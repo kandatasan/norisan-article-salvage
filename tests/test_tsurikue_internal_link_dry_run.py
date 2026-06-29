@@ -45,6 +45,65 @@ class DryRunTests(unittest.TestCase):
         self.assertNotIn("fishingpage", result.updated)
         self.assertIn('/live/', result.updated)
 
+    def test_image_link_is_unwrapped_without_removing_image(self):
+        source = '<!-- wp:paragraph -->\n<p><a href="/fishingpage/"><img src="fish.jpg" alt="魚" /></a></p>\n<!-- /wp:paragraph -->'
+        result = module.transform(source)
+        self.assertIn('<img src="fish.jpg" alt="魚" />', result.updated)
+        self.assertNotIn('<a href="/fishingpage/">', result.updated)
+        self.assertEqual([action.kind for action in result.actions], ["unwrap_anchor"])
+
+    def test_expected_counts_validation_rejects_mismatch(self):
+        summary = module.RunSummary(affected_documents=10, target_links=22, delete_blocks=22, unwrap_anchors=1, remaining=0)
+        with self.assertRaises(SystemExit):
+            module.validate_expected(summary)
+
+    def test_authenticated_fetch_uses_context_edit_and_content_raw(self):
+        calls = []
+
+        def fake_request_json(url, **kwargs):
+            calls.append((url, kwargs))
+            return {
+                "id": 2358,
+                "status": "publish",
+                "link": "https://tsurikue.com/everyman-iiyo/",
+                "title": {"raw": "raw title", "rendered": "rendered title"},
+                "content": {"raw": "RAW BODY", "rendered": "RENDERED BODY"},
+            }
+
+        original_ids = module.TARGET_POST_IDS
+        original_request_json = module.request_json
+        try:
+            module.TARGET_POST_IDS = (2358,)
+            module.request_json = fake_request_json
+            docs = module.fetch_authenticated_posts("https://tsurikue.com", "user", "pass")
+        finally:
+            module.TARGET_POST_IDS = original_ids
+            module.request_json = original_request_json
+
+        self.assertEqual(docs[0].content, "RAW BODY")
+        self.assertNotIn("RENDERED BODY", docs[0].content)
+        self.assertIn("context=edit", calls[0][0])
+        self.assertEqual(calls[0][1].get("auth_header", "").startswith("Basic "), True)
+
+    def test_apply_update_sends_only_content(self):
+        sent_payloads = []
+
+        def fake_request_json(url, **kwargs):
+            sent_payloads.append(kwargs.get("payload"))
+            return {"id": 2358}
+
+        original_request_json = module.request_json
+        try:
+            module.request_json = fake_request_json
+            doc = module.Document(2358, "post", "Title", "https://example.test", "before")
+            result = module.Result("before", "after", [module.Action("unwrap_anchor", ["/fishingpage/"], "before", "after", "test")], [])
+            statuses = module.apply_updates("https://tsurikue.com", "user", "pass", [(doc, result)])
+        finally:
+            module.request_json = original_request_json
+
+        self.assertEqual(statuses[2358], "updated")
+        self.assertEqual(sent_payloads, [{"content": "after"}])
+
 
 if __name__ == "__main__":
     unittest.main()
