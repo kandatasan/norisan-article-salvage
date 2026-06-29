@@ -1,0 +1,65 @@
+name: Tsurikue round-2 link cleanup
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode"
+        required: true
+        default: authenticated-dry-run
+        type: choice
+        options:
+          - authenticated-dry-run
+          - apply
+      apply_confirmation:
+        description: "Required only for apply mode: APPLY-ROUND2-23-LINKS"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: read
+
+    env:
+      OUTPUT_DIR: reports/tsurikue-round2-link-cleanup
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Validate apply confirmation
+        if: ${{ inputs.mode == 'apply' && inputs.apply_confirmation != 'APPLY-ROUND2-23-LINKS' }}
+        run: |
+          echo "apply mode requires the exact confirmation string."
+          exit 1
+
+      - name: Run authenticated cleanup mode
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: >-
+          python scripts/tsurikue_round2_link_cleanup.py
+          --mode "${{ inputs.mode }}"
+          --site-url https://tsurikue.com
+          --output-dir "$OUTPUT_DIR"
+          --apply-confirmation "${{ inputs.apply_confirmation }}"
+
+      - name: Upload cleanup artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsurikue-round2-link-cleanup-${{ inputs.mode }}
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: warn
