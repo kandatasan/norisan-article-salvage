@@ -50,7 +50,7 @@ jobs:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: >-
-          python scripts/tsurikue_internal_link_dry_run.py
+          python scripts/tsurikue_internal_link_cleanup.py
           --mode "${{ inputs.mode }}"
           --site-url https://tsurikue.com
           --output-dir "$OUTPUT_DIR"
