@@ -7,16 +7,20 @@ on:
     paths:
       - ".github/workflows/tsurikue-adsense-cleanup.yml"
       - "scripts/tsurikue_adsense_cleanup.py"
-      - "scripts/run_tsurikue_adsense_cleanup_with_retry.py"
+      - "scripts/tsurikue_adsense_cleanup_no_alt.py"
+      - "scripts/run_tsurikue_adsense_cleanup_no_alt_with_retry.py"
       - "tests/test_tsurikue_adsense_cleanup.py"
+      - "tests/test_tsurikue_adsense_cleanup_no_alt.py"
   pull_request:
     branches:
       - main
     paths:
       - ".github/workflows/tsurikue-adsense-cleanup.yml"
       - "scripts/tsurikue_adsense_cleanup.py"
-      - "scripts/run_tsurikue_adsense_cleanup_with_retry.py"
+      - "scripts/tsurikue_adsense_cleanup_no_alt.py"
+      - "scripts/run_tsurikue_adsense_cleanup_no_alt_with_retry.py"
       - "tests/test_tsurikue_adsense_cleanup.py"
+      - "tests/test_tsurikue_adsense_cleanup_no_alt.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -42,7 +46,7 @@ jobs:
       contents: read
 
     env:
-      OUTPUT_DIR: reports/tsurikue-adsense-cleanup
+      OUTPUT_DIR: reports/tsurikue-adsense-cleanup-no-alt
       RUN_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'authenticated-dry-run' }}
       APPLY_CONFIRMATION_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.apply_confirmation || '' }}
 
@@ -69,7 +73,7 @@ jobs:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: >-
-          python scripts/run_tsurikue_adsense_cleanup_with_retry.py
+          python scripts/run_tsurikue_adsense_cleanup_no_alt_with_retry.py
           --mode "$RUN_MODE"
           --site-url https://tsurikue.com
           --output-dir "$OUTPUT_DIR"
@@ -79,6 +83,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: tsurikue-adsense-cleanup-${{ env.RUN_MODE }}
+          name: tsurikue-adsense-cleanup-no-alt-${{ env.RUN_MODE }}
           path: ${{ env.OUTPUT_DIR }}/
           if-no-files-found: warn
