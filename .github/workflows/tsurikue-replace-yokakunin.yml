@@ -1,0 +1,73 @@
+name: Tsurikue replace 要確認
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/tsurikue-replace-yokakunin.yml"
+      - "scripts/tsurikue_replace_yokakunin.py"
+      - "tests/test_tsurikue_replace_yokakunin.py"
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: "Run mode"
+        required: true
+        default: authenticated-dry-run
+        type: choice
+        options:
+          - authenticated-dry-run
+          - apply
+      apply_confirmation:
+        description: "Required only for apply mode: APPLY-YOKAKUNIN-20260711"
+        required: false
+        default: ""
+        type: string
+
+jobs:
+  replace-yokakunin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      OUTPUT_DIR: reports/tsurikue-yokakunin
+      RUN_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'authenticated-dry-run' }}
+      APPLY_CONFIRMATION_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.apply_confirmation || '' }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run tests
+        run: python -m unittest tests/test_tsurikue_replace_yokakunin.py -v
+
+      - name: Validate apply confirmation
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply' && inputs.apply_confirmation != 'APPLY-YOKAKUNIN-20260711' }}
+        run: |
+          echo "apply mode requires the exact confirmation string."
+          exit 1
+
+      - name: Run replacement mode
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: >-
+          python scripts/tsurikue_replace_yokakunin.py
+          --mode "$RUN_MODE"
+          --site-url https://tsurikue.com
+          --output-dir "$OUTPUT_DIR"
+          --apply-confirmation "$APPLY_CONFIRMATION_INPUT"
+
+      - name: Upload artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsurikue-yokakunin-${{ env.RUN_MODE }}
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: warn
