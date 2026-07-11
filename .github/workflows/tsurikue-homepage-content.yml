@@ -1,14 +1,6 @@
 name: Tsurikue homepage content strengthening
 
 on:
-  pull_request:
-    branches:
-      - main
-    paths:
-      - ".github/workflows/tsurikue-homepage-content.yml"
-      - "scripts/tsurikue_homepage_content.py"
-      - "scripts/run_tsurikue_homepage_content_with_diagnostic.py"
-      - "tests/test_tsurikue_homepage_content.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -33,8 +25,8 @@ jobs:
       contents: read
     env:
       OUTPUT_DIR: reports/tsurikue-homepage-content
-      RUN_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'authenticated-dry-run' }}
-      APPLY_CONFIRMATION_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.apply_confirmation || '' }}
+      RUN_MODE: ${{ inputs.mode }}
+      APPLY_CONFIRMATION_INPUT: ${{ inputs.apply_confirmation }}
 
     steps:
       - name: Checkout
@@ -49,7 +41,7 @@ jobs:
         run: python -m unittest tests/test_tsurikue_homepage_content.py -v
 
       - name: Validate apply confirmation
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.mode == 'apply' && inputs.apply_confirmation != 'APPLY-HOMEPAGE-CONTENT-20260711' }}
+        if: ${{ inputs.mode == 'apply' && inputs.apply_confirmation != 'APPLY-HOMEPAGE-CONTENT-20260711' }}
         run: |
           echo "apply mode requires the exact confirmation string."
           exit 1
