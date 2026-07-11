@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/tsurikue-adsense-cleanup.yml"
       - "scripts/tsurikue_adsense_cleanup.py"
+      - "scripts/run_tsurikue_adsense_cleanup_with_retry.py"
       - "tests/test_tsurikue_adsense_cleanup.py"
   pull_request:
     branches:
@@ -14,6 +15,7 @@ on:
     paths:
       - ".github/workflows/tsurikue-adsense-cleanup.yml"
       - "scripts/tsurikue_adsense_cleanup.py"
+      - "scripts/run_tsurikue_adsense_cleanup_with_retry.py"
       - "tests/test_tsurikue_adsense_cleanup.py"
   workflow_dispatch:
     inputs:
@@ -67,7 +69,7 @@ jobs:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: >-
-          python scripts/tsurikue_adsense_cleanup.py
+          python scripts/run_tsurikue_adsense_cleanup_with_retry.py
           --mode "$RUN_MODE"
           --site-url https://tsurikue.com
           --output-dir "$OUTPUT_DIR"
