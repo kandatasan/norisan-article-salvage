@@ -41,7 +41,7 @@ def verify_after_apply_without_alt(site_url: str, user: str, app_password: str) 
 
 base.fill_blank_alts = keep_blank_alts
 base.EXPECTED_COUNTS = {
-    "documents": 31,
+    "documents": 21,
     "edit_memos": 4,
     "legacy_replacements": 34,
     "link_replacements": 1,
