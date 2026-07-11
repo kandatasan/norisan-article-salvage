@@ -8,6 +8,13 @@ on:
       - ".github/workflows/tsurikue-adsense-cleanup.yml"
       - "scripts/tsurikue_adsense_cleanup.py"
       - "tests/test_tsurikue_adsense_cleanup.py"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/tsurikue-adsense-cleanup.yml"
+      - "scripts/tsurikue_adsense_cleanup.py"
+      - "tests/test_tsurikue_adsense_cleanup.py"
   workflow_dispatch:
     inputs:
       mode:
@@ -34,7 +41,7 @@ jobs:
 
     env:
       OUTPUT_DIR: reports/tsurikue-adsense-cleanup
-      RUN_MODE: ${{ github.event_name == 'push' && 'authenticated-dry-run' || inputs.mode }}
+      RUN_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'authenticated-dry-run' }}
       APPLY_CONFIRMATION_INPUT: ${{ github.event_name == 'workflow_dispatch' && inputs.apply_confirmation || '' }}
 
     steps:
