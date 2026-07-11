@@ -7,6 +7,7 @@ on:
     paths:
       - ".github/workflows/tsurikue-homepage-content.yml"
       - "scripts/tsurikue_homepage_content.py"
+      - "scripts/run_tsurikue_homepage_content_with_diagnostic.py"
       - "tests/test_tsurikue_homepage_content.py"
   workflow_dispatch:
     inputs:
@@ -58,7 +59,7 @@ jobs:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: >-
-          python scripts/tsurikue_homepage_content.py
+          python scripts/run_tsurikue_homepage_content_with_diagnostic.py
           --mode "$RUN_MODE"
           --site-url https://tsurikue.com
           --output-dir "$OUTPUT_DIR"
