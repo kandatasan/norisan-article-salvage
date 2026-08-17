@@ -1,0 +1,46 @@
+name: Old Tsurikue photo reconciliation dry-run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  authenticated-photo-reconciliation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    permissions:
+      contents: read
+    env:
+      OUTPUT_DIR: reports/old-tsurikue-photo-reconciliation
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check Pillow
+
+      - name: Run focused tests
+        run: python -m unittest tests/test_old_tsurikue_photo_reconciliation.py -v
+
+      # No apply input and no write-capable WordPress code path exists in this workflow.
+      - name: Run authenticated GET-only photo reconciliation
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: >-
+          python scripts/old_tsurikue_photo_reconciliation.py
+          --site-url https://tsurikue.com
+          --output-dir "$OUTPUT_DIR"
+
+      - name: Upload reconciliation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: old-tsurikue-photo-reconciliation-dry-run
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: error
