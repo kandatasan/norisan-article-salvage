@@ -1,0 +1,47 @@
+name: Old Tsurikue recovered photo filename dry-run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  authenticated-recovered-photo-filename:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    env:
+      OUTPUT_DIR: reports/old-tsurikue-photo-filename-fallback
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check Pillow
+
+      - name: Run recovered fallback tests
+        run: python -m unittest tests/test_old_tsurikue_photo_filename_fallback.py -v
+
+      # GET-only: reads the authenticated WordPress media index and compares it with
+      # locally recovered legacy filenames. No Wayback request and no WordPress write path.
+      - name: Run authenticated recovered filename reconciliation
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: >-
+          python scripts/old_tsurikue_photo_filename_fallback.py
+          --site-url https://tsurikue.com
+          --output-dir "$OUTPUT_DIR"
+
+      - name: Upload reconciliation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: old-tsurikue-photo-filename-fallback-dry-run
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: error
