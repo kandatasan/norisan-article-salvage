@@ -1,0 +1,40 @@
+name: Old Tsurikue 46-article salvage dry-run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  authenticated-dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+
+      - name: Run focused local tests
+        run: python -m unittest tests/test_old_tsurikue_salvage_dry_run.py -v
+
+      - name: Run authenticated GET-only reconciliation
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: >-
+          python scripts/old_tsurikue_salvage_dry_run.py
+          --site-url https://tsurikue.com
+          --output-dir reports/old-tsurikue-salvage
+
+      - name: Upload reconciliation artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: old-tsurikue-salvage-dry-run
+          path: reports/old-tsurikue-salvage/
+          if-no-files-found: warn
