@@ -1,0 +1,46 @@
+name: Old Tsurikue Phase 4 create-plan dry-run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  authenticated-create-plan-get-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    env:
+      OUTPUT_DIR: reports/old-tsurikue-phase4-create-plan-dry-run
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run Phase 3 tests
+        run: python -m unittest tests/test_old_tsurikue_remake_dry_run.py -v
+      - name: Run Phase 3.1 tests
+        run: python -m unittest tests/test_old_tsurikue_remake_qa_dry_run.py -v
+      - name: Run Phase 3.2 tests
+        run: python -m unittest tests/test_old_tsurikue_remake_final_qa_dry_run.py -v
+      - name: Run reader-polish tests
+        run: python -m unittest tests/test_old_tsurikue_remake_publish_polish_dry_run.py -v
+      - name: Run Phase 4 Step A tests
+        run: python -m unittest tests/test_old_tsurikue_phase4_create_plan_dry_run.py -v
+      - name: Build authenticated GET-only create plan
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: >-
+          python scripts/old_tsurikue_phase4_create_plan_dry_run.py
+          --site-url https://tsurikue.com
+          --output-dir "$OUTPUT_DIR"
+      - name: Upload create-plan artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: old-tsurikue-phase4-create-plan-dry-run
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: warn
