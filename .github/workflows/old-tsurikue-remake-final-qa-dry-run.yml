@@ -24,8 +24,10 @@ jobs:
         run: python -m unittest tests/test_old_tsurikue_remake_qa_dry_run.py -v
       - name: Run Phase 3.2 tests
         run: python -m unittest tests/test_old_tsurikue_remake_final_qa_dry_run.py -v
-      - name: Build Phase 3.2 artifacts
-        run: python scripts/old_tsurikue_remake_final_qa_dry_run.py --output-dir "$OUTPUT_DIR"
+      - name: Run reader-polish tests
+        run: python -m unittest tests/test_old_tsurikue_remake_publish_polish_dry_run.py -v
+      - name: Build polished Phase 3.2 artifacts
+        run: python scripts/old_tsurikue_remake_publish_polish_dry_run.py --output-dir "$OUTPUT_DIR"
       - name: Upload Phase 3.2 artifacts
         uses: actions/upload-artifact@v4
         with:
