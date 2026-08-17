@@ -1,0 +1,30 @@
+name: Old Tsurikue 46-article remake dry-run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  remake-dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      OUTPUT_DIR: reports/old-tsurikue-remake-dry-run
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run focused tests
+        run: python -m unittest tests/test_old_tsurikue_remake_dry_run.py -v
+      - name: Build local-only remake artifacts
+        run: python scripts/old_tsurikue_remake_dry_run.py --output-dir "$OUTPUT_DIR"
+      - name: Upload remake artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: old-tsurikue-remake-dry-run
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: error
