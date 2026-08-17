@@ -1,0 +1,34 @@
+name: Old Tsurikue Phase 3.2 final editorial QA dry-run
+
+on:
+  workflow_dispatch:
+
+jobs:
+  final-editorial-qa-dry-run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+    env:
+      OUTPUT_DIR: reports/old-tsurikue-remake-final-qa-dry-run
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run Phase 3 tests
+        run: python -m unittest tests/test_old_tsurikue_remake_dry_run.py -v
+      - name: Run Phase 3.1 tests
+        run: python -m unittest tests/test_old_tsurikue_remake_qa_dry_run.py -v
+      - name: Run Phase 3.2 tests
+        run: python -m unittest tests/test_old_tsurikue_remake_final_qa_dry_run.py -v
+      - name: Build Phase 3.2 artifacts
+        run: python scripts/old_tsurikue_remake_final_qa_dry_run.py --output-dir "$OUTPUT_DIR"
+      - name: Upload Phase 3.2 artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: old-tsurikue-remake-final-qa-dry-run
+          path: ${{ env.OUTPUT_DIR }}/
+          if-no-files-found: error
