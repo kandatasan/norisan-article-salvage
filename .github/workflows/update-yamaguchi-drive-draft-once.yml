@@ -1,0 +1,51 @@
+name: Update yamaguchi-drive draft once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/update_yamaguchi_drive_draft_once.py
+      - scripts/yamaguchi_drive_final_content.html
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run focused safety tests
+        run: python -m unittest tests/test_update_yamaguchi_drive_draft_once.py -v
+      - name: Update only yamaguchi-drive draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_yamaguchi_drive_draft_once.py
+      - name: Record successful result on Phase 4 issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo "### yamaguchi-drive editorial update: SUCCESS"
+            echo
+            cat reports/yamaguchi-drive-draft-update/summary.md
+          } > /tmp/yamaguchi-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/yamaguchi-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yamaguchi-drive-draft-update
+          path: reports/yamaguchi-drive-draft-update/
+          if-no-files-found: warn
