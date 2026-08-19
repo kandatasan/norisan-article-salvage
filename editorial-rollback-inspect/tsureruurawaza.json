@@ -6,5 +6,13 @@
   "restore_title": "ルアー・ワームで魚が釣れない？裏技！この組み合わせを試してみて！",
   "salvage_marker": "<!-- old-tsurikue-salvage:v1 slug=tsureruurawaza -->",
   "editorial_marker": "<!-- tsurikue-editorial:tsureruurawaza:v1 -->",
-  "restore_media_ids": [46, 59, 67]
+  "restore_media_ids": [46, 59, 67],
+  "inspect_snippets": [
+    "このぬるぬるネバネバのおかげで",
+    "スプーン1杯にたいして",
+    "スプーン半杯",
+    "適当なマス針にガン玉",
+    "1時間で5匹ほど"
+  ],
+  "inspect_version": 2
 }
