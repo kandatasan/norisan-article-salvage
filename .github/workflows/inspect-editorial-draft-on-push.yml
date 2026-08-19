@@ -1,0 +1,69 @@
+name: Inspect editorial draft on push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial-inspect/**'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Inspection config path, e.g. editorial-inspect/totoya-iiyo.json'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  inspect-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Resolve inspection configs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+          else
+            git diff --name-only HEAD^ HEAD -- 'editorial-inspect/*.json' | sort -u > /tmp/configs.txt
+          fi
+          test -s /tmp/configs.txt
+          cat /tmp/configs.txt
+      - name: Inspect drafts with GET only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r config; do
+            python scripts/inspect_editorial_draft.py --config "$config"
+          done < /tmp/configs.txt
+      - name: Record read-only inspection on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Editorial draft media inspection: SUCCESS'
+            echo
+            find reports/editorial-inspect -name summary.md -print -exec cat {} \;
+          } > /tmp/inspection-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/inspection-comment.md
+      - name: Upload inspection artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: editorial-draft-inspection
+          path: reports/editorial-inspect/
+          if-no-files-found: warn
