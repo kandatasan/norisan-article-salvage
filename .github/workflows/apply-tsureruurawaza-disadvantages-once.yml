@@ -53,3 +53,5 @@ jobs:
       - name: Fail if patch blocked
         if: steps.apply.outcome != 'success'
         run: exit 1
+
+# retry 2026-08-19 after transient WordPress timeout
