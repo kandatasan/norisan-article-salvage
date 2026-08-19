@@ -24,7 +24,14 @@ class T(unittest.TestCase):
     td,p,cfg=self.package(); c,full=m.load_package(p); row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full+'changed'},"featured_media":7}
     with self.assertRaises(RuntimeError): m.validate_target(row,cfg,full)
     td.cleanup()
-  def test_featured_must_be_expected(self):
+  def test_nonzero_featured_must_be_expected(self):
     cfg={"featured_media":8,"expected_media":{"7":"/x.jpg"}}
     with self.assertRaises(RuntimeError): m.validate_media(cfg,'auth')
+  def test_zero_featured_allows_empty_media(self):
+    cfg={"featured_media":0,"expected_media":{}}
+    self.assertEqual(m.validate_media(cfg,'auth'),0)
+  def test_zero_featured_idempotent(self):
+    td,p,cfg=self.package(); cfg["featured_media"]=0; cfg["expected_media"]={}; p.write_text(json.dumps(cfg),encoding='utf-8'); c,full=m.load_package(p)
+    row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full},"featured_media":0}
+    self.assertEqual(m.validate_target(row,cfg,full),'ALREADY_UP_TO_DATE'); td.cleanup()
 if __name__=='__main__': unittest.main()
