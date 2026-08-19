@@ -1,0 +1,71 @@
+name: Apply editorial media patches on push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial-media-patches/**'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Media patch config path'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply-media-patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check patcher
+        run: python -m py_compile scripts/apply_editorial_media_patch_once.py
+      - name: Resolve patch configs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+          else
+            git diff --name-only HEAD^ HEAD -- 'editorial-media-patches/*.json' | sort -u > /tmp/configs.txt
+          fi
+          test -s /tmp/configs.txt
+          cat /tmp/configs.txt
+      - name: Apply guarded draft media patches
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r config; do
+            python scripts/apply_editorial_media_patch_once.py --config "$config"
+          done < /tmp/configs.txt
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Editorial draft media patch: SUCCESS'
+            echo
+            find reports -name summary.md -print -exec cat {} \;
+          } > /tmp/media-patch-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/media-patch-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: editorial-media-patch
+          path: reports/
+          if-no-files-found: warn

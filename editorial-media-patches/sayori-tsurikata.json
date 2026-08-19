@@ -1,0 +1,33 @@
+{
+  "post_id": 2655,
+  "slug": "sayori-tsurikata",
+  "expected_title": "サヨリの釣り方｜延べ竿＋市販仕掛けなら初心者でも簡単！エサ・撒き餌も解説",
+  "salvage_marker": "<!-- old-tsurikue-salvage:v1 slug=sayori-tsurikata -->",
+  "required_editorial_marker": "<!-- tsurikue-editorial:sayori-tsurikata:v1 -->",
+  "patch_marker": "<!-- tsurikue-media-patch:sayori-tsurikata:v1 -->",
+  "featured_media": 2695,
+  "expected_media": {
+    "2695": {
+      "path": "/wp-content/uploads/2026/08/gptempdownload.jpg",
+      "width": 1920,
+      "height": 1080
+    },
+    "2696": {
+      "path": "/wp-content/uploads/2026/08/img_8532.jpg",
+      "width": 828,
+      "height": 1792
+    }
+  },
+  "insertions": [
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p>撒き餌へ反応して寄ってくると、水面近くに銀色の魚が見えてきます。</p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:image {\"id\":2695,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/08/gptempdownload.jpg\" alt=\"水面近くを群れで泳ぐサヨリ\" class=\"wp-image-2695\"/></figure>\n<!-- /wp:image -->"
+    },
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p>みたいなのまで見えるんですよ。</p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:image {\"id\":2696,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/08/img_8532.jpg\" alt=\"堤防から釣り上げたサヨリ\" class=\"wp-image-2696\"/></figure>\n<!-- /wp:image -->"
+    }
+  ]
+}
