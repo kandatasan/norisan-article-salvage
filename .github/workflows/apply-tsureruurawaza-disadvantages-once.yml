@@ -1,0 +1,55 @@
+name: Apply tsureruurawaza disadvantages once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tsureruurawaza_disadvantages_once.py'
+      - '.github/workflows/apply-tsureruurawaza-disadvantages-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply guarded disadvantages patch
+        id: apply
+        continue-on-error: true
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tsureruurawaza_disadvantages_once.py
+      - name: Record result on audit issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### tsureruurawaza disadvantages patch'
+            echo
+            if [[ -f reports/tsureruurawaza-disadvantages-once/summary.md ]]; then
+              cat reports/tsureruurawaza-disadvantages-once/summary.md
+            else
+              echo 'No summary file was produced.'
+            fi
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsureruurawaza-disadvantages-once
+          path: reports/tsureruurawaza-disadvantages-once/
+          if-no-files-found: warn
+      - name: Fail if patch blocked
+        if: steps.apply.outcome != 'success'
+        run: exit 1
