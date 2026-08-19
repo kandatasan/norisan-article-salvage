@@ -1,0 +1,66 @@
+name: Inspect Phase 4 restore source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'phase4-restore-inspect/**'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Phase 4 restore inspection config'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  inspect-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Resolve config
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+          else
+            git diff --name-only HEAD^ HEAD -- 'phase4-restore-inspect/*.json' | sort -u > /tmp/configs.txt
+          fi
+          test -s /tmp/configs.txt
+          cat /tmp/configs.txt
+      - name: Rebuild original Phase 4 source locally
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r config; do
+            PYTHONPATH=scripts python scripts/inspect_phase4_restore_source.py --config "$config"
+          done < /tmp/configs.txt
+      - name: Record source inspection on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Phase 4 restore source inspection: SUCCESS'
+            echo
+            find reports/phase4-restore-source -name summary.md -print -exec cat {} \;
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload restore source artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase4-restore-source
+          path: reports/phase4-restore-source/
+          if-no-files-found: warn
