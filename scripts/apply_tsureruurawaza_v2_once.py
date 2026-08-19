@@ -23,7 +23,7 @@ SLUG = "tsureruurawaza"
 EXPECTED_CURRENT_TITLE = "ルアー・ワームで魚が釣れない？裏技！この組み合わせを試してみて！"
 EXPECTED_CURRENT_SHA256 = "e2b6af4fb0cb13a9da9e0f068183c85502651650670504bdd41be9afa132062a"
 CONFIG_PATH = Path("editorial/tsureruurawaza/config.json")
-USER_AGENT = "tsurikue-tsureruurawaza-v2-once/1.0"
+USER_AGENT = "tsurikue-tsureruurawaza-v2-once/1.1"
 REPORT_DIR = Path("reports/tsureruurawaza-v2-once")
 
 
