@@ -1,6 +1,16 @@
 {
   "slug": "tsureruurawaza",
   "salvage_marker": "<!-- old-tsurikue-salvage:v1 slug=tsureruurawaza -->",
-  "filename_patterns": [],
-  "recent_media_limit": 1
+  "filename_patterns": [
+    "a4377727-8225-46b6-a063-d7035d65096b.jpeg",
+    "image_458536d5-809e-461f-b429-7425bc269c00.jpg",
+    "img_9986.jpg",
+    "img_9987.jpg",
+    "img_9988.jpg",
+    "img_9982.jpg",
+    "img_9984.jpg",
+    "img_9983.jpg",
+    "img_9990.jpg",
+    "img_9758.jpg"
+  ]
 }
