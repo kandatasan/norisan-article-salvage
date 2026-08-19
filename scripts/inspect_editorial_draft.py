@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-editorial-draft-inspector/1.1"
+USER_AGENT = "tsurikue-editorial-draft-inspector/1.2"
 REPORT_ROOT = Path("reports/editorial-inspect")
 
 
@@ -90,6 +90,7 @@ def media_record(row: dict[str, Any]) -> dict[str, Any]:
     source_url = row.get("source_url") or ""
     return {
         "id": row.get("id"),
+        "date": row.get("date") or "",
         "source_url": source_url,
         "filename": Path(urllib.parse.urlparse(source_url).path).name,
         "alt_text": row.get("alt_text") or "",
@@ -101,7 +102,7 @@ def media_record(row: dict[str, Any]) -> dict[str, Any]:
 
 def fetch_media(media_id: int, authorization: str) -> dict[str, Any]:
     query = urllib.parse.urlencode(
-        {"context": "edit", "_fields": "id,source_url,alt_text,caption,media_details"}
+        {"context": "edit", "_fields": "id,date,source_url,alt_text,caption,media_details"}
     )
     row, _headers = get_json(f"{SITE_URL}/wp-json/wp/v2/media/{media_id}?{query}", authorization)
     return media_record(row)
@@ -122,7 +123,7 @@ def scan_media_library(patterns: list[str], authorization: str) -> list[dict[str
     base_params = {
         "context": "edit",
         "per_page": "100",
-        "_fields": "id,source_url,alt_text,caption,media_details",
+        "_fields": "id,date,source_url,alt_text,caption,media_details",
     }
     first_query = urllib.parse.urlencode({**base_params, "page": "1"})
     rows, headers = get_json(f"{SITE_URL}/wp-json/wp/v2/media?{first_query}", authorization)
@@ -153,11 +154,31 @@ def scan_media_library(patterns: list[str], authorization: str) -> list[dict[str
     return matches
 
 
+def scan_recent_media(limit: int, authorization: str) -> list[dict[str, Any]]:
+    """Return the newest media-library rows for read-only human identification."""
+    if limit <= 0:
+        return []
+    limit = max(1, min(limit, 100))
+    query = urllib.parse.urlencode(
+        {
+            "context": "edit",
+            "per_page": str(limit),
+            "page": "1",
+            "orderby": "date",
+            "order": "desc",
+            "_fields": "id,date,source_url,alt_text,caption,media_details",
+        }
+    )
+    rows, _headers = get_json(f"{SITE_URL}/wp-json/wp/v2/media?{query}", authorization)
+    return [media_record(row) for row in rows]
+
+
 def inspect(config_path: Path) -> dict[str, Any]:
     cfg = json.loads(config_path.read_text(encoding="utf-8"))
     slug = cfg["slug"]
     salvage_marker = cfg["salvage_marker"]
     filename_patterns = list(cfg.get("filename_patterns") or [])
+    recent_media_limit = int(cfg.get("recent_media_limit") or 0)
 
     user = os.environ.get("TSURIKUE_WP_USER")
     password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
@@ -180,6 +201,7 @@ def inspect(config_path: Path) -> dict[str, Any]:
         images.append(item)
 
     candidates = scan_media_library(filename_patterns, authorization)
+    recent_media = scan_recent_media(recent_media_limit, authorization)
 
     report = {
         "mode": "read-only",
@@ -194,6 +216,9 @@ def inspect(config_path: Path) -> dict[str, Any]:
         "filename_patterns": filename_patterns,
         "candidate_media_count": len(candidates),
         "candidate_media": candidates,
+        "recent_media_limit": recent_media_limit,
+        "recent_media_count": len(recent_media),
+        "recent_media": recent_media,
     }
 
     out = REPORT_ROOT / slug
@@ -213,6 +238,7 @@ def inspect(config_path: Path) -> dict[str, Any]:
         f"- current_featured_media: **{report['current_featured_media']}**",
         f"- article_image_count: **{report['article_image_count']}**",
         f"- candidate_media_count: **{report['candidate_media_count']}**",
+        f"- recent_media_count: **{report['recent_media_count']}**",
         "",
         "## Images already in draft",
     ]
@@ -220,6 +246,7 @@ def inspect(config_path: Path) -> dict[str, Any]:
         lines.extend(
             [
                 f"### {index}. media #{item['id']} — {item['filename']}",
+                f"- date: {item['date'] or '(unknown)'}",
                 f"- size: {item['width']}x{item['height']}",
                 f"- source_url: {item['source_url']}",
                 f"- alt: {item['alt_text'] or '(empty)'}",
@@ -236,6 +263,7 @@ def inspect(config_path: Path) -> dict[str, Any]:
             [
                 f"### {index}. media #{item['id']} — {item['filename']}",
                 f"- matched_pattern: {item['matched_pattern']}",
+                f"- date: {item['date'] or '(unknown)'}",
                 f"- size: {item['width']}x{item['height']}",
                 f"- source_url: {item['source_url']}",
                 f"- alt: {item['alt_text'] or '(empty)'}",
@@ -244,6 +272,21 @@ def inspect(config_path: Path) -> dict[str, Any]:
         )
     if not candidates:
         lines.extend(["(none)", ""])
+
+    lines.append("## Most recent media (read-only identification aid)")
+    for index, item in enumerate(recent_media, 1):
+        lines.extend(
+            [
+                f"### {index}. media #{item['id']} — {item['filename']}",
+                f"- date: {item['date'] or '(unknown)'}",
+                f"- size: {item['width']}x{item['height']}",
+                f"- source_url: {item['source_url']}",
+                f"- alt: {item['alt_text'] or '(empty)'}",
+                "",
+            ]
+        )
+    if not recent_media:
+        lines.extend(["(not requested)", ""])
 
     (out / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
