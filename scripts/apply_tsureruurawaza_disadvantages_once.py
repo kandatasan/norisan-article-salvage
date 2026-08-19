@@ -16,19 +16,16 @@ SITE_URL = "https://tsurikue.com"
 POST_ID = 2660
 SLUG = "tsureruurawaza"
 EXPECTED_TITLE = "ルアー・ワームで魚が釣れない？裏技！ガルプ粉＋特撰えび粉を試してみた"
+EXPECTED_CURRENT_SHA256 = "1b7302ca51cbe587a8d43fb4c9813202bc818420bc3a3488aaf072164c593cdd"
 EXPECTED_FEATURED_MEDIA = 67
 CURRENT_EDITORIAL_MARKER = "<!-- tsurikue-editorial:tsureruurawaza:v2 -->"
 PATCH_MARKER = "<!-- tsurikue-patch:tsureruurawaza:disadvantages-v1 -->"
-USER_AGENT = "tsurikue-tsureruurawaza-disadvantages-once/1.1"
+USER_AGENT = "tsurikue-tsureruurawaza-disadvantages-once/1.2"
 REPORT_DIR = Path("reports/tsureruurawaza-disadvantages-once")
 
 ANCHOR = """<!-- wp:heading -->
 <h2 class=\"wp-block-heading\">で、本当に釣れるの？近くの海で実験してみた</h2>
 <!-- /wp:heading -->"""
-
-PRE_ANCHOR = """<!-- wp:paragraph -->
-<p>……という気分になります。</p>
-<!-- /wp:paragraph -->"""
 
 SECTION = """<!-- tsurikue-patch:tsureruurawaza:disadvantages-v1 -->
 
@@ -101,17 +98,13 @@ def raw_field(row: dict[str, Any], key: str) -> str:
 
 
 def fetch_post(auth: str) -> dict[str, Any]:
-    query = urllib.parse.urlencode(
-        {"context": "edit", "_fields": "id,slug,status,title,content,featured_media"}
-    )
+    query = urllib.parse.urlencode({"context": "edit", "_fields": "id,slug,status,title,content,featured_media"})
     row, _ = get_json(f"{SITE_URL}/wp-json/wp/v2/posts/{POST_ID}?{query}", auth)
     return row
 
 
 def count_published(endpoint: str, auth: str) -> int:
-    query = urllib.parse.urlencode(
-        {"context": "edit", "status": "publish", "per_page": "1", "_fields": "id"}
-    )
+    query = urllib.parse.urlencode({"context": "edit", "status": "publish", "per_page": "1", "_fields": "id"})
     _, headers = get_json(f"{SITE_URL}/wp-json/wp/v2/{endpoint}?{query}", auth)
     return int(headers.get("X-WP-Total", "0"))
 
@@ -133,9 +126,7 @@ def media_ids(content: str) -> list[int]:
 
 def write_report(report: dict[str, Any]) -> None:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
-    (REPORT_DIR / "result.json").write_text(
-        json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8"
-    )
+    (REPORT_DIR / "result.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = [
         "# tsureruurawaza disadvantages patch",
         "",
@@ -191,22 +182,19 @@ def main() -> int:
             raise RuntimeError(f"title mismatch: {current_title!r}")
         if int(before.get("featured_media") or 0) != EXPECTED_FEATURED_MEDIA:
             raise RuntimeError("featured_media mismatch")
+        if current_sha != EXPECTED_CURRENT_SHA256:
+            raise RuntimeError(f"current content hash changed again: {current_sha}")
         if CURRENT_EDITORIAL_MARKER not in current:
             raise RuntimeError("v2 editorial marker missing")
         if PATCH_MARKER in current:
             raise RuntimeError("disadvantages patch already present")
-        if current.count(PRE_ANCHOR) != 1 or current.count(ANCHOR) != 1:
-            raise RuntimeError(
-                f"expected context not unique: pre={current.count(PRE_ANCHOR)} anchor={current.count(ANCHOR)}"
-            )
-        expected_context = PRE_ANCHOR + "\n\n" + ANCHOR
-        if current.count(expected_context) != 1:
-            raise RuntimeError("expected insertion context no longer matches")
+        if current.count(ANCHOR) != 1:
+            raise RuntimeError(f"anchor count is not 1: {current.count(ANCHOR)}")
         before_media = media_ids(current)
         if before_media != [46, 59, 67]:
             raise RuntimeError(f"unexpected current article media ids: {before_media}")
 
-        desired = current.replace(expected_context, PRE_ANCHOR + "\n\n" + SECTION + "\n\n" + ANCHOR, 1)
+        desired = current.replace(ANCHOR, SECTION + "\n\n" + ANCHOR, 1)
         response = post_json(
             f"{SITE_URL}/wp-json/wp/v2/posts/{POST_ID}",
             auth,
@@ -236,19 +224,17 @@ def main() -> int:
         if PATCH_MARKER not in after_content:
             raise RuntimeError("patch marker missing after update")
 
-        report.update(
-            {
-                "result": "SUCCESS",
-                "status": "draft",
-                "title": after_title,
-                "featured_media": EXPECTED_FEATURED_MEDIA,
-                "article_media_ids": after_media,
-                "public_before": before_counts["total"],
-                "public_after": after_counts["total"],
-                "wordpress_write_count": 1,
-                "content_sha256": hashlib.sha256(after_content.encode()).hexdigest(),
-            }
-        )
+        report.update({
+            "result": "SUCCESS",
+            "status": "draft",
+            "title": after_title,
+            "featured_media": EXPECTED_FEATURED_MEDIA,
+            "article_media_ids": after_media,
+            "public_before": before_counts["total"],
+            "public_after": after_counts["total"],
+            "wordpress_write_count": 1,
+            "content_sha256": hashlib.sha256(after_content.encode()).hexdigest(),
+        })
         write_report(report)
         print(json.dumps(report, ensure_ascii=False, indent=2))
         return 0
