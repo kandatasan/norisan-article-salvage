@@ -1,0 +1,55 @@
+name: Apply tsureruurawaza v2 once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tsureruurawaza_v2_once.py'
+      - '.github/workflows/apply-tsureruurawaza-v2-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply-once:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/apply_tsureruurawaza_v2_once.py
+      - name: Apply exact restored draft to v2
+        id: apply
+        continue-on-error: true
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python scripts/apply_tsureruurawaza_v2_once.py
+          echo "exit_code=$?" >> "$GITHUB_OUTPUT"
+      - name: Record audit result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### tsureruurawaza v2 one-off apply'
+            echo
+            cat reports/tsureruurawaza-v2-once/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsureruurawaza-v2-one-off
+          path: reports/tsureruurawaza-v2-once/
+          if-no-files-found: error
+      - name: Fail if blocked
+        if: always()
+        run: |
+          test "${{ steps.apply.outputs.exit_code }}" = "0"
