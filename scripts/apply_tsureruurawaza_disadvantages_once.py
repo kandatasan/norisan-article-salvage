@@ -16,16 +16,19 @@ SITE_URL = "https://tsurikue.com"
 POST_ID = 2660
 SLUG = "tsureruurawaza"
 EXPECTED_TITLE = "ルアー・ワームで魚が釣れない？裏技！ガルプ粉＋特撰えび粉を試してみた"
-EXPECTED_CURRENT_SHA256 = "4094d4d4559691e6ed1a8c49fc3a45e2777281ffa664b9ed1c67c3c7389fe896"
 EXPECTED_FEATURED_MEDIA = 67
 CURRENT_EDITORIAL_MARKER = "<!-- tsurikue-editorial:tsureruurawaza:v2 -->"
 PATCH_MARKER = "<!-- tsurikue-patch:tsureruurawaza:disadvantages-v1 -->"
-USER_AGENT = "tsurikue-tsureruurawaza-disadvantages-once/1.0"
+USER_AGENT = "tsurikue-tsureruurawaza-disadvantages-once/1.1"
 REPORT_DIR = Path("reports/tsureruurawaza-disadvantages-once")
 
 ANCHOR = """<!-- wp:heading -->
 <h2 class=\"wp-block-heading\">で、本当に釣れるの？近くの海で実験してみた</h2>
 <!-- /wp:heading -->"""
+
+PRE_ANCHOR = """<!-- wp:paragraph -->
+<p>……という気分になります。</p>
+<!-- /wp:paragraph -->"""
 
 SECTION = """<!-- tsurikue-patch:tsureruurawaza:disadvantages-v1 -->
 
@@ -145,6 +148,7 @@ def write_report(report: dict[str, Any]) -> None:
         f"- public_before: **{report.get('public_before', 'unknown')}**",
         f"- public_after: **{report.get('public_after', 'unknown')}**",
         f"- wordpress_write_count: **{report.get('wordpress_write_count', 0)}**",
+        f"- source_content_sha256: `{report.get('source_content_sha256', '')}`",
         f"- content_sha256: `{report.get('content_sha256', '')}`",
     ]
     if report.get("error"):
@@ -162,6 +166,7 @@ def main() -> int:
         "public_before": "unknown",
         "public_after": "unknown",
         "wordpress_write_count": 0,
+        "source_content_sha256": "",
         "content_sha256": "",
     }
     try:
@@ -176,6 +181,7 @@ def main() -> int:
         current = raw_field(before, "content")
         current_title = html.unescape(raw_field(before, "title"))
         current_sha = hashlib.sha256(current.encode()).hexdigest()
+        report["source_content_sha256"] = current_sha
 
         if int(before.get("id") or 0) != POST_ID or before.get("slug") != SLUG:
             raise RuntimeError("post id/slug mismatch")
@@ -185,19 +191,22 @@ def main() -> int:
             raise RuntimeError(f"title mismatch: {current_title!r}")
         if int(before.get("featured_media") or 0) != EXPECTED_FEATURED_MEDIA:
             raise RuntimeError("featured_media mismatch")
-        if current_sha != EXPECTED_CURRENT_SHA256:
-            raise RuntimeError(f"current content hash changed: {current_sha}")
         if CURRENT_EDITORIAL_MARKER not in current:
             raise RuntimeError("v2 editorial marker missing")
         if PATCH_MARKER in current:
             raise RuntimeError("disadvantages patch already present")
-        if current.count(ANCHOR) != 1:
-            raise RuntimeError(f"anchor count is not 1: {current.count(ANCHOR)}")
+        if current.count(PRE_ANCHOR) != 1 or current.count(ANCHOR) != 1:
+            raise RuntimeError(
+                f"expected context not unique: pre={current.count(PRE_ANCHOR)} anchor={current.count(ANCHOR)}"
+            )
+        expected_context = PRE_ANCHOR + "\n\n" + ANCHOR
+        if current.count(expected_context) != 1:
+            raise RuntimeError("expected insertion context no longer matches")
         before_media = media_ids(current)
         if before_media != [46, 59, 67]:
             raise RuntimeError(f"unexpected current article media ids: {before_media}")
 
-        desired = current.replace(ANCHOR, SECTION + "\n\n" + ANCHOR, 1)
+        desired = current.replace(expected_context, PRE_ANCHOR + "\n\n" + SECTION + "\n\n" + ANCHOR, 1)
         response = post_json(
             f"{SITE_URL}/wp-json/wp/v2/posts/{POST_ID}",
             auth,
