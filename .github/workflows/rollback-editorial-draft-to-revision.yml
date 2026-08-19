@@ -1,0 +1,67 @@
+name: Rollback editorial draft to revision
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial-rollback-apply/**'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Rollback config path'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  rollback-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Resolve rollback config
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+          else
+            git diff --name-only HEAD^ HEAD -- 'editorial-rollback-apply/*.json' | sort -u > /tmp/configs.txt
+          fi
+          test -s /tmp/configs.txt
+          cat /tmp/configs.txt
+      - name: Apply guarded rollback
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r config; do
+            python scripts/rollback_editorial_draft_to_revision.py --config "$config"
+          done < /tmp/configs.txt
+      - name: Record rollback on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Editorial draft rollback: SUCCESS'
+            echo
+            find reports/editorial-rollback -name summary.md -print -exec cat {} \;
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: editorial-draft-rollback
+          path: reports/editorial-rollback/
+          if-no-files-found: warn
