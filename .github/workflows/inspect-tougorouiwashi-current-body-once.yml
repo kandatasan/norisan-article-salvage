@@ -1,0 +1,43 @@
+name: Inspect tougorouiwashi current draft body once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_tougorouiwashi_current_body_once.py'
+      - '.github/workflows/inspect-tougorouiwashi-current-body-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+      TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Inspect current draft body with GET only
+        run: python scripts/inspect_tougorouiwashi_current_body_once.py
+      - name: Record current body on audit issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### tougorouiwashi current draft body: SUCCESS'
+            echo
+            cat reports/tougorouiwashi-current-body/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload inspection artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tougorouiwashi-current-body
+          path: reports/tougorouiwashi-current-body/
