@@ -1,0 +1,46 @@
+name: Patch kotamagai article to okiasari-only once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/patch_kotamagai_to_okiasari_only_once.py'
+      - '.github/workflows/patch-kotamagai-to-okiasari-only-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+      TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply guarded okiasari-only patch
+        run: python scripts/patch_kotamagai_to_okiasari_only_once.py
+      - name: Record audit result
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### kotamagai → okiasari-only patch: SUCCESS'
+            echo
+            cat reports/kotamagai-to-okiasari-only/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kotamagai-to-okiasari-only
+          path: reports/kotamagai-to-okiasari-only/
+          if-no-files-found: warn
