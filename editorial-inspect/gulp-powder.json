@@ -1,6 +1,16 @@
 {
   "slug": "gulp-powder",
   "salvage_marker": "<!-- old-tsurikue-salvage:v1 slug=gulp-powder -->",
-  "filename_patterns": [],
+  "filename_patterns": [
+    "image_458536d5-809e-461f-b429-7425bc269c00.jpg",
+    "image.jpg",
+    "image-1.jpg",
+    "image-2.jpg",
+    "image-3.jpg",
+    "image-4.jpg",
+    "image-5.jpg",
+    "img_9639.jpg",
+    "img_9831.jpg"
+  ],
   "recent_media_limit": 0
 }
