@@ -1,0 +1,63 @@
+{
+  "post_id": 2656,
+  "slug": "shiosoba-maeda-hiroshima",
+  "expected_title": "三原のラーメン名店「塩そば まえだ」は何度食べても旨い｜塩そば・和そばを実食",
+  "salvage_marker": "<!-- old-tsurikue-salvage:v1 slug=shiosoba-maeda-hiroshima -->",
+  "required_editorial_marker": "<!-- tsurikue-editorial:shiosoba-maeda-hiroshima:v1 -->",
+  "patch_marker": "<!-- tsurikue-media-patch:shiosoba-maeda-hiroshima:v1 -->",
+  "featured_media": 2727,
+  "expected_media": {
+    "2720": {
+      "path": "/wp-content/uploads/2026/08/img_0720.jpg",
+      "width": 1920,
+      "height": 1315
+    },
+    "2725": {
+      "path": "/wp-content/uploads/2026/08/img_0721.jpg",
+      "width": 1482,
+      "height": 1920
+    },
+    "2729": {
+      "path": "/wp-content/uploads/2026/08/img_0726.jpg",
+      "width": 1920,
+      "height": 1440
+    },
+    "2727": {
+      "path": "/wp-content/uploads/2026/08/img_0727.jpg",
+      "width": 1874,
+      "height": 1920
+    },
+    "2724": {
+      "path": "/wp-content/uploads/2026/08/img_0728.jpg",
+      "width": 1920,
+      "height": 1440
+    }
+  },
+  "insertions": [
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p><strong>塩そば まえだ。</strong></p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:image {\"id\":2720,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/08/img_0720.jpg\" alt=\"三原市の塩そば まえだの外観\" class=\"wp-image-2720\"/></figure>\n<!-- /wp:image -->"
+    },
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p>前回は塩そばを食べたので、この日は和そばを選びました。</p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:image {\"id\":2725,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/08/img_0721.jpg\" alt=\"塩そば まえだの券売機メニュー\" class=\"wp-image-2725\"/><figcaption class=\"wp-element-caption\">2026年8月撮影時の券売機。価格やメニューは変更される場合があります。</figcaption></figure>\n<!-- /wp:image -->"
+    },
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p>店内もきれいに整えられていて、私には<strong>高級割烹みたい</strong>に見えました。</p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:image {\"id\":2729,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/08/img_0726.jpg\" alt=\"木を基調にした塩そば まえだの店内\" class=\"wp-image-2729\"/></figure>\n<!-- /wp:image -->"
+    },
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p><strong>すっごく……キレイです。</strong></p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:image {\"id\":2727,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/08/img_0727.jpg\" alt=\"塩そば まえだの和そば\" class=\"wp-image-2727\"/></figure>\n<!-- /wp:image -->"
+    },
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p>ひと口飲むと、<strong>ガツンと濃厚な魚介風味。</strong></p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:image {\"id\":2724,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/08/img_0728.jpg\" alt=\"塩そば まえだの和そばの麺\" class=\"wp-image-2724\"/></figure>\n<!-- /wp:image -->"
+    }
+  ]
+}
