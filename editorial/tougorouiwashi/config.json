@@ -7,8 +7,8 @@
   "content_file": "content.html",
   "featured_media": 311,
   "expected_media": {
-    "311": {"path": "/wp-content/uploads/2026/05/img_0638.jpg", "width": 2000, "height": 1500},
-    "312": {"path": "/wp-content/uploads/2026/05/img_0641.jpg", "width": 1500, "height": 2000},
-    "317": {"path": "/wp-content/uploads/2026/05/img_0659.jpg", "width": 2000, "height": 1500}
+    "311": "/wp-content/uploads/2026/05/img_0638.jpg",
+    "312": "/wp-content/uploads/2026/05/img_0641.jpg",
+    "317": "/wp-content/uploads/2026/05/img_0659.jpg"
   }
 }
