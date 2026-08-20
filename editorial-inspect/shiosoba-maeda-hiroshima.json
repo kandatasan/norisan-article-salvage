@@ -1,6 +1,17 @@
 {
   "slug": "shiosoba-maeda-hiroshima",
   "salvage_marker": "<!-- old-tsurikue-salvage:v1 slug=shiosoba-maeda-hiroshima -->",
-  "filename_patterns": [],
-  "recent_media_limit": 0
+  "filename_patterns": [
+    "C9319321-E141-41F4-A1A9-90B8558AF6D3",
+    "392457D3-8D24-4814-A4F0-880646BF9AF4",
+    "41548971-B057-41F3-B309-F77AFDA5C203",
+    "1A0013F2-DA9D-4D59-ACE3-DA7E598F65D5",
+    "13800E12-6A28-4F8D-9D84-716A90AEBD7F",
+    "F2CB12C3-CB47-42D0-871B-95AB20B31C9C",
+    "5BCD7BE9-5BE4-4659-8CCE-FAC0648D22F9",
+    "B62EC7EF-D57B-4CA7-983E-46E7B0A2F8E4",
+    "67E258EC-4C7D-4977-85CF-E5D84B125059",
+    "5499F7D3-8C12-4420-BF8C-6193A1724F58"
+  ],
+  "recent_media_limit": 30
 }
