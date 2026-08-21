@@ -1,0 +1,40 @@
+name: Inspect agetate-tenpura-hongo preserved source body once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_agetate_tenpura_hongo_source_body_once.py'
+      - '.github/workflows/inspect-agetate-tenpura-hongo-source-body-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Rebuild preserved source locally
+        run: PYTHONPATH=scripts python scripts/inspect_agetate_tenpura_hongo_source_body_once.py
+      - name: Record source body on audit issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### agetate-tenpura-hongo preserved source body: SUCCESS'
+            echo
+            cat reports/agetate-tenpura-hongo-source-body/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload source body
+        uses: actions/upload-artifact@v4
+        with:
+          name: agetate-tenpura-hongo-source-body
+          path: reports/agetate-tenpura-hongo-source-body/
