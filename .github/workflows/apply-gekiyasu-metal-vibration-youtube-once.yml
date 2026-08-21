@@ -1,0 +1,46 @@
+name: Apply gekiyasu-metal-vibration YouTube once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_gekiyasu_metal_vibration_youtube_once.py'
+      - '.github/workflows/apply-gekiyasu-metal-vibration-youtube-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+      TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply guarded YouTube patch
+        run: python scripts/apply_gekiyasu_metal_vibration_youtube_once.py
+      - name: Record audit result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### gekiyasu-metal-vibration YouTube patch'
+            echo
+            cat reports/gekiyasu-metal-vibration-youtube-once/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gekiyasu-metal-vibration-youtube-once
+          path: reports/gekiyasu-metal-vibration-youtube-once/
+          if-no-files-found: warn
