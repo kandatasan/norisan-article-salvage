@@ -16,7 +16,7 @@ SITE_URL = "https://tsurikue.com"
 POST_ID = 2621
 SLUG = "agetate-tenpura-hongo"
 EXPECTED_TITLE = "あつあつ揚立てっちゃん本郷店へ｜揚げたて天ぷらが熱々すぎて最高！"
-EXPECTED_CURRENT_SHA256 = "172893c3868b8f5024f6186d6744461a4327d4bfe85771903f77379a35781a7c"
+EXPECTED_CURRENT_SHA256 = "8998dc7ba4518ab1a0ab2c5311b5effaee36372d4374fc6fb70de1d7d207685d"
 EXPECTED_FEATURED_MEDIA = 569
 EXPECTED_MEDIA_IDS = [569, 526, 530, 529, 533, 532, 531]
 SALVAGE_MARKER = "<!-- old-tsurikue-salvage:v1 slug=agetate-tenpura-hongo -->"
