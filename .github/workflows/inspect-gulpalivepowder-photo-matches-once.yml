@@ -1,0 +1,32 @@
+name: Inspect gulpalivepowder photo matches once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_gulpalivepowder_photo_matches_once.py'
+      - '.github/workflows/inspect-gulpalivepowder-photo-matches-once.yml'
+permissions:
+  contents: read
+  issues: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Inspect local photo-match bundles
+        run: python scripts/inspect_gulpalivepowder_photo_matches_once.py
+      - name: Record result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          { echo '### gulpalivepowder photo matches: SUCCESS'; echo; cat reports/gulpalivepowder-photo-matches/summary.md; } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: gulpalivepowder-photo-matches
+          path: reports/gulpalivepowder-photo-matches/
