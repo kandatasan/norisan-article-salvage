@@ -1,0 +1,46 @@
+name: Apply gulpalivepowder editorial once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_gulpalivepowder_editorial_once.py'
+      - '.github/workflows/apply-gulpalivepowder-editorial-once.yml'
+permissions:
+  contents: read
+  issues: write
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+      TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply exact guarded editorial package
+        run: PYTHONPATH=scripts python scripts/apply_gulpalivepowder_editorial_once.py
+      - name: Record result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### gulpalivepowder guarded editorial apply'
+            echo
+            if [[ -f reports/gulpalivepowder-draft-update/summary.md ]]; then
+              cat reports/gulpalivepowder-draft-update/summary.md
+            else
+              echo 'No success summary was produced.'
+            fi
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gulpalivepowder-editorial-once
+          path: reports/gulpalivepowder-draft-update/
+          if-no-files-found: warn
