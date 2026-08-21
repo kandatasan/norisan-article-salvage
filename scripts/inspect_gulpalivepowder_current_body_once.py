@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
+# Verification rerun after the 2026-08-21 editorial rewrite.
 import base64,hashlib,html,json,os,re,urllib.parse,urllib.request
 from pathlib import Path
 SITE_URL='https://tsurikue.com'; SLUG='gulpalivepowder'; SALVAGE_MARKER='<!-- old-tsurikue-salvage:v1 slug=gulpalivepowder -->'; REPORT_DIR=Path('reports/gulpalivepowder-current-body'); UA='tsurikue-gulpalivepowder-inspect/1.0'
