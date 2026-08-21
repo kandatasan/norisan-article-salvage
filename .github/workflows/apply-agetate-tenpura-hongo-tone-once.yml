@@ -1,0 +1,47 @@
+name: Apply agetate tenpura tone once
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/apply_agetate_tenpura_hongo_tone_once.py
+      - .github/workflows/apply-agetate-tenpura-hongo-tone-once.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply guarded draft tone patch
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_agetate_tenpura_hongo_tone_once.py
+      - name: Record audit result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### agetate-tenpura-hongo tone patch'
+            echo
+            cat reports/agetate-tenpura-hongo-tone-once/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: agetate-tenpura-hongo-tone-once
+          path: reports/agetate-tenpura-hongo-tone-once/
+          if-no-files-found: warn
