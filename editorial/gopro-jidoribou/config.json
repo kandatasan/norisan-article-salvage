@@ -6,7 +6,11 @@
   "editorial_marker": "<!-- tsurikue-editorial:gopro-jidoribou:v1 -->",
   "content_file": "content.html",
   "featured_media": 0,
+  "expected_current_content_sha256": "4de7742f9787154dc73363d0434c3d97d62fd36420e345446a3fa39ced57feb9",
   "expected_media": {
-    "36": "/wp-content/uploads/2026/05/gptempdownload-1.jpg"
+    "2797": "/wp-content/uploads/2026/08/img_9009.jpg",
+    "2794": "/wp-content/uploads/2026/08/img_9010.jpg",
+    "2796": "/wp-content/uploads/2026/08/無題7_20221225190028.jpg",
+    "2695": "/wp-content/uploads/2026/08/gptempdownload.jpg"
   }
 }
