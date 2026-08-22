@@ -1,7 +1,7 @@
-name: Apply gulpalivepowder grounding on labeled PR
+name: Apply gulpalivepowder grounding when PR is ready
 on:
   pull_request:
-    types: [labeled]
+    types: [ready_for_review]
 permissions:
   contents: write
   issues: write
@@ -9,7 +9,6 @@ permissions:
 jobs:
   apply:
     if: >-
-      github.event.label.name == 'apply-gulp-grounding' &&
       github.event.pull_request.head.repo.full_name == github.repository &&
       github.event.pull_request.head.ref == 'fix/gulpalivepowder-grounding-labeled-20260822'
     runs-on: ubuntu-latest
@@ -46,11 +45,11 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          { echo '### gulpalivepowder labeled grounding: SUCCESS'; echo; cat reports/gulpalivepowder-source-grounding/summary.md; } > /tmp/comment.md
+          { echo '### gulpalivepowder ready-PR grounding: SUCCESS'; echo; cat reports/gulpalivepowder-source-grounding/summary.md; } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: gulpalivepowder-labeled-grounding
+          name: gulpalivepowder-ready-pr-grounding
           path: reports/gulpalivepowder-source-grounding/
           if-no-files-found: warn
