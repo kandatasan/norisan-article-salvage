@@ -1,0 +1,50 @@
+name: Audit public internal links once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_public_internal_links_once.py'
+      - '.github/workflows/audit-public-internal-links-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Audit current published internal links (GET only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_public_internal_links_once.py
+      - name: Record audit on issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Public internal-link audit'
+            echo
+            if [[ -f reports/public-internal-links-audit/summary.md ]]; then
+              cat reports/public-internal-links-audit/summary.md
+            else
+              echo 'No summary file was produced.'
+            fi
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-internal-links-audit
+          path: reports/public-internal-links-audit/
+          if-no-files-found: error
