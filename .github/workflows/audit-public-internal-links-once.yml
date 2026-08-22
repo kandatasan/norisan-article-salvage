@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/audit_public_internal_links_once.py'
+      - 'scripts/identify_recent_gopro_media_once.py'
       - '.github/workflows/audit-public-internal-links-once.yml'
 
 permissions:
@@ -26,6 +27,11 @@ jobs:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: python scripts/audit_public_internal_links_once.py
+      - name: Identify recent GoPro media (GET only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/identify_recent_gopro_media_once.py
       - name: Record audit on issue 22
         if: always()
         env:
@@ -38,14 +44,24 @@ jobs:
             if [[ -f reports/public-internal-links-audit/summary.md ]]; then
               cat reports/public-internal-links-audit/summary.md
             else
-              echo 'No summary file was produced.'
+              echo 'No internal-link summary file was produced.'
+            fi
+            echo
+            echo '### GoPro media identification'
+            echo
+            if [[ -f reports/gopro-media-identify/summary.md ]]; then
+              cat reports/gopro-media-identify/summary.md
+            else
+              echo 'No GoPro media summary file was produced.'
             fi
           } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
-      - name: Upload audit artifact
+      - name: Upload audit artifacts
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: public-internal-links-audit
-          path: reports/public-internal-links-audit/
+          name: public-audit-and-gopro-media-identify
+          path: |
+            reports/public-internal-links-audit/
+            reports/gopro-media-identify/
           if-no-files-found: error
