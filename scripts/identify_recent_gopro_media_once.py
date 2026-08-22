@@ -9,7 +9,7 @@ import urllib.request
 from pathlib import Path
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-gopro-media-identify/1.0"
+USER_AGENT = "tsurikue-recent-media-identify/1.1"
 REPORT_DIR = Path("reports/gopro-media-identify")
 TARGET_SIZES = {(1152, 1536), (1194, 834)}
 
@@ -69,7 +69,7 @@ def main() -> int:
     REPORT_DIR.mkdir(parents=True, exist_ok=True)
     (REPORT_DIR / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = [
-        "# GoPro recent media identification",
+        "# Recent media identification",
         "",
         "GET-only. No WordPress write was performed.",
         "",
