@@ -6,6 +6,8 @@
   "editorial_marker": "<!-- tsurikue-editorial:catfish:v1 -->",
   "content_file": "content.html",
   "featured_media": 125,
+  "expected_current_content_sha256": "2c501a41f8054d4ea0aa822eac3cdc7c26bc3830784f1fec9aa155d61fc8a595",
+  "expected_current_featured_media": 125,
   "expected_media": {
     "125": "/wp-content/uploads/2026/05/img_0164.jpg"
   }
