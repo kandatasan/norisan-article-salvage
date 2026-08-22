@@ -5,7 +5,9 @@
   "salvage_marker": "<!-- old-tsurikue-salvage:v1 slug=hiroshima-koorogi -->",
   "editorial_marker": "<!-- tsurikue-editorial:hiroshima-koorogi:v1 -->",
   "content_file": "content.html",
-  "featured_media": 0,
+  "featured_media": 14,
+  "expected_current_content_sha256": "bb2800aefee411ae8dcd04ce10d4be7bdebaa46b1af5713a19401876b289fa98",
+  "expected_current_featured_media": 0,
   "expected_media": {
     "38": "/wp-content/uploads/2026/05/img_9584.jpg",
     "51": "/wp-content/uploads/2026/05/img_9585.jpg",
