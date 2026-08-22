@@ -6,6 +6,7 @@
   "editorial_marker": "<!-- tsurikue-editorial:sayori:v1 -->",
   "content_file": "content.html",
   "featured_media": 2695,
+  "expected_current_content_sha256": "5f828217fa5d01fc7197552436cb112f66e977fa00271efdd8b09706a5bd3fa8",
   "expected_media": {
     "2695": "/wp-content/uploads/2026/08/gptempdownload.jpg",
     "2696": "/wp-content/uploads/2026/08/img_8532.jpg"
