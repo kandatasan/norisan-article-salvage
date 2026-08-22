@@ -1,6 +1,7 @@
 name: Audit public internal links once
 
 # Re-run after the 2026-08-22 public internal-link optimization.
+# GoPro media identification refresh: 2026-08-23
 on:
   push:
     branches: [main]
