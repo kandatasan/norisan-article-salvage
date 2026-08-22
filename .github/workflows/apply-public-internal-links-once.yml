@@ -1,5 +1,6 @@
 name: Apply public internal links once
 
+# One follow-up push is intentional: the workflow now already exists on main.
 on:
   push:
     branches: [main]
