@@ -1,4 +1,4 @@
-import importlib.util, json, pathlib, tempfile, unittest
+import importlib.util, json, pathlib, tempfile, unittest, hashlib
 P=pathlib.Path(__file__).parents[1]/'scripts'/'apply_editorial_draft_once.py'
 spec=importlib.util.spec_from_file_location('m',P); m=importlib.util.module_from_spec(spec); spec.loader.exec_module(m)
 class T(unittest.TestCase):
@@ -22,6 +22,12 @@ class T(unittest.TestCase):
     td,p,cfg=self.package(); c,full=m.load_package(p); row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full},"featured_media":7}; self.assertEqual(m.validate_target(row,cfg,full),'ALREADY_UP_TO_DATE'); td.cleanup()
   def test_reject_later_edit(self):
     td,p,cfg=self.package(); c,full=m.load_package(p); row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full+'changed'},"featured_media":7}
+    with self.assertRaises(RuntimeError): m.validate_target(row,cfg,full)
+    td.cleanup()
+  def test_allow_known_editorial_revision_by_exact_hash(self):
+    td,p,cfg=self.package(); c,full=m.load_package(p); current=full+'old-revision\n'; cfg["expected_current_content_sha256"]=hashlib.sha256(current.encode()).hexdigest(); row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":current},"featured_media":7}; self.assertEqual(m.validate_target(row,cfg,full),'UPDATE'); td.cleanup()
+  def test_reject_revision_when_hash_differs(self):
+    td,p,cfg=self.package(); c,full=m.load_package(p); cfg["expected_current_content_sha256"]='0'*64; row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full+'human-edit'},"featured_media":7}
     with self.assertRaises(RuntimeError): m.validate_target(row,cfg,full)
     td.cleanup()
   def test_nonzero_featured_must_be_expected(self):
