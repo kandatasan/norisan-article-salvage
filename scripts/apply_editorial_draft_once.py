@@ -69,7 +69,8 @@ def validate_target(row,cfg,full):
     if cfg["editorial_marker"] in current:
         if current.strip()==full.strip() and current_title==cfg["title"] and current_featured==featured: return "ALREADY_UP_TO_DATE"
         expected_current=(cfg.get("expected_current_content_sha256") or "").strip().casefold()
-        if expected_current and hashlib.sha256(current.encode()).hexdigest().casefold()==expected_current and current_title==cfg["title"] and current_featured==featured:
+        expected_current_featured=int(cfg.get("expected_current_featured_media", featured) or 0)
+        if expected_current and hashlib.sha256(current.encode()).hexdigest().casefold()==expected_current and current_title==cfg["title"] and current_featured==expected_current_featured:
             return "UPDATE"
         raise RuntimeError("editorial marker exists but content/title/featured_media differs; refusing overwrite")
     if cfg["salvage_marker"] not in current: raise RuntimeError("salvage marker missing; refusing update")
