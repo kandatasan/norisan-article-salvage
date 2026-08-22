@@ -1,0 +1,53 @@
+name: Patch gulpalivepowder source grounding once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/patch_gulpalivepowder_source_grounding_once.py'
+      - '.github/workflows/patch-gulpalivepowder-source-grounding-once.yml'
+permissions:
+  contents: write
+  issues: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+      TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Patch guarded WordPress draft and local editorial source
+        run: PYTHONPATH=scripts python scripts/patch_gulpalivepowder_source_grounding_once.py
+      - name: Commit grounded editorial source back to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- editorial/gulpalivepowder/content.html; then
+            echo 'Editorial source already grounded.'
+          else
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add editorial/gulpalivepowder/content.html
+            git commit -m 'Ground gulpalivepowder firsthand wording'
+            git push origin HEAD:main
+          fi
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          { echo '### gulpalivepowder source grounding: SUCCESS'; echo; cat reports/gulpalivepowder-source-grounding/summary.md; } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gulpalivepowder-source-grounding
+          path: reports/gulpalivepowder-source-grounding/
+          if-no-files-found: warn
