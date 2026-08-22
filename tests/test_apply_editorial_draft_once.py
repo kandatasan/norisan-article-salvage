@@ -38,6 +38,12 @@ class T(unittest.TestCase):
     td,p,cfg=self.package(); c,full=m.load_package(p); current=full+'old-revision\n'; cfg["expected_current_content_sha256"]=hashlib.sha256(current.encode()).hexdigest(); row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":current},"featured_media":8}
     with self.assertRaises(RuntimeError): m.validate_target(row,cfg,full)
     td.cleanup()
+  def test_allow_known_featured_media_change(self):
+    td,p,cfg=self.package(); c,full=m.load_package(p); cfg["featured_media"]=8; cfg["expected_media"]["8"]="/y.jpg"; cfg["expected_current_content_sha256"]=hashlib.sha256(full.encode()).hexdigest(); cfg["expected_current_featured_media"]=7; row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full},"featured_media":7}; self.assertEqual(m.validate_target(row,cfg,full),'UPDATE'); td.cleanup()
+  def test_reject_known_featured_media_change_when_current_featured_differs(self):
+    td,p,cfg=self.package(); c,full=m.load_package(p); cfg["featured_media"]=8; cfg["expected_media"]["8"]="/y.jpg"; cfg["expected_current_content_sha256"]=hashlib.sha256(full.encode()).hexdigest(); cfg["expected_current_featured_media"]=7; row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full},"featured_media":9}
+    with self.assertRaises(RuntimeError): m.validate_target(row,cfg,full)
+    td.cleanup()
   def test_nonzero_featured_must_be_expected(self):
     cfg={"featured_media":8,"expected_media":{"7":"/x.jpg"}}
     with self.assertRaises(RuntimeError): m.validate_media(cfg,'auth')
