@@ -6,9 +6,17 @@
   "editorial_marker": "<!-- tsurikue-editorial:catfish:v1 -->",
   "content_file": "content.html",
   "featured_media": 125,
-  "expected_current_content_sha256": "2c501a41f8054d4ea0aa822eac3cdc7c26bc3830784f1fec9aa155d61fc8a595",
+  "expected_current_content_sha256": "67f50606885f7bcbc85d5c5e3ae0e62e183e2fec83f4e5419ee5a83a162cde14",
   "expected_current_featured_media": 125,
   "expected_media": {
-    "125": "/wp-content/uploads/2026/05/img_0164.jpg"
+    "125": "/wp-content/uploads/2026/05/img_0164.jpg",
+    "2825": "/wp-content/uploads/2026/08/img_9578.jpg",
+    "2824": "/wp-content/uploads/2026/08/img_0008.jpg",
+    "2816": "/wp-content/uploads/2026/08/img_0193.jpg",
+    "2815": "/wp-content/uploads/2026/08/img_0195.jpg",
+    "2814": "/wp-content/uploads/2026/08/img_0194.jpg",
+    "2813": "/wp-content/uploads/2026/08/img_0174.jpg",
+    "2809": "/wp-content/uploads/2026/08/無題32_20230509231214.jpg",
+    "2808": "/wp-content/uploads/2026/08/無題31_20230509225346.jpg"
   }
 }
