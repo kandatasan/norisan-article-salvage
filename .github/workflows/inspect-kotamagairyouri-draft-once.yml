@@ -5,6 +5,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/inspect-kotamagairyouri-draft-once.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'audit-trigger/kotamagairyouri.txt'
 
 permissions:
   contents: read
