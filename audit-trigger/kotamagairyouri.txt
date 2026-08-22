@@ -1,0 +1,1 @@
+Trigger GET-only audit for kotamagairyouri on 2026-08-22.
