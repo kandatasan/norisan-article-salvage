@@ -1,0 +1,47 @@
+name: Diagnose UX koukai sharpen range
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/diagnose_ux_koukai_sharpen_range.py
+      - .github/workflows/diagnose-ux-koukai-sharpen-range.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: GET-only diagnose sharpen ranges
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/diagnose_ux_koukai_sharpen_range.py
+      - name: Record diagnosis
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### ux-koukai sharpen range diagnosis'
+            echo
+            cat reports/ux-koukai-sharpen-diagnose/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload diagnosis
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-koukai-sharpen-diagnose
+          path: reports/ux-koukai-sharpen-diagnose/
+          if-no-files-found: warn
