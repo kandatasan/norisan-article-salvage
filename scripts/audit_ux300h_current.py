@@ -31,3 +31,5 @@ def main():
     return 0
 
 if __name__=='__main__': raise SystemExit(main())
+
+# retrigger: UX300h GET-only audit
