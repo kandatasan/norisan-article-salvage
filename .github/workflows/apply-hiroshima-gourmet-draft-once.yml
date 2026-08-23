@@ -1,0 +1,61 @@
+name: Apply Hiroshima gourmet draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-hiroshima-gourmet-draft-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run guarded Hiroshima gourmet updater
+        id: apply
+        continue-on-error: true
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set +e
+          python scripts/apply_editorial_draft_once.py --config editorial/hiroshima-gourmet/config.json > /tmp/hiroshima-gourmet-apply.log 2>&1
+          code=$?
+          echo "exit_code=$code" >> "$GITHUB_OUTPUT"
+          cat /tmp/hiroshima-gourmet-apply.log
+          exit 0
+      - name: Record diagnostic result on issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EXIT_CODE: ${{ steps.apply.outputs.exit_code }}
+        shell: bash
+        run: |
+          {
+            echo '### Hiroshima gourmet guarded apply diagnostic'
+            echo
+            echo "- exit_code: **${EXIT_CODE:-unknown}**"
+            if [[ "${EXIT_CODE:-1}" == "0" && -f reports/hiroshima-gourmet-draft-update/summary.md ]]; then
+              echo
+              cat reports/hiroshima-gourmet-draft-update/summary.md
+            else
+              echo
+              echo '```text'
+              tail -80 /tmp/hiroshima-gourmet-apply.log || true
+              echo '```'
+            fi
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Fail job when guarded updater failed
+        if: steps.apply.outputs.exit_code != '0'
+        shell: bash
+        run: exit 1
