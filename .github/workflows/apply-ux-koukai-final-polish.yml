@@ -1,11 +1,11 @@
-name: Apply current UX300h affiliate patch
+name: Audit UX300h current tail
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/apply_ux300h_affiliates_current_once.py
+      - scripts/audit_ux300h_current_tail.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -13,7 +13,7 @@ permissions:
   issues: write
 
 jobs:
-  apply:
+  audit:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,24 +21,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Compile guarded patch
-        run: python -m py_compile scripts/apply_ux300h_affiliates_current_once.py
-      - name: Apply current UX300h affiliate patch
+      - name: Compile audit
+        run: python -m py_compile scripts/audit_ux300h_current_tail.py
+      - name: Audit current tail
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/apply_ux300h_affiliates_current_once.py
+        run: python scripts/audit_ux300h_current_tail.py
       - name: Record result
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          { echo '### ux300h current affiliate patch'; echo; cat reports/ux300h-affiliates-current-once/summary.md 2>/dev/null || echo '- result: **BLOCKED_BEFORE_WRITE**'; } > /tmp/comment.md
+          { echo '### ux300h current tail audit'; echo; cat reports/ux300h-current-tail/summary.md 2>/dev/null || echo '- result: **BLOCKED**'; } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ux300h-affiliates-current-once
-          path: reports/ux300h-affiliates-current-once/
+          name: ux300h-current-tail
+          path: reports/ux300h-current-tail/
           if-no-files-found: warn
