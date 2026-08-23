@@ -1,0 +1,43 @@
+name: Apply UX resale rewrite once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/apply_ux_resale_rewrite_once.py
+      - .github/workflows/apply-ux-resale-rewrite-once.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile
+        run: python -m py_compile scripts/apply_ux_resale_rewrite_once.py
+      - name: Apply guarded rewrite
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_ux_resale_rewrite_once.py
+      - name: Record result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          { echo '### ux-resale sharpen + CTN rewrite'; echo; cat reports/ux-resale-rewrite-once/summary.md 2>/dev/null || echo '- result: **BLOCKED_BEFORE_APPLY**'; } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ux-resale-rewrite-once
+          path: reports/ux-resale-rewrite-once/
+          if-no-files-found: warn
