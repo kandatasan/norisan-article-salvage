@@ -60,7 +60,6 @@ def insert_after_paragraph(content, markers, block):
 def remove_block_containing(content, marker):
     if marker not in content:return content,0
     i=content.find(marker)
-    # Prefer enclosing WordPress paragraph/html/shortcode block.
     starts=[content.rfind('<!-- wp:paragraph',0,i),content.rfind('<!-- wp:html',0,i),content.rfind('<!-- wp:shortcode',0,i)]
     start=max(starts)
     if start<0:return content,0
@@ -90,7 +89,6 @@ def main():
     if hashlib.sha256(source.encode()).hexdigest()!=SOURCE_SHA:raise RuntimeError('source changed after fresh audit')
     if source.count(G) or source.count(CB) or source.count(CT):raise RuntimeError('target shortcode already exists')
     new=source
-    # Remove old direct CTN CTA if present; only exact known markers are touched.
     new,n1=remove_block_containing(new,'45秒で愛車の相場')
     new,n2=remove_block_containing(new,CTN_A8)
     new,g_anchor=insert_after_paragraph(new,['実車の装備と価格を比べた方がよいと思います。','中古車は、年式や走行距離だけでなく、車両状態や付いているオプションによっても価値が変わります。'],G_BLOCK)
@@ -101,9 +99,12 @@ def main():
     after=retry(lambda:wp.fetch_post_by_slug(auth)); saved=wp.raw_field(after,'content'); after_public=retry(lambda:wp.public_total(auth))
     view_url=f'{wp.SITE_URL}/wp-json/wp/v2/posts/{POST_ID}?context=view&_fields=id,status,title,content,featured_media'
     view,_=retry(lambda:wp.get_json(view_url,auth)); rendered=(view.get('content') or {}).get('rendered','')
-    ok=(after.get('status')=='publish' and after.get('featured_media')==FEATURED_MEDIA and after_public==PUBLIC_TOTAL and html.unescape(wp.raw_field(after,'title'))==EXPECTED_TITLE and imgs(saved)==before_imgs and saved.count(G)==1 and saved.count(CB)==1 and saved.count(CT)==1 and 'data-partsID="2843"' in rendered and 'data-partsID="2846"' in rendered and 'data-partsID="2184"' in rendered)
+    r2843='data-partsID="2843"' in rendered
+    r2846='data-partsID="2846"' in rendered
+    r2184='data-partsID="2184"' in rendered
+    ok=(after.get('status')=='publish' and after.get('featured_media')==FEATURED_MEDIA and after_public==PUBLIC_TOTAL and html.unescape(wp.raw_field(after,'title'))==EXPECTED_TITLE and imgs(saved)==before_imgs and saved.count(G)==1 and saved.count(CB)==1 and saved.count(CT)==1 and r2843 and r2846 and r2184)
     front=public_has_markers()
-    lines=['# UX300h current affiliate patch','',f"- result: **{'SUCCESS' if ok else 'BLOCKED_AFTER_WRITE'}**",f'- post_id: **{after.get("id")}**',f'- status: **{after.get("status")}**',f'- title: {html.unescape(wp.raw_field(after,"title"))}',f'- featured_media: **{after.get("featured_media",0)}**',f'- public_before: **{before_public}**',f'- public_after: **{after_public}**','- wordpress_write_count: **1**',f'- source_sha256: `{SOURCE_SHA}`',f'- content_sha256: `{hashlib.sha256(saved.encode()).hexdigest()}`',f'- article_image_count: **{len(imgs(saved))}**',f'- gulliver_2843_count: **{saved.count(G)}**',f'- ctn_banner_2846_count: **{saved.count(CB)}**',f'- ctn_button_2184_count: **{saved.count(CT)}**',f'- removed_old_cta_blocks: **{n1+n2}**',f'- gulliver_anchor: {g_anchor}',f'- ctn_anchor: {c_anchor}',f"- rendered_2843: **{'YES' if 'data-partsID=\"2843\"' in rendered else 'NO'}**",f"- rendered_2846: **{'YES' if 'data-partsID=\"2846\"' in rendered else 'NO'}**",f"- rendered_2184: **{'YES' if 'data-partsID=\"2184\"' in rendered else 'NO'}**",f"- public_front_markers_visible: **{'YES' if front else 'NO'}**"]
+    lines=['# UX300h current affiliate patch','',f"- result: **{'SUCCESS' if ok else 'BLOCKED_AFTER_WRITE'}**",f'- post_id: **{after.get("id")}**',f'- status: **{after.get("status")}**',f'- title: {html.unescape(wp.raw_field(after,"title"))}',f'- featured_media: **{after.get("featured_media",0)}**',f'- public_before: **{before_public}**',f'- public_after: **{after_public}**','- wordpress_write_count: **1**',f'- source_sha256: `{SOURCE_SHA}`',f'- content_sha256: `{hashlib.sha256(saved.encode()).hexdigest()}`',f'- article_image_count: **{len(imgs(saved))}**',f'- gulliver_2843_count: **{saved.count(G)}**',f'- ctn_banner_2846_count: **{saved.count(CB)}**',f'- ctn_button_2184_count: **{saved.count(CT)}**',f'- removed_old_cta_blocks: **{n1+n2}**',f'- gulliver_anchor: {g_anchor}',f'- ctn_anchor: {c_anchor}',f"- rendered_2843: **{'YES' if r2843 else 'NO'}**",f"- rendered_2846: **{'YES' if r2846 else 'NO'}**",f"- rendered_2184: **{'YES' if r2184 else 'NO'}**",f"- public_front_markers_visible: **{'YES' if front else 'NO'}**"]
     (REPORT/'summary.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
     if not ok:raise RuntimeError('post-write audit failed')
     return 0
