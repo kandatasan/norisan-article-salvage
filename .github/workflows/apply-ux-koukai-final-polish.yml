@@ -1,11 +1,11 @@
-name: Apply UX300h purchase funnel once
+name: Final GET-only audit UX300h
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/apply_ux300h_funnel_once.py
+      - scripts/audit_ux300h_current.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -13,7 +13,7 @@ permissions:
   issues: write
 
 jobs:
-  apply:
+  audit:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -21,24 +21,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Compile guarded UX300h rewrite
-        run: python -m py_compile scripts/apply_ux300h_funnel_once.py
-      - name: Apply guarded UX300h funnel
+      - name: Compile final GET-only audit
+        run: python -m py_compile scripts/audit_ux300h_current.py
+      - name: Run final GET-only audit
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/apply_ux300h_funnel_once.py
-      - name: Record result
+        run: python scripts/audit_ux300h_current.py
+      - name: Record final audit
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          { echo '### ux300h purchase funnel rewrite'; echo; cat reports/ux300h-funnel-once/summary.md 2>/dev/null || echo '- result: **BLOCKED_BEFORE_APPLY**'; } > /tmp/comment.md
+          { echo '### ux300h final GET-only audit'; echo; cat reports/ux300h-current-audit/summary.md 2>/dev/null || echo '- result: **BLOCKED**'; } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ux300h-funnel-once
-          path: reports/ux300h-funnel-once/
+          name: ux300h-final-get-only-audit
+          path: reports/ux300h-current-audit/
           if-no-files-found: warn
