@@ -1,5 +1,6 @@
 name: Audit UX koukai rewrite after
 
+# Existing workflow trigger refreshed after initial installation.
 on:
   push:
     branches:
