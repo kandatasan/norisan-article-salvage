@@ -6,5 +6,7 @@
   "editorial_marker": "<!-- tsurikue-editorial:yariika-fishing:v1 -->",
   "content_file": "content.html",
   "featured_media": 0,
+  "expected_current_content_sha256": "692a2027816cb7dc43eded29f13c911268ac299244201aac82482e547f58a36a",
+  "expected_current_featured_media": 0,
   "expected_media": {}
 }
