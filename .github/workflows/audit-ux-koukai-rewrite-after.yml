@@ -1,12 +1,11 @@
 name: Audit UX koukai rewrite after
 
-# Existing workflow trigger refreshed after initial installation.
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/audit_ux_koukai_rewrite_after.py
+      - scripts/audit_ux_koukai_rewrite_retry.py
       - .github/workflows/audit-ux-koukai-rewrite-after.yml
 
 permissions:
@@ -22,11 +21,11 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: GET-only audit UX rewrite
+      - name: GET-only audit UX rewrite with retries
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/audit_ux_koukai_rewrite_after.py
+        run: python scripts/audit_ux_koukai_rewrite_retry.py
       - name: Record audit result
         if: always()
         env:
@@ -34,15 +33,15 @@ jobs:
         shell: bash
         run: |
           {
-            echo '### ux-koukai rewrite GET-only audit'
+            echo '### ux-koukai rewrite retry audit'
             echo
-            cat reports/ux-koukai-rewrite-audit/summary.md
+            cat reports/ux-koukai-rewrite-audit-retry/summary.md
           } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
       - name: Upload result
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ux-koukai-rewrite-audit
-          path: reports/ux-koukai-rewrite-audit/
+          name: ux-koukai-rewrite-audit-retry
+          path: reports/ux-koukai-rewrite-audit-retry/
           if-no-files-found: warn
