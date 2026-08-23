@@ -1,11 +1,11 @@
-name: Apply UX resale through proven UX runner
+name: Apply UX resale through proven UX runner v2
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/apply_ux_resale_rewrite_once.py
+      - scripts/apply_ux_resale_rewrite_v2.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -21,13 +21,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Compile UX resale rewrite
-        run: python -m py_compile scripts/apply_ux_resale_rewrite_once.py
-      - name: Apply guarded UX resale rewrite
+      - name: Compile UX resale rewrite wrapper
+        run: python -m py_compile scripts/apply_ux_resale_rewrite_v2.py
+      - name: Apply guarded UX resale rewrite v2
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/apply_ux_resale_rewrite_once.py
+        run: python scripts/apply_ux_resale_rewrite_v2.py
       - name: Record audit result
         if: always()
         env:
@@ -35,7 +35,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo '### ux-resale rewrite through proven UX runner'
+            echo '### ux-resale rewrite through proven UX runner v2'
             echo
             if [ -f reports/ux-resale-rewrite-once/summary.md ]; then
               cat reports/ux-resale-rewrite-once/summary.md
@@ -49,6 +49,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ux-resale-rewrite-proven-ux-runner
+          name: ux-resale-rewrite-proven-ux-runner-v2
           path: reports/ux-resale-rewrite-once/
           if-no-files-found: warn
