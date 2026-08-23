@@ -129,8 +129,9 @@ def retry(fn):
             if n<2: time.sleep(3*(n+1))
     raise err
 
-def imgs(s):
-    return sorted(set(re.findall(r"<img[^>]+src=['\"]([^'\"]+)['\"]",s,re.I)))
+def article_imgs(s):
+    srcs=re.findall(r"<img[^>]+src=['\"]([^'\"]+)['\"]",s,re.I)
+    return sorted(set(x for x in srcs if 'a8.net/0.gif' not in x))
 
 def main():
     REPORT.mkdir(parents=True,exist_ok=True)
@@ -145,19 +146,19 @@ def main():
     if hashlib.sha256(source.encode()).hexdigest()!=SOURCE_SHA: raise RuntimeError('source changed after audit')
     for m in ['中古車でUX250hとUX300hのどちらを選ぶ？','まとめ｜新しさは300h、250hにも捨てがたい良さがある','シエンタ','427万円']:
         if m not in source: raise RuntimeError('marker missing: '+m)
-    before_imgs=imgs(source)
+    before_imgs=article_imgs(source)
     start=wp.heading_block_start(source,'中古車でUX250hとUX300hのどちらを選ぶ？')
     end=wp.heading_block_start(source,'まとめ｜新しさは300h、250hにも捨てがたい良さがある')
     if end<=start: raise RuntimeError('bad range')
     new=source[:start]+SECTION.strip()+'\n\n'+source[end:]
-    if imgs(new)!=before_imgs: raise RuntimeError('image set changed before apply')
+    if article_imgs(new)!=before_imgs: raise RuntimeError('article image set changed before apply')
     if new.count(GULLIVER_BANNER)!=1 or new.count(CTN_BUTTON)!=1 or new.count(GULLIVER_HREF)!=1 or new.count(GULLIVER_PIXEL)!=1:
         raise RuntimeError('affiliate count guard failed before apply')
     retry(lambda: wp.post_json(f'{wp.SITE_URL}/wp-json/wp/v2/posts/{POST_ID}',auth,{'content':new}))
     after=retry(lambda: wp.fetch_post_by_slug(auth)); saved=wp.raw_field(after,'content')
     after_public=retry(lambda: wp.public_total(auth))
-    ok=(after.get('id')==POST_ID and after.get('status')=='publish' and html.unescape(wp.raw_field(after,'title'))==EXPECTED_TITLE and after.get('featured_media')==FEATURED_MEDIA and after_public==PUBLIC_TOTAL and imgs(saved)==before_imgs and saved.count(GULLIVER_BANNER)==1 and saved.count(CTN_BUTTON)==1 and saved.count(GULLIVER_HREF)==1 and '迷ったら、実際の中古UXを見比べるのが早い' in saved and '高額査定の上位3社だけ' in saved)
-    lines=['# ux300h funnel rewrite','',f"- result: **{'SUCCESS' if ok else 'BLOCKED_AFTER_WRITE'}**",f'- post_id: **{after.get("id")}**',f'- status: **{after.get("status")}**',f'- title: {html.unescape(wp.raw_field(after,"title"))}',f'- featured_media: **{after.get("featured_media",0)}**',f'- public_before: **{before_public}**',f'- public_after: **{after_public}**','- wordpress_write_count: **1**',f'- source_sha256: `{SOURCE_SHA}`',f'- content_sha256: `{hashlib.sha256(saved.encode()).hexdigest()}`',f'- image_count: **{len(imgs(saved))}**',f'- gulliver_banner_count: **{saved.count(GULLIVER_BANNER)}**',f'- gulliver_button_link_count: **{saved.count(GULLIVER_HREF)}**',f'- ctn_button_count: **{saved.count(CTN_BUTTON)}**']
+    ok=(after.get('id')==POST_ID and after.get('status')=='publish' and html.unescape(wp.raw_field(after,'title'))==EXPECTED_TITLE and after.get('featured_media')==FEATURED_MEDIA and after_public==PUBLIC_TOTAL and article_imgs(saved)==before_imgs and saved.count(GULLIVER_BANNER)==1 and saved.count(CTN_BUTTON)==1 and saved.count(GULLIVER_HREF)==1 and '迷ったら、実際の中古UXを見比べるのが早い' in saved and '高額査定の上位3社だけ' in saved)
+    lines=['# ux300h funnel rewrite','',f"- result: **{'SUCCESS' if ok else 'BLOCKED_AFTER_WRITE'}**",f'- post_id: **{after.get("id")}**',f'- status: **{after.get("status")}**',f'- title: {html.unescape(wp.raw_field(after,"title"))}',f'- featured_media: **{after.get("featured_media",0)}**',f'- public_before: **{before_public}**',f'- public_after: **{after_public}**','- wordpress_write_count: **1**',f'- source_sha256: `{SOURCE_SHA}`',f'- content_sha256: `{hashlib.sha256(saved.encode()).hexdigest()}`',f'- image_count: **{len(article_imgs(saved))}**',f'- gulliver_banner_count: **{saved.count(GULLIVER_BANNER)}**',f'- gulliver_button_link_count: **{saved.count(GULLIVER_HREF)}**',f'- ctn_button_count: **{saved.count(CTN_BUTTON)}**']
     (REPORT/'summary.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
     if not ok: raise RuntimeError('post-update structural audit failed')
     return 0
