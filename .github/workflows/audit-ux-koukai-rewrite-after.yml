@@ -1,0 +1,47 @@
+name: Audit UX koukai rewrite after
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - scripts/audit_ux_koukai_rewrite_after.py
+      - .github/workflows/audit-ux-koukai-rewrite-after.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: GET-only audit UX rewrite
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_ux_koukai_rewrite_after.py
+      - name: Record audit result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### ux-koukai rewrite GET-only audit'
+            echo
+            cat reports/ux-koukai-rewrite-audit/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-koukai-rewrite-audit
+          path: reports/ux-koukai-rewrite-audit/
+          if-no-files-found: warn
