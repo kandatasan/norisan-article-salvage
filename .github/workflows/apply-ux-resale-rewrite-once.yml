@@ -41,3 +41,5 @@ jobs:
           name: ux-resale-rewrite-once
           path: reports/ux-resale-rewrite-once/
           if-no-files-found: warn
+
+# retrigger: authorized UX resale rewrite
