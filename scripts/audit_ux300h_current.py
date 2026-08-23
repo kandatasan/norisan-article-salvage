@@ -22,6 +22,12 @@ def article_imgs(content):
     srcs=re.findall(r"<img[^>]+src=['\"]([^'\"]+)['\"]", content, re.I)
     return sorted(set(x for x in srcs if 'a8.net/0.gif' not in x))
 
+def segment(text, start_marker, end_marker):
+    a=text.find(start_marker)
+    b=text.find(end_marker, a+1) if a>=0 else -1
+    if a<0 or b<0 or b<=a: return ''
+    return text[a:b]
+
 def main():
     REPORT.mkdir(parents=True, exist_ok=True)
     u=os.environ.get('TSURIKUE_WP_USER'); p=os.environ.get('TSURIKUE_WP_APP_PASSWORD')
@@ -34,6 +40,8 @@ def main():
     view_url=f'{wp.SITE_URL}/wp-json/wp/v2/posts/{POST_ID}?context=view&_fields=id,status,title,content,featured_media'
     view_row,_=retry(lambda: wp.get_json(view_url,auth))
     rendered=(view_row.get('content') or {}).get('rendered','')
+    gulliver_seg=segment(rendered,'お宝UX、まだ表に出ていないかも。','価格差で迷うなら、今乗っている車の売却額も確認する')
+    ctn_seg=segment(rendered,'高く売りたい。でも電話ラッシュはいらない。','まとめ｜新しさは300h、250hにも捨てがたい良さがある')
     lines=[
         '# ux300h rendered affiliate audit','', '- result: **SUCCESS**',
         f"- post_id: **{row.get('id')}**", f"- status: **{row.get('status')}**", f'- title: {title}',
@@ -51,6 +59,16 @@ def main():
         f"- rendered_gulliver_text_count: **{rendered.count('非公開在庫も含めて中古UXを探してみる')}**",
         f"- rendered_ctn_text_count: **{rendered.count('高く売りたい。でも電話ラッシュはいらない。')}**",
         f"- rendered_ctn_brand_count: **{rendered.count('CTN')}**",
+        '', '## Gulliver segment',
+        f"- segment_length: **{len(gulliver_seg)}**",
+        f"- anchor_count: **{len(re.findall(r'<a\\b',gulliver_seg,re.I))}**",
+        f"- image_count: **{len(re.findall(r'<img\\b',gulliver_seg,re.I))}**",
+        f"- px_a8_count: **{gulliver_seg.count('px.a8.net')}**",
+        '', '## CTN segment',
+        f"- segment_length: **{len(ctn_seg)}**",
+        f"- anchor_count: **{len(re.findall(r'<a\\b',ctn_seg,re.I))}**",
+        f"- image_count: **{len(re.findall(r'<img\\b',ctn_seg,re.I))}**",
+        f"- px_a8_count: **{ctn_seg.count('px.a8.net')}**",
         '', '## Rendered markers'
     ]
     for m in ['迷ったら、実際の中古UXを見比べるのが早い','Web掲載前の非公開在庫','お宝UX、まだ表に出ていないかも。','高額査定の上位3社だけ','高く売りたい。でも電話ラッシュはいらない。']:
