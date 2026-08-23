@@ -1,0 +1,43 @@
+name: Audit UX resale current
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/audit_ux_resale_current.py
+      - .github/workflows/audit-ux-resale-current.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile
+        run: python -m py_compile scripts/audit_ux_resale_current.py
+      - name: GET-only audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_ux_resale_current.py
+      - name: Record audit
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          { echo '### ux-resale current GET-only audit'; echo; cat reports/ux-resale-current-audit/summary.md 2>/dev/null || echo '- result: **BLOCKED**'; } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ux-resale-current-audit
+          path: reports/ux-resale-current-audit/
+          if-no-files-found: warn
