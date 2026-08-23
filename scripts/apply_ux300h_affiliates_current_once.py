@@ -99,9 +99,7 @@ def main():
     after=retry(lambda:wp.fetch_post_by_slug(auth)); saved=wp.raw_field(after,'content'); after_public=retry(lambda:wp.public_total(auth))
     view_url=f'{wp.SITE_URL}/wp-json/wp/v2/posts/{POST_ID}?context=view&_fields=id,status,title,content,featured_media'
     view,_=retry(lambda:wp.get_json(view_url,auth)); rendered=(view.get('content') or {}).get('rendered','')
-    r2843='data-partsID="2843"' in rendered
-    r2846='data-partsID="2846"' in rendered
-    r2184='data-partsID="2184"' in rendered
+    r2843='data-partsID="2843"' in rendered; r2846='data-partsID="2846"' in rendered; r2184='data-partsID="2184"' in rendered
     ok=(after.get('status')=='publish' and after.get('featured_media')==FEATURED_MEDIA and after_public==PUBLIC_TOTAL and html.unescape(wp.raw_field(after,'title'))==EXPECTED_TITLE and imgs(saved)==before_imgs and saved.count(G)==1 and saved.count(CB)==1 and saved.count(CT)==1 and r2843 and r2846 and r2184)
     front=public_has_markers()
     lines=['# UX300h current affiliate patch','',f"- result: **{'SUCCESS' if ok else 'BLOCKED_AFTER_WRITE'}**",f'- post_id: **{after.get("id")}**',f'- status: **{after.get("status")}**',f'- title: {html.unescape(wp.raw_field(after,"title"))}',f'- featured_media: **{after.get("featured_media",0)}**',f'- public_before: **{before_public}**',f'- public_after: **{after_public}**','- wordpress_write_count: **1**',f'- source_sha256: `{SOURCE_SHA}`',f'- content_sha256: `{hashlib.sha256(saved.encode()).hexdigest()}`',f'- article_image_count: **{len(imgs(saved))}**',f'- gulliver_2843_count: **{saved.count(G)}**',f'- ctn_banner_2846_count: **{saved.count(CB)}**',f'- ctn_button_2184_count: **{saved.count(CT)}**',f'- removed_old_cta_blocks: **{n1+n2}**',f'- gulliver_anchor: {g_anchor}',f'- ctn_anchor: {c_anchor}',f"- rendered_2843: **{'YES' if r2843 else 'NO'}**",f"- rendered_2846: **{'YES' if r2846 else 'NO'}**",f"- rendered_2184: **{'YES' if r2184 else 'NO'}**",f"- public_front_markers_visible: **{'YES' if front else 'NO'}**"]
@@ -109,4 +107,10 @@ def main():
     if not ok:raise RuntimeError('post-write audit failed')
     return 0
 
-if __name__=='__main__':raise SystemExit(main())
+if __name__=='__main__':
+    try:
+        raise SystemExit(main())
+    except Exception as e:
+        REPORT.mkdir(parents=True,exist_ok=True)
+        (REPORT/'summary.md').write_text('# UX300h current affiliate patch\n\n- result: **BLOCKED_BEFORE_WRITE**\n- wordpress_write_count: **0**\n- error_type: **'+type(e).__name__+'**\n- error: `'+str(e).replace('`','')+'`\n',encoding='utf-8')
+        raise
