@@ -1,11 +1,11 @@
-name: Apply UX koukai final prose polish
+name: Apply UX resale through proven UX runner
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/apply_ux_koukai_final_polish.py
+      - scripts/apply_ux_resale_rewrite_once.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -21,13 +21,13 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Compile final polish script
-        run: python -m py_compile scripts/apply_ux_koukai_final_polish.py
-      - name: Apply guarded UX final prose polish
+      - name: Compile UX resale rewrite
+        run: python -m py_compile scripts/apply_ux_resale_rewrite_once.py
+      - name: Apply guarded UX resale rewrite
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/apply_ux_koukai_final_polish.py
+        run: python scripts/apply_ux_resale_rewrite_once.py
       - name: Record audit result
         if: always()
         env:
@@ -35,10 +35,10 @@ jobs:
         shell: bash
         run: |
           {
-            echo '### ux-koukai final prose polish'
+            echo '### ux-resale rewrite through proven UX runner'
             echo
-            if [ -f reports/ux-koukai-final-polish/summary.md ]; then
-              cat reports/ux-koukai-final-polish/summary.md
+            if [ -f reports/ux-resale-rewrite-once/summary.md ]; then
+              cat reports/ux-resale-rewrite-once/summary.md
             else
               echo '- result: **BLOCKED_BEFORE_APPLY**'
               echo '- wordpress_write_count: **0**'
@@ -49,8 +49,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: ux-koukai-final-polish
-          path: reports/ux-koukai-final-polish/
+          name: ux-resale-rewrite-proven-ux-runner
+          path: reports/ux-resale-rewrite-once/
           if-no-files-found: warn
-
-# retrigger: final wording polish
