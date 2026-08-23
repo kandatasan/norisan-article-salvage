@@ -1,11 +1,11 @@
-name: Final GET-only audit UX resale
+name: Audit UX300h current
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/audit_ux_resale_current.py
+      - scripts/audit_ux300h_current.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -22,33 +22,23 @@ jobs:
         with:
           python-version: '3.x'
       - name: Compile GET-only audit
-        run: python -m py_compile scripts/audit_ux_resale_current.py
+        run: python -m py_compile scripts/audit_ux300h_current.py
       - name: Run GET-only audit
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/audit_ux_resale_current.py
+        run: python scripts/audit_ux300h_current.py
       - name: Record audit
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          {
-            echo '### ux-resale final GET-only audit'
-            echo
-            if [ -f reports/ux-resale-current-audit/summary.md ]; then
-              cat reports/ux-resale-current-audit/summary.md
-            else
-              echo '- result: **BLOCKED**'
-              echo '- wordpress_write_count: **0**'
-            fi
-          } > /tmp/comment.md
+          { echo '### ux300h current GET-only audit'; echo; cat reports/ux300h-current-audit/summary.md 2>/dev/null || echo '- result: **BLOCKED**'; } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
-      - name: Upload audit
+      - uses: actions/upload-artifact@v4
         if: always()
-        uses: actions/upload-artifact@v4
         with:
-          name: ux-resale-final-get-only-audit
-          path: reports/ux-resale-current-audit/
+          name: ux300h-current-audit
+          path: reports/ux300h-current-audit/
           if-no-files-found: warn
