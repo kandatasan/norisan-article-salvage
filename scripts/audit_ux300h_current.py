@@ -28,6 +28,10 @@ def segment(text, start_marker, end_marker):
     if a<0 or b<0 or b<=a: return ''
     return text[a:b]
 
+def compact(s, limit=900):
+    s=re.sub(r'\s+',' ',s).strip()
+    return s[:limit]
+
 def main():
     REPORT.mkdir(parents=True, exist_ok=True)
     u=os.environ.get('TSURIKUE_WP_USER'); p=os.environ.get('TSURIKUE_WP_APP_PASSWORD')
@@ -56,19 +60,18 @@ def main():
         f"- rendered_px_a8_count: **{rendered.count('px.a8.net')}**",
         f"- rendered_literal_gulliver_shortcode_count: **{rendered.count('[blog_parts id=\"2843\"]')}**",
         f"- rendered_literal_ctn_shortcode_count: **{rendered.count('[blog_parts id=\"2184\"]')}**",
-        f"- rendered_gulliver_text_count: **{rendered.count('非公開在庫も含めて中古UXを探してみる')}**",
-        f"- rendered_ctn_text_count: **{rendered.count('高く売りたい。でも電話ラッシュはいらない。')}**",
-        f"- rendered_ctn_brand_count: **{rendered.count('CTN')}**",
         '', '## Gulliver segment',
         f"- segment_length: **{len(gulliver_seg)}**",
-        f"- anchor_count: **{len(re.findall(r'<a\\b',gulliver_seg,re.I))}**",
-        f"- image_count: **{len(re.findall(r'<img\\b',gulliver_seg,re.I))}**",
+        f"- anchor_count: **{gulliver_seg.lower().count('<a ')}**",
+        f"- image_count: **{gulliver_seg.lower().count('<img ')}**",
         f"- px_a8_count: **{gulliver_seg.count('px.a8.net')}**",
+        f"- html: `{compact(gulliver_seg)}`",
         '', '## CTN segment',
         f"- segment_length: **{len(ctn_seg)}**",
-        f"- anchor_count: **{len(re.findall(r'<a\\b',ctn_seg,re.I))}**",
-        f"- image_count: **{len(re.findall(r'<img\\b',ctn_seg,re.I))}**",
+        f"- anchor_count: **{ctn_seg.lower().count('<a ')}**",
+        f"- image_count: **{ctn_seg.lower().count('<img ')}**",
         f"- px_a8_count: **{ctn_seg.count('px.a8.net')}**",
+        f"- html: `{compact(ctn_seg)}`",
         '', '## Rendered markers'
     ]
     for m in ['迷ったら、実際の中古UXを見比べるのが早い','Web掲載前の非公開在庫','お宝UX、まだ表に出ていないかも。','高額査定の上位3社だけ','高く売りたい。でも電話ラッシュはいらない。']:
