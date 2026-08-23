@@ -1,11 +1,10 @@
-name: Probe UX300h public cache
+name: Purge UX300h server cache if credential exists
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/public_ux300h_cache_probe.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -13,29 +12,63 @@ permissions:
   issues: write
 
 jobs:
-  probe:
+  purge:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    env:
+      XSERVER_API_KEY: ${{ secrets.XSERVER_API_KEY }}
+      XSERVER_SERVERNAME: ${{ secrets.XSERVER_SERVERNAME }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - name: Prepare report
+        shell: bash
+        run: |
+          mkdir -p reports/ux300h-xserver-cache-purge
+          echo '# UX300h Xserver cache purge' > reports/ux300h-xserver-cache-purge/summary.md
+          echo >> reports/ux300h-xserver-cache-purge/summary.md
+      - name: Check credential presence
+        id: check
+        shell: bash
+        run: |
+          if [ -n "$XSERVER_API_KEY" ]; then
+            echo 'has_key=yes' >> "$GITHUB_OUTPUT"
+            echo '- XSERVER_API_KEY: **PRESENT**' >> reports/ux300h-xserver-cache-purge/summary.md
+          else
+            echo 'has_key=no' >> "$GITHUB_OUTPUT"
+            echo '- result: **NO_XSERVER_API_KEY_SECRET**' >> reports/ux300h-xserver-cache-purge/summary.md
+            echo '- XSERVER_API_KEY: **NOT PRESENT**' >> reports/ux300h-xserver-cache-purge/summary.md
+          fi
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.has_key == 'yes'
         with:
-          python-version: '3.x'
-      - name: Compile public cache probe
-        run: python -m py_compile scripts/public_ux300h_cache_probe.py
-      - name: Probe public URL
-        run: python scripts/public_ux300h_cache_probe.py
+          node-version: '20'
+      - name: Purge Xserver server cache
+        if: steps.check.outputs.has_key == 'yes'
+        shell: bash
+        run: |
+          set +e
+          npx --yes xserver-cli server server-cache clear-cache tsurikue.com -y > /tmp/xserver-purge.log 2>&1
+          code=$?
+          if [ $code -eq 0 ]; then
+            echo '- result: **SUCCESS**' >> reports/ux300h-xserver-cache-purge/summary.md
+            echo '- domain: **tsurikue.com**' >> reports/ux300h-xserver-cache-purge/summary.md
+            echo '- action: **server cache cleared**' >> reports/ux300h-xserver-cache-purge/summary.md
+          else
+            echo '- result: **XSERVER_PURGE_FAILED**' >> reports/ux300h-xserver-cache-purge/summary.md
+            echo "- exit_code: **$code**" >> reports/ux300h-xserver-cache-purge/summary.md
+            sed -E 's/xs_[A-Za-z0-9_-]+/[REDACTED]/g' /tmp/xserver-purge.log | tail -20 | sed 's/^/- log: `/' | sed 's/$/`/' >> reports/ux300h-xserver-cache-purge/summary.md
+          fi
+          exit 0
       - name: Record result
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          { echo '### ux300h public cache probe'; echo; cat reports/ux300h-public-cache-probe/summary.md 2>/dev/null || echo '- result: **BLOCKED**'; } > /tmp/comment.md
+          { echo '### ux300h Xserver cache purge'; echo; cat reports/ux300h-xserver-cache-purge/summary.md; } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ux300h-public-cache-probe
-          path: reports/ux300h-public-cache-probe/
+          name: ux300h-xserver-cache-purge
+          path: reports/ux300h-xserver-cache-purge/
           if-no-files-found: warn
