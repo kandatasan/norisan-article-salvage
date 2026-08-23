@@ -1,11 +1,11 @@
-name: Final GET-only audit UX300h
+name: Refresh UX300h public cache once
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/audit_ux300h_current.py
+      - scripts/touch_ux300h_cache_once.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -13,7 +13,7 @@ permissions:
   issues: write
 
 jobs:
-  audit:
+  refresh:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
@@ -21,24 +21,24 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Compile final GET-only audit
-        run: python -m py_compile scripts/audit_ux300h_current.py
-      - name: Run final GET-only audit
+      - name: Compile guarded cache refresh
+        run: python -m py_compile scripts/touch_ux300h_cache_once.py
+      - name: Refresh UX300h post cache
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/audit_ux300h_current.py
-      - name: Record final audit
+        run: python scripts/touch_ux300h_cache_once.py
+      - name: Record refresh result
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          { echo '### ux300h final GET-only audit'; echo; cat reports/ux300h-current-audit/summary.md 2>/dev/null || echo '- result: **BLOCKED**'; } > /tmp/comment.md
+          { echo '### ux300h public cache refresh'; echo; cat reports/ux300h-cache-refresh/summary.md 2>/dev/null || echo '- result: **BLOCKED_BEFORE_WRITE**'; } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ux300h-final-get-only-audit
-          path: reports/ux300h-current-audit/
+          name: ux300h-cache-refresh
+          path: reports/ux300h-cache-refresh/
           if-no-files-found: warn
