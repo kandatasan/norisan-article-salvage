@@ -1,11 +1,11 @@
-name: Refresh UX300h public cache once
+name: Probe UX300h public cache
 
 on:
   push:
     branches:
       - main
     paths:
-      - scripts/touch_ux300h_cache_once.py
+      - scripts/public_ux300h_cache_probe.py
       - .github/workflows/apply-ux-koukai-final-polish.yml
 
 permissions:
@@ -13,32 +13,29 @@ permissions:
   issues: write
 
 jobs:
-  refresh:
+  probe:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Compile guarded cache refresh
-        run: python -m py_compile scripts/touch_ux300h_cache_once.py
-      - name: Refresh UX300h post cache
-        env:
-          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
-          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/touch_ux300h_cache_once.py
-      - name: Record refresh result
+      - name: Compile public cache probe
+        run: python -m py_compile scripts/public_ux300h_cache_probe.py
+      - name: Probe public URL
+        run: python scripts/public_ux300h_cache_probe.py
+      - name: Record result
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
         run: |
-          { echo '### ux300h public cache refresh'; echo; cat reports/ux300h-cache-refresh/summary.md 2>/dev/null || echo '- result: **BLOCKED_BEFORE_WRITE**'; } > /tmp/comment.md
+          { echo '### ux300h public cache probe'; echo; cat reports/ux300h-public-cache-probe/summary.md 2>/dev/null || echo '- result: **BLOCKED**'; } > /tmp/comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: ux300h-cache-refresh
-          path: reports/ux300h-cache-refresh/
+          name: ux300h-public-cache-probe
+          path: reports/ux300h-public-cache-probe/
           if-no-files-found: warn
