@@ -98,3 +98,5 @@ if __name__=='__main__':
         REPORT.mkdir(parents=True,exist_ok=True)
         (REPORT/'summary.md').write_text('# UX300h current affiliate patch\n\n- result: **BLOCKED_BEFORE_WRITE**\n- wordpress_write_count: **0**\n- error_type: **'+type(e).__name__+'**\n- error: `'+str(e).replace('`','')+'`\n',encoding='utf-8')
         raise
+
+# trigger 2026-08-24
