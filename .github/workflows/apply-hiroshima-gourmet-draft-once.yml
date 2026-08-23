@@ -1,5 +1,6 @@
 name: Apply Hiroshima gourmet draft once
 
+# Explicit trigger after workflow is present on main: 2026-08-23
 on:
   push:
     branches: [main]
