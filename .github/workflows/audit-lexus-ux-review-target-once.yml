@@ -1,0 +1,40 @@
+name: Audit Lexus UX review target once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_lexus_ux_review_target_once.py'
+      - '.github/workflows/audit-lexus-ux-review-target-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Audit target and verified UX media
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_lexus_ux_review_target_once.py
+      - name: Record audit on issue 22
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/lexus-ux-review-audit/summary.md
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexus-ux-review-audit
+          path: reports/lexus-ux-review-audit/
+          if-no-files-found: warn
