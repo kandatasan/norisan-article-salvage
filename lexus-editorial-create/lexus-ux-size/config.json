@@ -1,0 +1,25 @@
+{
+  "title": "レクサスUXのサイズは大きい？車幅・全長・取り回しを元オーナー目線で解説",
+  "slug": "lexus-ux-size",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-size source=lexus-diary.com/ux/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-size -->",
+  "featured_media": 2214,
+  "expected_media": {
+    "2214": "/wp-content/uploads/2026/06/IMG_0948.jpeg",
+    "2508": "/wp-content/uploads/2026/07/IMG_2045.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXのボディサイズ",
+    "車幅・最小回転半径は街中で扱いやすい？",
+    "機械式駐車場に入れやすいサイズなのか？",
+    "最低地上高・車高で気を付けたいこと",
+    "LBX・NXとサイズを比較",
+    "実際に乗って感じた取り回しと不便な場面"
+  ],
+  "allowed_related_post_ids": [2870, 2874, 2881, 2517, 2222, 2240, 2329, 2575, 2186],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1
+  }
+}
