@@ -1,0 +1,26 @@
+{
+  "title": "レクサスUXは貧乏・見栄っ張りに見える？実際に所有して感じたこと",
+  "slug": "lexus-ux-poor",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-poor source=lexus-diary.com/used-car/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-poor -->",
+  "featured_media": 2208,
+  "expected_media": {
+    "2208": "/wp-content/uploads/2026/06/IMG_2660-1.jpeg",
+    "2197": "/wp-content/uploads/2026/06/IMG_3929.jpeg",
+    "2201": "/wp-content/uploads/2026/06/IMG_3504.jpeg"
+  },
+  "expected_h2": [
+    "なぜ「レクサスUX 貧乏・見栄っ張り」と検索されるのか？",
+    "UXはレクサスの中では安い車なのか？",
+    "中古のレクサスUXは貧乏くさい？",
+    "実際にUXへ乗って他人の視線は気になった？",
+    "UXを選ぶと満足しやすい人",
+    "中古なら価格と満足度のバランスがさらに良い"
+  ],
+  "allowed_related_post_ids": [2870, 2517, 2222, 2240, 2329, 2575, 2186],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1
+  }
+}
