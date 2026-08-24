@@ -1,0 +1,29 @@
+{
+  "title": "レクサスUXの評価・感想は？1万km以上乗った元オーナーが本音レビュー",
+  "slug": "lexus-ux-review",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-review source=lexus-diary.com/ux/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-review -->",
+  "featured_media": 2208,
+  "expected_media": {
+    "2208": "/wp-content/uploads/2026/06/IMG_2660-1.jpeg",
+    "2197": "/wp-content/uploads/2026/06/IMG_3929.jpeg",
+    "2201": "/wp-content/uploads/2026/06/IMG_3504.jpeg"
+  },
+  "expected_h2": [
+    "1万km以上乗って感じたレクサスUXの総合評価",
+    "オーナーが感じたレクサスUXの良いところ",
+    "オーナーが感じたレクサスUXの気になるところ",
+    "走り・乗り心地はどうだった？",
+    "サイズと使い勝手は日常向き",
+    "レクサスUXはどんな人に向いている？",
+    "今から買うなら新車と中古どっち？"
+  ],
+  "allowed_related_post_ids": [2186, 2329, 2222, 2517, 2240, 2575],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2846\"]": 1,
+    "[blog_parts id=\"2184\"]": 1,
+    "https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY": 1
+  }
+}
