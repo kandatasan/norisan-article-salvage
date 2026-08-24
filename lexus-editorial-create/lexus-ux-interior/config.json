@@ -1,0 +1,26 @@
+{
+  "title": "レクサスUXの内装はしょぼい？実際に触って感じた高級感と気になる部分",
+  "slug": "lexus-ux-interior",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-interior source=lexus-diary.com/lexusuxblog/,lexus-diary.com/hidoi/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-interior -->",
+  "featured_media": 2210,
+  "expected_media": {
+    "2210": "/wp-content/uploads/2026/06/IMG_1136.jpeg",
+    "2201": "/wp-content/uploads/2026/06/IMG_3504.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXの内装をオーナー目線で評価",
+    "見た目だけだと高級感が弱く感じるところ",
+    "実際に触ると分かる素材・作りの良さ",
+    "インパネ・センターコンソールの使い勝手",
+    "後席ドア内装は正直どうだった？",
+    "F SPORTの内装で気に入ったところ"
+  ],
+  "allowed_related_post_ids": [2186, 2329, 2222, 2517, 2240, 2575, 2883, 2884, 2885, 2886],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1,
+    "https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY": 1
+  }
+}
