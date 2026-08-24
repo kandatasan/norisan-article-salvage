@@ -1,0 +1,28 @@
+{
+  "post_id": 2886,
+  "slug": "lexus-ux-size",
+  "expected_title": "レクサスUXのサイズは大きい？車幅・全長・取り回しを元オーナー目線で解説",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-size source=lexus-diary.com/ux/ -->",
+  "required_editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-size -->",
+  "patch_marker": "<!-- tsurikue-media-patch:lexus-ux-size-niyodo:v1 -->",
+  "featured_media": 2214,
+  "expected_media": {
+    "2190": {
+      "path": "/wp-content/uploads/2026/06/IMG_4588.jpeg",
+      "width": 1920,
+      "height": 1440
+    },
+    "2214": {
+      "path": "/wp-content/uploads/2026/06/IMG_0948.jpeg",
+      "width": 1920,
+      "height": 1441
+    }
+  },
+  "insertions": [
+    {
+      "position": "after",
+      "anchor": "<!-- wp:paragraph -->\n<p>そんなとき、UXのサイズは使いやすかったです。</p>\n<!-- /wp:paragraph -->",
+      "html": "<!-- wp:paragraph -->\n<p>秘境っぽい絶景スポットほど、道中に細い道が出てくることがあります。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>写真は仁淀川の水晶淵周辺。<br>こういう景色を見に行くドライブも、UXで楽しんでいました。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:image {\"id\":2190,\"sizeSlug\":\"large\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-large\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/06/IMG_4588.jpeg\" alt=\"仁淀川・水晶淵周辺の景色\" class=\"wp-image-2190\"/></figure>\n<!-- /wp:image -->\n\n<!-- wp:paragraph -->\n<p>UXは全幅1,840mmあるので、細い車ではありません。<br>それでも最小回転半径5.2mのおかげで、狭い場所のカーブや切り返しでは扱いやすさを感じます。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>絶景は見たい。でも道が細いのはちょっと怖い。</strong><br>そんな場所へも出かけやすいのは、ドライブ好きの私がUXで気に入っていたところです。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:image {\"id\":2214,\"sizeSlug\":\"large\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-large\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/06/IMG_0948.jpeg\" alt=\"レクサスUX250h F SPORTの外観\" class=\"wp-image-2214\"/></figure>\n<!-- /wp:image -->"
+    }
+  ]
+}
