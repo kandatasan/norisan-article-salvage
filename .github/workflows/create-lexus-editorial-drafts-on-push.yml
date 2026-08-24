@@ -1,0 +1,75 @@
+name: Create Lexus editorial drafts on push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lexus-editorial-create/**'
+      - 'scripts/create_lexus_editorial_draft_once.py'
+      - '.github/workflows/create-lexus-editorial-drafts-on-push.yml'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Lexus create config path'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-lexus-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/create_lexus_editorial_draft_once.py
+      - name: Resolve configs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+          else
+            git diff --name-only HEAD^ HEAD -- 'lexus-editorial-create/*/config.json' 'lexus-editorial-create/*/content.html' \
+              | awk -F/ 'NF>=3 {print $1 "/" $2 "/config.json"}' \
+              | sort -u > /tmp/configs.txt
+          fi
+          test -s /tmp/configs.txt
+          cat /tmp/configs.txt
+      - name: Create guarded draft only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r config; do
+            python scripts/create_lexus_editorial_draft_once.py --config "$config"
+          done < /tmp/configs.txt
+      - name: Record results on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Lexus editorial draft create: SUCCESS'
+            echo
+            find reports -name summary.md -print -exec cat {} \;
+          } > /tmp/lexus-create-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/lexus-create-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexus-editorial-draft-create
+          path: reports/
+          if-no-files-found: warn
