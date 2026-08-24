@@ -1,0 +1,26 @@
+{
+  "title": "レクサスUXを買う人はどんな人？年齢層・年収・向いている使い方を考える",
+  "slug": "lexus-ux-buyer",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-buyer source=lexus-diary.com/ux/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-buyer -->",
+  "featured_media": 2208,
+  "expected_media": {
+    "2208": "/wp-content/uploads/2026/06/IMG_2660-1.jpeg",
+    "2197": "/wp-content/uploads/2026/06/IMG_3929.jpeg",
+    "2201": "/wp-content/uploads/2026/06/IMG_3504.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXを買う人にはどんな特徴がある？",
+    "レクサスUXの年齢層は？",
+    "UXを買うなら年収はいくら必要？",
+    "街乗り・夫婦・子育てで使い勝手はどう変わる？",
+    "中古UXなら購入ハードルはかなり下がる",
+    "無理なく買える予算から考える"
+  ],
+  "allowed_related_post_ids": [2870, 2874, 2517, 2222, 2240, 2329, 2575, 2186],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1
+  }
+}
