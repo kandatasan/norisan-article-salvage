@@ -1,0 +1,25 @@
+{
+  "title": "レクサスUXの後部座席は狭い？大人4人で乗った感想と使い勝手を確認",
+  "slug": "lexus-ux-rear-seat",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-rear-seat source=lexus-diary.com/hidoi/,lexus-diary.com/koukai/,lexus-diary.com/lexusuxblog/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-rear-seat -->",
+  "featured_media": 2210,
+  "expected_media": {
+    "2210": "/wp-content/uploads/2026/06/IMG_1136.jpeg",
+    "2201": "/wp-content/uploads/2026/06/IMG_3504.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXの後部座席は本当に狭い？",
+    "大人が座ったときの足元スペースと座り心地",
+    "チャイルドシートを使うなら注意したいこと",
+    "後席への乗り降りとドア周りの使い勝手",
+    "後部座席をよく使うならNXも候補になる"
+  ],
+  "allowed_related_post_ids": [2186, 2329, 2222, 2517, 2240, 2575, 2870, 2874, 2881, 2886, 2897],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1,
+    "https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY": 1
+  }
+}
