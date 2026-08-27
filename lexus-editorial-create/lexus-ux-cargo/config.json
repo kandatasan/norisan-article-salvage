@@ -1,0 +1,23 @@
+{
+  "title": "レクサスUXの荷室は狭い？ゴルフバッグ・買い物で使えるかをチェック",
+  "slug": "lexus-ux-cargo",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-cargo source=lexus-diary.com/hidoi/,lexus-diary.com/koukai/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-cargo -->",
+  "featured_media": 2208,
+  "expected_media": {
+    "2208": "/wp-content/uploads/2026/06/IMG_2660-1.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXの荷室サイズと使い勝手",
+    "ゴルフバッグは積める？",
+    "日常の買い物では困らない？",
+    "後席を倒したときの積載力と荷物の出し入れ",
+    "実際に使って不便だった場面と向いている人"
+  ],
+  "allowed_related_post_ids": [2186, 2329, 2222, 2517, 2240, 2575, 2870, 2874, 2881, 2886, 2897, 2902],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1
+  }
+}
