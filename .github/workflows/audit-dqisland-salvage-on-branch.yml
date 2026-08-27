@@ -1,0 +1,36 @@
+name: Audit Dragon Quest Island salvage on branch
+
+on:
+  push:
+    branches:
+      - salvage/dqisland-20260828
+    paths:
+      - scripts/audit_dqisland_draft_media_once.py
+      - .github/workflows/audit-dqisland-salvage-on-branch.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/audit_dqisland_draft_media_once.py
+      - name: Run read-only WordPress audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_dqisland_draft_media_once.py
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dqisland-audit
+          path: reports/dqisland-audit/
+          if-no-files-found: error
