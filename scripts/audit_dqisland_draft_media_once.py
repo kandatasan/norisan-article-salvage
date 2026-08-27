@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only audit for Dragon Quest Island salvage target and existing WordPress media."""
+"""Read-only audit for Dragon Quest Island salvage target, categories, and existing WordPress media."""
 from __future__ import annotations
 
 import base64
@@ -14,13 +14,13 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-dqisland-audit/1.0"
+USER_AGENT = "tsurikue-dqisland-audit/1.1"
 OUT = Path("reports/dqisland-audit")
 PHOTO_STEMS = [
     "img_3058", "img_3059", "img_3060", "img_3061", "img_3062", "img_3063",
     "img_3065", "img_3067", "img_3068", "img_3069", "img_3071", "img_3072",
     "img_3073", "img_3074", "img_3075", "img_3076", "img_3077", "img_3081",
-    "img_3084", "img_3085", "img_3122",
+    "img_3084", "img_3085", "img_3121", "img_3122",
 ]
 
 
@@ -76,6 +76,27 @@ def fetch_posts(status: str, authorization: str) -> list[dict[str, Any]]:
         params["page"] = str(page)
         more, _ = get_json(
             f"{SITE_URL}/wp-json/wp/v2/posts?{urllib.parse.urlencode(params)}", authorization
+        )
+        result.extend(more)
+    return result
+
+
+def fetch_categories(authorization: str) -> list[dict[str, Any]]:
+    params = {
+        "context": "edit",
+        "per_page": "100",
+        "page": "1",
+        "_fields": "id,name,slug,parent,count",
+    }
+    rows, headers = get_json(
+        f"{SITE_URL}/wp-json/wp/v2/categories?{urllib.parse.urlencode(params)}", authorization
+    )
+    pages = int(headers.get("X-WP-TotalPages", "1"))
+    result = list(rows)
+    for page in range(2, pages + 1):
+        params["page"] = str(page)
+        more, _ = get_json(
+            f"{SITE_URL}/wp-json/wp/v2/categories?{urllib.parse.urlencode(params)}", authorization
         )
         result.extend(more)
     return result
@@ -171,9 +192,11 @@ def main() -> None:
 
     drafts = fetch_posts("draft", authorization)
     published = fetch_posts("publish", authorization)
+    categories = fetch_categories(authorization)
     draft_targets = [row for row in drafts if is_target(row)]
     published_targets = [row for row in published if is_target(row)]
     media = scan_media(authorization)
+    matched = {row["key"] for row in media}
 
     OUT.mkdir(parents=True, exist_ok=True)
     result = {
@@ -183,10 +206,11 @@ def main() -> None:
         "published_scanned": len(published),
         "draft_candidates": [post_record(row) for row in draft_targets],
         "published_candidates": [post_record(row) for row in published_targets],
+        "categories": categories,
         "photo_stems": PHOTO_STEMS,
         "media_matches": media,
-        "matched_photo_keys": sorted({row["key"] for row in media}),
-        "missing_photo_keys": [key for key in PHOTO_STEMS if key not in {row["key"] for row in media}],
+        "matched_photo_keys": sorted(matched),
+        "missing_photo_keys": [key for key in PHOTO_STEMS if key not in matched],
     }
     (OUT / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
@@ -200,6 +224,7 @@ def main() -> None:
         "- wordpress_write_count: **0**",
         f"- draft_candidates: **{len(draft_targets)}**",
         f"- published_candidates: **{len(published_targets)}**",
+        f"- categories: **{len(categories)}**",
         f"- media_matches: **{len(media)}** / {len(PHOTO_STEMS)} requested stems",
         "",
         "## Draft candidates",
@@ -229,6 +254,10 @@ def main() -> None:
             f"- link: {item['link']}",
             "",
         ])
+    lines.append("## Categories")
+    for item in categories:
+        lines.append(f"- #{item['id']} `{item['slug']}` — {item['name']} (parent={item['parent']}, count={item['count']})")
+    lines.append("")
     lines.append("## Media matches")
     for item in media:
         lines.extend([
