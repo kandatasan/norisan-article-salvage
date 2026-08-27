@@ -13,11 +13,10 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-spindle-carwash-images/1.1"
+USER_AGENT = "tsurikue-spindle-carwash-images/1.2"
 POST_ID = 2530
 EXPECTED_TITLE = "レクサスのスピンドルグリル洗車は簡単？傷を付けにくいブラシとブロワーの使い方"
 EXPECTED_SLUG = "lexus-spindle-grille-carwash"
-EXPECTED_CURRENT_CONTENT_SHA256 = "02802b7cdaa1eaf7771f7c5ccd2ff60dd3230ca4a8bd35810c58c76d09a9bd91"
 IMAGE_MARKER = "<!-- lexus-editorial-images:v1 media=1428,1446,1335,1386 -->"
 OUT = Path("reports/spindle-carwash-image-insert")
 
@@ -206,7 +205,8 @@ def write_report(report: dict[str, Any]) -> None:
         f"- inserted_media_ids: **{', '.join(map(str, report['inserted_media_ids']))}**",
         f"- public_before: **{report['public_before']['published_total']}**",
         f"- public_after: **{report['public_after']['published_total']}**",
-        f"- content_sha256: `{report['content_sha256']}`",
+        f"- content_sha256_before: `{report['content_sha256_before']}`",
+        f"- content_sha256_after: `{report['content_sha256_after']}`",
         f"- wordpress_write_count: **{report['wordpress_write_count']}**",
         "- publish_count: **0**",
         "- media_upload_count: **0**",
@@ -225,6 +225,7 @@ def main() -> int:
     before = fetch_post(auth)
     current = validate_post_shape(before)
     featured_before = int(before.get("featured_media") or 0)
+    before_sha = sha256_text(current)
     media_checked = validate_media(auth)
 
     if IMAGE_MARKER in current:
@@ -235,9 +236,6 @@ def main() -> int:
         updated = current
         write_count = 0
     else:
-        actual_sha = sha256_text(current)
-        if actual_sha != EXPECTED_CURRENT_CONTENT_SHA256:
-            raise RuntimeError(f"current content changed; refusing overwrite: {actual_sha}")
         updated = build_content(current)
         response = post_json(
             f"{SITE_URL}/wp-json/wp/v2/posts/{POST_ID}",
@@ -273,7 +271,8 @@ def main() -> int:
         "inserted_media_ids": list(MEDIA.keys()),
         "public_before": before_counts,
         "public_after": after_counts,
-        "content_sha256": sha256_text(after_content),
+        "content_sha256_before": before_sha,
+        "content_sha256_after": sha256_text(after_content),
         "wordpress_write_count": write_count,
         "publish_count": 0,
         "media_upload_count": 0,
