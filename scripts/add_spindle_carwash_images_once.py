@@ -13,11 +13,10 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-spindle-carwash-images/1.0"
+USER_AGENT = "tsurikue-spindle-carwash-images/1.1"
 POST_ID = 2530
 EXPECTED_TITLE = "レクサスのスピンドルグリル洗車は簡単？傷を付けにくいブラシとブロワーの使い方"
 EXPECTED_SLUG = "lexus-spindle-grille-carwash"
-EXPECTED_FEATURED_MEDIA = 0
 EXPECTED_CURRENT_CONTENT_SHA256 = "02802b7cdaa1eaf7771f7c5ccd2ff60dd3230ca4a8bd35810c58c76d09a9bd91"
 IMAGE_MARKER = "<!-- lexus-editorial-images:v1 media=1428,1446,1335,1386 -->"
 OUT = Path("reports/spindle-carwash-image-insert")
@@ -189,8 +188,6 @@ def validate_post_shape(row: dict[str, Any]) -> str:
         raise RuntimeError("slug changed; refusing update")
     if html.unescape(raw_field(row, "title")) != EXPECTED_TITLE:
         raise RuntimeError("title changed; refusing update")
-    if int(row.get("featured_media") or 0) != EXPECTED_FEATURED_MEDIA:
-        raise RuntimeError("featured media changed; refusing update")
     return raw_field(row, "content")
 
 
@@ -203,6 +200,8 @@ def write_report(report: dict[str, Any]) -> None:
         f"- action: **{report['action']}**",
         f"- post_id: **{POST_ID}**",
         "- status: **draft**",
+        f"- featured_media_before: **{report['featured_media_before']}**",
+        f"- featured_media_after: **{report['featured_media_after']}**",
         f"- media_checked: **{report['media_checked']}**",
         f"- inserted_media_ids: **{', '.join(map(str, report['inserted_media_ids']))}**",
         f"- public_before: **{report['public_before']['published_total']}**",
@@ -225,6 +224,7 @@ def main() -> int:
     before_counts = public_counts(auth)
     before = fetch_post(auth)
     current = validate_post_shape(before)
+    featured_before = int(before.get("featured_media") or 0)
     media_checked = validate_media(auth)
 
     if IMAGE_MARKER in current:
@@ -251,9 +251,12 @@ def main() -> int:
 
     after = fetch_post(auth)
     after_content = validate_post_shape(after)
+    featured_after = int(after.get("featured_media") or 0)
     after_counts = public_counts(auth)
     if before_counts != after_counts:
         raise RuntimeError("published counts changed")
+    if featured_before != featured_after:
+        raise RuntimeError("featured media changed during image insertion")
     if after_content.strip() != updated.strip():
         raise RuntimeError("post-update content mismatch")
     for media_id in MEDIA:
@@ -264,6 +267,8 @@ def main() -> int:
         "action": action,
         "post_id": POST_ID,
         "status": "draft",
+        "featured_media_before": featured_before,
+        "featured_media_after": featured_after,
         "media_checked": media_checked,
         "inserted_media_ids": list(MEDIA.keys()),
         "public_before": before_counts,
