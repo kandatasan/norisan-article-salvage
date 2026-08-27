@@ -1,0 +1,33 @@
+name: Capture current spindle draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/capture_current_spindle_draft.py'
+      - '.github/workflows/capture-current-spindle-draft-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python -m py_compile scripts/capture_current_spindle_draft.py
+      - name: Capture current draft read-only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/capture_current_spindle_draft.py
+      - uses: actions/upload-artifact@v4
+        with:
+          name: spindle-current-capture
+          path: reports/spindle-current-capture/
+          if-no-files-found: error
