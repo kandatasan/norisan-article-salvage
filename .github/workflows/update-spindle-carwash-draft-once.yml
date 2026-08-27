@@ -1,0 +1,43 @@
+name: Update spindle grille carwash draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'lexus-editorial-update/spindle-carwash/**'
+      - 'scripts/update_spindle_carwash_draft_once.py'
+      - '.github/workflows/update-spindle-carwash-draft-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/update_spindle_carwash_draft_once.py
+      - name: Guarded WordPress draft update
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_spindle_carwash_draft_once.py
+      - name: Record result on issue 22
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/spindle-carwash-draft-update/summary.md
+      - name: Upload update report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: spindle-carwash-draft-update
+          path: reports/spindle-carwash-draft-update/
+          if-no-files-found: warn
