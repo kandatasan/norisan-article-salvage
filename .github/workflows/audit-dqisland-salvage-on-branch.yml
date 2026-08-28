@@ -1,0 +1,61 @@
+name: Audit Dragon Quest Island salvage on branch
+
+on:
+  push:
+    branches:
+      - salvage/dqisland-20260828
+    paths:
+      - scripts/audit_dqisland_draft_media_once.py
+      - scripts/create_dqisland_draft_once.py
+      - editorial/dqisland/content.html
+      - editorial/dqisland/img_3122.jpg.b64
+      - .github/workflows/audit-dqisland-salvage-on-branch.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: |
+          python -m py_compile scripts/audit_dqisland_draft_media_once.py
+          python -m py_compile scripts/create_dqisland_draft_once.py
+      - name: Validate editorial package
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import base64, hashlib
+          content = Path('editorial/dqisland/content.html').read_text(encoding='utf-8')
+          if content.count('__MUG_IMAGE_BLOCK__') != 1:
+              raise SystemExit('invalid mug placeholder count')
+          if '<h1' in content.casefold():
+              raise SystemExit('body contains H1')
+          raw = base64.b64decode(Path('editorial/dqisland/img_3122.jpg.b64').read_text().strip(), validate=True)
+          digest = hashlib.sha256(raw).hexdigest()
+          expected = 'e5ca43b121cd565b1783422835f35665587decc965a5917bf275f2e6a079903b'
+          if digest != expected:
+              raise SystemExit(f'mug sha mismatch: {digest}')
+          if not raw.startswith(b'\xff\xd8\xff'):
+              raise SystemExit('mug payload is not jpeg')
+          print('package validation: OK')
+          PY
+      - name: Run read-only WordPress audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_dqisland_draft_media_once.py
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: dqisland-audit
+          path: reports/dqisland-audit/
+          if-no-files-found: error
