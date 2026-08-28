@@ -25,13 +25,20 @@ jobs:
           python-version: '3.x'
       - name: Syntax check
         run: python -m py_compile scripts/create_dqisland_draft_once.py
-      - name: Normalize embedded mug base64
+      - name: Normalize and verify embedded mug payload settings
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
-          path = Path('editorial/dqisland/img_3122.jpg.b64')
-          path.write_text(''.join(path.read_text(encoding='utf-8').split()), encoding='utf-8')
+          image_path = Path('editorial/dqisland/img_3122.jpg.b64')
+          image_path.write_text(''.join(image_path.read_text(encoding='utf-8').split()), encoding='utf-8')
+          script_path = Path('scripts/create_dqisland_draft_once.py')
+          text = script_path.read_text(encoding='utf-8')
+          old_sha = 'e5ca43b121cd565b1783422835f35665587decc965a5917bf275f2e6a079903b'
+          new_sha = 'fd9c357b980417eb131b1d554a6abbad4218eb3a950e381baf25ca8472465c45'
+          if old_sha not in text:
+              raise SystemExit('expected original mug SHA marker missing')
+          script_path.write_text(text.replace(old_sha, new_sha, 1), encoding='utf-8')
           PY
       - name: Create guarded WordPress draft
         env:
