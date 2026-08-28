@@ -35,7 +35,7 @@ jobs:
           script_path = Path('scripts/create_dqisland_draft_once.py')
           text = script_path.read_text(encoding='utf-8')
           old_sha = 'e5ca43b121cd565b1783422835f35665587decc965a5917bf275f2e6a079903b'
-          new_sha = 'fd9c357b980417eb131b1d554a6abbad4218eb3a950e381baf25ca8472465c45'
+          new_sha = '1d760e9ef228683a1ee3314d9f6437b7d8353d5960babd29fe866582f9b3c14e'
           if old_sha not in text:
               raise SystemExit('expected original mug SHA marker missing')
           script_path.write_text(text.replace(old_sha, new_sha, 1), encoding='utf-8')
