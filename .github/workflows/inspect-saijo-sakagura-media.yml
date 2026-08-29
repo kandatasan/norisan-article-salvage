@@ -1,0 +1,49 @@
+name: Inspect Saijo sakagura media
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_saijo_sakagura_media.py'
+      - '.github/workflows/inspect-saijo-sakagura-media.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/inspect_saijo_sakagura_media.py
+      - name: Inspect WordPress read-only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/inspect_saijo_sakagura_media.py
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Saijo sakagura media inspection: SUCCESS'
+            echo
+            cat reports/saijo-sakagura-inspect/summary.md
+          } > /tmp/saijo-sakagura-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/saijo-sakagura-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: saijo-sakagura-inspect
+          path: reports/saijo-sakagura-inspect/
+          if-no-files-found: warn
