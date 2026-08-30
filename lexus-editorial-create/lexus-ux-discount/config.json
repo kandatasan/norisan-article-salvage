@@ -1,0 +1,26 @@
+{
+  "title": "レクサスUXは値引きできる？値引き0円だった実体験と安く買う方法",
+  "slug": "lexus-ux-discount",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-discount source=lexus-diary.com/quotation/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-discount -->",
+  "featured_media": 2231,
+  "expected_media": {
+    "2231": "/wp-content/uploads/2026/06/IMG_3554-1.jpeg",
+    "2245": "/wp-content/uploads/2026/06/IMG_1132.jpeg",
+    "2244": "/wp-content/uploads/2026/06/IMG_2045.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXは値引きしてもらえる？",
+    "私の購入時は値引き0円だった",
+    "紹介実績があっても値引きされなかった例",
+    "値引き以外で購入総額を下げる方法",
+    "今の車を高く売って購入資金を増やす",
+    "認定中古車・中古UXも候補に入れる"
+  ],
+  "allowed_related_post_ids": [2186, 2329, 2222, 2517, 2240, 2575, 2870, 2874, 2881, 2886, 2897, 2902, 2948, 2956],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2184\"]": 1,
+    "[blog_parts id=\"2843\"]": 1
+  }
+}
