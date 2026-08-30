@@ -1,0 +1,51 @@
+name: Apply Yuki town drive line-break polish once v2
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_yuki_town_drive_linebreaks_once_v2.py'
+      - '.github/workflows/apply-yuki-town-drive-linebreaks-once-v2.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  polish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/apply_yuki_town_drive_linebreaks_once.py scripts/apply_yuki_town_drive_linebreaks_once_v2.py
+      - name: Apply guarded line-break polish
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          cd scripts
+          python apply_yuki_town_drive_linebreaks_once_v2.py
+      - name: Record result on salvage audit issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Yuki town drive line-break polish v2'
+            echo
+            cat scripts/reports/yuki-town-drive-linebreaks/summary.md
+          } > /tmp/yuki-town-linebreaks-v2-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/yuki-town-linebreaks-v2-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: yuki-town-drive-linebreaks-v2
+          path: scripts/reports/yuki-town-drive-linebreaks/
+          if-no-files-found: warn
