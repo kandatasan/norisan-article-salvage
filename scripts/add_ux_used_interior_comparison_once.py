@@ -15,7 +15,6 @@ SITE = "https://tsurikue.com"
 POST_ID = 2948
 SLUG = "lexus-ux-used"
 TITLE = "レクサスUXの中古は狙い目？新車と比べて中古をおすすめしたい理由"
-FEATURED_MEDIA = 2197
 MEDIA_ID = 2954
 MEDIA_PATH = "/wp-content/uploads/2026/08/08eca467-15bf-4b43-88b5-8d1785313cca.jpg"
 MEDIA_WIDTH = 1447
@@ -41,13 +40,13 @@ def auth_header(user: str, password: str) -> str:
 
 
 def get_json(url: str, auth: str) -> tuple[Any, dict[str, str]]:
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.0"}, method="GET")
+    req = urllib.request.Request(url, headers={"Accept": "application/json", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.1"}, method="GET")
     with urllib.request.urlopen(req, timeout=45) as r:
         return json.loads(r.read().decode("utf-8")), dict(r.headers)
 
 
 def post_json(url: str, auth: str, payload: dict[str, Any]) -> dict[str, Any]:
-    req = urllib.request.Request(url, data=json.dumps(payload, ensure_ascii=False).encode("utf-8"), headers={"Accept": "application/json", "Content-Type": "application/json; charset=utf-8", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.0"}, method="POST")
+    req = urllib.request.Request(url, data=json.dumps(payload, ensure_ascii=False).encode("utf-8"), headers={"Accept": "application/json", "Content-Type": "application/json; charset=utf-8", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.1"}, method="POST")
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode("utf-8"))
 
@@ -107,9 +106,8 @@ def main() -> int:
         raise RuntimeError("target is not draft")
     if html.unescape(raw_field(before, "title")) != TITLE:
         raise RuntimeError("title changed; refusing")
-    if int(before.get("featured_media") or 0) != FEATURED_MEDIA:
-        raise RuntimeError("featured media changed; refusing")
 
+    featured_before = int(before.get("featured_media") or 0)
     current = raw_field(before, "content")
     if SALVAGE_MARKER not in current or EDITORIAL_MARKER not in current:
         raise RuntimeError("required salvage/editorial marker missing")
@@ -138,13 +136,14 @@ def main() -> int:
     after = fetch_post(auth)
     after_counts = public_counts(auth)
     after_content = raw_field(after, "content")
+    featured_after = int(after.get("featured_media") or 0)
     if after_counts != before_counts:
         raise RuntimeError("published counts changed")
     if after.get("status") != "draft" or after.get("slug") != SLUG:
         raise RuntimeError("post-update identity/status mismatch")
     if html.unescape(raw_field(after, "title")) != TITLE:
         raise RuntimeError("title changed during patch")
-    if int(after.get("featured_media") or 0) != FEATURED_MEDIA:
+    if featured_after != featured_before:
         raise RuntimeError("featured media changed during patch")
     if PATCH_MARKER not in after_content or not has_image(after_content, MEDIA_ID):
         raise RuntimeError("comparison patch missing after update")
@@ -157,7 +156,7 @@ def main() -> int:
         "slug": SLUG,
         "status": "draft",
         "title": TITLE,
-        "featured_media": FEATURED_MEDIA,
+        "featured_media_preserved": featured_before,
         "comparison_media": MEDIA_ID,
         "comparison_media_path": MEDIA_PATH,
         "comparison_media_dimensions": f"{MEDIA_WIDTH}x{MEDIA_HEIGHT}",
@@ -175,7 +174,7 @@ def main() -> int:
         "# lexus-ux-used interior comparison patch", "",
         f"- action: **{action}**", f"- post_id: **{POST_ID}**", "- status: **draft**",
         f"- comparison_media: **{MEDIA_ID}**", f"- dimensions: **{MEDIA_WIDTH}x{MEDIA_HEIGHT}**",
-        f"- featured_media preserved: **{FEATURED_MEDIA}**",
+        f"- featured_media preserved: **{featured_before}**",
         f"- public_before: **{before_counts['published_total']}**", f"- public_after: **{after_counts['published_total']}**",
         "- publish_count: **0**", "- media_upload_count: **0**", "- media_delete_count: **0**",
         f"- content_sha256: `{report['content_sha256']}`",
