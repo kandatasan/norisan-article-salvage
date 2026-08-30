@@ -1,0 +1,25 @@
+{
+  "title": "レクサスUXの価格はいくら？乗り出し価格とグレード別の違い",
+  "slug": "lexus-ux-price",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-price source=lexus-diary.com/quotation/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-price -->",
+  "featured_media": 2197,
+  "expected_media": {
+    "2197": "/wp-content/uploads/2026/06/IMG_3929.jpeg",
+    "2201": "/wp-content/uploads/2026/06/IMG_3504.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXの新車価格はいくら？グレード別に比較",
+    "乗り出し価格はいくらになる？車両価格以外にかかる費用",
+    "オプションを付けると総額はいくら？",
+    "UX250hとUX300hで価格はどう変わった？",
+    "中古車ならどこまで価格が下がる？",
+    "予算別におすすめの買い方を整理"
+  ],
+  "allowed_related_post_ids": [2186, 2329, 2222, 2517, 2240, 2575, 2870, 2874, 2881, 2886, 2897, 2902, 2948],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1
+  }
+}
