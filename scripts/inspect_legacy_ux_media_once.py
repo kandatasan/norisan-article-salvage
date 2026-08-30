@@ -6,14 +6,14 @@ from pathlib import Path
 
 SITE='https://tsurikue.com'
 OUT=Path('reports/legacy-ux-media-inspection')
-AFTER='2023-07-01T00:00:00'
-BEFORE='2024-04-01T00:00:00'
+AFTER='2026-07-01T00:00:00'
+BEFORE='2026-08-30T14:30:00'
 
 def auth_header(user,password):
     return 'Basic '+base64.b64encode(f'{user}:{password}'.encode()).decode()
 
 def get_json(url,auth):
-    req=urllib.request.Request(url,headers={'Accept':'application/json','Authorization':auth,'User-Agent':'tsurikue-legacy-ux-media-inspector/1.0'},method='GET')
+    req=urllib.request.Request(url,headers={'Accept':'application/json','Authorization':auth,'User-Agent':'tsurikue-jul-aug-ux-media-inspector/1.0'},method='GET')
     with urllib.request.urlopen(req,timeout=45) as r:
         return json.loads(r.read().decode()),dict(r.headers)
 
@@ -28,7 +28,7 @@ def fetch_preview(item):
     row,dest=item
     url=preview_url(row)
     try:
-        req=urllib.request.Request(url,headers={'User-Agent':'tsurikue-legacy-ux-media-inspector/1.0'},method='GET')
+        req=urllib.request.Request(url,headers={'User-Agent':'tsurikue-jul-aug-ux-media-inspector/1.0'},method='GET')
         with urllib.request.urlopen(req,timeout=20) as r: dest.write_bytes(r.read())
         return 'ok'
     except Exception as exc:
@@ -58,7 +58,7 @@ def main():
         for f in as_completed(futures): by_id[futures[f]]['download']=f.result()
     result={'mode':'READ_ONLY','wordpress_write_count':0,'date_window':f'{AFTER}..{BEFORE}','media_scanned':len(rows),'downloaded':sum(x['download']=='ok' for x in manifest),'items':manifest}
     (OUT/'manifest.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    lines=['# Legacy UX media inspection','','- mode: **READ ONLY**','- wordpress_write_count: **0**',f"- media_scanned: **{len(rows)}**",f"- downloaded: **{result['downloaded']}**",'', '## Media']
+    lines=['# July-August UX media inspection','','- mode: **READ ONLY**','- wordpress_write_count: **0**',f"- media_scanned: **{len(rows)}**",f"- downloaded: **{result['downloaded']}**",'', '## Media']
     for x in manifest: lines.append(f"- #{x['id']} `{x['filename']}` | {x['date']} | {x['width']}x{x['height']} | alt: {x['alt_text'] or '(empty)'} | {x['download']}")
     (OUT/'summary.md').write_text('\n'.join(lines)+'\n',encoding='utf-8')
     print(json.dumps({'mode':'READ_ONLY','media_scanned':len(rows),'downloaded':result['downloaded'],'wordpress_write_count':0},ensure_ascii=False))
