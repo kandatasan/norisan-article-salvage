@@ -1,0 +1,29 @@
+{
+  "title": "レクサスUXのモデルチェンジはいつ？250hから300hまでの変更点を整理",
+  "slug": "lexus-ux-model-change",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-model-change source=lexus-diary.com/ux300h/,lexus-diary.com/lexusuxblog/,lexus-diary.com/used-car/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-model-change -->",
+  "featured_media": 2244,
+  "expected_media": {
+    "2244": "/wp-content/uploads/2026/06/IMG_2045.jpeg",
+    "1352": "/wp-content/uploads/2026/05/img_2780.jpg",
+    "2952": "/wp-content/uploads/2026/08/IMG_1102.jpeg",
+    "1624": "/wp-content/uploads/2026/05/img_3494.jpg"
+  },
+  "expected_h2": [
+    "結論｜次期UXのフルモデルチェンジ時期はまだ公式発表なし",
+    "レクサスUXのモデルチェンジ履歴",
+    "2022年の改良｜UX250hの前期・後期で何が変わった？",
+    "UX250hからUX300hで何が変わった？",
+    "写真で比較｜UX250h前期・後期・UX300hの内装",
+    "マイナーチェンジと年次改良の違い",
+    "次期モデルを待つ？今買うなら新車・中古どっち？",
+    "まとめ｜UXは「いつ変わったか」を知ると中古も選びやすい"
+  ],
+  "allowed_related_post_ids": [2240, 2329, 2870, 2897, 2948, 2956],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1
+  }
+}
