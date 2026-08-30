@@ -1,0 +1,48 @@
+name: Add UX used interior comparison once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/add_ux_used_interior_comparison_once.py'
+      - '.github/workflows/add-ux-used-interior-comparison-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/add_ux_used_interior_comparison_once.py
+      - name: Apply guarded draft-only patch
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/add_ux_used_interior_comparison_once.py
+      - name: Record result on issue 22
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Lexus UX used interior comparison: SUCCESS'
+            echo
+            cat reports/lexus-ux-used-interior-comparison/summary.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexus-ux-used-interior-comparison
+          path: reports/lexus-ux-used-interior-comparison/
+          if-no-files-found: warn
