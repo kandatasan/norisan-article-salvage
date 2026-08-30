@@ -6,7 +6,6 @@ import hashlib
 import html
 import json
 import os
-import re
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -38,8 +37,7 @@ OUT = Path("reports/lexus-ux-used-interior-comparison")
 
 
 def auth_header(user: str, password: str) -> str:
-    token = base64.b64encode(f"{user}:{password}".encode()).decode()
-    return f"Basic {token}"
+    return "Basic " + base64.b64encode(f"{user}:{password}".encode()).decode()
 
 
 def get_json(url: str, auth: str) -> tuple[Any, dict[str, str]]:
@@ -56,9 +54,7 @@ def post_json(url: str, auth: str, payload: dict[str, Any]) -> dict[str, Any]:
 
 def raw_field(row: dict[str, Any], key: str) -> str:
     value = row.get(key) or {}
-    if isinstance(value, dict):
-        return value.get("raw") or value.get("rendered") or ""
-    return str(value)
+    return (value.get("raw") or value.get("rendered") or "") if isinstance(value, dict) else str(value)
 
 
 def count_published(endpoint: str, auth: str) -> int:
@@ -79,15 +75,19 @@ def fetch_post(auth: str) -> dict[str, Any]:
     return row
 
 
+def has_image(content: str, media_id: int) -> bool:
+    return f"wp-image-{media_id}" in content or f'"id":{media_id}' in content or f'"id": {media_id}' in content
+
+
 def validate_media(auth: str) -> None:
     q = urllib.parse.urlencode({"context": "edit", "_fields": "id,source_url,media_details"})
     row, _ = get_json(f"{SITE}/wp-json/wp/v2/media/{MEDIA_ID}?{q}", auth)
+    actual_path = urllib.parse.unquote(urllib.parse.urlparse(row.get("source_url") or "").path).casefold()
+    details = row.get("media_details") or {}
     if int(row.get("id") or 0) != MEDIA_ID:
         raise RuntimeError("media id mismatch")
-    actual_path = urllib.parse.unquote(urllib.parse.urlparse(row.get("source_url") or "").path).casefold()
     if actual_path != MEDIA_PATH.casefold():
         raise RuntimeError(f"media path mismatch: {actual_path}")
-    details = row.get("media_details") or {}
     if int(details.get("width") or 0) != MEDIA_WIDTH or int(details.get("height") or 0) != MEDIA_HEIGHT:
         raise RuntimeError("media dimensions mismatch")
 
@@ -111,36 +111,33 @@ def main() -> int:
         raise RuntimeError("featured media changed; refusing")
 
     current = raw_field(before, "content")
-    for marker in (SALVAGE_MARKER, EDITORIAL_MARKER):
-        if marker not in current:
-            raise RuntimeError(f"required marker missing: {marker}")
+    if SALVAGE_MARKER not in current or EDITORIAL_MARKER not in current:
+        raise RuntimeError("required salvage/editorial marker missing")
     for required_media in (2197, 2201):
-        if not re.search(rf"wp-image-{required_media}\\b", current):
+        if not has_image(current, required_media):
             raise RuntimeError(f"expected existing body media missing: {required_media}")
-
     validate_media(auth)
 
     if PATCH_MARKER in current:
-        if not re.search(r"wp-image-2954\\b", current):
+        if not has_image(current, MEDIA_ID):
             raise RuntimeError("patch marker exists but comparison image missing")
         patched = current
         action = "ALREADY_UP_TO_DATE"
     else:
-        if re.search(r"wp-image-2954\\b", current):
+        if has_image(current, MEDIA_ID):
             raise RuntimeError("comparison image already present without patch marker")
         if current.count(ANCHOR) != 1:
             raise RuntimeError(f"anchor count mismatch: {current.count(ANCHOR)}")
         marked = current.replace(EDITORIAL_MARKER, EDITORIAL_MARKER + "\n" + PATCH_MARKER, 1)
         patched = marked.replace(ANCHOR, ANCHOR + "\n\n" + BLOCK, 1)
         response = post_json(f"{SITE}/wp-json/wp/v2/posts/{POST_ID}", auth, {"content": patched, "status": "draft"})
-        if int(response.get("id") or 0) != POST_ID or response.get("status") != "draft" or response.get("slug") != SLUG:
+        if int(response.get("id") or 0) != POST_ID or response.get("slug") != SLUG or response.get("status") != "draft":
             raise RuntimeError("update response identity/status mismatch")
         action = "UPDATE"
 
     after = fetch_post(auth)
     after_counts = public_counts(auth)
     after_content = raw_field(after, "content")
-
     if after_counts != before_counts:
         raise RuntimeError("published counts changed")
     if after.get("status") != "draft" or after.get("slug") != SLUG:
@@ -149,12 +146,11 @@ def main() -> int:
         raise RuntimeError("title changed during patch")
     if int(after.get("featured_media") or 0) != FEATURED_MEDIA:
         raise RuntimeError("featured media changed during patch")
-    if PATCH_MARKER not in after_content or not re.search(r"wp-image-2954\\b", after_content):
+    if PATCH_MARKER not in after_content or not has_image(after_content, MEDIA_ID):
         raise RuntimeError("comparison patch missing after update")
     if after_content.strip() != patched.strip():
         raise RuntimeError("post-update content differs from patched content")
 
-    OUT.mkdir(parents=True, exist_ok=True)
     report = {
         "action": action,
         "post_id": POST_ID,
@@ -173,24 +169,18 @@ def main() -> int:
         "media_upload_count": 0,
         "media_delete_count": 0,
     }
+    OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "result.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    summary = [
-        "# lexus-ux-used interior comparison patch",
-        "",
-        f"- action: **{action}**",
-        f"- post_id: **{POST_ID}**",
-        "- status: **draft**",
-        f"- comparison_media: **{MEDIA_ID}**",
-        f"- dimensions: **{MEDIA_WIDTH}x{MEDIA_HEIGHT}**",
+    lines = [
+        "# lexus-ux-used interior comparison patch", "",
+        f"- action: **{action}**", f"- post_id: **{POST_ID}**", "- status: **draft**",
+        f"- comparison_media: **{MEDIA_ID}**", f"- dimensions: **{MEDIA_WIDTH}x{MEDIA_HEIGHT}**",
         f"- featured_media preserved: **{FEATURED_MEDIA}**",
-        f"- public_before: **{before_counts['published_total']}**",
-        f"- public_after: **{after_counts['published_total']}**",
-        "- publish_count: **0**",
-        "- media_upload_count: **0**",
-        "- media_delete_count: **0**",
+        f"- public_before: **{before_counts['published_total']}**", f"- public_after: **{after_counts['published_total']}**",
+        "- publish_count: **0**", "- media_upload_count: **0**", "- media_delete_count: **0**",
         f"- content_sha256: `{report['content_sha256']}`",
     ]
-    (OUT / "summary.md").write_text("\n".join(summary) + "\n", encoding="utf-8")
+    (OUT / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps(report, ensure_ascii=False, indent=2))
     return 0
 
