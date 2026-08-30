@@ -10,7 +10,7 @@ from pathlib import Path
 
 SITE = "https://tsurikue.com"
 OUT = Path("reports/recent-ux-media-inspection")
-MAX_MEDIA = 30
+MAX_MEDIA = 15
 
 
 def auth_header(user: str, password: str) -> str:
@@ -21,7 +21,7 @@ def auth_header(user: str, password: str) -> str:
 def get_json(url: str, auth: str):
     req = urllib.request.Request(
         url,
-        headers={"Accept":"application/json", "Authorization":auth, "User-Agent":"tsurikue-recent-media-inspector/1.0"},
+        headers={"Accept":"application/json", "Authorization":auth, "User-Agent":"tsurikue-recent-media-inspector/1.1"},
         method="GET",
     )
     with urllib.request.urlopen(req, timeout=45) as r:
@@ -29,9 +29,19 @@ def get_json(url: str, auth: str):
 
 
 def download(url: str, dest: Path) -> None:
-    req = urllib.request.Request(url, headers={"User-Agent":"tsurikue-recent-media-inspector/1.0"}, method="GET")
-    with urllib.request.urlopen(req, timeout=60) as r:
+    req = urllib.request.Request(url, headers={"User-Agent":"tsurikue-recent-media-inspector/1.1"}, method="GET")
+    with urllib.request.urlopen(req, timeout=20) as r:
         dest.write_bytes(r.read())
+
+
+def preview_url(row: dict) -> str:
+    details = row.get("media_details") or {}
+    sizes = details.get("sizes") or {}
+    for key in ("medium", "medium_large", "thumbnail"):
+        item = sizes.get(key) or {}
+        if item.get("source_url"):
+            return item["source_url"]
+    return row.get("source_url") or ""
 
 
 def main() -> None:
@@ -59,13 +69,15 @@ def main() -> None:
 
     for row in rows:
         src = row.get("source_url") or ""
-        if not src:
+        preview = preview_url(row)
+        if not src or not preview:
             continue
         filename = Path(urllib.parse.urlparse(src).path).name
-        safe = f"{row.get('id')}_{filename}"
+        preview_filename = Path(urllib.parse.urlparse(preview).path).name
+        safe = f"{row.get('id')}_{preview_filename}"
         path = img_dir / safe
         try:
-            download(src, path)
+            download(preview, path)
             download_status = "ok"
         except Exception as exc:
             download_status = f"error:{type(exc).__name__}"
@@ -77,6 +89,7 @@ def main() -> None:
             "slug": row.get("slug"),
             "filename": filename,
             "source_url": src,
+            "preview_url": preview,
             "alt_text": row.get("alt_text") or "",
             "caption": (caption.get("raw") or caption.get("rendered") or "") if isinstance(caption, dict) else str(caption),
             "width": details.get("width"),
@@ -104,9 +117,7 @@ def main() -> None:
         "## Recent media",
     ]
     for x in manifest:
-        lines += [
-            f"- #{x['id']} `{x['filename']}` | {x['date']} | {x['width']}x{x['height']} | alt: {x['alt_text'] or '(empty)'} | {x['download']}",
-        ]
+        lines.append(f"- #{x['id']} `{x['filename']}` | {x['date']} | {x['width']}x{x['height']} | alt: {x['alt_text'] or '(empty)'} | {x['download']}")
     (OUT / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
