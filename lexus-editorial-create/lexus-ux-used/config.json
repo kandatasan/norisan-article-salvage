@@ -1,0 +1,26 @@
+{
+  "title": "レクサスUXの中古は狙い目？新車と比べて中古をおすすめしたい理由",
+  "slug": "lexus-ux-used",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lexus-ux-used source=lexus-diary.com/used-car/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-used -->",
+  "featured_media": 2197,
+  "expected_media": {
+    "2197": "/wp-content/uploads/2026/06/IMG_3929.jpeg",
+    "2201": "/wp-content/uploads/2026/06/IMG_3504.jpeg"
+  },
+  "expected_h2": [
+    "レクサスUXの中古車は今かなり面白い",
+    "新車と中古車の価格差を比べる",
+    "レクサス認定中古車CPOという選択肢",
+    "前期型と後期型の違いは？",
+    "中古UXのメリット・デメリット",
+    "中古で狙いたいグレードは？",
+    "安い中古車を見るときの注意点"
+  ],
+  "allowed_related_post_ids": [2186, 2329, 2222, 2517, 2240, 2575, 2870, 2874, 2881, 2886, 2897, 2902],
+  "required_affiliate_counts": {
+    "[blog_parts id=\"2843\"]": 1,
+    "[blog_parts id=\"2184\"]": 1
+  }
+}
