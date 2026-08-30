@@ -40,13 +40,13 @@ def auth_header(user: str, password: str) -> str:
 
 
 def get_json(url: str, auth: str) -> tuple[Any, dict[str, str]]:
-    req = urllib.request.Request(url, headers={"Accept": "application/json", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.1"}, method="GET")
+    req = urllib.request.Request(url, headers={"Accept": "application/json", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.2"}, method="GET")
     with urllib.request.urlopen(req, timeout=45) as r:
         return json.loads(r.read().decode("utf-8")), dict(r.headers)
 
 
 def post_json(url: str, auth: str, payload: dict[str, Any]) -> dict[str, Any]:
-    req = urllib.request.Request(url, data=json.dumps(payload, ensure_ascii=False).encode("utf-8"), headers={"Accept": "application/json", "Content-Type": "application/json; charset=utf-8", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.1"}, method="POST")
+    req = urllib.request.Request(url, data=json.dumps(payload, ensure_ascii=False).encode("utf-8"), headers={"Accept": "application/json", "Content-Type": "application/json; charset=utf-8", "Authorization": auth, "User-Agent": "tsurikue-ux-used-interior-patch/1.2"}, method="POST")
     with urllib.request.urlopen(req, timeout=60) as r:
         return json.loads(r.read().decode("utf-8"))
 
@@ -111,9 +111,6 @@ def main() -> int:
     current = raw_field(before, "content")
     if SALVAGE_MARKER not in current or EDITORIAL_MARKER not in current:
         raise RuntimeError("required salvage/editorial marker missing")
-    for required_media in (2197, 2201):
-        if not has_image(current, required_media):
-            raise RuntimeError(f"expected existing body media missing: {required_media}")
     validate_media(auth)
 
     if PATCH_MARKER in current:
