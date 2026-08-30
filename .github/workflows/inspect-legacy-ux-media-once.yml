@@ -1,0 +1,42 @@
+name: Inspect legacy UX media once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_legacy_ux_media_once.py'
+      - '.github/workflows/inspect-legacy-ux-media-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/inspect_legacy_ux_media_once.py
+      - name: Read-only WordPress legacy media inspection
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/inspect_legacy_ux_media_once.py
+      - name: Record result on issue 22
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/legacy-ux-media-inspection/summary.md
+      - name: Upload inspection artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: legacy-ux-media-inspection
+          path: reports/legacy-ux-media-inspection/
+          if-no-files-found: warn
