@@ -1,0 +1,73 @@
+name: Create experimental fixed page on push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'experimental-pages/**'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Experimental page config path, e.g. experimental-pages/top-design-lab/config.json'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-experimental-page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run experimental page safety tests
+        run: python -m unittest tests/test_create_experimental_page_once.py -v
+      - name: Resolve config
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+          else
+            git diff --name-only HEAD^ HEAD -- 'experimental-pages/*/config.json' 'experimental-pages/*/content.html' \
+              | awk -F/ 'NF>=3 {print $1 "/" $2 "/config.json"}' \
+              | sort -u > /tmp/configs.txt
+          fi
+          test -s /tmp/configs.txt
+          cat /tmp/configs.txt
+      - name: Create only guarded draft fixed pages
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r config; do
+            python scripts/create_experimental_page_once.py --config "$config"
+          done < /tmp/configs.txt
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Experimental fixed page: SUCCESS'
+            echo
+            find reports -path '*experimental-page-create/summary.md' -print -exec cat {} \;
+          } > /tmp/experimental-page-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/experimental-page-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: experimental-fixed-page-result
+          path: reports/
+          if-no-files-found: warn
