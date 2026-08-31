@@ -1,4 +1,4 @@
-name: Inspect live Gutenberg family block shape
+name: Inspect live Gutenberg family image block
 
 on:
   push:
@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Read family block vicinity only
+      - name: Read media 2992 vicinity only
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -29,29 +29,26 @@ jobs:
           user=os.environ['TSURIKUE_WP_USER']
           pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
           token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-family-inspect/1.0'}
+          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-family-inspect/1.1'}
           q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
           req=urllib.request.Request(f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}?{q}',headers=headers)
           with urllib.request.urlopen(req,timeout=45) as r:
               page=json.loads(r.read().decode())
           content=(page.get('content') or {}).get('raw') or ''
+          p=content.find('2992')
+          if p<0:
+              p=content.find('e9134f4d-3d71-45fd-a6e7-cf47982bb93d')
+          if p<0:
+              raise SystemExit('MEDIA_2992_NOT_FOUND')
           print('id='+str(page.get('id')))
           print('slug='+str(page.get('slug')))
           print('status='+str(page.get('status')))
           print('title='+str((page.get('title') or {}).get('raw') or (page.get('title') or {}).get('rendered') or ''))
-          needles=['2992','e9134f4d-3d71-45fd-a6e7-cf47982bb93d','tq4-party-image','tq4-party']
-          positions=[(n,content.find(n)) for n in needles]
-          print('positions='+repr(positions))
-          poss=[p for _,p in positions if p>=0]
-          if not poss:
-              raise SystemExit('FAMILY_NEEDLES_NOT_FOUND')
-          p=min(poss)
-          a=max(0,p-900)
-          b=min(len(content),p+1400)
-          print('---FAMILY_SNIPPET_START---')
+          print('media_pos='+str(p))
+          print('hero_pos='+str(content.find('https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg')))
+          a=max(0,p-1200)
+          b=min(len(content),p+1800)
+          print('---MEDIA2992_SNIPPET_START---')
           print(content[a:b])
-          print('---FAMILY_SNIPPET_END---')
-          hp=content.find('https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg')
-          print('hero_pos='+str(hp))
-          print('family_first_pos='+str(p))
+          print('---MEDIA2992_SNIPPET_END---')
           PY
