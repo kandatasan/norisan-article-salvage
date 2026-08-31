@@ -12,7 +12,7 @@ permissions:
 jobs:
   inspect:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
     steps:
       - uses: actions/setup-node@v4
         with:
@@ -32,34 +32,36 @@ jobs:
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage({viewport:{width:390,height:844}});
-            await page.goto('https://tsurikue.com/?headerinspect=1',{waitUntil:'networkidle',timeout:90000});
-            await page.waitForTimeout(1000);
+            await page.goto('https://tsurikue.com/?headerinspect=2',{waitUntil:'domcontentloaded',timeout:30000});
+            await page.waitForTimeout(1800);
             const before=await page.evaluate(()=>{
-              const pick=s=>{const e=document.querySelector(s);if(!e)return null; return {tag:e.tagName,cls:e.className,id:e.id,html:e.outerHTML.slice(0,7000)}};
+              const pick=s=>{const e=document.querySelector(s);if(!e)return null; return {tag:e.tagName,cls:e.className,id:e.id,html:e.outerHTML.slice(0,10000)}};
               return {
                 bodyClass:document.body.className,
+                htmlClass:document.documentElement.className,
                 header:pick('#header')||pick('.l-header')||pick('header'),
                 menuButton:pick('.c-iconBtn.-menuBtn')||pick('[aria-label*="メニュー"]')||pick('.menu-toggle'),
                 spMenu:pick('.p-spMenu'),
-                navs:[...document.querySelectorAll('nav')].map(n=>({cls:n.className,id:n.id,text:n.innerText.slice(0,1200),html:n.outerHTML.slice(0,5000)})).slice(0,12)
+                navs:[...document.querySelectorAll('nav')].map(n=>({cls:n.className,id:n.id,text:n.innerText.slice(0,1400),html:n.outerHTML.slice(0,7000)})).slice(0,12)
               };
             });
             console.log('---HEADER_BEFORE---');
             console.log(JSON.stringify(before,null,2));
             const btn=page.locator('.c-iconBtn.-menuBtn').first();
             if(await btn.count()){
-              await btn.click();
+              await btn.click({force:true,timeout:3000,noWaitAfter:true}).catch(()=>{});
               await page.waitForTimeout(700);
             }
             const after=await page.evaluate(()=>{
-              const pick=s=>{const e=document.querySelector(s);if(!e)return null; const cs=getComputedStyle(e); const r=e.getBoundingClientRect(); return {tag:e.tagName,cls:e.className,id:e.id,text:e.innerText.slice(0,2500),html:e.outerHTML.slice(0,12000),display:cs.display,visibility:cs.visibility,left:+r.left.toFixed(1),right:+r.right.toFixed(1),width:+r.width.toFixed(1)}};
+              const pick=s=>{const e=document.querySelector(s);if(!e)return null; const cs=getComputedStyle(e); const r=e.getBoundingClientRect(); return {tag:e.tagName,cls:e.className,id:e.id,text:e.innerText.slice(0,3500),html:e.outerHTML.slice(0,16000),display:cs.display,visibility:cs.visibility,left:+r.left.toFixed(1),right:+r.right.toFixed(1),width:+r.width.toFixed(1)}};
               return {
                 bodyClass:document.body.className,
+                htmlClass:document.documentElement.className,
                 spMenu:pick('.p-spMenu'),
                 spMenuBody:pick('.p-spMenu__body'),
                 spMenuInner:pick('.p-spMenu__inner'),
                 spMenuNav:pick('.p-spMenu__nav'),
-                widgetTitles:[...document.querySelectorAll('.p-spMenu .c-widget__title')].map(e=>e.innerText),
+                checked:[...document.querySelectorAll('input:checked')].map(e=>({id:e.id,cls:e.className,type:e.type})),
                 links:[...document.querySelectorAll('.p-spMenu a')].map(a=>({text:a.innerText.trim(),href:a.href,cls:a.className})).filter(x=>x.text).slice(0,80)
               };
             });
