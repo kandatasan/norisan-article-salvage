@@ -1,0 +1,23 @@
+name: Apply gourmet category hub once
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/apply-gourmet-category-hub-once.yml']
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.x'}
+      - name: Validate Gutenberg source
+        run: |
+          grep -q 'tsurikue-category-hub:v1:gourmet-blocks' category-hubs/gourmet/content.html
+          grep -q 'tq-gourmet-hero' category-hubs/gourmet/content.html
+          grep -q 'wp:latest-posts' category-hubs/gourmet/content.html
+      - name: Create or update gourmet draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python category-hubs/gourmet/deploy.py
