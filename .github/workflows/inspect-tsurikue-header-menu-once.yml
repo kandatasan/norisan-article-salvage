@@ -32,18 +32,18 @@ jobs:
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage({viewport:{width:390,height:844}});
-            await page.goto('https://tsurikue.com/?headerinspect=4',{waitUntil:'domcontentloaded',timeout:30000});
-            await page.waitForTimeout(1400);
+            await page.goto('https://tsurikue.com/',{waitUntil:'domcontentloaded',timeout:60000});
+            await page.waitForTimeout(1800);
             const snap=async(label)=>{
               const d=await page.evaluate(()=>{
-                const one=s=>{const e=document.querySelector(s);if(!e)return null;return {cls:e.className,style:e.getAttribute('style'),data:[...e.attributes].filter(a=>a.name.startsWith('data-')).reduce((o,a)=>(o[a.name]=a.value,o),{})}};
+                const one=s=>{const e=document.querySelector(s);if(!e)return null;return {cls:e.className,style:e.getAttribute('style'),ariaHidden:e.getAttribute('aria-hidden'),data:[...e.attributes].filter(a=>a.name.startsWith('data-')).reduce((o,a)=>(o[a.name]=a.value,o),{})}};
                 return {spMenu:one('#sp_menu'),inner:one('#sp_menu .p-spMenu__inner'),overlay:one('#sp_menu .p-spMenu__overlay'),headerBtn:one('.l-header__menuBtn .-menuBtn')};
               });
               console.log(label+'='+JSON.stringify(d));
             };
             await snap('INLINE_CLOSED');
             await page.locator('.l-header__menuBtn .-menuBtn').first().click({force:true,timeout:3000,noWaitAfter:true});
-            await page.waitForTimeout(700);
+            await page.waitForTimeout(900);
             await snap('INLINE_OPEN');
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
