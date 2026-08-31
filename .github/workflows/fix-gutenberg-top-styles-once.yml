@@ -1,4 +1,4 @@
-name: Center Gutenberg top and move family party
+name: Inspect live Gutenberg family block shape
 
 on:
   push:
@@ -7,166 +7,51 @@ on:
       - '.github/workflows/fix-gutenberg-top-styles-once.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  center-and-move-family:
+  inspect-family:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 5
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-
-      - name: Update only the verified page and preserve status
+      - name: Read family block vicinity only
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         shell: bash
         run: |
           python - <<'PY'
-          import base64, hashlib, json, os, pathlib, re, urllib.parse, urllib.request
-
-          PAGE_ID = 2983
-          MARKER = '<!-- tsurikue-experimental-page:v1:top-design-lab -->'
-          FIX_TAG = '/* GUTENBERG CENTER + FAMILY TOP FIX v1 */'
-
-          user = os.environ['TSURIKUE_WP_USER']
-          pw = os.environ['TSURIKUE_WP_APP_PASSWORD']
-          token = base64.b64encode(f'{user}:{pw}'.encode()).decode()
-          headers = {
-              'Authorization': 'Basic ' + token,
-              'Accept': 'application/json',
-              'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'tsurikue-center-family/1.5',
-          }
-
-          def get_page():
-              q = urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
-              req = urllib.request.Request(
-                  f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}?{q}',
-                  headers=headers,
-              )
-              with urllib.request.urlopen(req, timeout=45) as r:
-                  return json.loads(r.read().decode())
-
-          def raw_title(page):
-              t = page.get('title') or {}
-              return t.get('raw') or t.get('rendered') or ''
-
-          def raw_content(page):
-              c = page.get('content') or {}
-              return c.get('raw') or ''
-
-          page = get_page()
-          original = raw_content(page)
-          original_status = page.get('status')
-          if page.get('id') != PAGE_ID or original_status not in ('draft','publish'):
-              raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
-          if MARKER not in original:
-              raise SystemExit('BLOCKED_MARKER_MISSING')
-          if original.count('<!-- wp:cover') < 5 or original.count('<!-- wp:group') < 20:
-              raise SystemExit('BLOCKED_NOT_GUTENBERG_VERSION')
-          if '休日、<br>なにして遊ぶ？' not in original or 'ラーメン・ご当地グルメ' not in original:
-              raise SystemExit('BLOCKED_EXPECTED_TOP_CONTENT_MISSING')
-          if 'raw.githubusercontent.com' in original:
-              raise SystemExit('BLOCKED_EXTERNAL_MEDIA_REGRESSION')
-          if FIX_TAG in original:
-              raise SystemExit('BLOCKED_CENTER_FIX_ALREADY_PRESENT')
-
-          content = original
-          party_re = re.compile(
-              r'<!-- wp:group (?=[^\n]*"className":"tq4-party")[^\n]*-->\n'
-              r'<div[^\n]*class="[^"]*tq4-party[^"]*"[^>]*>\n'
-              r'.*?<!-- /wp:group -->',
-              re.S,
-          )
-          matches = list(party_re.finditer(content))
-          if len(matches) != 1:
-              print('party_matches=' + str(len(matches)))
-              raise SystemExit('BLOCKED_FAMILY_BLOCK_NOT_UNIQUE')
-          family = matches[0].group(0)
-          if 'wp-image-2992' not in family and 'id":2992' not in family:
-              raise SystemExit('BLOCKED_FAMILY_IMAGE_MISMATCH')
-
-          hero_start = '<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"'
-          if hero_start not in content:
-              raise SystemExit('BLOCKED_HERO_START_MISSING')
-          content = content[:matches[0].start()] + content[matches[0].end():]
-          content = content.replace(hero_start, family + '\n\n' + hero_start, 1)
-
-          css = '\n'.join([
-              '',
-              '/* GUTENBERG CENTER + FAMILY TOP FIX v1 */',
-              '/* alignfull already handles full width; undo the legacy HTML full-bleed offset. */',
-              '.tq4{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}',
-              'body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4{margin-left:auto!important;margin-right:auto!important}',
-              '.tq4>.wp-block-cover.alignfull,.tq4>.wp-block-group.alignfull{width:100%!important;max-width:none!important;margin-left:auto!important;margin-right:auto!important}',
-              '.tq4 .tq4-party{padding:16px 0 10px!important;background:#fff!important;border-bottom:0!important}',
-              '.tq4 .tq4-party>.wp-block-group__inner-container{width:min(1080px,91vw)!important;margin-left:auto!important;margin-right:auto!important}',
-              '.tq4 .tq4-party-image{width:100%!important;max-width:560px!important;margin-left:auto!important;margin-right:auto!important}',
-              '.tq4 .tq4-party-image img{display:block!important;width:100%!important;max-width:560px!important;max-height:180px!important;height:auto!important;object-fit:contain!important;margin-left:auto!important;margin-right:auto!important}',
-              '.tq4 .tq4-hero-inner,.tq4 .tq4-section>.wp-block-group__inner-container,.tq4 .tq4-final>.wp-block-group__inner-container,.tq4 .tq4-wrap{width:min(1080px,91vw)!important;margin-left:auto!important;margin-right:auto!important}',
-              '@media(max-width:560px){.tq4 .tq4-party{padding:10px 0 6px!important}.tq4 .tq4-party-image{max-width:360px!important}.tq4 .tq4-party-image img{max-width:360px!important;max-height:132px!important}}',
-              '',
-          ])
-          if '</style>' not in content:
-              raise SystemExit('BLOCKED_STYLE_END_MISSING')
-          content = content.replace('</style>', css + '</style>', 1)
-
-          latest = get_page()
-          latest_content = raw_content(latest)
-          if latest.get('status') != original_status or hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
-              raise SystemExit('BLOCKED_PAGE_CHANGED_DURING_RUN')
-
-          payload = json.dumps({'content': content}, ensure_ascii=False).encode('utf-8')
-          req = urllib.request.Request(
-              f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}',
-              data=payload,
-              headers=headers,
-              method='POST',
-          )
-          with urllib.request.urlopen(req, timeout=45) as r:
-              json.loads(r.read().decode())
-
-          after = get_page()
-          after_content = raw_content(after)
-          if after.get('status') != original_status:
-              raise SystemExit('VERIFY_STATUS_CHANGED')
-          if FIX_TAG not in after_content:
-              raise SystemExit('VERIFY_CENTER_FIX_MISSING')
-          hero_pos = after_content.find('<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"')
-          family_pos = after_content.find('tq4-party')
-          if family_pos < 0 or hero_pos < 0 or family_pos > hero_pos:
-              raise SystemExit('VERIFY_FAMILY_NOT_BEFORE_HERO')
-          if MARKER not in after_content:
-              raise SystemExit('VERIFY_MARKER_MISSING')
-
-          pathlib.Path('experimental-pages/top-design-lab/content.html').write_text(after_content, encoding='utf-8')
-          cfg_path = pathlib.Path('experimental-pages/top-design-lab/config.json')
-          cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
-          cfg['expected_current_content_sha256'] = hashlib.sha256(after_content.encode()).hexdigest()
-          cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          print('SUCCESS_CENTER_AND_FAMILY_TOP')
-          print('title=' + raw_title(after))
-          print('slug=' + str(after.get('slug')))
-          print('status=' + after.get('status',''))
-          print('content_sha256=' + cfg['expected_current_content_sha256'])
+          import base64, json, os, urllib.parse, urllib.request
+          PAGE_ID=2983
+          user=os.environ['TSURIKUE_WP_USER']
+          pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
+          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-family-inspect/1.0'}
+          q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
+          req=urllib.request.Request(f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}?{q}',headers=headers)
+          with urllib.request.urlopen(req,timeout=45) as r:
+              page=json.loads(r.read().decode())
+          content=(page.get('content') or {}).get('raw') or ''
+          print('id='+str(page.get('id')))
+          print('slug='+str(page.get('slug')))
+          print('status='+str(page.get('status')))
+          print('title='+str((page.get('title') or {}).get('raw') or (page.get('title') or {}).get('rendered') or ''))
+          needles=['2992','e9134f4d-3d71-45fd-a6e7-cf47982bb93d','tq4-party-image','tq4-party']
+          positions=[(n,content.find(n)) for n in needles]
+          print('positions='+repr(positions))
+          poss=[p for _,p in positions if p>=0]
+          if not poss:
+              raise SystemExit('FAMILY_NEEDLES_NOT_FOUND')
+          p=min(poss)
+          a=max(0,p-900)
+          b=min(len(content),p+1400)
+          print('---FAMILY_SNIPPET_START---')
+          print(content[a:b])
+          print('---FAMILY_SNIPPET_END---')
+          hp=content.find('https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg')
+          print('hero_pos='+str(hp))
+          print('family_first_pos='+str(p))
           PY
-
-      - name: Commit synchronized source
-        shell: bash
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
-          if git diff --cached --quiet; then
-            echo 'No source diff to commit.'
-            exit 0
-          fi
-          git commit -m 'Center Gutenberg top and move family above hero'
-          git push origin HEAD:main
