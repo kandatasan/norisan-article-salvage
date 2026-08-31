@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create one WordPress experimental fixed page as a guarded draft only."""
+"""Create or guarded-update one WordPress experimental fixed page as draft only."""
 from __future__ import annotations
 
 import argparse
@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-experimental-page-once/1.0"
+USER_AGENT = "tsurikue-experimental-page-once/1.1"
 PAGE_STATUSES = ("draft", "publish", "pending", "private", "future", "trash")
 
 
@@ -121,32 +121,43 @@ def validate_existing(rows, cfg, full):
     if not rows:
         return "CREATE", None
     if len(rows) != 1:
-        raise RuntimeError("multiple pages already use the requested slug; refusing create")
+        raise RuntimeError("multiple pages already use the requested slug; refusing sync")
+
     row = rows[0]
     title = html.unescape(raw_field(row, "title"))
     content = raw_field(row, "content")
-    if (
-        row.get("slug") == cfg["slug"]
-        and row.get("status") == "draft"
-        and title == cfg["title"]
-        and content.strip() == full.strip()
-        and cfg["marker"] in content
-    ):
-        return "ALREADY_EXISTS", row
-    raise RuntimeError("slug already exists but is not the exact guarded draft; refusing create")
 
-
-def validate_created(row, cfg, full):
     if row.get("slug") != cfg["slug"]:
-        raise RuntimeError("created page slug mismatch")
+        raise RuntimeError("existing page slug mismatch; refusing sync")
     if row.get("status") != "draft":
-        raise RuntimeError("created page is not draft")
+        raise RuntimeError("existing page is not draft; refusing sync")
+    if title != cfg["title"]:
+        raise RuntimeError("existing page title differs; refusing sync")
+    if cfg["marker"] not in content:
+        raise RuntimeError("experimental marker missing; refusing sync")
+
+    if content.strip() == full.strip():
+        return "ALREADY_EXISTS", row
+
+    expected_current = (cfg.get("expected_current_content_sha256") or "").strip().casefold()
+    actual_current = hashlib.sha256(content.encode()).hexdigest().casefold()
+    if expected_current and actual_current == expected_current:
+        return "UPDATE", row
+
+    raise RuntimeError("existing draft differs from the guarded expected content; refusing overwrite")
+
+
+def validate_synced(row, cfg, full):
+    if row.get("slug") != cfg["slug"]:
+        raise RuntimeError("synced page slug mismatch")
+    if row.get("status") != "draft":
+        raise RuntimeError("synced page is not draft")
     if html.unescape(raw_field(row, "title")) != cfg["title"]:
-        raise RuntimeError("created page title mismatch")
+        raise RuntimeError("synced page title mismatch")
     if raw_field(row, "content").strip() != full.strip():
-        raise RuntimeError("created page content mismatch")
+        raise RuntimeError("synced page content mismatch")
     if cfg["marker"] not in raw_field(row, "content"):
-        raise RuntimeError("created page marker missing")
+        raise RuntimeError("synced page marker missing")
 
 
 def apply(config_path: Path):
@@ -161,21 +172,26 @@ def apply(config_path: Path):
     rows = find_pages_by_slug(cfg["slug"], auth)
     action, existing = validate_existing(rows, cfg, full)
 
+    payload = {
+        "title": cfg["title"],
+        "slug": cfg["slug"],
+        "content": full,
+        "status": "draft",
+    }
+
     if action == "CREATE":
-        payload = {
-            "title": cfg["title"],
-            "slug": cfg["slug"],
-            "content": full,
-            "status": "draft",
-        }
         created = post_json(f"{SITE_URL}/wp-json/wp/v2/pages", auth, payload)
         page_id = int(created["id"])
-        after_page = fetch_page(page_id, auth)
-        validate_created(after_page, cfg, full)
+    elif action == "UPDATE":
+        page_id = int(existing["id"])
+        updated = post_json(f"{SITE_URL}/wp-json/wp/v2/pages/{page_id}", auth, payload)
+        if int(updated.get("id") or 0) != page_id:
+            raise RuntimeError("update response page id mismatch")
     else:
         page_id = int(existing["id"])
-        after_page = fetch_page(page_id, auth)
-        validate_created(after_page, cfg, full)
+
+    after_page = fetch_page(page_id, auth)
+    validate_synced(after_page, cfg, full)
 
     after_counts = public_counts(auth)
     if after_counts != before_counts:
@@ -191,7 +207,7 @@ def apply(config_path: Path):
         "public_before": before_counts,
         "public_after": after_counts,
         "content_sha256": hashlib.sha256(raw_field(after_page, "content").encode()).hexdigest(),
-        "wordpress_write_count": 1 if action == "CREATE" else 0,
+        "wordpress_write_count": 1 if action in ("CREATE", "UPDATE") else 0,
         "publish_count": 0,
     }
 
@@ -211,6 +227,8 @@ def apply(config_path: Path):
         f"- link: {report['link']}",
         f"- public_before: **{before_counts['published_total']}**",
         f"- public_after: **{after_counts['published_total']}**",
+        f"- wordpress_write_count: **{report['wordpress_write_count']}**",
+        f"- publish_count: **{report['publish_count']}**",
         f"- content_sha256: `{report['content_sha256']}`",
     ]
     (out / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
