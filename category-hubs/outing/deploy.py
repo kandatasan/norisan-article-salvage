@@ -16,7 +16,7 @@ PLACEHOLDER='{{OUTING_CATEGORY_IDS}}'
 user=os.environ['TSURIKUE_WP_USER']
 pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.5'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.6'}
 
 def request(path, method='GET', payload=None, attempts=3, timeout=35):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -47,11 +47,10 @@ def find_category(slug):
         raise RuntimeError(f'CATEGORY_NOT_UNIQUE slug={slug} count={len(items)}')
     return items[0]
 
-def remove_problematic_constrained_layouts(template):
-    # These cards are CSS grids. Gutenberg's constrained layout adds auto-centering/max-width
-    # rules to direct children and can collapse the text column to near one-character width on PC.
+def ensure_default_card_layouts(template):
     classes=('tq-out-trip-card','tq-out-trip-copy','tq-out-route-card','tq-out-route-copy')
     changed=0
+    defaults={}
     for cls in classes:
         old=f'<!-- wp:group {{"className":"{cls}","layout":{{"type":"constrained"}}}} -->'
         new=f'<!-- wp:group {{"className":"{cls}","layout":{{"type":"default"}}}} -->'
@@ -59,9 +58,10 @@ def remove_problematic_constrained_layouts(template):
         if count:
             template=template.replace(old,new)
             changed+=count
-    if changed < 11:
-        raise RuntimeError(f'EXPECTED_CARD_LAYOUT_REPLACEMENTS_MISSING changed={changed}')
-    return template, changed
+        defaults[cls]=template.count(new)
+    if not all(v>0 for v in defaults.values()):
+        raise RuntimeError('DEFAULT_CARD_LAYOUT_MISSING '+json.dumps(defaults,ensure_ascii=False))
+    return template, changed, defaults
 
 def build_content():
     parent=find_category(PARENT_SLUG)
@@ -71,7 +71,7 @@ def build_content():
     template=SOURCE.read_text(encoding='utf-8')
     if MARKER not in template:
         raise RuntimeError('SOURCE_MARKER_MISSING')
-    template, layout_replacements=remove_problematic_constrained_layouts(template)
+    template, layout_replacements, default_counts=ensure_default_card_layouts(template)
     if template.count(PLACEHOLDER)!=1:
         raise RuntimeError(f'PLACEHOLDER_COUNT_INVALID count={template.count(PLACEHOLDER)}')
     template=template.replace(PLACEHOLDER,f'{parent["id"]},{child["id"]}')
@@ -79,7 +79,7 @@ def build_content():
         raise RuntimeError('UNRESOLVED_TEMPLATE_TOKEN')
     if NAV_REF_START in template or NAV_REF_END in template:
         raise RuntimeError('SOURCE_MUST_NOT_CONTAIN_TEMP_NAV_REF')
-    return template, parent, child, layout_replacements
+    return template, parent, child, layout_replacements, default_counts
 
 def find_page():
     q=urllib.parse.urlencode({'slug':SLUG,'status':STATUS,'context':'edit','per_page':10,'_fields':'id,slug,status,title,content,excerpt,link'})
@@ -90,33 +90,31 @@ def find_page():
 
 def verify(page_id,parent,child):
     check=request(f'/pages/{page_id}?context=edit&_fields=id,slug,status,title,content,link')
-    check_content=raw(check,'content')
+    c=raw(check,'content')
     checks={
       'slug':check.get('slug')==SLUG,
       'status':check.get('status')==STATUS,
-      'marker':MARKER in check_content,
-      'temp_nav_absent':NAV_REF_START not in check_content and NAV_REF_END not in check_content,
-      'latest_block':'wp:latest-posts' in check_content,
-      'parent_cat':str(parent['id']) in check_content,
-      'child_cat':str(child['id']) in check_content,
-      'hero':'次の休日、' in check_content,
-      'archive_link':'/category/sightseeing-leisure/' in check_content,
-      'trip_card_default':'<!-- wp:group {"className":"tq-out-trip-card","layout":{"type":"default"}} -->' in check_content,
-      'trip_copy_default':'<!-- wp:group {"className":"tq-out-trip-copy","layout":{"type":"default"}} -->' in check_content,
-      'route_card_default':'<!-- wp:group {"className":"tq-out-route-card","layout":{"type":"default"}} -->' in check_content,
-      'route_copy_default':'<!-- wp:group {"className":"tq-out-route-copy","layout":{"type":"default"}} -->' in check_content,
+      'marker':MARKER in c,
+      'temp_nav_absent':NAV_REF_START not in c and NAV_REF_END not in c,
+      'latest_block':'wp:latest-posts' in c,
+      'parent_cat':str(parent['id']) in c,
+      'child_cat':str(child['id']) in c,
+      'hero':'次の休日、' in c,
+      'archive_link':'/category/sightseeing-leisure/' in c,
+      'trip_card_default':'<!-- wp:group {"className":"tq-out-trip-card","layout":{"type":"default"}} -->' in c,
+      'trip_copy_default':'<!-- wp:group {"className":"tq-out-trip-copy","layout":{"type":"default"}} -->' in c,
+      'route_card_default':'<!-- wp:group {"className":"tq-out-route-card","layout":{"type":"default"}} -->' in c,
+      'route_copy_default':'<!-- wp:group {"className":"tq-out-route-copy","layout":{"type":"default"}} -->' in c,
     }
     if not all(checks.values()):
         raise RuntimeError('VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
     return check,checks
 
 def main():
-    content,parent,child,layout_replacements=build_content()
+    content,parent,child,layout_replacements,default_counts=build_content()
     existing=find_page()
     payload={'title':TITLE,'slug':SLUG,'status':STATUS,'content':content,'excerpt':'広島・山口・中国地方を中心に、実際に出かけた観光地・ドライブ・旅行モデルコースから次の休日を探せる、つりくえ！のおでかけ入口です。'}
-    old_payload=None
-    created=False
-    page_id=None
+    old_payload=None; created=False; page_id=None
     try:
         if existing:
             current=raw(existing,'content')
@@ -125,38 +123,20 @@ def main():
             if existing.get('status')!='draft':
                 raise RuntimeError(f'REFUSE_OVERWRITE_NON_DRAFT id={existing["id"]} status={existing.get("status")}')
             old_payload={'title':raw(existing,'title'),'slug':existing.get('slug'),'status':existing.get('status'),'content':current,'excerpt':raw(existing,'excerpt')}
-            page=request(f'/pages/{existing["id"]}',method='POST',payload=payload)
-            action='UPDATED'
+            page=request(f'/pages/{existing["id"]}',method='POST',payload=payload); action='UPDATED'
         else:
-            page=request('/pages',method='POST',payload=payload)
-            action='CREATED'; created=True
-        page_id=page['id']
-        check,checks=verify(page_id,parent,child)
+            page=request('/pages',method='POST',payload=payload); action='CREATED'; created=True
+        page_id=page['id']; check,checks=verify(page_id,parent,child)
     except Exception:
         if page_id is not None:
             try:
                 if created:
-                    request(f'/pages/{page_id}?force=true',method='DELETE')
-                    print(f'ROLLBACK_DELETED_NEW_PAGE id={page_id}')
+                    request(f'/pages/{page_id}?force=true',method='DELETE'); print(f'ROLLBACK_DELETED_NEW_PAGE id={page_id}')
                 elif old_payload is not None:
-                    request(f'/pages/{page_id}',method='POST',payload=old_payload)
-                    print(f'ROLLBACK_RESTORED_DRAFT id={page_id}')
+                    request(f'/pages/{page_id}',method='POST',payload=old_payload); print(f'ROLLBACK_RESTORED_DRAFT id={page_id}')
             except Exception as rollback_error:
                 print(f'ROLLBACK_FAILED id={page_id} error={rollback_error}')
         raise
-    print(json.dumps({
-      'action':action,
-      'page_id':page_id,
-      'slug':SLUG,
-      'status':check.get('status'),
-      'title':raw(check,'title'),
-      'edit_link':f'https://tsurikue.com/wp-admin/post.php?post={page_id}&action=edit',
-      'preview_link':f'https://tsurikue.com/?page_id={page_id}&preview=true',
-      'outing_category_id':parent['id'],
-      'model_course_category_id':child['id'],
-      'temporary_nav':'absent',
-      'layout_replacements':layout_replacements,
-      'checks':checks,
-    },ensure_ascii=False))
+    print(json.dumps({'action':action,'page_id':page_id,'slug':SLUG,'status':check.get('status'),'title':raw(check,'title'),'preview_link':f'https://tsurikue.com/?page_id={page_id}&preview=true','temporary_nav':'absent','layout_replacements':layout_replacements,'default_counts':default_counts,'checks':checks},ensure_ascii=False))
 
 if __name__=='__main__': main()
