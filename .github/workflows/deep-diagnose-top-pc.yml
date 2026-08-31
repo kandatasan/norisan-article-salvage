@@ -1,0 +1,27 @@
+name: Deep diagnose top PC layout
+
+on:
+  push:
+    branches: [diag/top-pc-live-deep]
+    paths:
+      - '.github/workflows/deep-diagnose-top-pc.yml'
+      - 'experimental-pages/top-design-lab/deep_diagnose_pc.js'
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - run: node experimental-pages/top-design-lab/deep_diagnose_pc.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deep-top-pc
+          path: deep-top-pc.png
