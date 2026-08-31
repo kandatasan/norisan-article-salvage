@@ -28,7 +28,7 @@ jobs:
         shell: bash
         run: |
           python - <<'PY'
-          import base64, hashlib, json, os, pathlib, urllib.parse, urllib.request
+          import base64, hashlib, json, os, pathlib, re, urllib.parse, urllib.request
 
           PAGE_ID = 2983
           MARKER = '<!-- tsurikue-experimental-page:v1:top-design-lab -->'
@@ -41,7 +41,7 @@ jobs:
               'Authorization': 'Basic ' + token,
               'Accept': 'application/json',
               'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'tsurikue-center-family/1.4',
+              'User-Agent': 'tsurikue-center-family/1.5',
           }
 
           def get_page():
@@ -78,21 +78,24 @@ jobs:
               raise SystemExit('BLOCKED_CENTER_FIX_ALREADY_PRESENT')
 
           content = original
-          family = '\n'.join([
-              '<!-- wp:group {"align":"full","className":"tq4-party","layout":{"type":"constrained"}} -->',
-              '<div class="wp-block-group alignfull tq4-party">',
-              '<!-- wp:image {"id":2992,"sizeSlug":"full","linkDestination":"none","align":"center","className":"tq4-party-image"} -->',
-              '<figure class="wp-block-image aligncenter size-full tq4-party-image"><img src="https://tsurikue.com/wp-content/uploads/2026/08/e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg" alt="つりくえ！一家のドット絵" class="wp-image-2992"/></figure>',
-              '<!-- /wp:image -->',
-              '</div>',
-              '<!-- /wp:group -->',
-          ])
-          hero_start = '<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"'
-          if content.count(family) != 1:
+          party_re = re.compile(
+              r'<!-- wp:group (?=[^\n]*"className":"tq4-party")[^\n]*-->\n'
+              r'<div[^\n]*class="[^"]*tq4-party[^"]*"[^>]*>\n'
+              r'.*?<!-- /wp:group -->',
+              re.S,
+          )
+          matches = list(party_re.finditer(content))
+          if len(matches) != 1:
+              print('party_matches=' + str(len(matches)))
               raise SystemExit('BLOCKED_FAMILY_BLOCK_NOT_UNIQUE')
+          family = matches[0].group(0)
+          if 'wp-image-2992' not in family and 'id":2992' not in family:
+              raise SystemExit('BLOCKED_FAMILY_IMAGE_MISMATCH')
+
+          hero_start = '<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"'
           if hero_start not in content:
               raise SystemExit('BLOCKED_HERO_START_MISSING')
-          content = content.replace(family + '\n\n', '', 1)
+          content = content[:matches[0].start()] + content[matches[0].end():]
           content = content.replace(hero_start, family + '\n\n' + hero_start, 1)
 
           css = '\n'.join([
@@ -136,7 +139,7 @@ jobs:
           if FIX_TAG not in after_content:
               raise SystemExit('VERIFY_CENTER_FIX_MISSING')
           hero_pos = after_content.find('<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"')
-          family_pos = after_content.find('<!-- wp:group {"align":"full","className":"tq4-party"')
+          family_pos = after_content.find('tq4-party')
           if family_pos < 0 or hero_pos < 0 or family_pos > hero_pos:
               raise SystemExit('VERIFY_FAMILY_NOT_BEFORE_HERO')
           if MARKER not in after_content:
