@@ -268,7 +268,24 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 
 
 
+
+
 /* TQ TOP DESKTOP SECTION FULLWIDTH v1 */
+/* SWELL's ordinary article H2 decoration must not leak into the custom homepage. */
+.tq4 h2.wp-block-heading{
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--ink)!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.tq4 h2.wp-block-heading::before,
+.tq4 h2.wp-block-heading::after{
+  content:none!important;
+  display:none!important;
+}
 @media(min-width:960px){
   .tq4>.wp-block-group__inner-container{
     width:100%!important;
