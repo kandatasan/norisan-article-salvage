@@ -1,0 +1,58 @@
+name: Apply outing category hub
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-outing-category-hub-once.yml'
+      - 'category-hubs/outing/content.html'
+      - 'category-hubs/outing/deploy.py'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Validate outing hub source before WordPress write
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('category-hubs/outing/content.html')
+          s=p.read_text(encoding='utf-8')
+          required=[
+            '<!-- tsurikue-category-hub:v1:outing -->',
+            '{{OUTING_CATEGORY_IDS}}',
+            '次の休日、',
+            '/hiroshima-sightseeing/',
+            '/etajima-sightseeing/',
+            '/sera-sightseeing/',
+            '/yuki-town-drive/',
+            '/yamaguchi-drive/',
+            '/tottori-drive/',
+            '/hiroshima-oita-1night-2days-drive/',
+            '/dqisland/',
+            '/hiroshima-sanin-1night-2days/',
+            'wp:latest-posts',
+            '/category/sightseeing-leisure/'
+          ]
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('MISSING_REQUIRED='+repr(missing))
+          if '🔥' in s or '🤣' in s or '😏' in s: raise SystemExit('ARTICLE_EMOJI_FOUND')
+          print('SOURCE_OK bytes=',len(s.encode('utf-8')))
+          PY
+
+      - name: Create or update outing hub as WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python category-hubs/outing/deploy.py
+
+      - name: Success summary
+        run: echo 'OUTING_CATEGORY_HUB_DRAFT_CREATED_AND_VERIFIED'
