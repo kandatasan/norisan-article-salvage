@@ -1,4 +1,4 @@
-name: Create experimental fixed page on push
+name: Sync experimental fixed page on push
 
 on:
   push:
@@ -17,7 +17,7 @@ permissions:
   issues: write
 
 jobs:
-  create-experimental-page:
+  sync-experimental-page:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -42,7 +42,7 @@ jobs:
           fi
           test -s /tmp/configs.txt
           cat /tmp/configs.txt
-      - name: Create only guarded draft fixed pages
+      - name: Sync only guarded draft fixed pages
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -59,7 +59,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo '### Experimental fixed page: SUCCESS'
+            echo '### Experimental fixed page sync: SUCCESS'
             echo
             find reports -path '*experimental-page-create/summary.md' -print -exec cat {} \;
           } > /tmp/experimental-page-comment.md
