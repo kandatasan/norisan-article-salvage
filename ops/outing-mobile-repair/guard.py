@@ -19,7 +19,7 @@ def request(path, method='GET', data=None):
     for attempt in range(1,4):
         try:
             payload=None
-            headers={'Authorization':'Basic '+TOKEN,'Accept':'application/json','User-Agent':'tsurikue-outing-mobile-repair/1.0'}
+            headers={'Authorization':'Basic '+TOKEN,'Accept':'application/json','User-Agent':'tsurikue-outing-mobile-repair/2.0'}
             if data is not None:
                 payload=json.dumps(data,ensure_ascii=False).encode('utf-8')
                 headers['Content-Type']='application/json; charset=utf-8'
@@ -48,12 +48,13 @@ def backup():
         'slug':page.get('slug')=='odekake',
         'draft':page.get('status')=='draft',
         'blocks':'<!-- tsurikue-category-hub:v2:outing-blocks -->' in s,
-        'repair_absent':'/* TQ OUTING MOBILE REPAIR v1 */' not in s,
+        'repair_v1':'/* TQ OUTING MOBILE REPAIR v1 */' in s,
+        'repair_v2_absent':'/* TQ OUTING MOBILE REPAIR v2 */' not in s,
     }
-    print('OUTING_MOBILE_BACKUP_CHECKS='+json.dumps(checks,ensure_ascii=False))
-    if not all(checks.values()): raise SystemExit('BACKUP_GUARD_FAILED')
+    print('OUTING_MOBILE_V2_BACKUP_CHECKS='+json.dumps(checks,ensure_ascii=False))
+    if not all(checks.values()): raise SystemExit('BACKUP_GUARD_V2_FAILED')
     BACKUP.write_text(s,encoding='utf-8')
-    print('OUTING_MOBILE_BACKUP_SAVED')
+    print('OUTING_MOBILE_V2_BACKUP_SAVED')
 
 
 def verify():
@@ -63,16 +64,19 @@ def verify():
         'slug':page.get('slug')=='odekake',
         'draft':page.get('status')=='draft',
         'blocks':'<!-- tsurikue-category-hub:v2:outing-blocks -->' in s,
-        'repair':'/* TQ OUTING MOBILE REPAIR v1 */' in s,
+        'repair_v1':'/* TQ OUTING MOBILE REPAIR v1 */' in s,
+        'repair_v2':'/* TQ OUTING MOBILE REPAIR v2 */' in s,
         'dark_hero':'.tq-out .tq-out-hero{color:#20211f!important}' in s,
-        'trip_one_col':'.tq-out .tq-out-trip-grid{grid-template-columns:1fr!important}' in s,
-        'local_one_col':'.tq-out .tq-out-local-grid{grid-template-columns:1fr!important}' in s,
+        'trip_grid_one_col':'.tq-out .tq-out-trip-grid{' in s and 'grid-template-columns:1fr!important;' in s,
+        'trip_card_block':'display:block!important;' in s,
+        'trip_card_grid_removed':'grid-template-columns:none!important;' in s,
+        'horizontal_text':'writing-mode:horizontal-tb!important;' in s,
         'travel':'旅に出る' in s,
         'latest':'wp:latest-posts' in s,
     }
-    print('OUTING_MOBILE_VERIFY='+json.dumps(checks,ensure_ascii=False))
-    if not all(checks.values()): raise SystemExit('VERIFY_FAILED')
-    print('OUTING_MOBILE_REPAIR_VERIFIED')
+    print('OUTING_MOBILE_V2_VERIFY='+json.dumps(checks,ensure_ascii=False))
+    if not all(checks.values()): raise SystemExit('VERIFY_V2_FAILED')
+    print('OUTING_MOBILE_REPAIR_V2_VERIFIED')
 
 
 def restore():
@@ -81,8 +85,8 @@ def restore():
     content=BACKUP.read_text(encoding='utf-8')
     page=request(f'/pages/{PAGE_ID}','POST',{'content':content,'status':'draft'})
     ok=page.get('id')==PAGE_ID and page.get('status')=='draft'
-    print('OUTING_MOBILE_RESTORE='+str(ok))
-    if not ok: raise SystemExit('RESTORE_FAILED')
+    print('OUTING_MOBILE_V2_RESTORE='+str(ok))
+    if not ok: raise SystemExit('RESTORE_V2_FAILED')
 
 
 if __name__=='__main__':
