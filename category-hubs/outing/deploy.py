@@ -16,7 +16,7 @@ PLACEHOLDER='{{OUTING_CATEGORY_IDS}}'
 user=os.environ['TSURIKUE_WP_USER']
 pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.3'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.4'}
 
 def request(path, method='GET', payload=None, attempts=3, timeout=35):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -65,10 +65,12 @@ def build_content():
     return template, parent, child
 
 def find_page():
-    q=urllib.parse.urlencode({'slug':SLUG,'context':'edit','per_page':10,'_fields':'id,slug,status,title,content,excerpt,link'})
+    # WordPress collection endpoints default to status=publish even with context=edit.
+    # This hub lives as a draft until the user approves it, so query draft explicitly.
+    q=urllib.parse.urlencode({'slug':SLUG,'status':STATUS,'context':'edit','per_page':10,'_fields':'id,slug,status,title,content,excerpt,link'})
     items=request('/pages?'+q)
     if len(items)>1:
-        raise RuntimeError(f'PAGE_NOT_UNIQUE slug={SLUG} count={len(items)}')
+        raise RuntimeError(f'PAGE_NOT_UNIQUE slug={SLUG} status={STATUS} count={len(items)}')
     return items[0] if items else None
 
 def verify(page_id,parent,child):
