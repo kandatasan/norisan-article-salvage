@@ -13,7 +13,7 @@ CONFIG_PATH=pathlib.Path('experimental-pages/top-design-lab/config.json')
 
 user=os.environ['TSURIKUE_WP_USER']; pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-top-pc-fullwidth/1.1'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-top-pc-fullwidth/1.2'}
 
 def request(path,method='GET',payload=None,attempts=3,timeout=45):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -71,6 +71,13 @@ css=r'''
     left:0!important;
     right:auto!important;
     transform:none!important;
+  }
+  .tq4 .tq4-section>.wp-block-group__inner-container,
+  .tq4 .tq4-final>.wp-block-group__inner-container{
+    width:min(1080px,91vw)!important;
+    max-width:none!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
   }
 }
 /* END TQ TOP DESKTOP SECTION FULLWIDTH v1 */
