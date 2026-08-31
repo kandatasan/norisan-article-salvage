@@ -1,4 +1,4 @@
-name: Add Gutenberg gourmet category pill retry
+name: Add gourmet pill to guarded WordPress draft
 
 on:
   push:
@@ -21,13 +21,62 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Replace gourmet alignment hack with normal pill
+      - name: Update only the verified draft page
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         shell: bash
         run: |
           python - <<'PY'
-          from pathlib import Path
-          p = Path('experimental-pages/top-design-lab/content.html')
-          s = p.read_text(encoding='utf-8')
+          import base64, hashlib, json, os, pathlib, urllib.parse, urllib.request
+
+          PAGE_ID = 2983
+          EXPECTED_SLUG = 'top-design-lab'
+          EXPECTED_TITLE = 'つりくえ！トップデザイン実験室'
+          MARKER = '<!-- tsurikue-experimental-page:v1:top-design-lab -->'
+          LABEL = 'ラーメン・ご当地グルメ'
+
+          user = os.environ['TSURIKUE_WP_USER']
+          pw = os.environ['TSURIKUE_WP_APP_PASSWORD']
+          token = base64.b64encode(f'{user}:{pw}'.encode()).decode()
+          headers = {
+              'Authorization': 'Basic ' + token,
+              'Accept': 'application/json',
+              'Content-Type': 'application/json; charset=utf-8',
+              'User-Agent': 'tsurikue-gourmet-pill/1.0',
+          }
+
+          def get_page():
+              q = urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
+              req = urllib.request.Request(
+                  f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}?{q}',
+                  headers=headers,
+              )
+              with urllib.request.urlopen(req, timeout=45) as r:
+                  return json.loads(r.read().decode())
+
+          def raw_title(page):
+              t = page.get('title') or {}
+              return t.get('raw') or t.get('rendered') or ''
+
+          def raw_content(page):
+              c = page.get('content') or {}
+              return c.get('raw') or ''
+
+          page = get_page()
+          content = raw_content(page)
+          if page.get('id') != PAGE_ID or page.get('slug') != EXPECTED_SLUG or page.get('status') != 'draft':
+              raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
+          if EXPECTED_TITLE not in raw_title(page):
+              raise SystemExit('BLOCKED_TITLE_MISMATCH')
+          if MARKER not in content:
+              raise SystemExit('BLOCKED_MARKER_MISSING')
+          if content.count('<!-- wp:cover') < 5 or content.count('<!-- wp:group') < 20:
+              raise SystemExit('BLOCKED_NOT_GUTENBERG_VERSION')
+          if 'raw.githubusercontent.com' in content:
+              raise SystemExit('BLOCKED_EXTERNAL_MEDIA_REGRESSION')
+          if LABEL in content:
+              raise SystemExit('BLOCKED_GOURMET_PILL_ALREADY_PRESENT')
 
           old_css = (
               '\n/* GUTENBERG GOURMET ALIGN FIX v3 */\n'
@@ -35,56 +84,75 @@ jobs:
               '.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:58px!important}\n'
               '@media(max-width:560px){.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:52px!important}}\n'
           )
-          if old_css not in s:
-              raise SystemExit('expected gourmet alignment override not found')
-          s = s.replace(old_css, '\n', 1)
+          if old_css in content:
+              content = content.replace(old_css, '\n', 1)
 
           pill = (
               '<!-- wp:paragraph {"className":"tq4-pill-text"} -->\n'
               '<p class="tq4-pill-text">ラーメン・ご当地グルメ</p>\n'
               '<!-- /wp:paragraph -->\n'
           )
-          if 'ラーメン・ご当地グルメ' in s:
-              raise SystemExit('gourmet pill already present')
-
           needle = (
               '<p class="tq4-card-desc">街のラーメン、旅先のごはん、気になった店。</p>\n'
               '<!-- /wp:paragraph -->\n'
               '</div>\n'
           )
-          if needle not in s:
-              raise SystemExit('gourmet card insertion point not found')
-          replacement = (
+          if needle not in content:
+              raise SystemExit('BLOCKED_GOURMET_INSERTION_POINT_MISSING')
+          content = content.replace(
+              needle,
               '<p class="tq4-card-desc">街のラーメン、旅先のごはん、気になった店。</p>\n'
-              '<!-- /wp:paragraph -->\n'
-              + pill +
-              '</div>\n'
+              '<!-- /wp:paragraph -->\n' + pill + '</div>\n',
+              1,
           )
-          s = s.replace(needle, replacement, 1)
-          p.write_text(s, encoding='utf-8')
+
+          # Re-read immediately before writing so a concurrent manual edit cannot be overwritten.
+          latest = get_page()
+          latest_content = raw_content(latest)
+          if latest.get('status') != 'draft' or hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(raw_content(page).encode()).hexdigest():
+              raise SystemExit('BLOCKED_PAGE_CHANGED_DURING_RUN')
+
+          payload = json.dumps({'content': content, 'status': 'draft'}, ensure_ascii=False).encode('utf-8')
+          req = urllib.request.Request(
+              f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}',
+              data=payload,
+              headers=headers,
+              method='POST',
+          )
+          with urllib.request.urlopen(req, timeout=45) as r:
+              json.loads(r.read().decode())
+
+          after = get_page()
+          after_content = raw_content(after)
+          if after.get('status') != 'draft':
+              raise SystemExit('VERIFY_STATUS_CHANGED')
+          if LABEL not in after_content:
+              raise SystemExit('VERIFY_GOURMET_PILL_MISSING')
+          if 'GUTENBERG GOURMET ALIGN FIX v3' in after_content:
+              raise SystemExit('VERIFY_OLD_ALIGNMENT_FIX_REMAINS')
+          if MARKER not in after_content:
+              raise SystemExit('VERIFY_MARKER_MISSING')
+
+          pathlib.Path('experimental-pages/top-design-lab/content.html').write_text(after_content, encoding='utf-8')
+          cfg_path = pathlib.Path('experimental-pages/top-design-lab/config.json')
+          cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
+          cfg['expected_current_content_sha256'] = hashlib.sha256(after_content.encode()).hexdigest()
+          cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          print('SUCCESS_GOURMET_PILL')
+          print('status=' + after.get('status',''))
+          print('content_sha256=' + cfg['expected_current_content_sha256'])
           PY
 
-      - name: Sync only guarded draft page
-        env:
-          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
-          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/create_experimental_page_once.py --config experimental-pages/top-design-lab/config.json
-
-      - name: Adopt new exact draft hash and commit source
+      - name: Commit synchronized source
         shell: bash
         run: |
-          python - <<'PY'
-          from pathlib import Path
-          import hashlib, json
-          content_path = Path('experimental-pages/top-design-lab/content.html')
-          config_path = Path('experimental-pages/top-design-lab/config.json')
-          content = content_path.read_text(encoding='utf-8')
-          cfg = json.loads(config_path.read_text(encoding='utf-8'))
-          cfg['expected_current_content_sha256'] = hashlib.sha256(content.encode()).hexdigest()
-          config_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          PY
+          set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
-          git commit -m 'Add gourmet category pill'
+          if git diff --cached --quiet; then
+            echo 'No source diff to commit.'
+            exit 0
+          fi
+          git commit -m 'Add gourmet category pill to top design lab'
           git push origin HEAD:main
