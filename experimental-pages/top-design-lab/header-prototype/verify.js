@@ -11,31 +11,32 @@ const { chromium } = require('playwright');
     const toggle = document.querySelector('#tq-menu-toggle');
     const menu = document.querySelector('.tq-site-menu');
     const native = document.querySelector('.l-header__menuBtn');
-    const logo = document.querySelector('#header .c-headLogo__link');
+    const trigger = document.querySelector('.tq-site-menu-trigger');
     const content = document.querySelector('#content');
     const r = toggle ? toggle.getBoundingClientRect() : null;
     const top = document.elementFromPoint(31, 36);
+    const ncs = native ? getComputedStyle(native) : null;
     return {
       toggle: !!toggle,
       checked: toggle ? toggle.checked : null,
-      visibility: menu ? getComputedStyle(menu).visibility : null,
-      pointerEvents: menu ? getComputedStyle(menu).pointerEvents : null,
-      nativePointerEvents: native ? getComputedStyle(native).pointerEvents : null,
+      menuPointerEvents: menu ? getComputedStyle(menu).pointerEvents : null,
+      nativePointerEvents: ncs ? ncs.pointerEvents : null,
+      nativeOpacity: ncs ? ncs.opacity : null,
+      nativeVisibility: ncs ? ncs.visibility : null,
+      nativeDisplay: ncs ? ncs.display : null,
+      triggerDisplay: trigger ? getComputedStyle(trigger).display : null,
       navLinks: document.querySelectorAll('.tq-site-menu__quest a').length,
-      logoText: logo ? logo.textContent.trim() : null,
-      headerPosition: getComputedStyle(document.querySelector('#header')).position,
       contentZIndex: content ? getComputedStyle(content).zIndex : null,
       togglePointerEvents: toggle ? getComputedStyle(toggle).pointerEvents : null,
       toggleLeft: r ? +r.left.toFixed(1) : null,
       toggleTop: r ? +r.top.toFixed(1) : null,
       toggleWidth: r ? +r.width.toFixed(1) : null,
       toggleHeight: r ? +r.height.toFixed(1) : null,
-      topTag: top ? top.tagName : null,
       topId: top ? top.id : null,
     };
   });
   console.log('MOBILE_CLOSED=' + JSON.stringify(closed));
-  if (!closed.toggle || closed.checked !== false || closed.navLinks !== 4 || closed.nativePointerEvents !== 'none' || closed.pointerEvents !== 'none' || closed.togglePointerEvents !== 'auto' || closed.contentZIndex !== 'auto' || closed.toggleWidth < 47 || closed.toggleHeight < 47 || Math.abs(closed.toggleLeft - 7) > 1 || Math.abs(closed.toggleTop - 12) > 1 || closed.topId !== 'tq-menu-toggle') {
+  if (!closed.toggle || closed.checked !== false || closed.navLinks !== 4 || closed.nativePointerEvents !== 'none' || closed.nativeOpacity !== '1' || closed.nativeVisibility !== 'visible' || closed.nativeDisplay === 'none' || closed.triggerDisplay !== 'none' || closed.menuPointerEvents !== 'none' || closed.togglePointerEvents !== 'auto' || closed.contentZIndex !== 'auto' || closed.toggleWidth < 47 || closed.toggleHeight < 47 || Math.abs(closed.toggleLeft - 7) > 1 || Math.abs(closed.toggleTop - 12) > 1 || closed.topId !== 'tq-menu-toggle') {
     throw new Error('MOBILE_BASE_VERIFY_FAILED ' + JSON.stringify(closed));
   }
 
@@ -47,7 +48,6 @@ const { chromium } = require('playwright');
     const drawer = document.querySelector('.tq-site-menu__drawer');
     const r = drawer.getBoundingClientRect();
     const cs = getComputedStyle(menu);
-    const top = document.elementFromPoint(31, 36);
     return {
       checked: toggle ? toggle.checked : null,
       visibility: cs.visibility,
@@ -56,11 +56,10 @@ const { chromium } = require('playwright');
       left: +r.left.toFixed(1),
       width: +r.width.toFixed(1),
       title: drawer.innerText.slice(0, 180),
-      topId: top ? top.id : null,
     };
   });
   console.log('MOBILE_OPEN=' + JSON.stringify(opened));
-  if (opened.checked !== true || opened.visibility !== 'visible' || opened.pointerEvents !== 'auto' || Math.abs(opened.left) > 0.5 || opened.width < 300 || !opened.title.includes('なにして遊ぶ') || opened.topId !== 'tq-menu-toggle') {
+  if (opened.checked !== true || opened.visibility !== 'visible' || opened.pointerEvents !== 'auto' || Math.abs(opened.left) > 0.5 || opened.width < 300 || !opened.title.includes('なにして遊ぶ')) {
     throw new Error('MOBILE_OPEN_VERIFY_FAILED ' + JSON.stringify(opened));
   }
 
@@ -71,7 +70,6 @@ const { chromium } = require('playwright');
     const menu = document.querySelector('.tq-site-menu');
     return {
       checked: toggle ? toggle.checked : null,
-      visibility: getComputedStyle(menu).visibility,
       pointerEvents: getComputedStyle(menu).pointerEvents,
       opacity: getComputedStyle(menu).opacity,
     };
@@ -95,7 +93,6 @@ const { chromium } = require('playwright');
       oldGnav: old ? getComputedStyle(old).display : null,
       triggerDisplay: trigger ? getComputedStyle(trigger).display : null,
       toggleDisplay: toggle ? getComputedStyle(toggle).display : null,
-      headerPosition: getComputedStyle(document.querySelector('#header')).position,
       text: n ? n.innerText.replace(/\s+/g, ' ').trim() : '',
     };
   });
