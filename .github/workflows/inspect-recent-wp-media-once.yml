@@ -1,0 +1,59 @@
+name: Inspect recent WordPress media once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/inspect-recent-wp-media-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  inspect-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read recent WordPress media
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY' > /tmp/recent-media.md
+          import base64, json, os, urllib.parse, urllib.request
+          user=os.environ['TSURIKUE_WP_USER']
+          pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
+          q=urllib.parse.urlencode({
+              'context':'edit',
+              'per_page':'30',
+              'orderby':'date',
+              'order':'desc',
+              '_fields':'id,date,slug,source_url,title,alt_text,media_details,mime_type'
+          })
+          req=urllib.request.Request(
+              'https://tsurikue.com/wp-json/wp/v2/media?'+q,
+              headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-media-inspector/1.0'}
+          )
+          with urllib.request.urlopen(req,timeout=45) as r:
+              rows=json.loads(r.read().decode())
+          print('### Recent WordPress media (read-only)')
+          print('')
+          print('| id | date | title/slug | size | source_url |')
+          print('|---:|---|---|---|---|')
+          for row in rows:
+              title=((row.get('title') or {}).get('rendered') or '').replace('|','\\|')
+              slug=(row.get('slug') or '').replace('|','\\|')
+              d=row.get('media_details') or {}
+              size=f"{d.get('width','?')}×{d.get('height','?')}"
+              print(f"| {row.get('id')} | {row.get('date')} | {title} / `{slug}` | {size} | {row.get('source_url')} |")
+          PY
+      - name: Record on audit issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/recent-media.md
