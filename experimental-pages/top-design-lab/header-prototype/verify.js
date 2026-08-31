@@ -10,28 +10,31 @@ const { chromium } = require('playwright');
   const closed = await mobile.evaluate(() => {
     const toggle = document.querySelector('#tq-menu-toggle');
     const menu = document.querySelector('.tq-site-menu');
-    const trigger = document.querySelector('.tq-site-menu-trigger');
     const native = document.querySelector('.l-header__menuBtn');
     const logo = document.querySelector('#header .c-headLogo__link');
+    const r = toggle ? toggle.getBoundingClientRect() : null;
     return {
       toggle: !!toggle,
       checked: toggle ? toggle.checked : null,
-      menu: !!menu,
-      trigger: !!trigger,
       visibility: menu ? getComputedStyle(menu).visibility : null,
       pointerEvents: menu ? getComputedStyle(menu).pointerEvents : null,
       nativePointerEvents: native ? getComputedStyle(native).pointerEvents : null,
       navLinks: document.querySelectorAll('.tq-site-menu__quest a').length,
       logoText: logo ? logo.textContent.trim() : null,
       headerPosition: getComputedStyle(document.querySelector('#header')).position,
+      togglePointerEvents: toggle ? getComputedStyle(toggle).pointerEvents : null,
+      toggleLeft: r ? +r.left.toFixed(1) : null,
+      toggleTop: r ? +r.top.toFixed(1) : null,
+      toggleWidth: r ? +r.width.toFixed(1) : null,
+      toggleHeight: r ? +r.height.toFixed(1) : null,
     };
   });
   console.log('MOBILE_CLOSED=' + JSON.stringify(closed));
-  if (!closed.toggle || closed.checked !== false || !closed.menu || !closed.trigger || closed.navLinks !== 4 || closed.nativePointerEvents !== 'none' || closed.pointerEvents !== 'none') {
+  if (!closed.toggle || closed.checked !== false || closed.navLinks !== 4 || closed.nativePointerEvents !== 'none' || closed.pointerEvents !== 'none' || closed.togglePointerEvents !== 'auto' || closed.toggleWidth < 47 || closed.toggleHeight < 47 || Math.abs(closed.toggleLeft - 7) > 1 || Math.abs(closed.toggleTop - 12) > 1) {
     throw new Error('MOBILE_BASE_VERIFY_FAILED ' + JSON.stringify(closed));
   }
 
-  await mobile.locator('.tq-site-menu-trigger').click({ force: true });
+  await mobile.mouse.click(31, 36);
   await mobile.waitForTimeout(450);
   const opened = await mobile.evaluate(() => {
     const toggle = document.querySelector('#tq-menu-toggle');
@@ -54,7 +57,7 @@ const { chromium } = require('playwright');
     throw new Error('MOBILE_OPEN_VERIFY_FAILED ' + JSON.stringify(opened));
   }
 
-  await mobile.locator('.tq-site-menu__close').click({ force: true });
+  await mobile.mouse.click(31, 36);
   await mobile.waitForTimeout(300);
   const reclosed = await mobile.evaluate(() => {
     const toggle = document.querySelector('#tq-menu-toggle');
@@ -78,16 +81,18 @@ const { chromium } = require('playwright');
     const n = document.querySelector('.tq-site-nav');
     const old = document.querySelector('#gnav');
     const trigger = document.querySelector('.tq-site-menu-trigger');
+    const toggle = document.querySelector('#tq-menu-toggle');
     return {
       display: n ? getComputedStyle(n).display : null,
       links: n ? n.querySelectorAll('a').length : 0,
       oldGnav: old ? getComputedStyle(old).display : null,
       triggerDisplay: trigger ? getComputedStyle(trigger).display : null,
+      toggleDisplay: toggle ? getComputedStyle(toggle).display : null,
       headerPosition: getComputedStyle(document.querySelector('#header')).position,
     };
   });
   console.log('DESKTOP=' + JSON.stringify(pc));
-  if (pc.display === 'none' || pc.links !== 5 || pc.oldGnav !== 'none' || pc.triggerDisplay !== 'none') {
+  if (pc.display === 'none' || pc.links !== 5 || pc.oldGnav !== 'none' || pc.triggerDisplay !== 'none' || pc.toggleDisplay !== 'none') {
     throw new Error('DESKTOP_VERIFY_FAILED ' + JSON.stringify(pc));
   }
 
