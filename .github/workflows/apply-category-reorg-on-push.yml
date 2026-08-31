@@ -1,0 +1,74 @@
+name: Apply guarded category reorganization
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'category-reorg/**'
+  workflow_dispatch:
+    inputs:
+      manifest_path:
+        description: 'Category reorganization manifest path'
+        required: true
+        default: 'category-reorg/2026-08-31/manifest.json'
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  reorganize-categories:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Run category reorganization safety tests
+        run: python -m unittest tests/test_apply_category_reorg_once.py -v
+
+      - name: Resolve manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            manifest='${{ inputs.manifest_path }}'
+          else
+            manifest='category-reorg/2026-08-31/manifest.json'
+          fi
+          test -f "$manifest"
+          printf '%s\n' "$manifest" > /tmp/category-reorg-manifest.txt
+
+      - name: Apply guarded category changes only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest="$(cat /tmp/category-reorg-manifest.txt)"
+          python scripts/apply_category_reorg_once.py --manifest "$manifest"
+
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Category reorganization: SUCCESS'
+            echo
+            cat reports/category-reorganization/summary.md
+          } > /tmp/category-reorg-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/category-reorg-comment.md
+
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: category-reorganization-result
+          path: reports/category-reorganization/
+          if-no-files-found: warn
