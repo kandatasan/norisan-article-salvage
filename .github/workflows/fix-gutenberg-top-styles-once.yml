@@ -1,4 +1,4 @@
-name: Move family above hero and center Gutenberg top
+name: Center published top page on mobile viewport
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  center-and-move-family:
+  center-mobile-viewport:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -20,7 +20,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Update verified top page only
+      - name: Patch verified top page only
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -31,7 +31,8 @@ jobs:
 
           PAGE_ID=2983
           MARKER='<!-- tsurikue-experimental-page:v1:top-design-lab -->'
-          FIX_TAG='/* GUTENBERG CENTER + FAMILY TOP FIX v1 */'
+          OLD_FIX='/* GUTENBERG CENTER + FAMILY TOP FIX v1 */'
+          NEW_FIX='/* MOBILE VIEWPORT CENTER FIX v2 */'
           HERO_URL='https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg'
 
           user=os.environ['TSURIKUE_WP_USER']
@@ -41,7 +42,7 @@ jobs:
               'Authorization':'Basic '+token,
               'Accept':'application/json',
               'Content-Type':'application/json; charset=utf-8',
-              'User-Agent':'tsurikue-center-family/1.6',
+              'User-Agent':'tsurikue-mobile-center/2.0',
           }
 
           def get_page():
@@ -56,67 +57,34 @@ jobs:
           page=get_page()
           original=raw_content(page)
           original_status=page.get('status')
+
           if page.get('id') != PAGE_ID or original_status not in ('draft','publish'):
               raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
           if MARKER not in original:
               raise SystemExit('BLOCKED_MARKER_MISSING')
-          if original.count('<!-- wp:cover') < 5 or original.count('<!-- wp:group') < 20:
-              raise SystemExit('BLOCKED_NOT_GUTENBERG_VERSION')
-          if '休日、<br>なにして遊ぶ？' not in original or 'ラーメン・ご当地グルメ' not in original:
-              raise SystemExit('BLOCKED_EXPECTED_TOP_CONTENT_MISSING')
-          if FIX_TAG in original:
-              raise SystemExit('BLOCKED_FIX_ALREADY_PRESENT')
-
-          media_pos=original.find('"id":2992')
-          if media_pos < 0:
-              media_pos=original.find('wp-image-2992')
-          if media_pos < 0:
-              raise SystemExit('BLOCKED_MEDIA_2992_MISSING')
-
-          family_start=original.rfind('<!-- wp:group ',0,media_pos)
-          if family_start < 0:
-              raise SystemExit('BLOCKED_FAMILY_GROUP_START_MISSING')
-          family_open_end=original.find('-->',family_start)
-          if family_open_end < 0 or 'tq4-party' not in original[family_start:family_open_end+3]:
-              raise SystemExit('BLOCKED_FAMILY_GROUP_CLASS_MISSING')
-          family_end_marker='<!-- /wp:group -->'
-          family_end=original.find(family_end_marker,media_pos)
-          if family_end < 0:
-              raise SystemExit('BLOCKED_FAMILY_GROUP_END_MISSING')
-          family_end += len(family_end_marker)
-          family=original[family_start:family_end]
-          if '2992' not in family or 'tq4-party-image' not in family:
-              raise SystemExit('BLOCKED_FAMILY_BLOCK_MISMATCH')
-
-          hero_comment_start=original.rfind('<!-- wp:cover ',0,original.find(HERO_URL)+1)
-          if hero_comment_start < 0 or HERO_URL not in original[hero_comment_start:original.find('-->',hero_comment_start)+3]:
-              raise SystemExit('BLOCKED_HERO_START_MISSING')
-          if family_start < hero_comment_start:
-              raise SystemExit('BLOCKED_FAMILY_ALREADY_ABOVE_HERO')
-
-          content=original[:family_start] + original[family_end:]
-          hero_after_remove=content.rfind('<!-- wp:cover ',0,content.find(HERO_URL)+1)
-          if hero_after_remove < 0:
-              raise SystemExit('BLOCKED_HERO_RELOCATE_POINT_MISSING')
-          content=content[:hero_after_remove] + family + '\n\n' + content[hero_after_remove:]
+          if OLD_FIX not in original:
+              raise SystemExit('BLOCKED_PREVIOUS_FIX_MISSING')
+          if NEW_FIX in original:
+              raise SystemExit('BLOCKED_MOBILE_FIX_ALREADY_PRESENT')
+          if '"id":2992' not in original and 'wp-image-2992' not in original:
+              raise SystemExit('BLOCKED_FAMILY_MEDIA_MISSING')
+          if HERO_URL not in original or '休日、<br>なにして遊ぶ？' not in original:
+              raise SystemExit('BLOCKED_EXPECTED_HERO_MISSING')
 
           css='\n'.join([
               '',
-              '/* GUTENBERG CENTER + FAMILY TOP FIX v1 */',
-              '.tq4{width:100%!important;max-width:none!important;margin-left:auto!important;margin-right:auto!important;box-sizing:border-box!important}',
-              'body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4{margin-left:auto!important;margin-right:auto!important}',
-              '.tq4>.alignfull,.tq4>.wp-block-cover.alignfull,.tq4>.wp-block-group.alignfull{width:100%!important;max-width:none!important;margin-left:auto!important;margin-right:auto!important}',
-              '.tq4 .tq4-party{padding:12px 0 8px!important;background:#fff!important;border-bottom:0!important}',
-              '.tq4 .tq4-party>.wp-block-group__inner-container{width:min(1080px,91vw)!important;margin-left:auto!important;margin-right:auto!important}',
-              '.tq4 .tq4-party-image{width:100%!important;max-width:560px!important;margin:0 auto!important}',
-              '.tq4 .tq4-party-image img{display:block!important;width:100%!important;max-width:560px!important;max-height:180px!important;height:auto!important;object-fit:contain!important;margin:0 auto!important}',
-              '.tq4 .tq4-hero-inner,.tq4 .tq4-section>.wp-block-group__inner-container,.tq4 .tq4-final>.wp-block-group__inner-container,.tq4 .tq4-wrap{width:min(1080px,91vw)!important;margin-left:auto!important;margin-right:auto!important}',
-              '@media(max-width:560px){.tq4 .tq4-party{padding:8px 0 4px!important}.tq4 .tq4-party-image{max-width:360px!important}.tq4 .tq4-party-image img{max-width:360px!important;max-height:132px!important}}',
+              NEW_FIX,
+              'body.page-id-2983{overflow-x:hidden!important}',
+              'body.page-id-2983 .post_content{overflow:visible!important}',
+              'body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4{width:100vw!important;max-width:100vw!important;position:relative!important;left:50%!important;transform:translateX(-50%)!important;margin-left:0!important;margin-right:0!important;box-sizing:border-box!important}',
+              'body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfull,body.page-id-2983 .tq4>.wp-block-group.alignfull{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}',
+              'body.page-id-2983 .tq4 .tq4-party{width:100%!important;max-width:100%!important}',
+              '@media(max-width:782px){body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4{width:100dvw!important;max-width:100dvw!important}}',
               '',
           ])
-          if '</style>' not in content:
+          if '</style>' not in original:
               raise SystemExit('BLOCKED_STYLE_END_MISSING')
-          content=content.replace('</style>',css+'</style>',1)
+          content=original.replace('</style>',css+'</style>',1)
 
           latest=get_page()
           latest_content=raw_content(latest)
@@ -132,27 +100,27 @@ jobs:
           after_content=raw_content(after)
           if after.get('status') != original_status:
               raise SystemExit('VERIFY_STATUS_CHANGED')
-          if FIX_TAG not in after_content:
-              raise SystemExit('VERIFY_FIX_MISSING')
-          after_media=after_content.find('"id":2992')
-          if after_media < 0:
-              after_media=after_content.find('wp-image-2992')
-          after_hero=after_content.find(HERO_URL)
-          if after_media < 0 or after_hero < 0 or after_media > after_hero:
-              raise SystemExit('VERIFY_FAMILY_NOT_ABOVE_HERO')
-          if MARKER not in after_content:
-              raise SystemExit('VERIFY_MARKER_MISSING')
+          if NEW_FIX not in after_content:
+              raise SystemExit('VERIFY_MOBILE_FIX_MISSING')
+          if MARKER not in after_content or OLD_FIX not in after_content:
+              raise SystemExit('VERIFY_GUARDS_MISSING')
+
+          media_pos=after_content.find('"id":2992')
+          if media_pos < 0:
+              media_pos=after_content.find('wp-image-2992')
+          hero_pos=after_content.find(HERO_URL)
+          if media_pos < 0 or hero_pos < 0 or media_pos > hero_pos:
+              raise SystemExit('VERIFY_FAMILY_ORDER_CHANGED')
 
           pathlib.Path('experimental-pages/top-design-lab/content.html').write_text(after_content,encoding='utf-8')
           cfg_path=pathlib.Path('experimental-pages/top-design-lab/config.json')
           cfg=json.loads(cfg_path.read_text(encoding='utf-8'))
           cfg['expected_current_content_sha256']=hashlib.sha256(after_content.encode()).hexdigest()
           cfg_path.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-          print('SUCCESS_CENTER_AND_FAMILY_TOP')
+
+          print('SUCCESS_MOBILE_VIEWPORT_CENTER_FIX')
           print('slug='+str(after.get('slug')))
           print('status='+str(after.get('status')))
-          print('family_media_pos='+str(after_media))
-          print('hero_pos='+str(after_hero))
           print('content_sha256='+cfg['expected_current_content_sha256'])
           PY
       - name: Commit synchronized source
@@ -166,5 +134,5 @@ jobs:
             echo 'No source diff to commit.'
             exit 0
           fi
-          git commit -m 'Move family above hero and center Gutenberg top'
+          git commit -m 'Center published top page on mobile viewport'
           git push origin HEAD:main
