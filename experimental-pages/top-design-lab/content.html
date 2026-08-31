@@ -261,6 +261,8 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 
 
 
+
+
 /* TQ HEADER DRAWER PROTOTYPE v1 */
 body:has(.tq4) #header{
   position:sticky!important;top:0;z-index:99980;
@@ -403,7 +405,11 @@ body:has(.tq4) #content{z-index:auto!important}
   width:48px!important;height:48px!important;margin:0!important;padding:0!important;
   opacity:0!important;pointer-events:auto!important;cursor:pointer!important
 }
-.tq-site-menu-trigger{z-index:100000!important;pointer-events:none!important}
+/* Use SWELL's native hamburger only as the visible icon. Its own JS stays disabled. */
+body:has(.tq4) #header .l-header__menuBtn{
+  opacity:1!important;visibility:visible!important;pointer-events:none!important
+}
+.tq-site-menu-trigger{display:none!important}
 .tq-site-menu__close{display:none!important}
 @media(max-width:782px){body.admin-bar .tq-site-menu-toggle{top:58px!important}}
 
@@ -444,6 +450,8 @@ body:has(.tq4) #content{z-index:auto!important}
 </nav>
 <!-- /wp:html -->
 <!-- TQ HEADER NAV PROTOTYPE v1 END -->
+
+
 
 
 
