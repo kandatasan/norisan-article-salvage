@@ -5,7 +5,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/apply-outing-category-hub-once.yml'
-      - 'category-hubs/outing/**'
+      - 'category-hubs/outing/content.html'
+      - 'category-hubs/outing/deploy.py'
 
 jobs:
   deploy:
@@ -104,5 +105,3 @@ jobs:
 
       - name: Success summary
         run: echo 'OUTING_CATEGORY_HUB_DRAFT_CREATED_AND_VERIFIED'
-
-# operational redeploy: desktop nested-group guard
