@@ -29,6 +29,12 @@ jobs:
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: python experimental-pages/top-design-lab/header-prototype/apply.py
 
+      - name: Make checkbox itself the mobile tap target
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python experimental-pages/top-design-lab/header-prototype/patch_direct_checkbox.py
+
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
