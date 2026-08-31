@@ -1,0 +1,73 @@
+name: Adopt normalized Gutenberg draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/adopt-top-design-lab-wp-blocks-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  adopt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read guarded draft and adopt WordPress-normalized blocks
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, hashlib, json, os, pathlib, urllib.parse, urllib.request
+          user=os.environ['TSURIKUE_WP_USER']
+          pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
+          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-block-adopter/1.0'}
+          q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
+          req=urllib.request.Request('https://tsurikue.com/wp-json/wp/v2/pages/2983?'+q,headers=headers)
+          with urllib.request.urlopen(req,timeout=45) as r:
+              page=json.loads(r.read().decode())
+          title=(page.get('title') or {}).get('raw') or (page.get('title') or {}).get('rendered') or ''
+          content=(page.get('content') or {}).get('raw') or ''
+          marker='<!-- tsurikue-experimental-page:v1:top-design-lab -->'
+          if page.get('id') != 2983 or page.get('slug') != 'top-design-lab' or page.get('status') != 'draft':
+              raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
+          if 'つりくえ！トップデザイン実験室' not in title:
+              raise SystemExit('BLOCKED_TITLE_MISMATCH')
+          if marker not in content:
+              raise SystemExit('BLOCKED_MARKER_MISSING')
+          if content.count('<!-- wp:cover') < 5 or content.count('<!-- wp:group') < 20:
+              raise SystemExit('BLOCKED_NOT_GUTENBERG_VERSION')
+          if 'raw.githubusercontent.com' in content:
+              raise SystemExit('BLOCKED_EXTERNAL_MEDIA_REGRESSION')
+          sha=hashlib.sha256(content.encode()).hexdigest()
+          pathlib.Path('experimental-pages/top-design-lab/content.html').write_text(content,encoding='utf-8')
+          cfg_path=pathlib.Path('experimental-pages/top-design-lab/config.json')
+          cfg=json.loads(cfg_path.read_text(encoding='utf-8'))
+          cfg['expected_current_content_sha256']=sha
+          cfg_path.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
+          print('adopted_sha='+sha)
+          print('blocks='+str(content.count('<!-- wp:')))
+          PY
+      - name: Commit normalized source
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
+          if git diff --cached --quiet; then
+            echo 'No normalization diff to commit.'
+            exit 0
+          fi
+          git commit -m 'Adopt WordPress-normalized Gutenberg top design lab'
+          git push origin HEAD:main
