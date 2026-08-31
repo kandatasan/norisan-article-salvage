@@ -317,6 +317,70 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 }
 /* END TQ TOP DESKTOP SECTION FULLWIDTH v1 */
 
+
+/* TQ TOP PHOTO-FIRST REFRESH v1 */
+/* Keep the existing homepage structure; let the real photos carry the visual identity. */
+.tq4 .tq4-hero .wp-block-cover__background{
+  background:linear-gradient(90deg,rgba(7,20,26,.58) 0%,rgba(8,22,27,.44) 58%,rgba(9,24,28,.30) 100%)!important;
+  background-color:transparent!important;
+  opacity:1!important;
+}
+.tq4 .tq4-hero,
+.tq4 .tq4-hero .wp-block-cover__inner-container,
+.tq4 .tq4-hero .tq4-brand,
+.tq4 .tq4-hero .tq4-label,
+.tq4 .tq4-hero h1,
+.tq4 .tq4-hero .tq4-hero-lead{color:#fff!important}
+.tq4 .tq4-hero .tq4-hero-text{color:rgba(255,255,255,.90)!important}
+.tq4 .tq4-hero h1{ text-shadow:0 3px 18px rgba(0,0,0,.42),0 1px 2px rgba(0,0,0,.66)!important }
+.tq4 .tq4-hero .tq4-brand,
+.tq4 .tq4-hero .tq4-label,
+.tq4 .tq4-hero .tq4-hero-lead,
+.tq4 .tq4-hero .tq4-hero-text{ text-shadow:0 2px 10px rgba(0,0,0,.42),0 1px 1px rgba(0,0,0,.52)!important }
+
+.tq4 .tq4-cat .wp-block-cover__background,
+.tq4 .tq4-cat--gourmet .wp-block-cover__background,
+.tq4 .tq4-cat--fishing .wp-block-cover__background{
+  background:linear-gradient(180deg,rgba(5,16,20,.16) 0%,rgba(5,17,21,.36) 48%,rgba(5,17,21,.76) 100%)!important;
+  background-color:transparent!important;
+  opacity:1!important;
+}
+.tq4 .tq4-cat-body{background:transparent!important}
+.tq4 .tq4-cat,
+.tq4 .tq4-cat .wp-block-cover__inner-container,
+.tq4 .tq4-cat .tq4-card-label,
+.tq4 .tq4-cat h3,
+.tq4 .tq4-cat h3 a,
+.tq4 .tq4-cat .tq4-card-desc{color:#fff!important}
+.tq4 .tq4-card-label{color:rgba(255,255,255,.80)!important}
+.tq4 .tq4-card-desc{color:rgba(255,255,255,.91)!important}
+.tq4 .tq4-cat h3,
+.tq4 .tq4-cat h3 a{ text-shadow:0 2px 10px rgba(0,0,0,.50),0 1px 1px rgba(0,0,0,.58)!important }
+.tq4 .tq4-card-label,
+.tq4 .tq4-card-desc{ text-shadow:0 1px 6px rgba(0,0,0,.52)!important }
+.tq4 .tq4-pill-text{
+  background:rgba(255,255,255,.90)!important;
+  color:#242826!important;
+  border-color:rgba(255,255,255,.48)!important;
+  text-shadow:none!important;
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)
+}
+.tq4 .tq4-cat img{transition:transform .45s ease!important}
+.tq4 .tq4-cat:hover img{transform:scale(1.025)!important}
+@media(max-width:560px){
+  .tq4 .tq4-hero .wp-block-cover__background{
+    background:linear-gradient(90deg,rgba(7,20,26,.60) 0%,rgba(8,22,27,.46) 62%,rgba(9,24,28,.34) 100%)!important;
+    opacity:1!important;
+  }
+  .tq4 .tq4-cat .wp-block-cover__background,
+  .tq4 .tq4-cat--gourmet .wp-block-cover__background,
+  .tq4 .tq4-cat--fishing .wp-block-cover__background{
+    background:linear-gradient(180deg,rgba(5,16,20,.12) 0%,rgba(5,17,21,.32) 42%,rgba(5,17,21,.78) 100%)!important;
+    opacity:1!important;
+  }
+}
+/* END TQ TOP PHOTO-FIRST REFRESH v1 */
+
 /* TQ HEADER DRAWER PROTOTYPE v1 */
 body:has(.tq4) #header{
   position:sticky!important;top:0;z-index:99980;
@@ -610,8 +674,8 @@ body:has(.tq4) #header .l-header__menuBtn{
 <!-- /wp:group -->
 
 <!-- wp:group {"className":"tq4-cat-grid","layout":{"type":"grid","columnCount":4}} -->
-<div class="wp-block-group tq4-cat-grid"><!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/08/img_2419.jpg","id":2991,"dimRatio":70,"overlayColor":"white","isUserOverlayColor":true,"minHeight":270,"minHeightUnit":"px","contentPosition":"bottom left","className":"tq4-cat tq4-cat\u002d\u002douting"} -->
-<div class="wp-block-cover has-custom-content-position is-position-bottom-left tq4-cat tq4-cat--outing" style="min-height:270px"><img class="wp-block-cover__image-background wp-image-2991" alt="" src="https://tsurikue.com/wp-content/uploads/2026/08/img_2419.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-white-background-color has-background-dim-70 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"className":"tq4-cat-body","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq4-cat-grid"><!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/09/img_2419.jpg","id":3177,"dimRatio":70,"overlayColor":"white","isUserOverlayColor":true,"minHeight":270,"minHeightUnit":"px","contentPosition":"bottom left","className":"tq4-cat tq4-cat\u002d\u002douting"} -->
+<div class="wp-block-cover has-custom-content-position is-position-bottom-left tq4-cat tq4-cat--outing" style="min-height:270px"><img class="wp-block-cover__image-background wp-image-3177" alt="" src="https://tsurikue.com/wp-content/uploads/2026/09/img_2419.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-white-background-color has-background-dim-70 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"className":"tq4-cat-body","layout":{"type":"constrained"}} -->
 <div class="wp-block-group tq4-cat-body"><!-- wp:paragraph {"className":"tq4-card-label"} -->
 <p class="tq4-card-label">GO OUT</p>
 <!-- /wp:paragraph -->
