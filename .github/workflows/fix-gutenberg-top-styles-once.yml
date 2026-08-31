@@ -1,0 +1,107 @@
+name: Fix Gutenberg top styles once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-gutenberg-top-styles-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  fix-gutenberg-styles:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Add Gutenberg compatibility overrides
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p = Path('experimental-pages/top-design-lab/content.html')
+          s = p.read_text(encoding='utf-8')
+          tag = '/* GUTENBERG COMPAT FIX v1 */'
+          if tag in s:
+              raise SystemExit('compat fix already present')
+          css = r'''
+
+/* GUTENBERG COMPAT FIX v1 */
+/* Core block layout resets: keep the native blocks editable without theme spacing leaks. */
+.tq4 > *{margin-block-start:0!important;margin-block-end:0!important}
+.tq4 .wp-block-cover,
+.tq4 .wp-block-group,
+.tq4 .wp-block-image{margin-block-start:0!important;margin-block-end:0!important}
+
+/* Cover blocks default to white text. Restore the approved dark typography. */
+.tq4 .tq4-hero,
+.tq4 .tq4-hero .wp-block-cover__inner-container{color:var(--ink)!important}
+.tq4 .tq4-hero .tq4-brand,
+.tq4 .tq4-hero .tq4-label,
+.tq4 .tq4-hero h1,
+.tq4 .tq4-hero .tq4-hero-lead{color:var(--ink)!important}
+.tq4 .tq4-hero .tq4-hero-text{color:var(--sub)!important}
+
+.tq4 .tq4-cat,
+.tq4 .tq4-cat .wp-block-cover__inner-container{color:var(--ink)!important}
+.tq4 .tq4-cat .tq4-card-label{color:#70716b!important}
+.tq4 .tq4-cat h3,
+.tq4 .tq4-cat h3 a{color:var(--ink)!important}
+.tq4 .tq4-cat .tq4-card-desc{color:#4f514c!important}
+.tq4 .tq4-cat .tq4-pill-text{color:var(--ink)!important}
+
+/* WordPress constrained-layout rules were squeezing the recommended article copy. */
+.tq4 .tq4-pick{display:flex!important;align-items:center!important;width:100%!important;max-width:none!important}
+.tq4 .tq4-pick > *{min-width:0!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+.tq4 .tq4-pick > .tq4-pick-badge{flex:0 0 70px!important}
+.tq4 .tq4-pick > .wp-block-group{flex:1 1 auto!important;width:100%!important;max-width:none!important}
+.tq4 .tq4-pick > .wp-block-group > *{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+.tq4 .tq4-pick h3,
+.tq4 .tq4-pick h3 a{display:block!important;width:100%!important;max-width:none!important;word-break:normal!important;color:var(--ink)!important}
+.tq4 .tq4-pick .tq4-pick-label,
+.tq4 .tq4-pick .tq4-read{width:100%!important;max-width:none!important}
+
+/* Keep other grid children from inheriting restrictive constrained widths. */
+.tq4 .tq4-concept-grid > *,
+.tq4 .tq4-about-grid > *,
+.tq4 .tq4-final-grid > *{min-width:0!important;max-width:none!important}
+
+@media(max-width:560px){
+  .tq4 .tq4-pick > .tq4-pick-badge{flex-basis:56px!important}
+}
+'''
+          s = s.replace('</style>', css + '\n</style>', 1)
+          p.write_text(s, encoding='utf-8')
+          PY
+
+      - name: Sync only guarded draft page
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_experimental_page_once.py --config experimental-pages/top-design-lab/config.json
+
+      - name: Adopt new exact draft hash and commit source
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib, json
+          content_path = Path('experimental-pages/top-design-lab/content.html')
+          config_path = Path('experimental-pages/top-design-lab/config.json')
+          content = content_path.read_text(encoding='utf-8')
+          cfg = json.loads(config_path.read_text(encoding='utf-8'))
+          cfg['expected_current_content_sha256'] = hashlib.sha256(content.encode()).hexdigest()
+          config_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
+          git commit -m 'Fix Gutenberg top design compatibility styles'
+          git push
