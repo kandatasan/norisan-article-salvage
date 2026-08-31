@@ -1,0 +1,56 @@
+name: Patch top design lab media URLs once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/patch-top-design-lab-wp-media-once.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - name: Patch only verified media refs and guard hash
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+
+          content_path = Path('experimental-pages/top-design-lab/content.html')
+          config_path = Path('experimental-pages/top-design-lab/config.json')
+          text = content_path.read_text(encoding='utf-8')
+
+          replacements = {
+            'https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/f20628b32f86f83a9fb098eb947b13ebd3398100/experimental-pages/top-design-lab/assets/family-party.webp': 'https://tsurikue.com/wp-content/uploads/2026/08/e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg',
+            'https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/f20628b32f86f83a9fb098eb947b13ebd3398100/experimental-pages/top-design-lab/assets/dolphin-jump.webp': 'https://tsurikue.com/wp-content/uploads/2026/08/img_2419.jpg',
+            'https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/main/experimental-pages/top-design-lab/assets/img_1028-bg.jpg': 'https://tsurikue.com/wp-content/uploads/2026/08/img_1028.jpg',
+          }
+          for old, new in replacements.items():
+              if text.count(old) != 1:
+                  raise SystemExit(f'expected exactly one occurrence: {old}')
+              text = text.replace(old, new, 1)
+          content_path.write_text(text, encoding='utf-8')
+
+          cfg = json.loads(config_path.read_text(encoding='utf-8'))
+          # Confirmed from the immediately preceding guarded WordPress sync audit.
+          cfg['expected_current_content_sha256'] = 'af1cbeb53ca19a7846880c950b889cd83f55d437596035bd528b5203d4aa8f9b'
+          config_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+      - name: Commit patch to main
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
+          git diff --cached --check
+          git commit -m 'Use WordPress-hosted media on top design lab'
+          git push origin HEAD:main
