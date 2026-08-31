@@ -1,0 +1,86 @@
+name: Finalize outing category hub once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/finalize-outing-hub-once.yml'
+      - 'ops/outing-final/**'
+
+permissions:
+  contents: write
+
+jobs:
+  finalize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Apply final outing design polish locally
+        run: |
+          python ops/outing-final/finalize.py
+          git diff --check
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('category-hubs/outing/content.html').read_text(encoding='utf-8')
+          required=[
+            '<!-- tsurikue-category-hub:v1:outing -->',
+            '/* TQ OUTING ONE COLUMN v1 */',
+            '/* TQ OUTING FINAL POLISH v1 */',
+            '{{OUTING_CATEGORY_IDS}}',
+            'wp:latest-posts',
+            '/category/sightseeing-leisure/'
+          ]
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('FINAL_SOURCE_MISSING='+repr(missing))
+          if any(x in s for x in ['🔥','🤣','😏']): raise SystemExit('ARTICLE_EMOJI_FOUND')
+          print('OUTING_FINAL_SOURCE_OK bytes=',len(s.encode('utf-8')))
+          PY
+
+      - name: Update WordPress outing draft only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            echo "outing final deploy attempt ${attempt}/3"
+            if python category-hubs/outing/deploy.py; then exit 0; fi
+            if [[ "$attempt" != 3 ]]; then sleep 8; fi
+          done
+          exit 1
+
+      - name: Verify final draft markers and status
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            if python ops/outing-final/verify_draft.py; then exit 0; fi
+            if [[ "$attempt" != 3 ]]; then sleep 6; fi
+          done
+          exit 1
+
+      - name: Commit canonical finalized outing source
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add category-hubs/outing/content.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Finalize outing category hub layout'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+
+      - name: Success summary
+        run: echo 'OUTING_CATEGORY_HUB_FINAL_DRAFT_READY'
