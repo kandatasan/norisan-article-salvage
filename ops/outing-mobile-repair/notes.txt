@@ -1,0 +1,1 @@
+Repair targets: dark hero text over pale Cover overlay; mobile Gutenberg grid blocks for choose/local/trip sections; trip copy min-width handling. Page 3154 remains draft.
