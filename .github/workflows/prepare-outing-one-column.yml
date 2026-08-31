@@ -1,0 +1,37 @@
+name: Prepare outing one-column source
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/prepare-outing-one-column.yml'
+      - 'category-hubs/outing/fix_one_column.py'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Patch canonical outing source
+        run: python category-hubs/outing/fix_one_column.py
+      - name: Commit canonical source if changed
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add category-hubs/outing/content.html
+          if git diff --cached --quiet; then
+            echo 'No source change needed.'
+            exit 0
+          fi
+          git commit -m 'Make outing hub one column'
+          git push origin HEAD:main
