@@ -1,0 +1,44 @@
+name: Apply outing dolphin hero
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-outing-dolphin-hero-once.yml'
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with: {fetch-depth: 2}
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.x'}
+      - name: Resolve latest cropped dolphin media and patch hero
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python ops/outing-dolphin-hero/apply.py
+      - name: Validate source
+        run: |
+          grep -q 'tsurikue-category-hub:v2:outing-blocks' category-hubs/outing/content.html
+          grep -q 'TQ OUTING DARK HERO v1' category-hubs/outing/content.html
+          grep -q 'IMG_2419' category-hubs/outing/content.html
+          grep -q 'rgba(7,20,26,.56)' category-hubs/outing/content.html
+          git diff --check
+      - name: Deploy draft 3154
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python category-hubs/outing/deploy.py
+      - name: Persist canonical source
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add category-hubs/outing/content.html
+          git diff --cached --quiet && exit 0
+          git commit -m 'Use dolphin photo for outing hero'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
