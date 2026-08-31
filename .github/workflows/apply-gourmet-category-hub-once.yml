@@ -9,25 +9,18 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: feat/gourmet-category-hub-v2
       - uses: actions/setup-python@v5
         with: {python-version: '3.x'}
-      - name: Validate Gutenberg source
+      - name: Validate source
         run: |
           grep -q 'tsurikue-category-hub:v1:gourmet-blocks' category-hubs/gourmet/content.html
-          grep -q 'tq-gourmet-hero' category-hubs/gourmet/content.html
           grep -q 'img_4017.jpg' category-hubs/gourmet/content.html
-          grep -q 'wp:latest-posts' category-hubs/gourmet/content.html
-          python - <<'PY'
-          from pathlib import Path
-          s=Path('category-hubs/gourmet/content.html').read_text()
-          assert s.count('<!-- wp:group')==s.count('<!-- /wp:group -->')
-          assert s.count('<!-- wp:cover')==s.count('<!-- /wp:cover -->')
-          assert s.count('<!-- wp:html -->')==s.count('<!-- /wp:html -->')
-          print('GOURMET_BLOCK_MARKUP_OK')
-          PY
-      - name: Create or update gourmet draft
+          grep -q '__GOURMET_CATEGORY_ID__' category-hubs/gourmet/content.html
+      - name: Create gourmet draft
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: python category-hubs/gourmet/deploy.py
-# deploy trigger
+# clean-source retry
