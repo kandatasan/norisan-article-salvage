@@ -1,4 +1,4 @@
-name: Add Gutenberg gourmet category pill
+name: Add Gutenberg gourmet category pill retry
 
 on:
   push:
