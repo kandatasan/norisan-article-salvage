@@ -1,4 +1,4 @@
-name: Reapply full-width mobile top fix safely
+name: Measure mobile top layout
 
 on:
   push:
@@ -7,147 +7,65 @@ on:
       - '.github/workflows/fix-gutenberg-top-styles-once.yml'
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
-  reapply-full-width:
+  measure-mobile-layout:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
-          fetch-depth: 2
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Patch current WordPress top CSS only
-        env:
-          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
-          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        shell: bash
-        run: |
-          python - <<'PY'
-          import base64, hashlib, json, os, pathlib, re, urllib.parse, urllib.request
-
-          PAGE_ID = 2983
-          MARKER = '<!-- tsurikue-experimental-page:v1:top-design-lab -->'
-          FIX_TAG = '/* MOBILE FULL-WIDTH FIX v3 */'
-          HERO_URL = 'https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg'
-
-          user = os.environ['TSURIKUE_WP_USER']
-          pw = os.environ['TSURIKUE_WP_APP_PASSWORD']
-          token = base64.b64encode(f'{user}:{pw}'.encode()).decode()
-          headers = {
-              'Authorization': 'Basic ' + token,
-              'Accept': 'application/json',
-              'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'tsurikue-fullwidth-v3/1.1',
-          }
-
-          def get_page():
-              q = urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
-              req = urllib.request.Request(
-                  f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}?{q}',
-                  headers=headers,
-              )
-              with urllib.request.urlopen(req, timeout=45) as r:
-                  return json.loads(r.read().decode())
-
-          def raw_content(page):
-              return (page.get('content') or {}).get('raw') or ''
-
-          page = get_page()
-          original = raw_content(page)
-          original_status = page.get('status')
-
-          if page.get('id') != PAGE_ID or original_status not in ('draft','publish'):
-              raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
-          if MARKER not in original:
-              raise SystemExit('BLOCKED_MARKER_MISSING')
-          if HERO_URL not in original or '休日、<br>なにして遊ぶ？' not in original:
-              raise SystemExit('BLOCKED_EXPECTED_HERO_MISSING')
-          if '"id":2992' not in original and 'wp-image-2992' not in original:
-              raise SystemExit('BLOCKED_FAMILY_MEDIA_MISSING')
-          if '</style>' not in original:
-              raise SystemExit('BLOCKED_STYLE_END_MISSING')
-
-          content = re.sub(
-              r'\n?/\* MOBILE FULL-WIDTH FIX v3 \*/.*?/\* END MOBILE FULL-WIDTH FIX v3 \*/\n?',
-              '\n',
-              original,
-              flags=re.S,
-          )
-
-          css = '\n'.join([
-              '',
-              '/* MOBILE FULL-WIDTH FIX v3 */',
-              'html,body.page-id-2983{overflow-x:hidden!important}',
-              'body.page-id-2983 .l-content,body.page-id-2983 .l-container,body.page-id-2983 .l-mainContent,body.page-id-2983 .post_content{max-width:none!important}',
-              'body.page-id-2983 .post_content{width:100%!important;padding-left:0!important;padding-right:0!important}',
-              'body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4,body.page-id-2983 .alignfull.tq4{width:100vw!important;max-width:100vw!important;margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;position:relative!important;left:auto!important;right:auto!important;transform:none!important;box-sizing:border-box!important}',
-              'body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfull,body.page-id-2983 .tq4>.wp-block-group.alignfull,body.page-id-2983 .tq4 .tq4-party,body.page-id-2983 .tq4 .tq4-hero,body.page-id-2983 .tq4 .tq4-cats{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}',
-              '@supports(width:100dvw){@media(max-width:782px){body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4,body.page-id-2983 .alignfull.tq4{width:100dvw!important;max-width:100dvw!important;margin-left:calc(50% - 50dvw)!important;margin-right:calc(50% - 50dvw)!important}}}',
-              '/* END MOBILE FULL-WIDTH FIX v3 */',
-              '',
-          ])
-          content = content.replace('</style>', css + '</style>', 1)
-
-          latest = get_page()
-          latest_content = raw_content(latest)
-          if latest.get('status') != original_status:
-              raise SystemExit('BLOCKED_STATUS_CHANGED_DURING_RUN')
-          if hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
-              raise SystemExit('BLOCKED_PAGE_CHANGED_DURING_RUN')
-
-          payload = json.dumps({'content': content}, ensure_ascii=False).encode('utf-8')
-          req = urllib.request.Request(
-              f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}',
-              data=payload,
-              headers=headers,
-              method='POST',
-          )
-          with urllib.request.urlopen(req, timeout=45) as r:
-              json.loads(r.read().decode())
-
-          after = get_page()
-          after_content = raw_content(after)
-          if after.get('status') != original_status:
-              raise SystemExit('VERIFY_STATUS_CHANGED')
-          if after_content.count(FIX_TAG) != 1:
-              raise SystemExit('VERIFY_V3_FIX_NOT_UNIQUE')
-          if MARKER not in after_content or HERO_URL not in after_content:
-              raise SystemExit('VERIFY_CONTENT_GUARDS_MISSING')
-
-          media_pos = after_content.find('"id":2992')
-          if media_pos < 0:
-              media_pos = after_content.find('wp-image-2992')
-          hero_pos = after_content.find(HERO_URL)
-          if media_pos < 0 or hero_pos < 0 or media_pos > hero_pos:
-              raise SystemExit('VERIFY_FAMILY_ORDER_CHANGED')
-
-          pathlib.Path('experimental-pages/top-design-lab/content.html').write_text(after_content, encoding='utf-8')
-          cfg_path = pathlib.Path('experimental-pages/top-design-lab/config.json')
-          cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
-          cfg['expected_current_content_sha256'] = hashlib.sha256(after_content.encode()).hexdigest()
-          cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-
-          print('SUCCESS_MOBILE_FULL_WIDTH_V3')
-          print('slug=' + str(after.get('slug')))
-          print('status=' + str(after.get('status')))
-          print('content_sha256=' + cfg['expected_current_content_sha256'])
-          PY
-
-      - name: Commit synchronized source
+          node-version: '22'
+      - name: Install browser tooling
         shell: bash
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
-          if git diff --cached --quiet; then
-            echo 'No source diff to commit.'
-            exit 0
-          fi
-          git commit -m 'Reapply mobile full-width top fix v3'
-          git push origin HEAD:main
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Measure live page at iPhone width
+        shell: bash
+        run: |
+          cat > /tmp/measure.js <<'JS'
+          const { chromium } = require('playwright');
+          (async() => {
+            const browser = await chromium.launch({headless:true});
+            const page = await browser.newPage({viewport:{width:390,height:844}, deviceScaleFactor:1});
+            await page.goto('https://tsurikue.com/', {waitUntil:'networkidle', timeout:90000});
+            await page.waitForTimeout(1500);
+            const data = await page.evaluate(() => {
+              const sels = [
+                'html','body','.l-content','.l-container','.l-mainContent','.l-mainContent__inner',
+                '.post_content','.post_content>.tq4','.post_content>.wp-block-group.tq4',
+                '.tq4','.tq4-party','.tq4-hero','.tq4-cats'
+              ];
+              const out = {innerWidth:window.innerWidth, docClientWidth:document.documentElement.clientWidth, scrollWidth:document.documentElement.scrollWidth};
+              out.rects = {};
+              for (const s of sels) {
+                const el = document.querySelector(s);
+                if (!el) { out.rects[s] = null; continue; }
+                const r = el.getBoundingClientRect();
+                const cs = getComputedStyle(el);
+                out.rects[s] = {
+                  left:+r.left.toFixed(2), right:+r.right.toFixed(2), width:+r.width.toFixed(2),
+                  marginLeft:cs.marginLeft, marginRight:cs.marginRight,
+                  paddingLeft:cs.paddingLeft, paddingRight:cs.paddingRight,
+                  maxWidth:cs.maxWidth, position:cs.position, transform:cs.transform,
+                  overflowX:cs.overflowX
+                };
+              }
+              const all = [...document.querySelectorAll('body *')].map(el => {
+                const r=el.getBoundingClientRect();
+                return {tag:el.tagName, cls:(el.className||'').toString().slice(0,160), left:r.left, right:r.right, width:r.width};
+              }).filter(x => x.width>0 && (x.left < -1 || x.right > window.innerWidth+1)).sort((a,b)=>Math.max(Math.abs(b.left),Math.abs(b.right-window.innerWidth))-Math.max(Math.abs(a.left),Math.abs(a.right-window.innerWidth))).slice(0,20);
+              out.overflowers = all;
+              return out;
+            });
+            console.log('---MOBILE_LAYOUT_MEASURE---');
+            console.log(JSON.stringify(data,null,2));
+            console.log('---END_MOBILE_LAYOUT_MEASURE---');
+            await browser.close();
+          })().catch(e => { console.error(e); process.exit(1); });
+          JS
+          node /tmp/measure.js
