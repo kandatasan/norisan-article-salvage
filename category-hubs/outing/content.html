@@ -1,4 +1,5 @@
 <!-- tsurikue-category-hub:v1:outing -->
+<!-- tsurikue-category-hub:v2:outing-blocks -->
 <!-- wp:html -->
 <style>
 body:has(.tq-out) .c-pageTitle,body:has(.tq-out) .p-breadcrumb{display:none!important}
@@ -58,74 +59,435 @@ body:has(.tq-out) .tq-out h3:before,body:has(.tq-out) .tq-out h3:after{content:n
   .tq-out-final a{width:100%;justify-self:stretch!important}
 }
 @media(max-width:359px){.tq-out-choose-grid{grid-template-columns:1fr}}
+
+/* TQ OUTING BLOCKS v1 */
+.tq-out.wp-block-group{width:100%!important;max-width:none!important;margin:0!important;padding:0!important}
+.tq-out .wp-block-group__inner-container{width:100%!important;max-width:none!important}
+.tq-out>.wp-block-cover,.tq-out>.wp-block-group{margin-block-start:0!important;margin-block-end:0!important}
+.tq-out .tq-out-section,.tq-out .tq-out-latest,.tq-out .tq-out-final{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+.tq-out .tq-out-head>.wp-block-group__inner-container{display:flex!important;justify-content:space-between;align-items:flex-end;gap:28px}
+.tq-out .tq-out-choose-grid>.wp-block-group__inner-container{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+.tq-out .tq-out-local-grid>.wp-block-group__inner-container{display:grid!important;grid-template-columns:1.2fr .8fr .8fr;gap:12px}
+.tq-out .tq-out-trip-grid>.wp-block-group__inner-container{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.tq-out .tq-out-route-list>.wp-block-group__inner-container{display:grid!important;gap:10px}
+.tq-out .tq-out-card>.wp-block-group__inner-container{display:flex!important;flex-direction:column;justify-content:flex-end;height:100%}
+.tq-out .tq-out-trip-card>.wp-block-group__inner-container{display:grid!important;grid-template-columns:82px 1fr;gap:18px;align-items:center}
+.tq-out .tq-out-route-card>.wp-block-group__inner-container{display:grid!important;grid-template-columns:145px 1fr auto;gap:24px;align-items:center}
+.tq-out .tq-out-final-inner>.wp-block-group__inner-container{display:grid!important;grid-template-columns:1fr auto;gap:30px;align-items:center}
+.tq-out .tq-out-kicker{margin:0 0 10px!important}
+.tq-out .tq-out-head-note{margin:0!important;max-width:430px;color:var(--sub);font-size:13px;line-height:1.9}
+.tq-out-choice .tq-out-choice-label{margin:0 0 18px!important;color:#73756f;font-size:9px;font-weight:900;letter-spacing:.15em}
+.tq-out-choice h3{margin:0!important;font-size:20px!important;line-height:1.35!important}
+.tq-out-choice .tq-out-choice-text{margin:8px 0 0!important;color:#5f615b;font-size:11px;line-height:1.65}
+.tq-out-choice .tq-out-arrow{margin:14px 0 0!important;font-size:13px;font-weight:900}
+.tq-out-card .tq-out-card-label{margin:0 0 9px!important;color:#74766f;font-size:9px;font-weight:900;letter-spacing:.14em}
+.tq-out-card .tq-out-card-text{margin:11px 0 0!important;color:#5b5d57;font-size:12px;line-height:1.8}
+.tq-out-card .tq-out-more{margin:18px 0 0!important;font-size:11px;font-weight:900}
+.tq-out-trip-badge{margin:0!important}
+.tq-out-trip-card .tq-out-trip-label{margin:0 0 6px!important;color:#7b7c76;font-size:9px;font-weight:850}
+.tq-out-trip-card .tq-out-trip-text{margin:7px 0 0!important;color:#666861;font-size:11px;line-height:1.7}
+.tq-out-route-card .tq-out-route-label{margin:0!important;font-size:9px;font-weight:900;letter-spacing:.12em;color:#73756f}
+.tq-out-route-card .tq-out-route-text{margin:5px 0 0!important;color:#62645e;font-size:11px;line-height:1.65}
+.tq-out-route-card .tq-out-route-arrow{margin:0!important;font-size:22px;font-weight:900}
+.tq-out h3 a,.tq-out .tq-out-more a,.tq-out .tq-out-arrow a,.tq-out .tq-out-route-arrow a{color:inherit!important;text-decoration:none!important}
+.tq-out .tq-out-latest{margin:0!important}
+.tq-out .tq-out-latest>.wp-block-group__inner-container{width:100%!important;max-width:none!important}
+.tq-out .tq-out-latest-head{margin-bottom:28px}
+.tq-out .tq-out-final{margin:0!important}
+.tq-out .tq-out-final-actions,.tq-out .tq-out-final-button{margin:0!important}
+.tq-out .tq-out-final-button .wp-block-button__link{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border:1px solid rgba(32,33,31,.5);border-radius:999px;color:#20211f!important;text-decoration:none!important;font-size:12px;font-weight:900;background:rgba(255,255,255,.25)}
+@media(min-width:960px){
+  .tq-out .tq-out-choose-grid>.wp-block-group__inner-container,.tq-out .tq-out-local-grid>.wp-block-group__inner-container,.tq-out .tq-out-trip-grid>.wp-block-group__inner-container{gap:14px}
+  .tq-out .tq-out-route-list>.wp-block-group__inner-container{gap:12px}
+}
+@media(max-width:860px){
+  .tq-out .tq-out-choose-grid>.wp-block-group__inner-container{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .tq-out .tq-out-local-grid>.wp-block-group__inner-container{grid-template-columns:1fr 1fr}
+  .tq-out .tq-out-trip-grid>.wp-block-group__inner-container{grid-template-columns:1fr}
+  .tq-out .tq-out-route-card>.wp-block-group__inner-container{grid-template-columns:110px 1fr}
+  .tq-out .tq-out-route-arrow{display:none}
+  .tq-out .tq-out-final-inner>.wp-block-group__inner-container{grid-template-columns:1fr}
+}
+@media(max-width:560px){
+  .tq-out .tq-out-head>.wp-block-group__inner-container{display:block!important}
+  .tq-out .tq-out-head-note{margin-top:10px!important;max-width:none}
+  .tq-out .tq-out-local-grid>.wp-block-group__inner-container{grid-template-columns:1fr}
+  .tq-out .tq-out-trip-card>.wp-block-group__inner-container{grid-template-columns:62px 1fr;gap:14px}
+  .tq-out .tq-out-route-card>.wp-block-group__inner-container{grid-template-columns:1fr;gap:8px}
+  .tq-out .tq-out-final-actions,.tq-out .tq-out-final-button,.tq-out .tq-out-final-button .wp-block-button__link{width:100%}
+}
+@media(max-width:359px){.tq-out .tq-out-choose-grid>.wp-block-group__inner-container{grid-template-columns:1fr}}
 </style>
-<main class="tq-out">
-  <section class="tq-out-hero">
-    <div class="tq-out-hero-inner">
-      <p class="tq-out-brand">GO OUT / TSURIKUE!</p>
-      <h1>次の休日、<br>どこ行く？</h1>
-      <p class="tq-out-hero-lead">広島からふらっと日帰り。たまには1泊2日で遠くまで。実際に走ったコースと、寄ってみて面白かった場所を集めました。</p>
-      <p class="tq-out-hero-note">観光地を並べるだけではなく、「この順番で回った」「ここで予定が狂った」まで含めた、つりくえ！のおでかけ記録です。</p>
-    </div>
-  </section>
-
-  <section class="tq-out-section tq-out-choose">
-    <div class="tq-out-wrap">
-      <div class="tq-out-head"><div><p class="tq-out-kicker">CHOOSE YOUR QUEST</p><h2>今日は、どう遊ぶ？</h2></div><p>近場でゆるく遊ぶ日も、朝から車を走らせる日も。気分に近い入口からどうぞ。</p></div>
-      <div class="tq-out-choose-grid">
-        <a class="tq-out-choice" href="#hiroshima"><small>NEARBY</small><strong>広島で遊ぶ</strong><span>江田島・世羅・湯来など、日帰りで遊びやすい場所。</span><i class="tq-out-arrow">↓</i></a>
-        <a class="tq-out-choice" href="#trip"><small>ROAD TRIP</small><strong>旅に出る</strong><span>山口・鳥取・大分・淡路島。実際に出かけた旅をまとめました。</span><i class="tq-out-arrow">↓</i></a>
-        <a class="tq-out-choice" href="#route"><small>MODEL COURSE</small><strong>ルートを真似する</strong><span>実際に走った順番で、1泊2日や日帰りコースを紹介。</span><i class="tq-out-arrow">↓</i></a>
-        <a class="tq-out-choice" href="/category/sightseeing-leisure/"><small>ALL ARTICLES</small><strong>全部のおでかけ</strong><span>スポット記事も旅行記も、新着順でまとめて見る。</span><i class="tq-out-arrow">→</i></a>
-      </div>
-    </div>
-  </section>
-
-  <section id="hiroshima" class="tq-out-section tq-out-local">
-    <div class="tq-out-wrap">
-      <div class="tq-out-head"><div><p class="tq-out-kicker">HIROSHIMA</p><h2>まずは広島で遊ぶ</h2></div><p>海も山も街もあるので、「何しよう？」からでも決めやすい。つりくえ！で一番記事が育っているエリアです。</p></div>
-      <div class="tq-out-local-grid">
-        <a class="tq-out-card tq-out-card--main" href="/hiroshima-sightseeing/"><small>START HERE</small><h3>広島観光・レジャーまとめ</h3><p>今日どこ行く？を決めたい日に。実際に遊びに行った場所をまとめて探せます。</p><span class="tq-out-more">広島のおでかけを探す →</span></a>
-        <a class="tq-out-card tq-out-card--etajima" href="/etajima-sightseeing/"><small>ISLAND</small><h3>江田島</h3><p>海沿いを走って、気になる場所へ寄り道。島ドライブの日。</p><span class="tq-out-more">江田島へ →</span></a>
-        <a class="tq-out-card tq-out-card--sera" href="/sera-sightseeing/"><small>FLOWERS & FARM</small><h3>世羅</h3><p>花畑、牧場、ジェラート、夢吊橋。のんびり走る日帰り旅。</p><span class="tq-out-more">世羅へ →</span></a>
-        <a class="tq-out-card tq-out-card--yuki" href="/yuki-town-drive/"><small>RIVER & NATURE</small><h3>湯来町</h3><p>牧場、川遊び、釣り堀。自然の中で遊びたい休日に。</p><span class="tq-out-more">湯来へ →</span></a>
-        <a class="tq-out-card" href="/saijo-sakagura-dori/"><small>WALK</small><h3>西条酒蔵通り</h3><p>白壁と赤レンガ煙突の町を歩いて、酒蔵めぐり。</p><span class="tq-out-more">西条を歩く →</span></a>
-      </div>
-    </div>
-  </section>
-
-  <section id="trip" class="tq-out-section tq-out-trip">
-    <div class="tq-out-wrap">
-      <div class="tq-out-head"><div><p class="tq-out-kicker">ROAD TRIP</p><h2>旅に出る</h2></div><p>せっかくの休みなら、いつもより少し遠くへ。山口・鳥取・大分・淡路島など、実際に出かけた旅を集めました。</p></div>
-      <div class="tq-out-trip-grid">
-        <a class="tq-out-trip-card" href="/yamaguchi-drive/"><span class="tq-out-trip-badge">YAMAGUCHI</span><div><small>1 NIGHT / 2 DAYS</small><h3>山口｜ムーバレー・萩・元乃隅・角島へ</h3><p>山口西部をぐるっと走った、欲張りな1泊2日。</p></div></a>
-        <a class="tq-out-trip-card" href="/tottori-drive/"><span class="tq-out-trip-badge">TOTTORI</span><div><small>DRIVE</small><h3>鳥取｜境港・大山・コナン・砂の美術館</h3><p>最後は雨。予定通りにいかないところまで旅行です。</p></div></a>
-        <a class="tq-out-trip-card" href="/hiroshima-oita-1night-2days-drive/"><span class="tq-out-trip-badge">OITA</span><div><small>1 NIGHT / 2 DAYS</small><h3>大分｜別府・湯布院・日田へ</h3><p>下関に寄って別府泊。翌日は湯布院と日田まで。</p></div></a>
-        <a class="tq-out-trip-card" href="/dqisland/"><span class="tq-out-trip-badge">AWAJI</span><div><small>QUEST</small><h3>淡路島｜ドラゴンクエスト アイランド</h3><p>大人4人で本気の冒険。つりくえ！の名前と相性が良すぎる場所。</p></div></a>
-      </div>
-    </div>
-  </section>
-
-  <section id="route" class="tq-out-section tq-out-route">
-    <div class="tq-out-wrap">
-      <div class="tq-out-head"><div><p class="tq-out-kicker">REAL ROUTES</p><h2>実際に走った順番で</h2></div><p>モデルコースは机の上で組まず、実際に動いたルートを優先。丸ごと真似しても、気になる場所だけ拾ってもOKです。</p></div>
-      <div class="tq-out-route-list">
-        <a class="tq-out-route-card" href="/yamaguchi-drive/"><small>YAMAGUCHI / 1泊2日</small><div><h3>ムーバレー → 萩 → 元乃隅 → 角島</h3><p>広島発。山口の西側を1泊2日で走る。</p></div><b>→</b></a>
-        <a class="tq-out-route-card" href="/hiroshima-oita-1night-2days-drive/"><small>OITA / 1泊2日</small><div><h3>下関に寄り道 → 別府泊 → 湯布院 → 日田</h3><p>九州まで行くなら、別府だけでは帰らない。</p></div><b>→</b></a>
-        <a class="tq-out-route-card" href="/hiroshima-sanin-1night-2days/"><small>SANIN / 1泊2日</small><div><h3>広島から山陰へ。海と温泉をつなぐ旅</h3><p>長距離ドライブも、寄り道を入れるとクエストになる。</p></div><b>→</b></a>
-      </div>
-    </div>
-  </section>
-</main>
 <!-- /wp:html -->
 
-<!-- wp:group {"align":"full","className":"tq-out-latest","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull tq-out-latest"><!-- wp:html -->
-<div class="tq-out-latest-head"><p class="tq-out-kicker">LATEST QUESTS</p><h2>新着のおでかけ</h2><p>ここは自動更新。新しく遊びに行った記事が増えると、順番に入れ替わります。</p></div>
-<!-- /wp:html -->
-<!-- wp:latest-posts {"categories":[{{OUTING_CATEGORY_IDS}}],"postsToShow":6,"displayPostDate":true,"displayFeaturedImage":true,"featuredImageSizeSlug":"medium","addLinkToFeaturedImage":true,"className":"tq-out-latest-list"} /--></div>
+<!-- wp:group {"className":"tq-out","layout":{"type":"constrained"},"align":"full"} -->
+<div class="wp-block-group alignfull tq-out"><!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg","dimRatio":80,"overlayColor":"white","isUserOverlayColor":true,"align":"full","className":"tq-out-hero"} -->
+<div class="wp-block-cover alignfull tq-out-hero"><img class="wp-block-cover__image-background" alt="" src="https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg" data-object-fit="cover"/><span aria-hidden="true" class="wp-block-cover__background has-white-background-color has-background-dim-80 has-background-dim"></span><div class="wp-block-cover__inner-container"><!-- wp:group {"className":"tq-out-hero-inner","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-hero-inner"><!-- wp:paragraph {"className":"tq-out-brand"} -->
+<p class="tq-out-brand">GO OUT / TSURIKUE!</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":1} -->
+<h1 class="wp-block-heading">次の休日、<br>どこ行く？</h1>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-hero-lead"} -->
+<p class="tq-out-hero-lead">広島からふらっと日帰り。たまには1泊2日で遠くまで。実際に走ったコースと、寄ってみて面白かった場所を集めました。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-hero-note"} -->
+<p class="tq-out-hero-note">観光地を並べるだけではなく、「この順番で回った」「ここで予定が狂った」まで含めた、つりくえ！のおでかけ記録です。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div></div>
+<!-- /wp:cover -->
+
+<!-- wp:group {"className":"tq-out-section tq-out-choose","layout":{"type":"constrained"},"align":"full"} -->
+<div class="wp-block-group alignfull tq-out-section tq-out-choose"><!-- wp:group {"className":"tq-out-wrap","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-wrap"><!-- wp:group {"className":"tq-out-head","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head"><!-- wp:group {"className":"tq-out-head-left","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head-left"><!-- wp:paragraph {"className":"tq-out-kicker"} -->
+<p class="tq-out-kicker">CHOOSE YOUR QUEST</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">今日は、どう遊ぶ？</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"tq-out-head-note"} -->
+<p class="tq-out-head-note">近場でゆるく遊ぶ日も、朝から車を走らせる日も。気分に近い入口からどうぞ。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-choose-grid","layout":{"type":"grid","columnCount":4}} -->
+<div class="wp-block-group tq-out-choose-grid"><!-- wp:group {"className":"tq-out-choice","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-choice"><!-- wp:paragraph {"className":"tq-out-choice-label"} -->
+<p class="tq-out-choice-label">NEARBY</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="#hiroshima">広島で遊ぶ</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-choice-text"} -->
+<p class="tq-out-choice-text">江田島・世羅・湯来など、日帰りで遊びやすい場所。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-arrow"} -->
+<p class="tq-out-arrow"><a href="#hiroshima">↓</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-choice","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-choice"><!-- wp:paragraph {"className":"tq-out-choice-label"} -->
+<p class="tq-out-choice-label">ROAD TRIP</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="#trip">旅に出る</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-choice-text"} -->
+<p class="tq-out-choice-text">山口・鳥取・大分・淡路島。実際に出かけた旅をまとめました。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-arrow"} -->
+<p class="tq-out-arrow"><a href="#trip">↓</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-choice","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-choice"><!-- wp:paragraph {"className":"tq-out-choice-label"} -->
+<p class="tq-out-choice-label">MODEL COURSE</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="#route">ルートを真似する</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-choice-text"} -->
+<p class="tq-out-choice-text">実際に走った順番で、1泊2日や日帰りコースを紹介。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-arrow"} -->
+<p class="tq-out-arrow"><a href="#route">↓</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-choice","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-choice"><!-- wp:paragraph {"className":"tq-out-choice-label"} -->
+<p class="tq-out-choice-label">ALL ARTICLES</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/category/sightseeing-leisure/">全部のおでかけ</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-choice-text"} -->
+<p class="tq-out-choice-text">スポット記事も旅行記も、新着順でまとめて見る。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-arrow"} -->
+<p class="tq-out-arrow"><a href="/category/sightseeing-leisure/">→</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
 <!-- /wp:group -->
 
-<!-- wp:html -->
-<section class="tq-out-final"><div class="tq-out-final-inner"><div><h2>まだ決められない？</h2><p>それなら、とりあえず全部眺めてみるのもアリです。</p></div><a href="/category/sightseeing-leisure/">おでかけ記事を全部見る →</a></div></section>
-<!-- /wp:html -->
+<!-- wp:group {"className":"tq-out-section tq-out-local","layout":{"type":"constrained"},"align":"full","anchor":"hiroshima"} -->
+<div id="hiroshima" class="wp-block-group alignfull tq-out-section tq-out-local"><!-- wp:group {"className":"tq-out-wrap","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-wrap"><!-- wp:group {"className":"tq-out-head","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head"><!-- wp:group {"className":"tq-out-head-left","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head-left"><!-- wp:paragraph {"className":"tq-out-kicker"} -->
+<p class="tq-out-kicker">HIROSHIMA</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">まずは広島で遊ぶ</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"tq-out-head-note"} -->
+<p class="tq-out-head-note">海も山も街もあるので、「何しよう？」からでも決めやすい。つりくえ！で一番記事が育っているエリアです。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-local-grid","layout":{"type":"grid","columnCount":3}} -->
+<div class="wp-block-group tq-out-local-grid"><!-- wp:group {"className":"tq-out-card tq-out-card--main","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-card tq-out-card--main"><!-- wp:paragraph {"className":"tq-out-card-label"} -->
+<p class="tq-out-card-label">START HERE</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/hiroshima-sightseeing/">広島観光・レジャーまとめ</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-card-text"} -->
+<p class="tq-out-card-text">今日どこ行く？を決めたい日に。実際に遊びに行った場所をまとめて探せます。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-more"} -->
+<p class="tq-out-more"><a href="/hiroshima-sightseeing/">広島のおでかけを探す →</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-card tq-out-card--etajima","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-card tq-out-card--etajima"><!-- wp:paragraph {"className":"tq-out-card-label"} -->
+<p class="tq-out-card-label">ISLAND</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/etajima-sightseeing/">江田島</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-card-text"} -->
+<p class="tq-out-card-text">海沿いを走って、気になる場所へ寄り道。島ドライブの日。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-more"} -->
+<p class="tq-out-more"><a href="/etajima-sightseeing/">江田島へ →</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-card tq-out-card--sera","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-card tq-out-card--sera"><!-- wp:paragraph {"className":"tq-out-card-label"} -->
+<p class="tq-out-card-label">FLOWERS & FARM</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/sera-sightseeing/">世羅</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-card-text"} -->
+<p class="tq-out-card-text">花畑、牧場、ジェラート、夢吊橋。のんびり走る日帰り旅。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-more"} -->
+<p class="tq-out-more"><a href="/sera-sightseeing/">世羅へ →</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-card tq-out-card--yuki","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-card tq-out-card--yuki"><!-- wp:paragraph {"className":"tq-out-card-label"} -->
+<p class="tq-out-card-label">RIVER & NATURE</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/yuki-town-drive/">湯来町</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-card-text"} -->
+<p class="tq-out-card-text">牧場、川遊び、釣り堀。自然の中で遊びたい休日に。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-more"} -->
+<p class="tq-out-more"><a href="/yuki-town-drive/">湯来へ →</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-card"><!-- wp:paragraph {"className":"tq-out-card-label"} -->
+<p class="tq-out-card-label">WALK</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/saijo-sakagura-dori/">西条酒蔵通り</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-card-text"} -->
+<p class="tq-out-card-text">白壁と赤レンガ煙突の町を歩いて、酒蔵めぐり。</p>
+<!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-out-more"} -->
+<p class="tq-out-more"><a href="/saijo-sakagura-dori/">西条を歩く →</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-out-section tq-out-trip","layout":{"type":"constrained"},"align":"full","anchor":"trip"} -->
+<div id="trip" class="wp-block-group alignfull tq-out-section tq-out-trip"><!-- wp:group {"className":"tq-out-wrap","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-wrap"><!-- wp:group {"className":"tq-out-head","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head"><!-- wp:group {"className":"tq-out-head-left","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head-left"><!-- wp:paragraph {"className":"tq-out-kicker"} -->
+<p class="tq-out-kicker">ROAD TRIP</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">旅に出る</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"tq-out-head-note"} -->
+<p class="tq-out-head-note">せっかくの休みなら、いつもより少し遠くへ。山口・鳥取・大分・淡路島など、実際に出かけた旅を集めました。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-trip-grid","layout":{"type":"grid","columnCount":2}} -->
+<div class="wp-block-group tq-out-trip-grid"><!-- wp:group {"className":"tq-out-trip-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-card"><!-- wp:paragraph {"className":"tq-out-trip-badge"} -->
+<p class="tq-out-trip-badge">YAMAGUCHI</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-out-trip-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-copy"><!-- wp:paragraph {"className":"tq-out-trip-label"} -->
+<p class="tq-out-trip-label">1 NIGHT / 2 DAYS</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/yamaguchi-drive/">山口｜ムーバレー・萩・元乃隅・角島へ</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-trip-text"} -->
+<p class="tq-out-trip-text">山口西部をぐるっと走った、欲張りな1泊2日。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-trip-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-card"><!-- wp:paragraph {"className":"tq-out-trip-badge"} -->
+<p class="tq-out-trip-badge">TOTTORI</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-out-trip-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-copy"><!-- wp:paragraph {"className":"tq-out-trip-label"} -->
+<p class="tq-out-trip-label">DRIVE</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/tottori-drive/">鳥取｜境港・大山・コナン・砂の美術館</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-trip-text"} -->
+<p class="tq-out-trip-text">最後は雨。予定通りにいかないところまで旅行です。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-trip-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-card"><!-- wp:paragraph {"className":"tq-out-trip-badge"} -->
+<p class="tq-out-trip-badge">OITA</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-out-trip-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-copy"><!-- wp:paragraph {"className":"tq-out-trip-label"} -->
+<p class="tq-out-trip-label">1 NIGHT / 2 DAYS</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/hiroshima-oita-1night-2days-drive/">大分｜別府・湯布院・日田へ</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-trip-text"} -->
+<p class="tq-out-trip-text">下関に寄って別府泊。翌日は湯布院と日田まで。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-trip-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-card"><!-- wp:paragraph {"className":"tq-out-trip-badge"} -->
+<p class="tq-out-trip-badge">AWAJI</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-out-trip-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-trip-copy"><!-- wp:paragraph {"className":"tq-out-trip-label"} -->
+<p class="tq-out-trip-label">QUEST</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/dqisland/">淡路島｜ドラゴンクエスト アイランド</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-trip-text"} -->
+<p class="tq-out-trip-text">大人4人で本気の冒険。つりくえ！の名前と相性が良すぎる場所。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-out-section tq-out-route","layout":{"type":"constrained"},"align":"full","anchor":"route"} -->
+<div id="route" class="wp-block-group alignfull tq-out-section tq-out-route"><!-- wp:group {"className":"tq-out-wrap","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-wrap"><!-- wp:group {"className":"tq-out-head","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head"><!-- wp:group {"className":"tq-out-head-left","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-head-left"><!-- wp:paragraph {"className":"tq-out-kicker"} -->
+<p class="tq-out-kicker">REAL ROUTES</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">実際に走った順番で</h2>
+<!-- /wp:heading --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"tq-out-head-note"} -->
+<p class="tq-out-head-note">モデルコースは机の上で組まず、実際に動いたルートを優先。丸ごと真似しても、気になる場所だけ拾ってもOKです。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-route-list","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-route-list"><!-- wp:group {"className":"tq-out-route-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-route-card"><!-- wp:paragraph {"className":"tq-out-route-label"} -->
+<p class="tq-out-route-label">YAMAGUCHI / 1泊2日</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-out-route-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-route-copy"><!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/yamaguchi-drive/">ムーバレー → 萩 → 元乃隅 → 角島</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-route-text"} -->
+<p class="tq-out-route-text">広島発。山口の西側を1泊2日で走る。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"tq-out-route-arrow"} -->
+<p class="tq-out-route-arrow"><a href="/yamaguchi-drive/">→</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-route-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-route-card"><!-- wp:paragraph {"className":"tq-out-route-label"} -->
+<p class="tq-out-route-label">OITA / 1泊2日</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-out-route-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-route-copy"><!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/hiroshima-oita-1night-2days-drive/">下関に寄り道 → 別府泊 → 湯布院 → 日田</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-route-text"} -->
+<p class="tq-out-route-text">九州まで行くなら、別府だけでは帰らない。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"tq-out-route-arrow"} -->
+<p class="tq-out-route-arrow"><a href="/hiroshima-oita-1night-2days-drive/">→</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:group {"className":"tq-out-route-card","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-route-card"><!-- wp:paragraph {"className":"tq-out-route-label"} -->
+<p class="tq-out-route-label">SANIN / 1泊2日</p>
+<!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-out-route-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-route-copy"><!-- wp:heading {"level":3} -->
+<h3 class="wp-block-heading"><a href="/hiroshima-sanin-1night-2days/">広島から山陰へ。海と温泉をつなぐ旅</a></h3>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-route-text"} -->
+<p class="tq-out-route-text">長距離ドライブも、寄り道を入れるとクエストになる。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:paragraph {"className":"tq-out-route-arrow"} -->
+<p class="tq-out-route-arrow"><a href="/hiroshima-sanin-1night-2days/">→</a></p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-out-latest","layout":{"type":"constrained"},"align":"full"} -->
+<div class="wp-block-group alignfull tq-out-latest"><!-- wp:group {"className":"tq-out-wrap","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-wrap"><!-- wp:group {"className":"tq-out-latest-head","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-latest-head"><!-- wp:paragraph {"className":"tq-out-kicker"} -->
+<p class="tq-out-kicker">LATEST QUESTS</p>
+<!-- /wp:paragraph -->
+<!-- wp:heading -->
+<h2 class="wp-block-heading">新着のおでかけ</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-out-latest-note"} -->
+<p class="tq-out-latest-note">ここは自動更新。新しく遊びに行った記事が増えると、順番に入れ替わります。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:latest-posts {"categories":[{{OUTING_CATEGORY_IDS}}],"postsToShow":6,"displayPostDate":true,"displayFeaturedImage":true,"featuredImageSizeSlug":"medium","addLinkToFeaturedImage":true,"className":"tq-out-latest-list"} /--></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-out-final","layout":{"type":"constrained"},"align":"full"} -->
+<div class="wp-block-group alignfull tq-out-final"><!-- wp:group {"className":"tq-out-final-inner","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-final-inner"><!-- wp:group {"className":"tq-out-final-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-out-final-copy"><!-- wp:heading -->
+<h2 class="wp-block-heading">まだ決められない？</h2>
+<!-- /wp:heading -->
+<!-- wp:paragraph -->
+<p>それなら、とりあえず全部眺めてみるのもアリです。</p>
+<!-- /wp:paragraph --></div>
+<!-- /wp:group -->
+<!-- wp:buttons {"className":"tq-out-final-actions"} -->
+<div class="wp-block-buttons tq-out-final-actions"><!-- wp:button {"className":"tq-out-final-button"} -->
+<div class="wp-block-button tq-out-final-button"><a class="wp-block-button__link wp-element-button" href="/category/sightseeing-leisure/">おでかけ記事を全部見る →</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group --></div>
+<!-- /wp:group -->
