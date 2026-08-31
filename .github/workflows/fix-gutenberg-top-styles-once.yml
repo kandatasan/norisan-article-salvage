@@ -1,4 +1,4 @@
-name: Fix Gutenberg category card alignment retry
+name: Align Gutenberg gourmet category card
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  align-category-cards:
+  align-gourmet-card:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,24 +21,21 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Add category card alignment override
+      - name: Add gourmet vertical alignment override
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('experimental-pages/top-design-lab/content.html')
           s = p.read_text(encoding='utf-8')
-          tag = '/* GUTENBERG CARD ALIGN FIX v2 */'
+          tag = '/* GUTENBERG GOURMET ALIGN FIX v3 */'
           if tag in s:
-              raise SystemExit('card alignment fix already present')
+              raise SystemExit('gourmet alignment fix already present')
           css = (
-              '\n/* GUTENBERG CARD ALIGN FIX v2 */\n'
-              '.tq4 .tq4-cat .wp-block-cover__inner-container{width:100%!important;display:flex!important;align-items:flex-end!important;justify-content:flex-start!important;text-align:left!important}\n'
-              '.tq4 .tq4-cat-body{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;text-align:left!important}\n'
-              '.tq4 .tq4-cat-body>*{max-width:none!important;margin-left:0!important;margin-right:0!important;text-align:left!important}\n'
-              '.tq4 .tq4-cat-body>.tq4-card-label,.tq4 .tq4-cat-body>h3,.tq4 .tq4-cat-body>.tq4-card-desc{width:100%!important}\n'
-              '.tq4 .tq4-cat-body>.tq4-pill-text{display:inline-block!important;width:max-content!important;max-width:100%!important}\n'
-              '@media(max-width:560px){.tq4 .tq4-cat-body{padding-left:14px!important;padding-right:14px!important}}\n'
+              '\n/* GUTENBERG GOURMET ALIGN FIX v3 */\n'
+              '/* Gourmet has no pill, so reserve the same vertical space as the other cards. */\n'
+              '.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:58px!important}\n'
+              '@media(max-width:560px){.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:52px!important}}\n'
           )
           s = s.replace('</style>', css + '\n</style>', 1)
           p.write_text(s, encoding='utf-8')
@@ -66,5 +63,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
-          git commit -m 'Align Gutenberg category card text'
+          git commit -m 'Align gourmet category card vertically'
           git push origin HEAD:main
