@@ -1,0 +1,1 @@
+Scope is intentionally limited to responsive CSS and hero text contrast for the Gutenberg outing hub draft.
