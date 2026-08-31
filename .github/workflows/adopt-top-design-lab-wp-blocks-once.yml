@@ -1,4 +1,4 @@
-name: Adopt normalized Gutenberg draft once
+name: Adopt normalized Gutenberg draft before gourmet fix
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
           user=os.environ['TSURIKUE_WP_USER']
           pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
           token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-block-adopter/1.1'}
+          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-block-adopter/1.2'}
           q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
           req=urllib.request.Request('https://tsurikue.com/wp-json/wp/v2/pages/2983?'+q,headers=headers)
           with urllib.request.urlopen(req,timeout=45) as r:
