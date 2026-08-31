@@ -1,3 +1,4 @@
+import hashlib
 import importlib.util
 import json
 import pathlib
@@ -27,7 +28,7 @@ class T(unittest.TestCase):
 
     def test_package_adds_marker(self):
         td, p, cfg = self.package()
-        loaded, full = m.load_package(p)
+        _, full = m.load_package(p)
         self.assertTrue(full.startswith(cfg["marker"] + "\n"))
         self.assertIn("<p>Hello</p>", full)
         td.cleanup()
@@ -53,6 +54,23 @@ class T(unittest.TestCase):
         self.assertEqual(existing["id"], 10)
         td.cleanup()
 
+    def test_allow_guarded_update_by_exact_current_hash(self):
+        td, p, cfg = self.package()
+        _, full = m.load_package(p)
+        current = cfg["marker"] + "\n<p>Old version</p>\n"
+        cfg["expected_current_content_sha256"] = hashlib.sha256(current.encode()).hexdigest()
+        row = {
+            "id": 10,
+            "slug": cfg["slug"],
+            "status": "draft",
+            "title": {"raw": cfg["title"]},
+            "content": {"raw": current},
+        }
+        action, existing = m.validate_existing([row], cfg, full)
+        self.assertEqual(action, "UPDATE")
+        self.assertEqual(existing["id"], 10)
+        td.cleanup()
+
     def test_reject_published_same_slug(self):
         td, p, cfg = self.package()
         _, full = m.load_package(p)
@@ -67,15 +85,48 @@ class T(unittest.TestCase):
             m.validate_existing([row], cfg, full)
         td.cleanup()
 
-    def test_reject_edited_draft_same_slug(self):
+    def test_reject_edited_draft_when_hash_differs(self):
         td, p, cfg = self.package()
         _, full = m.load_package(p)
+        cfg["expected_current_content_sha256"] = "0" * 64
         row = {
             "id": 10,
             "slug": cfg["slug"],
             "status": "draft",
             "title": {"raw": cfg["title"]},
-            "content": {"raw": full + "human edit"},
+            "content": {"raw": cfg["marker"] + "\nhuman edit"},
+        }
+        with self.assertRaises(RuntimeError):
+            m.validate_existing([row], cfg, full)
+        td.cleanup()
+
+    def test_reject_missing_marker_even_with_hash(self):
+        td, p, cfg = self.package()
+        _, full = m.load_package(p)
+        current = "no marker here"
+        cfg["expected_current_content_sha256"] = hashlib.sha256(current.encode()).hexdigest()
+        row = {
+            "id": 10,
+            "slug": cfg["slug"],
+            "status": "draft",
+            "title": {"raw": cfg["title"]},
+            "content": {"raw": current},
+        }
+        with self.assertRaises(RuntimeError):
+            m.validate_existing([row], cfg, full)
+        td.cleanup()
+
+    def test_reject_title_change_even_with_hash(self):
+        td, p, cfg = self.package()
+        _, full = m.load_package(p)
+        current = cfg["marker"] + "\nold"
+        cfg["expected_current_content_sha256"] = hashlib.sha256(current.encode()).hexdigest()
+        row = {
+            "id": 10,
+            "slug": cfg["slug"],
+            "status": "draft",
+            "title": {"raw": "Human title"},
+            "content": {"raw": current},
         }
         with self.assertRaises(RuntimeError):
             m.validate_existing([row], cfg, full)
