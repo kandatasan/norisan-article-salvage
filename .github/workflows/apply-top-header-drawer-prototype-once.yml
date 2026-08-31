@@ -40,9 +40,25 @@ jobs:
           npx playwright install chromium >/dev/null 2>&1
 
       - name: Verify mobile drawer and desktop navigation
+        id: verify_header
+        continue-on-error: true
         run: node experimental-pages/top-design-lab/header-prototype/verify.js
 
+      - name: Roll back custom header if verification failed
+        if: steps.verify_header.outcome == 'failure'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python experimental-pages/top-design-lab/header-prototype/restore.py
+
+      - name: Fail after safe rollback
+        if: steps.verify_header.outcome == 'failure'
+        run: |
+          echo 'Header browser verification failed; custom prototype was rolled back.'
+          exit 1
+
       - name: Commit synchronized WordPress source
+        if: steps.verify_header.outcome == 'success'
         run: |
           set -euo pipefail
           git config user.name 'github-actions[bot]'

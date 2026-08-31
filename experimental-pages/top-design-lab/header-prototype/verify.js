@@ -8,11 +8,14 @@ const { chromium } = require('playwright');
   await mobile.waitForTimeout(1800);
 
   const closed = await mobile.evaluate(() => {
+    const toggle = document.querySelector('#tq-menu-toggle');
     const menu = document.querySelector('.tq-site-menu');
     const trigger = document.querySelector('.tq-site-menu-trigger');
     const native = document.querySelector('.l-header__menuBtn');
     const logo = document.querySelector('#header .c-headLogo__link');
     return {
+      toggle: !!toggle,
+      checked: toggle ? toggle.checked : null,
       menu: !!menu,
       trigger: !!trigger,
       visibility: menu ? getComputedStyle(menu).visibility : null,
@@ -21,48 +24,50 @@ const { chromium } = require('playwright');
       navLinks: document.querySelectorAll('.tq-site-menu__quest a').length,
       logoText: logo ? logo.textContent.trim() : null,
       headerPosition: getComputedStyle(document.querySelector('#header')).position,
-      hash: location.hash,
     };
   });
   console.log('MOBILE_CLOSED=' + JSON.stringify(closed));
-  if (!closed.menu || !closed.trigger || closed.navLinks !== 4 || closed.nativePointerEvents !== 'none') {
+  if (!closed.toggle || closed.checked !== false || !closed.menu || !closed.trigger || closed.navLinks !== 4 || closed.nativePointerEvents !== 'none' || closed.pointerEvents !== 'none') {
     throw new Error('MOBILE_BASE_VERIFY_FAILED ' + JSON.stringify(closed));
   }
 
   await mobile.locator('.tq-site-menu-trigger').click({ force: true });
   await mobile.waitForTimeout(450);
   const opened = await mobile.evaluate(() => {
+    const toggle = document.querySelector('#tq-menu-toggle');
     const menu = document.querySelector('.tq-site-menu');
     const drawer = document.querySelector('.tq-site-menu__drawer');
     const r = drawer.getBoundingClientRect();
     const cs = getComputedStyle(menu);
     return {
-      hash: location.hash,
+      checked: toggle ? toggle.checked : null,
       visibility: cs.visibility,
       pointerEvents: cs.pointerEvents,
       opacity: cs.opacity,
       left: +r.left.toFixed(1),
       width: +r.width.toFixed(1),
-      title: drawer.innerText.slice(0, 140),
+      title: drawer.innerText.slice(0, 180),
     };
   });
   console.log('MOBILE_OPEN=' + JSON.stringify(opened));
-  if (opened.hash !== '#tq-holiday-menu' || opened.visibility !== 'visible' || opened.pointerEvents !== 'auto' || Math.abs(opened.left) > 0.5 || opened.width < 300 || !opened.title.includes('なにして遊ぶ')) {
+  if (opened.checked !== true || opened.visibility !== 'visible' || opened.pointerEvents !== 'auto' || Math.abs(opened.left) > 0.5 || opened.width < 300 || !opened.title.includes('なにして遊ぶ')) {
     throw new Error('MOBILE_OPEN_VERIFY_FAILED ' + JSON.stringify(opened));
   }
 
   await mobile.locator('.tq-site-menu__close').click({ force: true });
-  await mobile.waitForTimeout(250);
+  await mobile.waitForTimeout(300);
   const reclosed = await mobile.evaluate(() => {
+    const toggle = document.querySelector('#tq-menu-toggle');
     const menu = document.querySelector('.tq-site-menu');
     return {
-      hash: location.hash,
+      checked: toggle ? toggle.checked : null,
       visibility: getComputedStyle(menu).visibility,
       pointerEvents: getComputedStyle(menu).pointerEvents,
+      opacity: getComputedStyle(menu).opacity,
     };
   });
   console.log('MOBILE_RECLOSED=' + JSON.stringify(reclosed));
-  if (reclosed.hash === '#tq-holiday-menu' || reclosed.pointerEvents !== 'none') {
+  if (reclosed.checked !== false || reclosed.pointerEvents !== 'none') {
     throw new Error('MOBILE_RECLOSE_VERIFY_FAILED ' + JSON.stringify(reclosed));
   }
 
