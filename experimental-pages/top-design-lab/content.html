@@ -236,6 +236,20 @@ body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-g
 body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfull,body.page-id-2983 .tq4>.wp-block-group.alignfull,body.page-id-2983 .tq4 .tq4-party,body.page-id-2983 .tq4 .tq4-hero,body.page-id-2983 .tq4 .tq4-cats{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
 @supports(width:100dvw){@media(max-width:782px){body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4,body.page-id-2983 .alignfull.tq4{width:100dvw!important;max-width:100dvw!important;margin-left:calc(50% - 50dvw)!important;margin-right:calc(50% - 50dvw)!important}}}
 /* END MOBILE FULL-WIDTH FIX v3 */
+
+/* MOBILE OUTER PADDING FIX v4 */
+body.page-id-2983 .l-content{padding-left:0!important;padding-right:0!important;max-width:none!important}
+body.page-id-2983 .l-mainContent,body.page-id-2983 .l-mainContent__inner,body.page-id-2983 .post_content{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}
+body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4,body.page-id-2983 .alignfull.tq4{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;left:auto!important;right:auto!important;transform:none!important}
+body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfull,body.page-id-2983 .tq4>.wp-block-group.alignfull{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
+/* END MOBILE OUTER PADDING FIX v4 */
+
+/* MOBILE HAS-PARENT FIX v5 */
+.l-content:has(.tq4){padding-left:0!important;padding-right:0!important;max-width:none!important}
+.l-mainContent:has(.tq4),.l-mainContent__inner:has(.tq4),.post_content:has(>.tq4){width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}
+.post_content:has(>.tq4)>.tq4,.post_content:has(>.tq4)>.wp-block-group.tq4{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;left:auto!important;right:auto!important;transform:none!important}
+.post_content:has(>.tq4)>.tq4>.alignfull,.post_content:has(>.tq4)>.tq4>.wp-block-cover.alignfull,.post_content:has(>.tq4)>.tq4>.wp-block-group.alignfull{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
+/* END MOBILE HAS-PARENT FIX v5 */
 </style>
 <!-- /wp:html -->
 
