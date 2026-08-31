@@ -5,7 +5,6 @@ SLUG='odekake'
 TITLE='おでかけ｜広島・山口・中国地方の観光・ドライブ・旅行'
 STATUS='draft'
 MARKER='<!-- tsurikue-category-hub:v1:outing -->'
-NAV_MARKER='<!-- tq-global-site-nav:v1 -->'
 NAV_REF_START='<!-- tq-global-site-nav-ref:v1 start -->'
 NAV_REF_END='<!-- tq-global-site-nav-ref:v1 end -->'
 HERE=pathlib.Path(__file__).resolve().parent
@@ -17,7 +16,7 @@ PLACEHOLDER='{{OUTING_CATEGORY_IDS}}'
 user=os.environ['TSURIKUE_WP_USER']
 pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.2'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.3'}
 
 def request(path, method='GET', payload=None, attempts=3, timeout=35):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -48,17 +47,6 @@ def find_category(slug):
         raise RuntimeError(f'CATEGORY_NOT_UNIQUE slug={slug} count={len(items)}')
     return items[0]
 
-def find_nav_block_id():
-    blocks=request('/blocks?context=edit&per_page=100&_fields=id,title,status,content')
-    for block in blocks:
-        content=raw(block,'content')
-        title=raw(block,'title')
-        if NAV_MARKER in content or title=='つりくえ！共通ナビ（自動管理）':
-            if block.get('status')!='publish':
-                raise RuntimeError(f'NAV_BLOCK_NOT_PUBLISHED id={block["id"]}')
-            return block['id']
-    raise RuntimeError('NAV_BLOCK_NOT_FOUND')
-
 def build_content():
     parent=find_category(PARENT_SLUG)
     child=find_category(CHILD_SLUG)
@@ -72,9 +60,9 @@ def build_content():
     template=template.replace(PLACEHOLDER,f'{parent["id"]},{child["id"]}')
     if PLACEHOLDER in template:
         raise RuntimeError('UNRESOLVED_TEMPLATE_TOKEN')
-    nav_id=find_nav_block_id()
-    nav=f'{NAV_REF_START}\n<!-- wp:block {{"ref":{nav_id}}} /-->\n{NAV_REF_END}\n\n'
-    return nav+template, parent, child, nav_id
+    if NAV_REF_START in template or NAV_REF_END in template:
+        raise RuntimeError('SOURCE_MUST_NOT_CONTAIN_TEMP_NAV_REF')
+    return template, parent, child
 
 def find_page():
     q=urllib.parse.urlencode({'slug':SLUG,'context':'edit','per_page':10,'_fields':'id,slug,status,title,content,excerpt,link'})
@@ -83,14 +71,14 @@ def find_page():
         raise RuntimeError(f'PAGE_NOT_UNIQUE slug={SLUG} count={len(items)}')
     return items[0] if items else None
 
-def verify(page_id,parent,child,nav_id):
+def verify(page_id,parent,child):
     check=request(f'/pages/{page_id}?context=edit&_fields=id,slug,status,title,content,link')
     check_content=raw(check,'content')
     checks={
       'slug':check.get('slug')==SLUG,
       'status':check.get('status')==STATUS,
       'marker':MARKER in check_content,
-      'nav_ref':NAV_REF_START in check_content and f'"ref":{nav_id}' in check_content,
+      'temp_nav_absent':NAV_REF_START not in check_content and NAV_REF_END not in check_content,
       'latest_block':'wp:latest-posts' in check_content,
       'parent_cat':str(parent['id']) in check_content,
       'child_cat':str(child['id']) in check_content,
@@ -102,7 +90,7 @@ def verify(page_id,parent,child,nav_id):
     return check,checks
 
 def main():
-    content,parent,child,nav_id=build_content()
+    content,parent,child=build_content()
     existing=find_page()
     payload={'title':TITLE,'slug':SLUG,'status':STATUS,'content':content,'excerpt':'広島・山口・中国地方を中心に、実際に出かけた観光地・ドライブ・旅行モデルコースから次の休日を探せる、つりくえ！のおでかけ入口です。'}
     old_payload=None
@@ -122,7 +110,7 @@ def main():
             page=request('/pages',method='POST',payload=payload)
             action='CREATED'; created=True
         page_id=page['id']
-        check,checks=verify(page_id,parent,child,nav_id)
+        check,checks=verify(page_id,parent,child)
     except Exception:
         if page_id is not None:
             try:
@@ -145,7 +133,7 @@ def main():
       'preview_link':f'https://tsurikue.com/?page_id={page_id}&preview=true',
       'outing_category_id':parent['id'],
       'model_course_category_id':child['id'],
-      'nav_block_id':nav_id,
+      'temporary_nav':'absent',
       'checks':checks,
     },ensure_ascii=False))
 

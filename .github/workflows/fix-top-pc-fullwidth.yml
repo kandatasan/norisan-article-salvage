@@ -1,0 +1,71 @@
+name: Fix top PC fullwidth
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/fix-top-pc-fullwidth.yml'
+      - 'experimental-pages/top-design-lab/layout-fixes/**'
+
+permissions:
+  contents: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Apply guarded desktop full-width patch
+        id: apply
+        continue-on-error: true
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            if python experimental-pages/top-design-lab/layout-fixes/patch_pc_fullwidth.py; then exit 0; fi
+            if [[ "$attempt" != 3 ]]; then sleep 5; fi
+          done
+          exit 1
+      - name: Stop if patch could not be applied
+        if: steps.apply.outcome == 'failure'
+        run: exit 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser verifier
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Verify PC full width and mobile regression
+        id: verify
+        continue-on-error: true
+        run: node experimental-pages/top-design-lab/layout-fixes/verify_pc_fullwidth.js
+      - name: Roll back if browser verification failed
+        if: steps.verify.outcome == 'failure'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python experimental-pages/top-design-lab/layout-fixes/rollback_pc_fullwidth.py
+      - name: Fail after safe rollback
+        if: steps.verify.outcome == 'failure'
+        run: exit 1
+      - name: Commit synchronized top source
+        if: steps.verify.outcome == 'success'
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Fix top desktop full width'
+          git push origin HEAD:main
