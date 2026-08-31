@@ -4,6 +4,13 @@
 body:has(.tq-out) .c-pageTitle,body:has(.tq-out) .p-breadcrumb{display:none!important}
 body:has(.tq-out) .l-content{padding-top:0!important}
 body:has(.tq-out) #content{z-index:auto!important}
+/* TQ OUTING ONE COLUMN v1 */
+body:has(.tq-out) #content.l-content.l-container{width:100%!important;max-width:none!important;padding-left:0!important;padding-right:0!important}
+body:has(.tq-out) .l-mainContent{width:100%!important;max-width:none!important;flex:1 1 100%!important;margin:0!important}
+body:has(.tq-out) .l-mainContent__inner,body:has(.tq-out) .post_content{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+body:has(.tq-out) .l-sidebar{display:none!important}
+body:has(.tq-out) .tq-out h2,body:has(.tq-out) .tq-out-final h2,body:has(.tq-out) .tq-out-latest h2{background:transparent!important;color:inherit!important;padding:0!important;border:0!important;box-shadow:none!important}
+body:has(.tq-out) .tq-out h2:before,body:has(.tq-out) .tq-out h2:after,body:has(.tq-out) .tq-out-final h2:before,body:has(.tq-out) .tq-out-final h2:after,body:has(.tq-out) .tq-out-latest h2:before,body:has(.tq-out) .tq-out-latest h2:after{content:none!important;display:none!important}
 .tq-out,.tq-out *{box-sizing:border-box}
 .tq-out{--ink:#20211f;--sub:#676963;--paper:#f7f5ef;--line:#dedbd1;--yellow:#f3b92f;--green:#e6eddc;--blue:#e3edf7;--sea:#dbeaf0;width:100vw;margin-left:calc(50% - 50vw);overflow:hidden;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;-webkit-font-smoothing:antialiased}
 .tq-out a{color:inherit;text-decoration:none}.tq-out a:focus-visible{outline:3px solid #222;outline-offset:4px}
