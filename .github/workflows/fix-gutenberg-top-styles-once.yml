@@ -1,4 +1,4 @@
-name: Align Gutenberg gourmet category card retry
+name: Add Gutenberg gourmet category pill
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  align-gourmet-card:
+  add-gourmet-pill:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -21,23 +21,46 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Add gourmet vertical alignment override
+      - name: Replace gourmet alignment hack with normal pill
         shell: bash
         run: |
           python - <<'PY'
           from pathlib import Path
           p = Path('experimental-pages/top-design-lab/content.html')
           s = p.read_text(encoding='utf-8')
-          tag = '/* GUTENBERG GOURMET ALIGN FIX v3 */'
-          if tag in s:
-              raise SystemExit('gourmet alignment fix already present')
-          css = (
+
+          old_css = (
               '\n/* GUTENBERG GOURMET ALIGN FIX v3 */\n'
               '/* Gourmet has no pill, so reserve the same vertical space as the other cards. */\n'
               '.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:58px!important}\n'
               '@media(max-width:560px){.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:52px!important}}\n'
           )
-          s = s.replace('</style>', css + '\n</style>', 1)
+          if old_css not in s:
+              raise SystemExit('expected gourmet alignment override not found')
+          s = s.replace(old_css, '\n', 1)
+
+          pill = (
+              '<!-- wp:paragraph {"className":"tq4-pill-text"} -->\n'
+              '<p class="tq4-pill-text">ラーメン・ご当地グルメ</p>\n'
+              '<!-- /wp:paragraph -->\n'
+          )
+          if 'ラーメン・ご当地グルメ' in s:
+              raise SystemExit('gourmet pill already present')
+
+          needle = (
+              '<p class="tq4-card-desc">街のラーメン、旅先のごはん、気になった店。</p>\n'
+              '<!-- /wp:paragraph -->\n'
+              '</div>\n'
+          )
+          if needle not in s:
+              raise SystemExit('gourmet card insertion point not found')
+          replacement = (
+              '<p class="tq4-card-desc">街のラーメン、旅先のごはん、気になった店。</p>\n'
+              '<!-- /wp:paragraph -->\n'
+              + pill +
+              '</div>\n'
+          )
+          s = s.replace(needle, replacement, 1)
           p.write_text(s, encoding='utf-8')
           PY
 
@@ -63,5 +86,5 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
-          git commit -m 'Align gourmet category card vertically'
+          git commit -m 'Add gourmet category pill'
           git push origin HEAD:main
