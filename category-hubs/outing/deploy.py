@@ -16,7 +16,7 @@ CHILD_SLUG='drive'
 user=os.environ['TSURIKUE_WP_USER']
 pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.0'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.1'}
 
 def request(path, method='GET', payload=None, attempts=3, timeout=35):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -74,33 +74,13 @@ def build_content():
     return nav+template, parent, child, nav_id
 
 def find_page():
-    q=urllib.parse.urlencode({'slug':SLUG,'context':'edit','status':'draft,publish,private,pending,future','per_page':10,'_fields':'id,slug,status,title,content,link'})
-    try:
-        items=request('/pages?'+q)
-    except RuntimeError:
-        # Some WP installs reject comma statuses. Fall back to any accessible context.
-        q=urllib.parse.urlencode({'slug':SLUG,'context':'edit','per_page':10,'_fields':'id,slug,status,title,content,link'})
-        items=request('/pages?'+q)
+    q=urllib.parse.urlencode({'slug':SLUG,'context':'edit','per_page':10,'_fields':'id,slug,status,title,content,excerpt,link'})
+    items=request('/pages?'+q)
     if len(items)>1:
         raise RuntimeError(f'PAGE_NOT_UNIQUE slug={SLUG} count={len(items)}')
     return items[0] if items else None
 
-def main():
-    content,parent,child,nav_id=build_content()
-    existing=find_page()
-    payload={'title':TITLE,'slug':SLUG,'status':STATUS,'content':content,'excerpt':'広島・山口・中国地方を中心に、実際に出かけた観光地・ドライブ・旅行モデルコースから次の休日を探せる、つりくえ！のおでかけ入口です。'}
-    if existing:
-        current=raw(existing,'content')
-        if MARKER not in current:
-            raise RuntimeError(f'REFUSE_OVERWRITE_UNRELATED_PAGE id={existing["id"]} status={existing.get("status")}')
-        if existing.get('status')!='draft':
-            raise RuntimeError(f'REFUSE_OVERWRITE_NON_DRAFT id={existing["id"]} status={existing.get("status")}')
-        page=request(f'/pages/{existing["id"]}',method='POST',payload=payload)
-        action='UPDATED'
-    else:
-        page=request('/pages',method='POST',payload=payload)
-        action='CREATED'
-    page_id=page['id']
+def verify(page_id,parent,child,nav_id):
     check=request(f'/pages/{page_id}?context=edit&_fields=id,slug,status,title,content,link')
     check_content=raw(check,'content')
     checks={
@@ -111,9 +91,47 @@ def main():
       'latest_block':'wp:latest-posts' in check_content,
       'parent_cat':str(parent['id']) in check_content,
       'child_cat':str(child['id']) in check_content,
+      'hero':'次の休日、' in check_content,
+      'archive_link':'/category/sightseeing-leisure/' in check_content,
     }
     if not all(checks.values()):
         raise RuntimeError('VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
+    return check,checks
+
+def main():
+    content,parent,child,nav_id=build_content()
+    existing=find_page()
+    payload={'title':TITLE,'slug':SLUG,'status':STATUS,'content':content,'excerpt':'広島・山口・中国地方を中心に、実際に出かけた観光地・ドライブ・旅行モデルコースから次の休日を探せる、つりくえ！のおでかけ入口です。'}
+    old_payload=None
+    created=False
+    page_id=None
+    try:
+        if existing:
+            current=raw(existing,'content')
+            if MARKER not in current:
+                raise RuntimeError(f'REFUSE_OVERWRITE_UNRELATED_PAGE id={existing["id"]} status={existing.get("status")}')
+            if existing.get('status')!='draft':
+                raise RuntimeError(f'REFUSE_OVERWRITE_NON_DRAFT id={existing["id"]} status={existing.get("status")}')
+            old_payload={'title':raw(existing,'title'),'slug':existing.get('slug'),'status':existing.get('status'),'content':current,'excerpt':raw(existing,'excerpt')}
+            page=request(f'/pages/{existing["id"]}',method='POST',payload=payload)
+            action='UPDATED'
+        else:
+            page=request('/pages',method='POST',payload=payload)
+            action='CREATED'; created=True
+        page_id=page['id']
+        check,checks=verify(page_id,parent,child,nav_id)
+    except Exception:
+        if page_id is not None:
+            try:
+                if created:
+                    request(f'/pages/{page_id}?force=true',method='DELETE')
+                    print(f'ROLLBACK_DELETED_NEW_PAGE id={page_id}')
+                elif old_payload is not None:
+                    request(f'/pages/{page_id}',method='POST',payload=old_payload)
+                    print(f'ROLLBACK_RESTORED_DRAFT id={page_id}')
+            except Exception as rollback_error:
+                print(f'ROLLBACK_FAILED id={page_id} error={rollback_error}')
+        raise
     print(json.dumps({
       'action':action,
       'page_id':page_id,
