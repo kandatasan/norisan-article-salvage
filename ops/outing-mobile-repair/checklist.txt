@@ -1,0 +1,5 @@
+- Hero text must be dark on mobile and desktop.
+- Travel card grid must be one column at <=860px.
+- Local cards must be one column at <=560px.
+- Choice cards must be two columns at <=860px and one column below 360px.
+- Draft page 3154 only.
