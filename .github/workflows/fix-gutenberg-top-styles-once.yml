@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: '3.x'
 
-      - name: Update only the verified draft page
+      - name: Update only the verified page and preserve status
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -42,7 +42,7 @@ jobs:
               'Authorization': 'Basic ' + token,
               'Accept': 'application/json',
               'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'tsurikue-center-family/1.2',
+              'User-Agent': 'tsurikue-center-family/1.3',
           }
 
           def get_page():
@@ -64,10 +64,8 @@ jobs:
 
           page = get_page()
           original = raw_content(page)
-          if page.get('id') != PAGE_ID or page.get('status') != 'draft':
-              print('id=' + str(page.get('id')))
-              print('slug=' + str(page.get('slug')))
-              print('status=' + str(page.get('status')))
+          original_status = page.get('status')
+          if page.get('id') != PAGE_ID or original_status not in ('draft','publish'):
               raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
           if EXPECTED_TITLE not in raw_title(page):
               raise SystemExit('BLOCKED_TITLE_MISMATCH')
@@ -121,10 +119,10 @@ jobs:
 
           latest = get_page()
           latest_content = raw_content(latest)
-          if latest.get('status') != 'draft' or hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
+          if latest.get('status') != original_status or hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
               raise SystemExit('BLOCKED_PAGE_CHANGED_DURING_RUN')
 
-          payload = json.dumps({'content': content, 'status': 'draft'}, ensure_ascii=False).encode('utf-8')
+          payload = json.dumps({'content': content, 'status': original_status}, ensure_ascii=False).encode('utf-8')
           req = urllib.request.Request(
               f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}',
               data=payload,
@@ -136,7 +134,7 @@ jobs:
 
           after = get_page()
           after_content = raw_content(after)
-          if after.get('status') != 'draft':
+          if after.get('status') != original_status:
               raise SystemExit('VERIFY_STATUS_CHANGED')
           if FIX_TAG not in after_content:
               raise SystemExit('VERIFY_CENTER_FIX_MISSING')
