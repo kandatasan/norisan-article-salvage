@@ -12,11 +12,12 @@ HERE=pathlib.Path(__file__).resolve().parent
 SOURCE=HERE/'content.html'
 PARENT_SLUG='sightseeing-leisure'
 CHILD_SLUG='drive'
+PLACEHOLDER='{{OUTING_CATEGORY_IDS}}'
 
 user=os.environ['TSURIKUE_WP_USER']
 pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.1'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.2'}
 
 def request(path, method='GET', payload=None, attempts=3, timeout=35):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -66,8 +67,10 @@ def build_content():
     template=SOURCE.read_text(encoding='utf-8')
     if MARKER not in template:
         raise RuntimeError('SOURCE_MARKER_MISSING')
-    template=template.replace('{{OUTING_CATEGORY_IDS}}',f'{parent["id"]},{child["id"]}')
-    if '{{' in template or '}}' in template:
+    if template.count(PLACEHOLDER)!=1:
+        raise RuntimeError(f'PLACEHOLDER_COUNT_INVALID count={template.count(PLACEHOLDER)}')
+    template=template.replace(PLACEHOLDER,f'{parent["id"]},{child["id"]}')
+    if PLACEHOLDER in template:
         raise RuntimeError('UNRESOLVED_TEMPLATE_TOKEN')
     nav_id=find_nav_block_id()
     nav=f'{NAV_REF_START}\n<!-- wp:block {{"ref":{nav_id}}} /-->\n{NAV_REF_END}\n\n'
