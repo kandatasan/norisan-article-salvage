@@ -7,7 +7,10 @@ REF_START='<!-- tq-global-site-nav-ref:v1 start -->'
 REF_END='<!-- tq-global-site-nav-ref:v1 end -->'
 TOP_PAGE_ID=2983
 CANARY_SLUG='ux-koukai'
-NAV_SOURCE=pathlib.Path(__file__).with_name('nav-block.html')
+HERE=pathlib.Path(__file__).resolve().parent
+NAV_SOURCE=HERE/'nav-block.html'
+CANARY_MANIFEST=HERE/'.canary_changed.json'
+ROLLOUT_MANIFEST=HERE/'.rollout_changed.json'
 
 user=os.environ['TSURIKUE_WP_USER']
 pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
@@ -16,7 +19,7 @@ HEADERS={
   'Authorization':'Basic '+token,
   'Accept':'application/json',
   'Content-Type':'application/json; charset=utf-8',
-  'User-Agent':'tsurikue-sitewide-nav-deploy/1.0',
+  'User-Agent':'tsurikue-sitewide-nav-deploy/1.1',
 }
 
 def request(path, method='GET', payload=None, attempts=3, timeout=35):
@@ -77,8 +80,15 @@ def add_ref_to_item(kind,item,block_id):
     request(f'/{kind}/{item["id"]}',method='POST',payload={'content':updated})
     verify=request(f'/{kind}/{item["id"]}?context=edit&_fields=id,content')
     if REF_START not in raw_content(verify) or f'"ref":{block_id}' not in raw_content(verify):
-        raise RuntimeError(f'REF_VERIFY_FAILED {kind} {item["id"]}')
+        # Best-effort cleanup if WordPress accepted the write but normalization broke the ref.
+        try:
+            request(f'/{kind}/{item["id"]}',method='POST',payload={'content':content})
+        finally:
+            raise RuntimeError(f'REF_VERIFY_FAILED {kind} {item["id"]}')
     return True
+
+def get_item(kind,item_id):
+    return request(f'/{kind}/{item_id}?context=edit&_fields=id,slug,status,content')
 
 def get_canary():
     q=urllib.parse.urlencode({'slug':CANARY_SLUG,'context':'edit','_fields':'id,slug,status,content'})
@@ -100,8 +110,16 @@ def list_items(kind,status):
         page+=1
     return out
 
+def write_manifest(path, entries):
+    path.write_text(json.dumps(entries,ensure_ascii=False,indent=2),encoding='utf-8')
+
+def read_manifest(path):
+    if not path.exists(): return []
+    try: return json.loads(path.read_text(encoding='utf-8'))
+    except Exception: return []
+
 def rollout(block_id):
-    changed=[]; seen=set()
+    changed=[]; seen=set(); write_manifest(ROLLOUT_MANIFEST,changed)
     for kind in ('posts','pages'):
         for status in ('publish','draft'):
             for item in list_items(kind,status):
@@ -111,12 +129,30 @@ def rollout(block_id):
                 if kind=='pages' and item['id']==TOP_PAGE_ID:
                     continue
                 if add_ref_to_item(kind,item,block_id):
-                    changed.append(key)
+                    entry={'kind':kind,'id':item['id'],'slug':item.get('slug','')}
+                    changed.append(entry)
+                    write_manifest(ROLLOUT_MANIFEST,changed)
                     print(f'ADDED_REF {kind} id={item["id"]} slug={item.get("slug","")}')
                 time.sleep(0.08)
     print(f'ROLLOUT_DONE changed={len(changed)} checked={len(seen)} block_id={block_id}')
 
-def rollback_all():
+def rollback_manifest(path):
+    entries=read_manifest(path)
+    changed=0
+    for entry in reversed(entries):
+        kind=entry['kind']; item_id=entry['id']
+        item=get_item(kind,item_id)
+        content=raw_content(item)
+        if REF_START not in content:
+            continue
+        cleaned=strip_ref(content)
+        request(f'/{kind}/{item_id}',method='POST',payload={'content':cleaned})
+        changed+=1
+        print(f'REMOVED_REF {kind} id={item_id}')
+        time.sleep(0.08)
+    print(f'ROLLBACK_MANIFEST_DONE file={path.name} changed={changed}')
+
+def rollback_all_refs():
     changed=0
     for kind in ('posts','pages'):
         for status in ('publish','draft'):
@@ -128,17 +164,24 @@ def rollback_all():
                 changed+=1
                 print(f'REMOVED_REF {kind} id={item["id"]}')
                 time.sleep(0.08)
-    print(f'ROLLBACK_DONE changed={changed}')
+    print(f'ROLLBACK_ALL_DONE changed={changed}')
 
 mode=(sys.argv[1] if len(sys.argv)>1 else '').strip()
 if mode=='canary':
+    write_manifest(CANARY_MANIFEST,[])
     bid=ensure_block()
     item=get_canary()
     changed=add_ref_to_item('posts',item,bid)
+    if changed:
+        write_manifest(CANARY_MANIFEST,[{'kind':'posts','id':item['id'],'slug':item.get('slug','')}])
     print(f'CANARY_READY id={item["id"]} block_id={bid} changed={changed}')
 elif mode=='rollout':
     bid=ensure_block(); rollout(bid)
-elif mode=='rollback':
-    rollback_all()
+elif mode=='rollback-canary':
+    rollback_manifest(CANARY_MANIFEST)
+elif mode=='rollback-rollout':
+    rollback_manifest(ROLLOUT_MANIFEST)
+elif mode=='rollback-all':
+    rollback_all_refs()
 else:
-    raise SystemExit('usage: deploy.py canary|rollout|rollback')
+    raise SystemExit('usage: deploy.py canary|rollout|rollback-canary|rollback-rollout|rollback-all')
