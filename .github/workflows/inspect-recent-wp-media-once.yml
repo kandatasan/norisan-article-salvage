@@ -18,40 +18,35 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Read recent WordPress media
+      - name: Read current experimental draft state
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         shell: bash
         run: |
           python - <<'PY' > /tmp/recent-media.md
-          import base64, json, os, urllib.parse, urllib.request
+          import base64, hashlib, json, os, urllib.parse, urllib.request
           user=os.environ['TSURIKUE_WP_USER']
           pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
           token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-          q=urllib.parse.urlencode({
-              'context':'edit',
-              'per_page':'30',
-              'orderby':'date',
-              'order':'desc',
-              '_fields':'id,date,slug,source_url,title,alt_text,media_details,mime_type'
-          })
-          req=urllib.request.Request(
-              'https://tsurikue.com/wp-json/wp/v2/media?'+q,
-              headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-media-inspector/1.0'}
-          )
+          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-media-inspector/1.1'}
+
+          q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
+          req=urllib.request.Request('https://tsurikue.com/wp-json/wp/v2/pages/2983?'+q,headers=headers)
           with urllib.request.urlopen(req,timeout=45) as r:
-              rows=json.loads(r.read().decode())
-          print('### Recent WordPress media (read-only)')
+              page=json.loads(r.read().decode())
+          content=(page.get('content') or {}).get('raw') or (page.get('content') or {}).get('rendered') or ''
+          sha=hashlib.sha256(content.encode()).hexdigest()
+          print('### Current top-design-lab draft (read-only)')
           print('')
-          print('| id | date | title/slug | size | source_url |')
-          print('|---:|---|---|---|---|')
-          for row in rows:
-              title=((row.get('title') or {}).get('rendered') or '').replace('|','\\|')
-              slug=(row.get('slug') or '').replace('|','\\|')
-              d=row.get('media_details') or {}
-              size=f"{d.get('width','?')}×{d.get('height','?')}"
-              print(f"| {row.get('id')} | {row.get('date')} | {title} / `{slug}` | {size} | {row.get('source_url')} |")
+          print(f"- page_id: **{page.get('id')}**")
+          print(f"- slug: **{page.get('slug')}**")
+          print(f"- status: **{page.get('status')}**")
+          print(f"- content_sha256: `{sha}`")
+          print(f"- has_family_wp_url: **{'e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg' in content}**")
+          print(f"- has_dolphin_wp_url: **{'/2026/08/img_2419.jpg' in content}**")
+          print(f"- has_car_wp_url: **{'/2026/08/img_1028.jpg' in content}**")
+          print(f"- has_github_raw_media: **{'raw.githubusercontent.com' in content}**")
           PY
       - name: Record on audit issue
         env:
