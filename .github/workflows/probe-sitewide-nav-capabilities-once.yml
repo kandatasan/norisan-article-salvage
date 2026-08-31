@@ -1,0 +1,23 @@
+name: Probe sitewide nav capabilities
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/probe-sitewide-nav-capabilities-once.yml'
+      - 'sitewide-nav/probe_capabilities.py'
+
+jobs:
+  probe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Probe WordPress REST capabilities without writes
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python sitewide-nav/probe_capabilities.py
