@@ -1,9 +1,10 @@
+// live recheck after H2 reset deployment attempt
 const { chromium } = require('playwright');
 
 (async()=>{
   const browser=await chromium.launch({headless:true});
   const page=await browser.newPage({viewport:{width:1648,height:920},deviceScaleFactor:1});
-  await page.goto('https://tsurikue.com/?deepdiag=h2',{waitUntil:'networkidle',timeout:90000});
+  await page.goto('https://tsurikue.com/?deepdiag=h2-recheck',{waitUntil:'networkidle',timeout:90000});
   await page.waitForSelector('.tq4',{timeout:30000});
   const out=await page.evaluate(()=>{
     function m(el){
