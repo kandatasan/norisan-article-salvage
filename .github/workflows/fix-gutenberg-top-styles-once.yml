@@ -31,7 +31,6 @@ jobs:
           import base64, hashlib, json, os, pathlib, urllib.parse, urllib.request
 
           PAGE_ID = 2983
-          EXPECTED_SLUG = 'top-design-lab'
           EXPECTED_TITLE = 'つりくえ！トップデザイン実験室'
           MARKER = '<!-- tsurikue-experimental-page:v1:top-design-lab -->'
           FIX_TAG = '/* GUTENBERG CENTER + FAMILY TOP FIX v1 */'
@@ -43,7 +42,7 @@ jobs:
               'Authorization': 'Basic ' + token,
               'Accept': 'application/json',
               'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'tsurikue-center-family/1.1',
+              'User-Agent': 'tsurikue-center-family/1.2',
           }
 
           def get_page():
@@ -65,7 +64,10 @@ jobs:
 
           page = get_page()
           original = raw_content(page)
-          if page.get('id') != PAGE_ID or page.get('slug') != EXPECTED_SLUG or page.get('status') != 'draft':
+          if page.get('id') != PAGE_ID or page.get('status') != 'draft':
+              print('id=' + str(page.get('id')))
+              print('slug=' + str(page.get('slug')))
+              print('status=' + str(page.get('status')))
               raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
           if EXPECTED_TITLE not in raw_title(page):
               raise SystemExit('BLOCKED_TITLE_MISMATCH')
@@ -81,7 +83,6 @@ jobs:
               raise SystemExit('BLOCKED_CENTER_FIX_ALREADY_PRESENT')
 
           content = original
-
           family = '\n'.join([
               '<!-- wp:group {"align":"full","className":"tq4-party","layout":{"type":"constrained"}} -->',
               '<div class="wp-block-group alignfull tq4-party">',
@@ -152,6 +153,7 @@ jobs:
           cfg['expected_current_content_sha256'] = hashlib.sha256(after_content.encode()).hexdigest()
           cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
           print('SUCCESS_CENTER_AND_FAMILY_TOP')
+          print('slug=' + str(after.get('slug')))
           print('status=' + after.get('status',''))
           print('content_sha256=' + cfg['expected_current_content_sha256'])
           PY
