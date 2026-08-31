@@ -1,1 +1,26 @@
-{}
+{
+  "categories": {
+    "sightseeing-leisure": {"name": "おでかけ", "parent_slug": null},
+    "drive": {"name": "旅行・モデルコース", "parent_slug": "sightseeing-leisure"},
+    "fishing": {"name": "釣り", "parent_slug": null},
+    "wild-food-fish-cooking": {"name": "野食・魚料理", "parent_slug": "fishing"},
+    "car": {"name": "クルマ", "parent_slug": null},
+    "car-goods-wash": {"name": "カー用品・洗車", "parent_slug": "car"}
+  },
+  "operations": [
+    {"post_id":2063,"slug":"hiroshima-hajimarinoteras","from_category_slugs":["drive"],"to_category_slugs":["sightseeing-leisure"]},
+    {"post_id":2125,"slug":"human-beach-nagase","from_category_slugs":["drive"],"to_category_slugs":["sightseeing-leisure"]},
+    {"post_id":1996,"slug":"serakankounokotsu","from_category_slugs":["drive"],"to_category_slugs":["sightseeing-leisure"]},
+    {"post_id":1911,"slug":"hiroshima-bokujyou","from_category_slugs":["drive"],"to_category_slugs":["sightseeing-leisure"]},
+    {"post_id":2096,"slug":"oliveoil","from_category_slugs":["drive"],"to_category_slugs":["sightseeing-leisure"]},
+    {"post_id":2026,"slug":"yuki-hotaru","from_category_slugs":["drive"],"to_category_slugs":["sightseeing-leisure"]},
+    {"post_id":2115,"slug":"mamegashima","from_category_slugs":["drive"],"to_category_slugs":["sightseeing-leisure"]},
+    {"post_id":1887,"slug":"etajima-sightseeing","from_category_slugs":["sightseeing-leisure"],"to_category_slugs":["drive"]},
+    {"post_id":2658,"slug":"tottori-drive","from_category_slugs":["sightseeing-leisure"],"to_category_slugs":["drive"]},
+    {"post_id":2664,"slug":"yamaguchi-drive","from_category_slugs":["sightseeing-leisure"],"to_category_slugs":["drive"]},
+    {"post_id":1939,"slug":"hiroshima-sanin-1night-2days","from_category_slugs":["sightseeing-leisure"],"to_category_slugs":["drive"]},
+    {"post_id":2635,"slug":"hiroshima-oita-1night-2days-drive","from_category_slugs":["sightseeing-leisure"],"to_category_slugs":["drive"]},
+    {"post_id":2640,"slug":"kotamagai-seafood-gathering","from_category_slugs":["fishing"],"to_category_slugs":["wild-food-fish-cooking"]},
+    {"post_id":2575,"slug":"ccwatergold","from_category_slugs":["car-goods-wash","fishing"],"to_category_slugs":["car-goods-wash"]}
+  ]
+}
