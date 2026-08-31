@@ -32,7 +32,7 @@ headers = {
     'Authorization': 'Basic ' + token,
     'Accept': 'application/json',
     'Content-Type': 'application/json; charset=utf-8',
-    'User-Agent': 'tsurikue-header-prototype-v2/1.0',
+    'User-Agent': 'tsurikue-header-prototype-v3/1.0',
 }
 
 
@@ -49,6 +49,18 @@ def raw_content(page):
     return (page.get('content') or {}).get('raw') or ''
 
 
+def post_content(content):
+    payload = json.dumps({'content': content}, ensure_ascii=False).encode('utf-8')
+    req = urllib.request.Request(
+        f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}',
+        data=payload,
+        headers=headers,
+        method='POST',
+    )
+    with urllib.request.urlopen(req, timeout=45) as r:
+        return json.loads(r.read().decode())
+
+
 page = get_page()
 original = raw_content(page)
 original_status = page.get('status')
@@ -63,7 +75,7 @@ for label, href in LINKS.items():
     if label not in original or href not in original:
         raise SystemExit('BLOCKED_CATEGORY_LINK_MISSING_' + label)
 
-# Idempotent cleanup before writing the current prototype.
+# Idempotent cleanup of any earlier prototype version.
 content = re.sub(
     r'\n?/\* TQ HEADER DRAWER PROTOTYPE v1 \*/.*?/\* END TQ HEADER DRAWER PROTOTYPE v1 \*/\n?',
     '\n',
@@ -79,7 +91,6 @@ content = re.sub(
 
 css = r'''
 /* TQ HEADER DRAWER PROTOTYPE v1 */
-/* Front page header skin. The static front page has no reliable body page-id class. */
 body:has(.tq4) #header{
   position:sticky!important;top:0;z-index:99980;
   background:rgba(255,255,255,.94)!important;
@@ -107,30 +118,37 @@ body:has(.tq4) #header .l-header__customBtn .c-iconBtn{
 body:has(.tq4) #header .l-header__menuBtn{opacity:0!important;pointer-events:none!important}
 body:has(.tq4) #gnav{display:none!important}
 
-/* Hash-target mobile hamburger. No JavaScript required and no conflict with SWELL toggleMenu. */
+/* Checkbox + label mobile drawer: independent from SWELL link and menu JavaScript. */
+.tq-site-menu-toggle{
+  position:fixed!important;left:-9999px!important;top:-9999px!important;
+  width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important
+}
 .tq-site-menu-trigger{
   position:fixed;left:7px;top:12px;z-index:99998;width:48px;height:48px;
   display:flex;align-items:center;justify-content:center;border-radius:50%;
-  color:#20211f!important;text-decoration:none!important;background:transparent
+  color:#20211f;cursor:pointer;background:transparent
 }
 .tq-site-menu__bars,.tq-site-menu__bars:before,.tq-site-menu__bars:after{
-  display:block;width:25px;height:2px;border-radius:99px;background:#20211f;content:""
+  display:block;width:25px;height:2px;border-radius:99px;background:#20211f;content:"";
+  transition:transform .2s ease,opacity .2s ease
 }
 .tq-site-menu__bars{position:relative}
 .tq-site-menu__bars:before{position:absolute;top:-8px;left:0}
 .tq-site-menu__bars:after{position:absolute;top:8px;left:0}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger .tq-site-menu__bars{background:transparent}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger .tq-site-menu__bars:before{top:0;transform:rotate(45deg)}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger .tq-site-menu__bars:after{top:0;transform:rotate(-45deg)}
 
 .tq-site-menu{
   position:fixed;inset:0;z-index:99999;margin:0!important;
   opacity:0;visibility:hidden;pointer-events:none;
   transition:opacity .2s ease,visibility 0s linear .2s
 }
-.tq-site-menu:target{
-  opacity:1;visibility:visible;pointer-events:auto;
-  transition:opacity .2s ease
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger + .tq-site-menu{
+  opacity:1;visibility:visible;pointer-events:auto;transition:opacity .2s ease
 }
 .tq-site-menu__overlay{
-  position:absolute;inset:0;display:block;background:rgba(22,24,21,.45);
+  position:absolute;inset:0;display:block;background:rgba(22,24,21,.45);cursor:pointer;
   backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)
 }
 .tq-site-menu__drawer{
@@ -139,11 +157,11 @@ body:has(.tq4) #gnav{display:none!important}
   box-shadow:18px 0 50px rgba(18,20,17,.16);transform:translateX(-102%);
   transition:transform .24s cubic-bezier(.2,.75,.2,1)
 }
-.tq-site-menu:target .tq-site-menu__drawer{transform:translateX(0)}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger + .tq-site-menu .tq-site-menu__drawer{transform:translateX(0)}
 .tq-site-menu__close{
   position:absolute;left:8px;top:12px;width:48px;height:48px;display:flex;
-  align-items:center;justify-content:center;border-radius:50%;color:#20211f!important;
-  text-decoration:none!important;background:#fff;border:1px solid #e4e0d6
+  align-items:center;justify-content:center;border-radius:50%;cursor:pointer;
+  background:#fff;border:1px solid #e4e0d6
 }
 .tq-site-menu__close:before,.tq-site-menu__close:after{
   content:"";position:absolute;width:24px;height:2px;border-radius:99px;background:#20211f
@@ -200,11 +218,11 @@ body:has(.tq4) #gnav{display:none!important}
   body:has(.tq4) #header .c-headLogo__link{font-size:22px!important}
 }
 @media(min-width:960px){
-  .tq-site-menu-trigger,.tq-site-menu{display:none!important}
+  .tq-site-menu-toggle,.tq-site-menu-trigger,.tq-site-menu{display:none!important}
   body:has(.tq4) #header .l-header__logo{min-width:170px}
 }
 @media(prefers-reduced-motion:reduce){
-  .tq-site-menu,.tq-site-menu__drawer,.tq-site-nav a{transition:none!important}
+  .tq-site-menu,.tq-site-menu__drawer,.tq-site-menu__bars,.tq-site-menu__bars:before,.tq-site-menu__bars:after,.tq-site-nav a{transition:none!important}
 }
 /* END TQ HEADER DRAWER PROTOTYPE v1 */
 '''
@@ -213,11 +231,12 @@ content = content.replace('</style>', css + '\n</style>', 1)
 menu_html = f'''
 {HTML_START}
 <!-- wp:html -->
-<a class="tq-site-menu-trigger" href="#tq-holiday-menu" aria-label="メニューを開く"><span class="tq-site-menu__bars" aria-hidden="true"></span></a>
-<div id="tq-holiday-menu" class="tq-site-menu" aria-label="つりくえ！休日メニュー">
-  <a class="tq-site-menu__overlay" href="#menu-close" aria-label="メニューを閉じる"></a>
+<input class="tq-site-menu-toggle" type="checkbox" id="tq-menu-toggle" aria-hidden="true">
+<label class="tq-site-menu-trigger" for="tq-menu-toggle" aria-label="メニューを開閉"><span class="tq-site-menu__bars" aria-hidden="true"></span></label>
+<div class="tq-site-menu" aria-label="つりくえ！休日メニュー">
+  <label class="tq-site-menu__overlay" for="tq-menu-toggle" aria-label="メニューを閉じる"></label>
   <div class="tq-site-menu__drawer">
-    <a class="tq-site-menu__close" href="#menu-close" aria-label="メニューを閉じる"></a>
+    <label class="tq-site-menu__close" for="tq-menu-toggle" aria-label="メニューを閉じる"></label>
     <p class="tq-site-menu__eyebrow">TSURIKUE! / HOLIDAY MENU</p>
     <p class="tq-site-menu__title">今日は、<br>なにして遊ぶ？</p>
     <nav class="tq-site-menu__quest" aria-label="休日メニュー">
@@ -258,25 +277,28 @@ if latest.get('status') != original_status:
 if hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
     raise SystemExit('BLOCKED_PAGE_CHANGED_DURING_RUN')
 
-payload = json.dumps({'content': content}, ensure_ascii=False).encode('utf-8')
-req = urllib.request.Request(
-    f'https://tsurikue.com/wp-json/wp/v2/pages/{PAGE_ID}',
-    data=payload,
-    headers=headers,
-    method='POST',
-)
-with urllib.request.urlopen(req, timeout=45) as r:
-    json.loads(r.read().decode())
-
+post_content(content)
 after = get_page()
 after_content = raw_content(after)
+
+# Some WordPress roles strip form controls. If that happens, immediately restore the exact original page.
+if 'tq-menu-toggle' not in after_content or '<input' not in after_content:
+    post_content(original)
+    restored = raw_content(get_page())
+    if hashlib.sha256(restored.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
+        raise SystemExit('ROLLBACK_FAILED_AFTER_INPUT_STRIP')
+    raise SystemExit('WORDPRESS_STRIPPED_CHECKBOX_ROLLED_BACK')
+
 if after.get('status') != original_status:
-    raise SystemExit('VERIFY_STATUS_CHANGED')
+    post_content(original)
+    raise SystemExit('VERIFY_STATUS_CHANGED_ROLLED_BACK')
 if after_content.count(CSS_START) != 1 or after_content.count(HTML_START) != 1:
-    raise SystemExit('VERIFY_PROTOTYPE_NOT_UNIQUE')
+    post_content(original)
+    raise SystemExit('VERIFY_PROTOTYPE_NOT_UNIQUE_ROLLED_BACK')
 for label, href in LINKS.items():
     if label not in after_content or href not in after_content:
-        raise SystemExit('VERIFY_MENU_LINK_MISSING_' + label)
+        post_content(original)
+        raise SystemExit('VERIFY_MENU_LINK_MISSING_ROLLED_BACK_' + label)
 
 pathlib.Path('experimental-pages/top-design-lab/content.html').write_text(after_content, encoding='utf-8')
 cfg_path = pathlib.Path('experimental-pages/top-design-lab/config.json')
@@ -284,5 +306,5 @@ cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
 cfg['expected_current_content_sha256'] = hashlib.sha256(after_content.encode()).hexdigest()
 cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
-print('SUCCESS_HEADER_PROTOTYPE_TARGET_V2')
+print('SUCCESS_HEADER_PROTOTYPE_CHECKBOX_V3')
 print('status=' + str(after.get('status')))
