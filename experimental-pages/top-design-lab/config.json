@@ -2,5 +2,6 @@
   "slug": "top-design-lab",
   "title": "つりくえ！トップデザイン実験室",
   "marker": "<!-- tsurikue-experimental-page:v1:top-design-lab -->",
-  "content_file": "content.html"
+  "content_file": "content.html",
+  "expected_current_content_sha256": "289fa3a296483be56d8dfcd7db3be1927b8ccf76a12a73e267c8adf95cc80d68"
 }
