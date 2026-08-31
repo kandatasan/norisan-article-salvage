@@ -13,7 +13,7 @@ CONFIG_PATH=pathlib.Path('experimental-pages/top-design-lab/config.json')
 
 user=os.environ['TSURIKUE_WP_USER']; pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-top-pc-fullwidth/1.2'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-top-pc-fullwidth/1.3'}
 
 def request(path,method='GET',payload=None,attempts=3,timeout=45):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -51,6 +51,21 @@ BACKUP.write_text(json.dumps({'status':status,'content':content},ensure_ascii=Fa
 content=re.sub(r'\n?/\* TQ TOP DESKTOP SECTION FULLWIDTH v1 \*/.*?/\* END TQ TOP DESKTOP SECTION FULLWIDTH v1 \*/\n?','\n',content,flags=re.S)
 css=r'''
 /* TQ TOP DESKTOP SECTION FULLWIDTH v1 */
+/* SWELL's ordinary article H2 decoration must not leak into the custom homepage. */
+.tq4 h2.wp-block-heading{
+  background:transparent!important;
+  background-color:transparent!important;
+  color:var(--ink)!important;
+  padding:0!important;
+  border:0!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+}
+.tq4 h2.wp-block-heading::before,
+.tq4 h2.wp-block-heading::after{
+  content:none!important;
+  display:none!important;
+}
 @media(min-width:960px){
   .tq4>.wp-block-group__inner-container{
     width:100%!important;
@@ -89,4 +104,4 @@ if after.get('status')!=status: raise SystemExit('PC_WIDTH_VERIFY_STATUS_CHANGED
 if PATCH_START not in after_content or PATCH_END not in after_content: raise SystemExit('PC_WIDTH_VERIFY_PATCH_MISSING')
 if after_content.count(PATCH_START)!=1: raise SystemExit('PC_WIDTH_VERIFY_PATCH_DUPLICATED')
 sync_source(after_content)
-print('SUCCESS_TOP_PC_FULLWIDTH_PATCH')
+print('SUCCESS_TOP_PC_FULLWIDTH_AND_H2_RESET_PATCH')
