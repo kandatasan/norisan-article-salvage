@@ -1,0 +1,91 @@
+<!-- tsurikue-category-hub:v1:outing -->
+<!-- wp:html -->
+<style>
+body:has(.tq-out) .c-pageTitle,body:has(.tq-out) .p-breadcrumb{display:none!important}
+body:has(.tq-out) .l-content{padding-top:0!important}
+body:has(.tq-out) #content{z-index:auto!important}
+.tq-out,.tq-out *{box-sizing:border-box}
+.tq-out{--ink:#20211f;--sub:#676963;--paper:#f7f5ef;--line:#dedbd1;--yellow:#f3b92f;--green:#e6eddc;--blue:#e3edf7;--sea:#dbeaf0;width:100vw;margin-left:calc(50% - 50vw);overflow:hidden;background:var(--paper);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;-webkit-font-smoothing:antialiased}
+.tq-out a{color:inherit;text-decoration:none}.tq-out a:focus-visible{outline:3px solid #222;outline-offset:4px}
+.tq-out-wrap{width:min(1080px,91vw);margin:0 auto}.tq-out-section{padding:clamp(68px,8vw,104px) 0}.tq-out-kicker{margin:0 0 10px;color:#74766f;font-size:10px;font-weight:900;letter-spacing:.16em}.tq-out-head{display:flex;justify-content:space-between;align-items:end;gap:28px;margin-bottom:32px}.tq-out-head h2{margin:0;font-size:clamp(31px,4.2vw,48px);line-height:1.18;letter-spacing:-.04em}.tq-out-head p{margin:0;max-width:430px;color:var(--sub);font-size:13px;line-height:1.9}
+.tq-out-hero{position:relative;min-height:520px;display:flex;align-items:flex-end;background:linear-gradient(90deg,rgba(228,239,244,.96) 0%,rgba(240,242,232,.90) 52%,rgba(247,245,239,.76) 100%),url('https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg') center/cover no-repeat;border-bottom:1px solid var(--line)}
+.tq-out-hero-inner{width:min(1080px,91vw);margin:0 auto;padding:clamp(90px,12vw,150px) 0 clamp(64px,8vw,92px)}.tq-out-brand{display:inline-flex;align-items:center;gap:10px;margin:0 0 24px;font-size:12px;font-weight:900;letter-spacing:.08em}.tq-out-brand:before{content:"";width:11px;height:11px;border-radius:50%;background:#7ab0df;box-shadow:18px 0 0 #f3b92f,36px 0 0 #8fb56e;margin-right:36px}.tq-out-hero h1{margin:0;max-width:800px;font-size:clamp(44px,6.4vw,76px);line-height:1.07;letter-spacing:-.05em;font-weight:900}.tq-out-hero-lead{margin:26px 0 0;max-width:660px;font-size:clamp(16px,1.8vw,19px);font-weight:650;line-height:1.9}.tq-out-hero-note{margin:14px 0 0;max-width:650px;color:var(--sub);font-size:13px;line-height:1.9}
+.tq-out-choose{background:#fff;border-bottom:1px solid var(--line)}.tq-out-choose-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}.tq-out-choice{display:block;min-height:150px;padding:22px;border:1px solid var(--line);border-radius:16px;background:var(--paper);transition:transform .2s ease,box-shadow .2s ease}.tq-out-choice:hover{transform:translateY(-3px);box-shadow:0 14px 30px rgba(32,33,31,.07)}.tq-out-choice:nth-child(1){background:var(--blue)}.tq-out-choice:nth-child(2){background:#f5e7c9}.tq-out-choice:nth-child(3){background:var(--green)}.tq-out-choice:nth-child(4){background:#eee8f1}.tq-out-choice small{display:block;margin-bottom:18px;color:#73756f;font-size:9px;font-weight:900;letter-spacing:.15em}.tq-out-choice strong{display:block;font-size:20px;line-height:1.35}.tq-out-choice span{display:block;margin-top:8px;color:#5f615b;font-size:11px;line-height:1.65}.tq-out-arrow{display:inline-block;margin-top:14px;font-size:13px;font-weight:900}
+.tq-out-local{background:var(--paper)}.tq-out-local-grid{display:grid;grid-template-columns:1.2fr .8fr .8fr;gap:12px}.tq-out-card{position:relative;display:flex;flex-direction:column;justify-content:flex-end;min-height:245px;padding:25px;border:1px solid var(--line);border-radius:18px;background:#fff;overflow:hidden;transition:transform .2s ease,box-shadow .2s ease}.tq-out-card:hover{transform:translateY(-3px);box-shadow:0 16px 32px rgba(32,33,31,.08)}.tq-out-card--main{grid-row:span 2;min-height:502px;background:linear-gradient(145deg,#dceaf0,#f6f3e8)}.tq-out-card--etajima{background:#e3edf7}.tq-out-card--sera{background:#efe8df}.tq-out-card--yuki{background:#e6eddc}.tq-out-card small{margin:0 0 9px;color:#74766f;font-size:9px;font-weight:900;letter-spacing:.14em}.tq-out-card h3{margin:0;font-size:clamp(22px,2.6vw,31px);line-height:1.25;letter-spacing:-.03em}.tq-out-card--main h3{font-size:clamp(30px,4vw,46px)}.tq-out-card p{margin:11px 0 0;color:#5b5d57;font-size:12px;line-height:1.8}.tq-out-card .tq-out-more{margin-top:18px;font-size:11px;font-weight:900}
+.tq-out-trip{background:#fff;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}.tq-out-trip-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.tq-out-trip-card{display:grid;grid-template-columns:82px 1fr;gap:18px;align-items:center;min-height:170px;padding:23px;border:1px solid var(--line);border-radius:17px;background:var(--paper);transition:transform .2s ease,box-shadow .2s ease}.tq-out-trip-card:hover{transform:translateY(-2px);box-shadow:0 13px 28px rgba(32,33,31,.07)}.tq-out-trip-badge{display:flex;align-items:center;justify-content:center;width:72px;height:72px;border-radius:50%;background:var(--blue);font-size:10px;font-weight:900;letter-spacing:.08em}.tq-out-trip-card:nth-child(2) .tq-out-trip-badge{background:#e6eddc}.tq-out-trip-card:nth-child(3) .tq-out-trip-badge{background:#f5e7c9}.tq-out-trip-card:nth-child(4) .tq-out-trip-badge{background:#eee8f1}.tq-out-trip-card small{display:block;margin:0 0 6px;color:#7b7c76;font-size:9px;font-weight:850}.tq-out-trip-card h3{margin:0;font-size:18px;line-height:1.5}.tq-out-trip-card p{margin:7px 0 0;color:#666861;font-size:11px;line-height:1.7}
+.tq-out-route{background:var(--green)}.tq-out-route-list{display:grid;gap:10px}.tq-out-route-card{display:grid;grid-template-columns:145px 1fr auto;gap:24px;align-items:center;padding:23px 25px;border:1px solid rgba(32,33,31,.12);border-radius:16px;background:rgba(255,255,255,.68)}.tq-out-route-card small{font-size:9px;font-weight:900;letter-spacing:.12em;color:#73756f}.tq-out-route-card h3{margin:0;font-size:18px;line-height:1.5}.tq-out-route-card p{margin:5px 0 0;color:#62645e;font-size:11px;line-height:1.65}.tq-out-route-card b{font-size:22px}
+.tq-out-final{width:100vw;margin-left:calc(50% - 50vw);padding:clamp(58px,8vw,88px) 0;background:#f3b92f;color:#20211f}.tq-out-final-inner{width:min(1080px,91vw);margin:0 auto;display:grid;grid-template-columns:1fr auto;gap:30px;align-items:center}.tq-out-final h2{margin:0;font-size:clamp(32px,4.6vw,52px);line-height:1.2;letter-spacing:-.04em}.tq-out-final p{margin:12px 0 0;font-size:13px;line-height:1.8}.tq-out-final a{display:inline-flex;align-items:center;justify-content:center;min-height:48px;padding:0 20px;border:1px solid rgba(32,33,31,.5);border-radius:999px;color:#20211f!important;text-decoration:none!important;font-size:12px;font-weight:900;background:rgba(255,255,255,.25)}
+.tq-out-latest{width:100vw!important;max-width:none!important;margin-left:calc(50% - 50vw)!important;padding:clamp(68px,8vw,100px) 0!important;background:#f7f5ef}.tq-out-latest>.wp-block-group__inner-container{width:min(1080px,91vw);margin:0 auto}.tq-out-latest .tq-out-latest-head{margin-bottom:28px}.tq-out-latest .tq-out-latest-head h2{margin:0;font-size:clamp(31px,4.2vw,48px);line-height:1.18;letter-spacing:-.04em}.tq-out-latest .tq-out-latest-head p{margin:10px 0 0;color:#676963;font-size:13px;line-height:1.8}.tq-out-latest-list{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px!important;padding:0!important;margin:0!important;list-style:none!important}.tq-out-latest-list li{margin:0!important;padding:17px!important;border:1px solid #dedbd1;border-radius:15px;background:#fff}.tq-out-latest-list .wp-block-latest-posts__featured-image{margin:0 0 13px!important}.tq-out-latest-list .wp-block-latest-posts__featured-image img{width:100%!important;height:150px!important;object-fit:cover;border-radius:10px}.tq-out-latest-list a{color:#20211f!important;text-decoration:none!important;font-size:14px;font-weight:800;line-height:1.55}.tq-out-latest-list time{display:block;margin-top:8px;color:#85867f;font-size:9px}
+@media(max-width:860px){.tq-out-choose-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.tq-out-local-grid{grid-template-columns:1fr 1fr}.tq-out-card--main{grid-row:auto;grid-column:1/-1;min-height:340px}.tq-out-trip-grid{grid-template-columns:1fr}.tq-out-route-card{grid-template-columns:110px 1fr}.tq-out-route-card b{display:none}.tq-out-latest-list{grid-template-columns:repeat(2,minmax(0,1fr))!important}.tq-out-final-inner{grid-template-columns:1fr}.tq-out-final a{justify-self:start}}
+@media(max-width:560px){.tq-out-hero{min-height:470px}.tq-out-hero-inner{padding:88px 0 54px}.tq-out-hero h1{font-size:42px;line-height:1.12}.tq-out-hero-lead{font-size:16px;line-height:1.8}.tq-out-section{padding:58px 0}.tq-out-head{display:block;margin-bottom:23px}.tq-out-head h2{font-size:30px}.tq-out-head p{margin-top:10px}.tq-out-choose-grid{gap:8px}.tq-out-choice{min-height:132px;padding:17px 15px;border-radius:13px}.tq-out-choice small{margin-bottom:12px}.tq-out-choice strong{font-size:17px}.tq-out-local-grid{grid-template-columns:1fr}.tq-out-card--main{grid-column:auto;min-height:300px}.tq-out-card{min-height:205px;padding:20px}.tq-out-card h3,.tq-out-card--main h3{font-size:26px}.tq-out-trip-card{grid-template-columns:62px 1fr;gap:14px;min-height:140px;padding:18px}.tq-out-trip-badge{width:58px;height:58px;font-size:9px}.tq-out-trip-card h3{font-size:16px}.tq-out-route-card{grid-template-columns:1fr;gap:8px;padding:19px}.tq-out-latest{padding:58px 0!important}.tq-out-latest-list{grid-template-columns:1fr!important}.tq-out-latest-list .wp-block-latest-posts__featured-image img{height:180px!important}.tq-out-final{padding:55px 0}.tq-out-final h2{font-size:34px}}
+</style>
+<main class="tq-out">
+  <section class="tq-out-hero">
+    <div class="tq-out-hero-inner">
+      <p class="tq-out-brand">GO OUT / TSURIKUE!</p>
+      <h1>次の休日、<br>どこ行く？</h1>
+      <p class="tq-out-hero-lead">広島からふらっと日帰り。たまには1泊2日で遠くまで。実際に走ったコースと、寄ってみて面白かった場所を集めました。</p>
+      <p class="tq-out-hero-note">観光地を並べるだけではなく、「この順番で回った」「ここで予定が狂った」まで含めた、つりくえ！のおでかけ記録です。</p>
+    </div>
+  </section>
+
+  <section class="tq-out-section tq-out-choose">
+    <div class="tq-out-wrap">
+      <div class="tq-out-head"><div><p class="tq-out-kicker">CHOOSE YOUR QUEST</p><h2>今日は、どう遊ぶ？</h2></div><p>近場でゆるく遊ぶ日も、朝から車を走らせる日も。気分に近い入口からどうぞ。</p></div>
+      <div class="tq-out-choose-grid">
+        <a class="tq-out-choice" href="#hiroshima"><small>NEARBY</small><strong>広島で遊ぶ</strong><span>江田島・世羅・湯来など、日帰りで遊びやすい場所。</span><i class="tq-out-arrow">↓</i></a>
+        <a class="tq-out-choice" href="#trip"><small>ROAD TRIP</small><strong>ちょっと遠くへ</strong><span>山口・鳥取・大分・淡路島。車で行くから面白い旅。</span><i class="tq-out-arrow">↓</i></a>
+        <a class="tq-out-choice" href="#route"><small>MODEL COURSE</small><strong>ルートを真似する</strong><span>実際に走った順番で、1泊2日や日帰りコースを紹介。</span><i class="tq-out-arrow">↓</i></a>
+        <a class="tq-out-choice" href="/category/sightseeing-leisure/"><small>ALL ARTICLES</small><strong>全部のおでかけ</strong><span>スポット記事も旅行記も、新着順でまとめて見る。</span><i class="tq-out-arrow">→</i></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="hiroshima" class="tq-out-section tq-out-local">
+    <div class="tq-out-wrap">
+      <div class="tq-out-head"><div><p class="tq-out-kicker">HIROSHIMA</p><h2>まずは広島で遊ぶ</h2></div><p>海も山も街もあるので、「何しよう？」からでも決めやすい。つりくえ！で一番記事が育っているエリアです。</p></div>
+      <div class="tq-out-local-grid">
+        <a class="tq-out-card tq-out-card--main" href="/hiroshima-sightseeing/"><small>START HERE</small><h3>広島観光・レジャーまとめ</h3><p>今日どこ行く？を決めたい日に。実際に遊びに行った場所をまとめて探せます。</p><span class="tq-out-more">広島のおでかけを探す →</span></a>
+        <a class="tq-out-card tq-out-card--etajima" href="/etajima-sightseeing/"><small>ISLAND</small><h3>江田島</h3><p>海沿いを走って、気になる場所へ寄り道。島ドライブの日。</p><span class="tq-out-more">江田島へ →</span></a>
+        <a class="tq-out-card tq-out-card--sera" href="/sera-sightseeing/"><small>FLOWERS & FARM</small><h3>世羅</h3><p>花畑、牧場、ジェラート、夢吊橋。のんびり走る日帰り旅。</p><span class="tq-out-more">世羅へ →</span></a>
+        <a class="tq-out-card tq-out-card--yuki" href="/yuki-town-drive/"><small>RIVER & NATURE</small><h3>湯来町</h3><p>牧場、川遊び、釣り堀。自然の中で遊びたい休日に。</p><span class="tq-out-more">湯来へ →</span></a>
+        <a class="tq-out-card" href="/saijo-sakagura-dori/"><small>WALK</small><h3>西条酒蔵通り</h3><p>白壁と赤レンガ煙突の町を歩いて、酒蔵めぐり。</p><span class="tq-out-more">西条を歩く →</span></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="trip" class="tq-out-section tq-out-trip">
+    <div class="tq-out-wrap">
+      <div class="tq-out-head"><div><p class="tq-out-kicker">ROAD TRIP</p><h2>ちょっと遠くへ</h2></div><p>せっかくの休みなら、朝から走る。広島を飛び出して遊んだ旅を集めました。</p></div>
+      <div class="tq-out-trip-grid">
+        <a class="tq-out-trip-card" href="/yamaguchi-drive/"><span class="tq-out-trip-badge">YAMAGUCHI</span><div><small>1 NIGHT / 2 DAYS</small><h3>山口｜ムーバレー・萩・元乃隅・角島へ</h3><p>山口西部をぐるっと走った、欲張りな1泊2日。</p></div></a>
+        <a class="tq-out-trip-card" href="/tottori-drive/"><span class="tq-out-trip-badge">TOTTORI</span><div><small>DRIVE</small><h3>鳥取｜境港・大山・コナン・砂の美術館</h3><p>最後は雨。予定通りにいかないところまで旅行です。</p></div></a>
+        <a class="tq-out-trip-card" href="/hiroshima-oita-1night-2days-drive/"><span class="tq-out-trip-badge">OITA</span><div><small>1 NIGHT / 2 DAYS</small><h3>大分｜別府・湯布院・日田へ</h3><p>下関に寄って別府泊。翌日は湯布院と日田まで。</p></div></a>
+        <a class="tq-out-trip-card" href="/dqisland/"><span class="tq-out-trip-badge">AWAJI</span><div><small>QUEST</small><h3>淡路島｜ドラゴンクエスト アイランド</h3><p>大人4人で本気の冒険。つりくえ！の名前と相性が良すぎる場所。</p></div></a>
+      </div>
+    </div>
+  </section>
+
+  <section id="route" class="tq-out-section tq-out-route">
+    <div class="tq-out-wrap">
+      <div class="tq-out-head"><div><p class="tq-out-kicker">REAL ROUTES</p><h2>実際に走った順番で</h2></div><p>モデルコースは机の上で組まず、実際に動いたルートを優先。丸ごと真似しても、気になる場所だけ拾ってもOKです。</p></div>
+      <div class="tq-out-route-list">
+        <a class="tq-out-route-card" href="/yamaguchi-drive/"><small>YAMAGUCHI / 1泊2日</small><div><h3>ムーバレー → 萩 → 元乃隅 → 角島</h3><p>広島発。山口の西側を1泊2日で走る。</p></div><b>→</b></a>
+        <a class="tq-out-route-card" href="/hiroshima-oita-1night-2days-drive/"><small>OITA / 1泊2日</small><div><h3>下関に寄り道 → 別府泊 → 湯布院 → 日田</h3><p>九州まで行くなら、別府だけでは帰らない。</p></div><b>→</b></a>
+        <a class="tq-out-route-card" href="/hiroshima-sanin-1night-2days/"><small>SANIN / 1泊2日</small><div><h3>広島から山陰へ。海と温泉をつなぐ旅</h3><p>長距離ドライブも、寄り道を入れるとクエストになる。</p></div><b>→</b></a>
+      </div>
+    </div>
+  </section>
+</main>
+<!-- /wp:html -->
+
+<!-- wp:group {"align":"full","className":"tq-out-latest","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull tq-out-latest"><!-- wp:html -->
+<div class="tq-out-latest-head"><p class="tq-out-kicker">LATEST QUESTS</p><h2>新着のおでかけ</h2><p>ここは自動更新。新しく遊びに行った記事が増えると、順番に入れ替わります。</p></div>
+<!-- /wp:html -->
+<!-- wp:latest-posts {"categories":[{{OUTING_CATEGORY_IDS}}],"postsToShow":6,"displayPostDate":true,"displayFeaturedImage":true,"featuredImageSizeSlug":"medium","addLinkToFeaturedImage":true,"className":"tq-out-latest-list"} /--></div>
+<!-- /wp:group -->
+
+<!-- wp:html -->
+<section class="tq-out-final"><div class="tq-out-final-inner"><div><h2>まだ決められない？</h2><p>それなら、とりあえず全部眺めてみるのもアリです。</p></div><a href="/category/sightseeing-leisure/">おでかけ記事を全部見る →</a></div></section>
+<!-- /wp:html -->
