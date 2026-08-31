@@ -250,8 +250,211 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 .post_content:has(>.tq4)>.tq4,.post_content:has(>.tq4)>.wp-block-group.tq4{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;left:auto!important;right:auto!important;transform:none!important}
 .post_content:has(>.tq4)>.tq4>.alignfull,.post_content:has(>.tq4)>.tq4>.wp-block-cover.alignfull,.post_content:has(>.tq4)>.tq4>.wp-block-group.alignfull{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
 /* END MOBILE HAS-PARENT FIX v5 */
+
+
+
+
+
+
+
+
+
+
+
+/* TQ HEADER DRAWER PROTOTYPE v1 */
+body:has(.tq4) #header{
+  position:sticky!important;top:0;z-index:99980;
+  background:rgba(255,255,255,.94)!important;
+  border-bottom:1px solid #e7e3d9;
+  box-shadow:0 4px 18px rgba(32,33,31,.045);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+}
+body.admin-bar:has(.tq4) #header{top:32px}
+body:has(.tq4) #header .l-header__bar{display:none!important}
+body:has(.tq4) #header .l-header__inner{
+  height:72px;min-height:72px;max-width:1180px!important;
+  padding-left:22px!important;padding-right:22px!important
+}
+body:has(.tq4) #header .c-headLogo__link{
+  font-size:24px!important;font-weight:900!important;letter-spacing:.08em;
+  color:#20211f!important;line-height:1.1
+}
+body:has(.tq4) #header .c-headLogo__link:after{
+  content:"";display:block;width:31px;height:3px;margin:7px auto 0;border-radius:99px;
+  background:linear-gradient(90deg,#f3b92f 0 29%,transparent 29% 35%,#7ab0df 35% 64%,transparent 64% 70%,#8fb56e 70% 100%)
+}
+body:has(.tq4) #header .l-header__customBtn .c-iconBtn{
+  width:48px;height:48px;border:1px solid #e4e0d6;border-radius:50%;background:#fff
+}
+body:has(.tq4) #header .l-header__menuBtn{opacity:0!important;pointer-events:none!important}
+body:has(.tq4) #gnav{display:none!important}
+
+/* Checkbox + label mobile drawer: independent from SWELL link and menu JavaScript. */
+.tq-site-menu-toggle{
+  position:fixed!important;left:-9999px!important;top:-9999px!important;
+  width:1px!important;height:1px!important;opacity:0!important;pointer-events:none!important
+}
+.tq-site-menu-trigger{
+  position:fixed;left:7px;top:12px;z-index:99998;width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;border-radius:50%;
+  color:#20211f;cursor:pointer;background:transparent
+}
+.tq-site-menu__bars,.tq-site-menu__bars:before,.tq-site-menu__bars:after{
+  display:block;width:25px;height:2px;border-radius:99px;background:#20211f;content:"";
+  transition:transform .2s ease,opacity .2s ease
+}
+.tq-site-menu__bars{position:relative}
+.tq-site-menu__bars:before{position:absolute;top:-8px;left:0}
+.tq-site-menu__bars:after{position:absolute;top:8px;left:0}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger .tq-site-menu__bars{background:transparent}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger .tq-site-menu__bars:before{top:0;transform:rotate(45deg)}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger .tq-site-menu__bars:after{top:0;transform:rotate(-45deg)}
+
+.tq-site-menu{
+  position:fixed;inset:0;z-index:99999;margin:0!important;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .2s ease,visibility 0s linear .2s
+}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger + .tq-site-menu{
+  opacity:1;visibility:visible;pointer-events:auto;transition:opacity .2s ease
+}
+.tq-site-menu__overlay{
+  position:absolute;inset:0;display:block;background:rgba(22,24,21,.45);cursor:pointer;
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)
+}
+.tq-site-menu__drawer{
+  position:absolute;left:0;top:0;z-index:2;width:min(88vw,360px);height:100dvh;
+  overflow:auto;padding:78px 24px 28px;background:#f7f5ef;border-right:1px solid #dedbd1;
+  box-shadow:18px 0 50px rgba(18,20,17,.16);transform:translateX(-102%);
+  transition:transform .24s cubic-bezier(.2,.75,.2,1)
+}
+.tq-site-menu-toggle:checked + .tq-site-menu-trigger + .tq-site-menu .tq-site-menu__drawer{transform:translateX(0)}
+.tq-site-menu__close{
+  position:absolute;left:8px;top:12px;width:48px;height:48px;display:flex;
+  align-items:center;justify-content:center;border-radius:50%;cursor:pointer;
+  background:#fff;border:1px solid #e4e0d6
+}
+.tq-site-menu__close:before,.tq-site-menu__close:after{
+  content:"";position:absolute;width:24px;height:2px;border-radius:99px;background:#20211f
+}
+.tq-site-menu__close:before{transform:rotate(45deg)}
+.tq-site-menu__close:after{transform:rotate(-45deg)}
+.tq-site-menu__eyebrow{margin:0 0 7px;font-size:10px;font-weight:900;letter-spacing:.18em;color:#77786f}
+.tq-site-menu__title{margin:0 0 22px;font-size:27px;line-height:1.25;letter-spacing:-.035em;font-weight:900;color:#20211f}
+.tq-site-menu__quest{display:grid;gap:8px;margin:0}
+.tq-site-menu__quest a{
+  position:relative;display:block;padding:15px 44px 15px 16px;border:1px solid #dedbd1;
+  border-radius:14px;background:#fff;color:#20211f!important;text-decoration:none!important
+}
+.tq-site-menu__quest a:after{content:"→";position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px}
+.tq-site-menu__quest small{display:block;margin:0 0 3px;font-size:9px;letter-spacing:.14em;font-weight:900;color:#77786f}
+.tq-site-menu__quest strong{display:block;font-size:18px;line-height:1.35}
+.tq-site-menu__quest span{display:block;margin-top:3px;font-size:10px;line-height:1.5;color:#77786f}
+.tq-site-menu__quest a:nth-child(1){border-left:5px solid #7ab0df}
+.tq-site-menu__quest a:nth-child(2){border-left:5px solid #f3b92f}
+.tq-site-menu__quest a:nth-child(3){border-left:5px solid #8fb56e}
+.tq-site-menu__quest a:nth-child(4){border-left:5px solid #b8a7c7}
+.tq-site-menu__utility{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 2px 0;padding-top:18px;border-top:1px solid #dedbd1}
+.tq-site-menu__utility a{font-size:11px;font-weight:800;color:#555750!important;text-decoration:none!important}
+.tq-site-menu__family{margin:24px 0 0;padding:15px 10px 6px;border-radius:14px;background:#fff;border:1px solid #e4e0d6}
+.tq-site-menu__family img{display:block;width:100%;height:auto;max-height:110px;object-fit:contain}
+.tq-site-menu__family p{margin:6px 0 0;text-align:center;font-size:9px;font-weight:800;letter-spacing:.08em;color:#85867f}
+
+/* Desktop navigation. */
+.tq-site-nav{
+  position:fixed;z-index:99992;left:50%;top:0;transform:translateX(-50%);height:72px;
+  display:flex;align-items:center;gap:4px;margin:0!important;padding:0
+}
+.tq-site-nav a{
+  position:relative;display:flex;align-items:center;height:44px;padding:0 13px;border-radius:999px;
+  color:#3b3d38!important;text-decoration:none!important;font-size:12px;font-weight:800;letter-spacing:.03em;
+  transition:background .18s ease,transform .18s ease
+}
+.tq-site-nav a:hover{background:#f3f0e8;transform:translateY(-1px)}
+.tq-site-nav a:after{
+  content:"";position:absolute;left:16px;right:16px;bottom:6px;height:2px;border-radius:99px;
+  background:#0e4c5a;transform:scaleX(0);transition:transform .18s ease
+}
+.tq-site-nav a:hover:after{transform:scaleX(1)}
+
+@media(max-width:782px){
+  body.admin-bar:has(.tq4) #header{top:46px}
+  body.admin-bar .tq-site-menu-trigger{top:58px}
+  body.admin-bar .tq-site-menu__drawer{padding-top:124px}
+  body.admin-bar .tq-site-menu__close{top:58px}
+}
+@media(max-width:959px){
+  .tq-site-nav{display:none!important}
+  body:has(.tq4) #header .l-header__inner{height:64px;min-height:64px;padding-left:8px!important;padding-right:8px!important}
+  body:has(.tq4) #header .c-headLogo__link{font-size:22px!important}
+}
+@media(min-width:960px){
+  .tq-site-menu-toggle,.tq-site-menu-trigger,.tq-site-menu{display:none!important}
+  body:has(.tq4) #header .l-header__logo{min-width:170px}
+}
+@media(prefers-reduced-motion:reduce){
+  .tq-site-menu,.tq-site-menu__drawer,.tq-site-menu__bars,.tq-site-menu__bars:before,.tq-site-menu__bars:after,.tq-site-nav a{transition:none!important}
+}
+
+/* TQ DIRECT CHECKBOX HIT TARGET v4 */
+body:has(.tq4) #content{z-index:auto!important}
+.tq-site-menu-toggle{
+  position:fixed!important;left:7px!important;top:12px!important;z-index:100001!important;
+  width:48px!important;height:48px!important;margin:0!important;padding:0!important;
+  opacity:0!important;pointer-events:auto!important;cursor:pointer!important
+}
+.tq-site-menu-trigger{z-index:100000!important;pointer-events:none!important}
+.tq-site-menu__close{display:none!important}
+@media(max-width:782px){body.admin-bar .tq-site-menu-toggle{top:58px!important}}
+
+/* END TQ HEADER DRAWER PROTOTYPE v1 */
+
 </style>
 <!-- /wp:html -->
+
+<!-- TQ HEADER NAV PROTOTYPE v1 START -->
+<!-- wp:html -->
+<input class="tq-site-menu-toggle" type="checkbox" id="tq-menu-toggle" aria-label="メニューを開閉">
+<label class="tq-site-menu-trigger" for="tq-menu-toggle" aria-label="メニューを開閉"><span class="tq-site-menu__bars" aria-hidden="true"></span></label>
+<div class="tq-site-menu" aria-label="つりくえ！休日メニュー">
+  <label class="tq-site-menu__overlay" for="tq-menu-toggle" aria-label="メニューを閉じる"></label>
+  <div class="tq-site-menu__drawer">
+    <label class="tq-site-menu__close" for="tq-menu-toggle" aria-label="メニューを閉じる"></label>
+    <p class="tq-site-menu__eyebrow">TSURIKUE! / HOLIDAY MENU</p>
+    <p class="tq-site-menu__title">今日は、<br>なにして遊ぶ？</p>
+    <nav class="tq-site-menu__quest" aria-label="休日メニュー">
+      <a href="/category/sightseeing-leisure/"><small>GO OUT</small><strong>おでかけ</strong><span>遊び場・観光・温泉・旅行</span></a>
+      <a href="/category/gourmet/"><small>EAT</small><strong>グルメ</strong><span>街のごはん・旅先グルメ</span></a>
+      <a href="/category/fishing/"><small>FISH</small><strong>釣り</strong><span>気軽な釣り・野食・魚料理</span></a>
+      <a href="/category/car/"><small>CAR</small><strong>クルマ</strong><span>レクサスUX・洗車・カー用品</span></a>
+    </nav>
+    <div class="tq-site-menu__utility">
+      <a href="/profile/">つりくえ！について</a>
+      <a href="/contact-form/">お問い合わせ</a>
+    </div>
+    <div class="tq-site-menu__family"><img src="https://tsurikue.com/wp-content/uploads/2026/08/e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg" alt="つりくえ！一家のドット絵"><p>のんびり冒険中。</p></div>
+  </div>
+</div>
+<nav class="tq-site-nav" aria-label="つりくえ！メインナビ">
+  <a href="/category/sightseeing-leisure/">おでかけ</a>
+  <a href="/category/gourmet/">グルメ</a>
+  <a href="/category/fishing/">釣り</a>
+  <a href="/category/car/">クルマ</a>
+  <a href="/profile/">ABOUT</a>
+</nav>
+<!-- /wp:html -->
+<!-- TQ HEADER NAV PROTOTYPE v1 END -->
+
+
+
+
+
+
+
+
+
+
+
 
 <!-- wp:group {"align":"full","className":"tq4","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull tq4"><!-- wp:group {"className":"tq4-party","layout":{"type":"constrained"}} -->
@@ -280,7 +483,7 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"className":"tq4-hero-text"} -->
-<p class="tq4-hero-text">広島・中国地方を中心に、実際に遊んだ場所、食べたもの、釣った魚、走った道を残しています。大げさな冒険じゃなくても、ちょっと面白ければ立派な休日。</p>
+<p class="tq4-hero-text">広島・中国地方を中心に、実際に遊んだ場所、食べたもの、<br>釣った魚、走った道を残しています。<br>大げさな冒険じゃなくても、ちょっと面白ければ立派な休日。</p>
 <!-- /wp:paragraph --></div>
 <!-- /wp:group --></div>
 <!-- /wp:group --></div></div>
@@ -315,7 +518,7 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-card-desc"} -->
-<p class="tq4-card-desc">遊び場、観光、温泉、ふらっと寄った場所。</p>
+<p class="tq4-card-desc">遊び場、観光、温泉、<br>ふらっと寄った場所。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"className":"tq4-pill-text"} -->
@@ -335,7 +538,7 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-card-desc"} -->
-<p class="tq4-card-desc">街のラーメン、旅先のごはん、気になった店。</p>
+<p class="tq4-card-desc">旅先のごはんやラーメン気になったお店。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"className":"tq4-pill-text"} -->
@@ -443,7 +646,7 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading"><a href="/hiroshima-sightseeing/">広島観光｜実際に遊んだ場所から選ぶ休日スポット</a></h3>
+<h3 class="wp-block-heading"><a href="/hiroshima-sightseeing/">広島観光｜実際に遊んだ場所で選ぶ休日スポット</a></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-read"} -->
