@@ -27,7 +27,7 @@ jobs:
       - name: Measure live page at iPhone width
         shell: bash
         run: |
-          cat > /tmp/measure.js <<'JS'
+          cat > measure.js <<'JS'
           const { chromium } = require('playwright');
           (async() => {
             const browser = await chromium.launch({headless:true});
@@ -57,7 +57,7 @@ jobs:
               }
               const all = [...document.querySelectorAll('body *')].map(el => {
                 const r=el.getBoundingClientRect();
-                return {tag:el.tagName, cls:(el.className||'').toString().slice(0,160), left:r.left, right:r.right, width:r.width};
+                return {tag:el.tagName, cls:(el.className||'').toString().slice(0,160), left:+r.left.toFixed(2), right:+r.right.toFixed(2), width:+r.width.toFixed(2)};
               }).filter(x => x.width>0 && (x.left < -1 || x.right > window.innerWidth+1)).sort((a,b)=>Math.max(Math.abs(b.left),Math.abs(b.right-window.innerWidth))-Math.max(Math.abs(a.left),Math.abs(a.right-window.innerWidth))).slice(0,20);
               out.overflowers = all;
               return out;
@@ -68,4 +68,4 @@ jobs:
             await browser.close();
           })().catch(e => { console.error(e); process.exit(1); });
           JS
-          node /tmp/measure.js
+          node measure.js
