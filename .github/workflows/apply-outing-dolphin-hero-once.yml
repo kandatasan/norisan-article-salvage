@@ -4,6 +4,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/apply-outing-dolphin-hero-once.yml'
+      - 'ops/outing-dolphin-hero/apply.py'
 jobs:
   apply:
     runs-on: ubuntu-latest
@@ -15,7 +16,7 @@ jobs:
         with: {fetch-depth: 2}
       - uses: actions/setup-python@v5
         with: {python-version: '3.x'}
-      - name: Resolve latest cropped dolphin media and patch hero
+      - name: Patch hero with WordPress media 3177
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -24,8 +25,8 @@ jobs:
         run: |
           grep -q 'tsurikue-category-hub:v2:outing-blocks' category-hubs/outing/content.html
           grep -q 'TQ OUTING DARK HERO v1' category-hubs/outing/content.html
-          grep -q '2419' category-hubs/outing/content.html
-          grep -q 'rgba(7,20,26,.56)' category-hubs/outing/content.html
+          grep -q 'wp-image-3177' category-hubs/outing/content.html
+          grep -q 'rgba(6,18,24,.50)' category-hubs/outing/content.html
           git diff --check
       - name: Deploy draft 3154
         env:
@@ -42,4 +43,3 @@ jobs:
           git fetch origin main
           git rebase origin/main
           git push origin HEAD:main
-# retry after media lookup hardening
