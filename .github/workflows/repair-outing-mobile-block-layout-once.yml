@@ -1,0 +1,77 @@
+name: Repair outing mobile block layout once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/repair-outing-mobile-block-layout-once.yml'
+      - 'ops/outing-mobile-repair/**'
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Backup current WordPress outing draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python ops/outing-mobile-repair/guard.py backup
+
+      - name: Patch canonical CSS
+        run: |
+          python ops/outing-mobile-repair/patch.py
+          git diff --check
+
+      - name: Deploy repair to WordPress draft only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            echo "outing mobile repair deploy attempt ${attempt}/3"
+            if python category-hubs/outing/deploy.py; then exit 0; fi
+            if [[ "$attempt" != 3 ]]; then sleep 8; fi
+          done
+          exit 1
+
+      - name: Verify WordPress repair
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python ops/outing-mobile-repair/guard.py verify
+
+      - name: Commit canonical repaired source
+        if: success()
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add category-hubs/outing/content.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Repair outing mobile block layout'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+
+      - name: Restore previous draft if repair failed
+        if: failure()
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python ops/outing-mobile-repair/guard.py restore
+
+      - name: Success summary
+        if: success()
+        run: echo 'OUTING_MOBILE_BLOCK_LAYOUT_REPAIRED'
