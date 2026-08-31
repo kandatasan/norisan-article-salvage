@@ -1,0 +1,103 @@
+name: Migrate outing hub to Gutenberg blocks once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/migrate-outing-hub-to-blocks-once.yml'
+      - 'ops/outing-blocks/**'
+
+jobs:
+  migrate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Backup current WordPress outing draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python ops/outing-blocks/wp_guard.py backup
+
+      - name: Convert canonical outing source to Gutenberg blocks
+        run: |
+          python ops/outing-blocks/convert.py
+          git diff --check
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('category-hubs/outing/content.html').read_text(encoding='utf-8')
+          required=[
+            '<!-- tsurikue-category-hub:v1:outing -->',
+            '<!-- tsurikue-category-hub:v2:outing-blocks -->',
+            '/* TQ OUTING BLOCKS v1 */',
+            '<!-- wp:cover ',
+            '<!-- wp:latest-posts ',
+            '{{OUTING_CATEGORY_IDS}}',
+            '旅に出る',
+          ]
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('OUTING_BLOCK_SOURCE_MISSING='+repr(missing))
+          if s.count('<!-- wp:html -->') != 1: raise SystemExit('CUSTOM_HTML_COUNT_INVALID')
+          if '<main class="tq-out">' in s: raise SystemExit('LEGACY_MAIN_REMAINS')
+          print('OUTING_BLOCK_SOURCE_READY bytes=',len(s.encode('utf-8')))
+          PY
+
+      - name: Deploy blockized content to WordPress draft only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            echo "outing block deploy attempt ${attempt}/3"
+            if python category-hubs/outing/deploy.py; then exit 0; fi
+            if [[ "$attempt" != 3 ]]; then sleep 8; fi
+          done
+          exit 1
+
+      - name: Verify WordPress block migration
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python ops/outing-blocks/wp_guard.py verify
+
+      - name: Commit canonical block source after verification
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add category-hubs/outing/content.html
+          if git diff --cached --quiet; then exit 0; fi
+          git commit -m 'Convert outing hub to Gutenberg blocks'
+          git fetch origin main
+          git rebase origin/main
+          git push origin HEAD:main
+
+      - name: Roll back WordPress draft if migration failed
+        if: failure()
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            echo "outing block rollback attempt ${attempt}/3"
+            if python ops/outing-blocks/wp_guard.py restore; then exit 0; fi
+            if [[ "$attempt" != 3 ]]; then sleep 8; fi
+          done
+          exit 1
+
+      - name: Success summary
+        if: success()
+        run: echo 'OUTING_GUTENBERG_BLOCK_MIGRATION_COMPLETE'
