@@ -13,7 +13,7 @@ permissions:
 jobs:
   apply-and-verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 12
+    timeout-minutes: 18
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,13 +27,33 @@ jobs:
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python experimental-pages/top-design-lab/header-prototype/apply.py
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            echo "apply.py attempt ${attempt}/3"
+            if python experimental-pages/top-design-lab/header-prototype/apply.py; then
+              exit 0
+            fi
+            if [[ "$attempt" != 3 ]]; then sleep 5; fi
+          done
+          exit 1
 
       - name: Make checkbox itself the mobile tap target
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python experimental-pages/top-design-lab/header-prototype/patch_direct_checkbox.py
+        shell: bash
+        run: |
+          set -u
+          for attempt in 1 2 3; do
+            echo "patch attempt ${attempt}/3"
+            if python experimental-pages/top-design-lab/header-prototype/patch_direct_checkbox.py; then
+              exit 0
+            fi
+            if [[ "$attempt" != 3 ]]; then sleep 5; fi
+          done
+          exit 1
 
       - uses: actions/setup-node@v4
         with:
