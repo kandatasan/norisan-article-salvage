@@ -16,7 +16,7 @@ PLACEHOLDER='{{OUTING_CATEGORY_IDS}}'
 user=os.environ['TSURIKUE_WP_USER']
 pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
 token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.4'}
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-outing-hub-deploy/1.5'}
 
 def request(path, method='GET', payload=None, attempts=3, timeout=35):
     data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
@@ -47,6 +47,22 @@ def find_category(slug):
         raise RuntimeError(f'CATEGORY_NOT_UNIQUE slug={slug} count={len(items)}')
     return items[0]
 
+def remove_problematic_constrained_layouts(template):
+    # These cards are CSS grids. Gutenberg's constrained layout adds auto-centering/max-width
+    # rules to direct children and can collapse the text column to near one-character width on PC.
+    classes=('tq-out-trip-card','tq-out-trip-copy','tq-out-route-card','tq-out-route-copy')
+    changed=0
+    for cls in classes:
+        old=f'<!-- wp:group {{"className":"{cls}","layout":{{"type":"constrained"}}}} -->'
+        new=f'<!-- wp:group {{"className":"{cls}","layout":{{"type":"default"}}}} -->'
+        count=template.count(old)
+        if count:
+            template=template.replace(old,new)
+            changed+=count
+    if changed < 11:
+        raise RuntimeError(f'EXPECTED_CARD_LAYOUT_REPLACEMENTS_MISSING changed={changed}')
+    return template, changed
+
 def build_content():
     parent=find_category(PARENT_SLUG)
     child=find_category(CHILD_SLUG)
@@ -55,6 +71,7 @@ def build_content():
     template=SOURCE.read_text(encoding='utf-8')
     if MARKER not in template:
         raise RuntimeError('SOURCE_MARKER_MISSING')
+    template, layout_replacements=remove_problematic_constrained_layouts(template)
     if template.count(PLACEHOLDER)!=1:
         raise RuntimeError(f'PLACEHOLDER_COUNT_INVALID count={template.count(PLACEHOLDER)}')
     template=template.replace(PLACEHOLDER,f'{parent["id"]},{child["id"]}')
@@ -62,11 +79,9 @@ def build_content():
         raise RuntimeError('UNRESOLVED_TEMPLATE_TOKEN')
     if NAV_REF_START in template or NAV_REF_END in template:
         raise RuntimeError('SOURCE_MUST_NOT_CONTAIN_TEMP_NAV_REF')
-    return template, parent, child
+    return template, parent, child, layout_replacements
 
 def find_page():
-    # WordPress collection endpoints default to status=publish even with context=edit.
-    # This hub lives as a draft until the user approves it, so query draft explicitly.
     q=urllib.parse.urlencode({'slug':SLUG,'status':STATUS,'context':'edit','per_page':10,'_fields':'id,slug,status,title,content,excerpt,link'})
     items=request('/pages?'+q)
     if len(items)>1:
@@ -86,13 +101,17 @@ def verify(page_id,parent,child):
       'child_cat':str(child['id']) in check_content,
       'hero':'次の休日、' in check_content,
       'archive_link':'/category/sightseeing-leisure/' in check_content,
+      'trip_card_default':'<!-- wp:group {"className":"tq-out-trip-card","layout":{"type":"default"}} -->' in check_content,
+      'trip_copy_default':'<!-- wp:group {"className":"tq-out-trip-copy","layout":{"type":"default"}} -->' in check_content,
+      'route_card_default':'<!-- wp:group {"className":"tq-out-route-card","layout":{"type":"default"}} -->' in check_content,
+      'route_copy_default':'<!-- wp:group {"className":"tq-out-route-copy","layout":{"type":"default"}} -->' in check_content,
     }
     if not all(checks.values()):
         raise RuntimeError('VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
     return check,checks
 
 def main():
-    content,parent,child=build_content()
+    content,parent,child,layout_replacements=build_content()
     existing=find_page()
     payload={'title':TITLE,'slug':SLUG,'status':STATUS,'content':content,'excerpt':'広島・山口・中国地方を中心に、実際に出かけた観光地・ドライブ・旅行モデルコースから次の休日を探せる、つりくえ！のおでかけ入口です。'}
     old_payload=None
@@ -136,6 +155,7 @@ def main():
       'outing_category_id':parent['id'],
       'model_course_category_id':child['id'],
       'temporary_nav':'absent',
+      'layout_replacements':layout_replacements,
       'checks':checks,
     },ensure_ascii=False))
 
