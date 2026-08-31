@@ -1,4 +1,4 @@
-name: Remove SWELL outer padding and verify mobile width
+name: Fix SWELL outer padding with has selector
 
 on:
   push:
@@ -31,7 +31,7 @@ jobs:
 
           PAGE_ID=2983
           MARKER='<!-- tsurikue-experimental-page:v1:top-design-lab -->'
-          FIX_TAG='/* MOBILE OUTER PADDING FIX v4 */'
+          FIX_TAG='/* MOBILE HAS-PARENT FIX v5 */'
           HERO_URL='https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg'
 
           user=os.environ['TSURIKUE_WP_USER']
@@ -41,7 +41,7 @@ jobs:
               'Authorization':'Basic '+token,
               'Accept':'application/json',
               'Content-Type':'application/json; charset=utf-8',
-              'User-Agent':'tsurikue-outer-padding-v4/1.0',
+              'User-Agent':'tsurikue-has-parent-v5/1.0',
           }
 
           def get_page():
@@ -65,19 +65,15 @@ jobs:
           if '</style>' not in original:
               raise SystemExit('BLOCKED_STYLE_END_MISSING')
 
-          content=re.sub(
-              r'\n?/\* MOBILE OUTER PADDING FIX v4 \*/.*?/\* END MOBILE OUTER PADDING FIX v4 \*/\n?',
-              '\n', original, flags=re.S
-          )
-
+          content=re.sub(r'\n?/\* MOBILE HAS-PARENT FIX v5 \*/.*?/\* END MOBILE HAS-PARENT FIX v5 \*/\n?','\n',original,flags=re.S)
           css='\n'.join([
               '',
-              '/* MOBILE OUTER PADDING FIX v4 */',
-              'body.page-id-2983 .l-content{padding-left:0!important;padding-right:0!important;max-width:none!important}',
-              'body.page-id-2983 .l-mainContent,body.page-id-2983 .l-mainContent__inner,body.page-id-2983 .post_content{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}',
-              'body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4,body.page-id-2983 .alignfull.tq4{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;left:auto!important;right:auto!important;transform:none!important}',
-              'body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfull,body.page-id-2983 .tq4>.wp-block-group.alignfull{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}',
-              '/* END MOBILE OUTER PADDING FIX v4 */',
+              '/* MOBILE HAS-PARENT FIX v5 */',
+              '.l-content:has(.tq4){padding-left:0!important;padding-right:0!important;max-width:none!important}',
+              '.l-mainContent:has(.tq4),.l-mainContent__inner:has(.tq4),.post_content:has(>.tq4){width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}',
+              '.post_content:has(>.tq4)>.tq4,.post_content:has(>.tq4)>.wp-block-group.tq4{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important;left:auto!important;right:auto!important;transform:none!important}',
+              '.post_content:has(>.tq4)>.tq4>.alignfull,.post_content:has(>.tq4)>.tq4>.wp-block-cover.alignfull,.post_content:has(>.tq4)>.tq4>.wp-block-group.alignfull{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}',
+              '/* END MOBILE HAS-PARENT FIX v5 */',
               '',
           ])
           content=content.replace('</style>',css+'</style>',1)
@@ -108,7 +104,7 @@ jobs:
           cfg=json.loads(cfg_path.read_text(encoding='utf-8'))
           cfg['expected_current_content_sha256']=hashlib.sha256(after_content.encode()).hexdigest()
           cfg_path.write_text(json.dumps(cfg,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-          print('SUCCESS_PATCH_V4')
+          print('SUCCESS_PATCH_V5')
           print('status='+str(after.get('status')))
           PY
 
@@ -129,14 +125,14 @@ jobs:
           (async()=>{
             const browser=await chromium.launch({headless:true});
             const page=await browser.newPage({viewport:{width:390,height:844}});
-            await page.goto('https://tsurikue.com/?v4check=1',{waitUntil:'networkidle',timeout:90000});
+            await page.goto('https://tsurikue.com/?v5check=1',{waitUntil:'networkidle',timeout:90000});
             await page.waitForTimeout(1200);
             const m=await page.evaluate(()=>{
-              const rect=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect();return {left:+r.left.toFixed(2),right:+r.right.toFixed(2),width:+r.width.toFixed(2),paddingLeft:getComputedStyle(e).paddingLeft,paddingRight:getComputedStyle(e).paddingRight}};
-              return {innerWidth:innerWidth,lContent:rect('.l-content'),post:rect('.post_content'),tq4:rect('.tq4'),party:rect('.tq4-party'),hero:rect('.tq4-hero')};
+              const rect=s=>{const e=document.querySelector(s);if(!e)return null;const r=e.getBoundingClientRect();const cs=getComputedStyle(e);return {left:+r.left.toFixed(2),right:+r.right.toFixed(2),width:+r.width.toFixed(2),paddingLeft:cs.paddingLeft,paddingRight:cs.paddingRight}};
+              return {innerWidth,bodyClass:document.body.className,lContent:rect('.l-content'),post:rect('.post_content'),tq4:rect('.tq4'),party:rect('.tq4-party'),hero:rect('.tq4-hero')};
             });
             console.log('VERIFY_LAYOUT='+JSON.stringify(m));
-            const ok=m.innerWidth===390 && m.lContent && m.tq4 && Math.abs(m.lContent.left)<=0.5 && Math.abs(m.lContent.right-390)<=0.5 && Math.abs(m.tq4.left)<=0.5 && Math.abs(m.tq4.right-390)<=0.5 && m.lContent.paddingLeft==='0px' && m.lContent.paddingRight==='0px';
+            const ok=m.innerWidth===390 && m.lContent && m.post && m.tq4 && Math.abs(m.post.left)<=0.5 && Math.abs(m.post.right-390)<=0.5 && Math.abs(m.tq4.left)<=0.5 && Math.abs(m.tq4.right-390)<=0.5 && m.lContent.paddingLeft==='0px' && m.lContent.paddingRight==='0px';
             if(!ok){throw new Error('VERIFY_FULL_WIDTH_FAILED '+JSON.stringify(m));}
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
@@ -151,5 +147,5 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
           if git diff --cached --quiet; then exit 0; fi
-          git commit -m 'Remove SWELL outer padding on top page'
+          git commit -m 'Fix SWELL outer padding on top page'
           git push origin HEAD:main
