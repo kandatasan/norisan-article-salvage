@@ -1,4 +1,4 @@
-name: Add gourmet pill to guarded WordPress draft
+name: Center Gutenberg top and move family party
 
 on:
   push:
@@ -10,7 +10,7 @@ permissions:
   contents: write
 
 jobs:
-  add-gourmet-pill:
+  center-and-move-family:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -34,7 +34,7 @@ jobs:
           EXPECTED_SLUG = 'top-design-lab'
           EXPECTED_TITLE = 'つりくえ！トップデザイン実験室'
           MARKER = '<!-- tsurikue-experimental-page:v1:top-design-lab -->'
-          LABEL = 'ラーメン・ご当地グルメ'
+          FIX_TAG = '/* GUTENBERG CENTER + FAMILY TOP FIX v1 */'
 
           user = os.environ['TSURIKUE_WP_USER']
           pw = os.environ['TSURIKUE_WP_APP_PASSWORD']
@@ -43,7 +43,7 @@ jobs:
               'Authorization': 'Basic ' + token,
               'Accept': 'application/json',
               'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'tsurikue-gourmet-pill/1.0',
+              'User-Agent': 'tsurikue-center-family/1.0',
           }
 
           def get_page():
@@ -64,52 +64,112 @@ jobs:
               return c.get('raw') or ''
 
           page = get_page()
-          content = raw_content(page)
+          original = raw_content(page)
           if page.get('id') != PAGE_ID or page.get('slug') != EXPECTED_SLUG or page.get('status') != 'draft':
               raise SystemExit('BLOCKED_WRONG_PAGE_STATE')
           if EXPECTED_TITLE not in raw_title(page):
               raise SystemExit('BLOCKED_TITLE_MISMATCH')
-          if MARKER not in content:
+          if MARKER not in original:
               raise SystemExit('BLOCKED_MARKER_MISSING')
-          if content.count('<!-- wp:cover') < 5 or content.count('<!-- wp:group') < 20:
+          if original.count('<!-- wp:cover') < 5 or original.count('<!-- wp:group') < 20:
               raise SystemExit('BLOCKED_NOT_GUTENBERG_VERSION')
-          if 'raw.githubusercontent.com' in content:
+          if 'raw.githubusercontent.com' in original:
               raise SystemExit('BLOCKED_EXTERNAL_MEDIA_REGRESSION')
-          if LABEL in content:
-              raise SystemExit('BLOCKED_GOURMET_PILL_ALREADY_PRESENT')
+          if 'ラーメン・ご当地グルメ' not in original:
+              raise SystemExit('BLOCKED_GOURMET_PILL_MISSING')
+          if FIX_TAG in original:
+              raise SystemExit('BLOCKED_CENTER_FIX_ALREADY_PRESENT')
 
-          old_css = (
-              '\n/* GUTENBERG GOURMET ALIGN FIX v3 */\n'
-              '/* Gourmet has no pill, so reserve the same vertical space as the other cards. */\n'
-              '.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:58px!important}\n'
-              '@media(max-width:560px){.tq4 .tq4-cat--gourmet .tq4-cat-body{padding-bottom:52px!important}}\n'
-          )
-          if old_css in content:
-              content = content.replace(old_css, '\n', 1)
+          content = original
 
-          pill = (
-              '<!-- wp:paragraph {"className":"tq4-pill-text"} -->\n'
-              '<p class="tq4-pill-text">ラーメン・ご当地グルメ</p>\n'
-              '<!-- /wp:paragraph -->\n'
-          )
-          needle = (
-              '<p class="tq4-card-desc">街のラーメン、旅先のごはん、気になった店。</p>\n'
-              '<!-- /wp:paragraph -->\n'
-              '</div>\n'
-          )
-          if needle not in content:
-              raise SystemExit('BLOCKED_GOURMET_INSERTION_POINT_MISSING')
-          content = content.replace(
-              needle,
-              '<p class="tq4-card-desc">街のラーメン、旅先のごはん、気になった店。</p>\n'
-              '<!-- /wp:paragraph -->\n' + pill + '</div>\n',
-              1,
-          )
+          # Move the native image/group block from below the hero to above it.
+          family = '''<!-- wp:group {"align":"full","className":"tq4-party","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull tq4-party">
+<!-- wp:image {"id":2992,"sizeSlug":"full","linkDestination":"none","align":"center","className":"tq4-party-image"} -->
+<figure class="wp-block-image aligncenter size-full tq4-party-image"><img src="https://tsurikue.com/wp-content/uploads/2026/08/e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg" alt="つりくえ！一家のドット絵" class="wp-image-2992"/></figure>
+<!-- /wp:image -->
+</div>
+<!-- /wp:group -->'''
+
+          hero_start = '<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"'
+          if content.count(family) != 1:
+              raise SystemExit('BLOCKED_FAMILY_BLOCK_NOT_UNIQUE')
+          if hero_start not in content:
+              raise SystemExit('BLOCKED_HERO_START_MISSING')
+          content = content.replace(family + '\n\n', '', 1)
+          content = content.replace(hero_start, family + '\n\n' + hero_start, 1)
+
+          css = r'''
+/* GUTENBERG CENTER + FAMILY TOP FIX v1 */
+/* alignfull already handles the full-width block; undo the legacy HTML full-bleed offset. */
+.tq4{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:0!important;
+  margin-right:0!important;
+}
+body.page-id-2983 .post_content>.tq4,
+body.page-id-2983 .post_content>.wp-block-group.tq4{
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.tq4>.wp-block-cover.alignfull,
+.tq4>.wp-block-group.alignfull{
+  width:100%!important;
+  max-width:none!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+/* Family party now lives in the quiet space before the hero. */
+.tq4 .tq4-party{
+  padding:16px 0 10px!important;
+  background:#fff!important;
+  border-bottom:0!important;
+}
+.tq4 .tq4-party>.wp-block-group__inner-container{
+  width:min(1080px,91vw)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.tq4 .tq4-party-image{
+  width:100%!important;
+  max-width:560px!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+.tq4 .tq4-party-image img{
+  display:block!important;
+  width:100%!important;
+  max-width:560px!important;
+  max-height:180px!important;
+  height:auto!important;
+  object-fit:contain!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+/* Keep all primary inner rails centered on the same axis. */
+.tq4 .tq4-hero-inner,
+.tq4 .tq4-section>.wp-block-group__inner-container,
+.tq4 .tq4-final>.wp-block-group__inner-container,
+.tq4 .tq4-wrap{
+  width:min(1080px,91vw)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+}
+@media(max-width:560px){
+  .tq4 .tq4-party{padding:10px 0 6px!important}
+  .tq4 .tq4-party-image{max-width:360px!important}
+  .tq4 .tq4-party-image img{max-width:360px!important;max-height:132px!important}
+}
+'''
+          if '</style>' not in content:
+              raise SystemExit('BLOCKED_STYLE_END_MISSING')
+          content = content.replace('</style>', css + '\n</style>', 1)
 
           # Re-read immediately before writing so a concurrent manual edit cannot be overwritten.
           latest = get_page()
           latest_content = raw_content(latest)
-          if latest.get('status') != 'draft' or hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(raw_content(page).encode()).hexdigest():
+          if latest.get('status') != 'draft' or hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
               raise SystemExit('BLOCKED_PAGE_CHANGED_DURING_RUN')
 
           payload = json.dumps({'content': content, 'status': 'draft'}, ensure_ascii=False).encode('utf-8')
@@ -126,10 +186,10 @@ jobs:
           after_content = raw_content(after)
           if after.get('status') != 'draft':
               raise SystemExit('VERIFY_STATUS_CHANGED')
-          if LABEL not in after_content:
-              raise SystemExit('VERIFY_GOURMET_PILL_MISSING')
-          if 'GUTENBERG GOURMET ALIGN FIX v3' in after_content:
-              raise SystemExit('VERIFY_OLD_ALIGNMENT_FIX_REMAINS')
+          if FIX_TAG not in after_content:
+              raise SystemExit('VERIFY_CENTER_FIX_MISSING')
+          if after_content.find('tq4-party') > after_content.find('tq4-hero'):
+              raise SystemExit('VERIFY_FAMILY_NOT_BEFORE_HERO')
           if MARKER not in after_content:
               raise SystemExit('VERIFY_MARKER_MISSING')
 
@@ -138,7 +198,7 @@ jobs:
           cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
           cfg['expected_current_content_sha256'] = hashlib.sha256(after_content.encode()).hexdigest()
           cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
-          print('SUCCESS_GOURMET_PILL')
+          print('SUCCESS_CENTER_AND_FAMILY_TOP')
           print('status=' + after.get('status',''))
           print('content_sha256=' + cfg['expected_current_content_sha256'])
           PY
@@ -154,5 +214,5 @@ jobs:
             echo 'No source diff to commit.'
             exit 0
           fi
-          git commit -m 'Add gourmet category pill to top design lab'
+          git commit -m 'Center Gutenberg top and move family above hero'
           git push origin HEAD:main
