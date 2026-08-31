@@ -65,3 +65,5 @@ jobs:
 
       - name: Success summary
         run: echo 'OUTING_CATEGORY_HUB_DRAFT_CREATED_AND_VERIFIED'
+
+# operational redeploy: one-column outing shell
