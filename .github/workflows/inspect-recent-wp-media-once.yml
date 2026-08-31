@@ -29,24 +29,29 @@ jobs:
           user=os.environ['TSURIKUE_WP_USER']
           pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
           token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
-          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-media-inspector/1.1'}
-
+          headers={'Authorization':'Basic '+token,'Accept':'application/json','User-Agent':'tsurikue-block-inspector/1.0'}
           q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content'})
           req=urllib.request.Request('https://tsurikue.com/wp-json/wp/v2/pages/2983?'+q,headers=headers)
           with urllib.request.urlopen(req,timeout=45) as r:
               page=json.loads(r.read().decode())
           content=(page.get('content') or {}).get('raw') or (page.get('content') or {}).get('rendered') or ''
           sha=hashlib.sha256(content.encode()).hexdigest()
-          print('### Current top-design-lab draft (read-only)')
+          encoded=base64.b64encode(content.encode()).decode()
+          print('### Current top-design-lab Gutenberg draft (read-only)')
           print('')
           print(f"- page_id: **{page.get('id')}**")
           print(f"- slug: **{page.get('slug')}**")
           print(f"- status: **{page.get('status')}**")
           print(f"- content_sha256: `{sha}`")
-          print(f"- has_family_wp_url: **{'e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg' in content}**")
-          print(f"- has_dolphin_wp_url: **{'/2026/08/img_2419.jpg' in content}**")
-          print(f"- has_car_wp_url: **{'/2026/08/img_1028.jpg' in content}**")
-          print(f"- has_github_raw_media: **{'raw.githubusercontent.com' in content}**")
+          print(f"- block_comments: **{content.count('<!-- wp:')}**")
+          print(f"- cover_blocks: **{content.count('<!-- wp:cover')}**")
+          print(f"- group_blocks: **{content.count('<!-- wp:group')}**")
+          print(f"- image_blocks: **{content.count('<!-- wp:image')}**")
+          print(f"- custom_html_blocks: **{content.count('<!-- wp:html')}**")
+          print(f"- has_marker: **{'tsurikue-experimental-page:v1:top-design-lab' in content}**")
+          print('')
+          print('content_b64:')
+          print(encoded)
           PY
       - name: Record on audit issue
         env:
