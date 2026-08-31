@@ -265,6 +265,32 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
 
 
 
+
+/* TQ TOP DESKTOP SECTION FULLWIDTH v1 */
+@media(min-width:960px){
+  .tq4>.wp-block-group__inner-container{
+    width:100%!important;
+    max-width:none!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    padding-left:0!important;
+    padding-right:0!important;
+  }
+  .tq4>.wp-block-group__inner-container>.tq4-party,
+  .tq4>.wp-block-group__inner-container>.tq4-hero,
+  .tq4>.wp-block-group__inner-container>.tq4-section,
+  .tq4>.wp-block-group__inner-container>.tq4-final{
+    width:100%!important;
+    max-width:none!important;
+    margin-left:0!important;
+    margin-right:0!important;
+    left:0!important;
+    right:auto!important;
+    transform:none!important;
+  }
+}
+/* END TQ TOP DESKTOP SECTION FULLWIDTH v1 */
+
 /* TQ HEADER DRAWER PROTOTYPE v1 */
 body:has(.tq4) #header{
   position:sticky!important;top:0;z-index:99980;
@@ -471,7 +497,8 @@ body:has(.tq4) #header .l-header__menuBtn{
 </style>
 <!-- /wp:html -->
 
-<!-- TQ HEADER NAV PROTOTYPE v1 START -->
+<p><!-- TQ HEADER NAV PROTOTYPE v1 START --></p>
+
 <!-- wp:html -->
 <input class="tq-site-menu-toggle" type="checkbox" id="tq-menu-toggle" aria-label="メニューを開閉">
 <label class="tq-site-menu-trigger" for="tq-menu-toggle" aria-label="メニューを開閉"><span class="tq-site-menu__bars" aria-hidden="true"></span></label>
@@ -503,22 +530,8 @@ body:has(.tq4) #header .l-header__menuBtn{
   <a href="/profile/">ABOUT</a>
 </nav>
 <!-- /wp:html -->
-<!-- TQ HEADER NAV PROTOTYPE v1 END -->
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+<p><!-- TQ HEADER NAV PROTOTYPE v1 END --></p>
 
 <!-- wp:group {"align":"full","className":"tq4","layout":{"type":"constrained"}} -->
 <div class="wp-block-group alignfull tq4"><!-- wp:group {"className":"tq4-party","layout":{"type":"constrained"}} -->
@@ -622,7 +635,7 @@ body:has(.tq4) #header .l-header__menuBtn{
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-card-desc"} -->
-<p class="tq4-card-desc">気軽な釣り、ちょっとした実験、野食・魚料理。</p>
+<p class="tq4-card-desc">気軽な釣り日記。<br>釣り方や野食・料理。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph {"className":"tq4-pill-text"} -->
