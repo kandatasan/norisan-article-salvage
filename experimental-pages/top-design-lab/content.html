@@ -33,20 +33,16 @@ body.page-id-2983 .l-content{padding-top:0!important}
 
 /* HERO */
 .tq3-hero{padding:clamp(54px,7vw,88px) 0 clamp(54px,7vw,82px);border-bottom:1px solid var(--line);background:linear-gradient(90deg,rgba(255,255,255,.94) 0%,rgba(255,255,255,.90) 42%,rgba(247,245,239,.78) 72%,rgba(247,245,239,.72) 100%),url('https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg') center 52%/cover no-repeat}
-.tq3-hero-grid{display:grid;grid-template-columns:minmax(0,1.02fr) minmax(360px,.98fr);gap:clamp(34px,6vw,72px);align-items:center}
+.tq3-hero-grid{display:block;max-width:760px}
 .tq3-brand{display:inline-flex;align-items:center;gap:10px;margin-bottom:26px;font-size:13px;font-weight:850}
 .tq3-brand:before{content:"";width:11px;height:11px;border-radius:50%;background:var(--yellow);box-shadow:18px 0 0 #7ab0df,36px 0 0 #8fb56e;margin-right:36px}
 .tq3-hero h1{margin:0;font-size:clamp(42px,6.2vw,74px);line-height:1.08;letter-spacing:-.045em;font-weight:900}
 .tq3-hero-lead{margin:26px 0 0;max-width:640px;font-size:clamp(16px,1.8vw,19px);line-height:1.9;font-weight:650}
 .tq3-hero-text{margin:14px 0 0;max-width:620px;color:var(--sub);font-size:14px;line-height:2}
-.tq3-mosaic{display:grid;grid-template-columns:1.1fr .9fr;grid-template-rows:1fr 1fr;gap:9px;height:390px}
-.tq3-mosaic figure{margin:0;overflow:hidden;border-radius:18px;background:#ddd}
-.tq3-mosaic figure:first-child{grid-row:1/3}
-.tq3-mosaic img{display:block;width:100%;height:100%;object-fit:cover}
 
 /* FAMILY PARTY */
 .tq3-party{padding:18px 0 24px;background:#fff;border-bottom:1px solid var(--line)}
-.tq3-party img{display:block;width:min(820px,100%);height:auto;margin:0 auto}
+.tq3-party img{display:block;width:min(820px,100%);height:auto;max-height:280px;aspect-ratio:3/1;object-fit:contain;margin:0 auto}
 
 /* SECTIONS */
 .tq3-section{padding:clamp(72px,9vw,112px) 0}
@@ -108,9 +104,7 @@ body.page-id-2983 .l-content{padding-top:0!important}
 .tq3-final-links a{padding:11px 15px;border:1px solid rgba(32,33,31,.5);border-radius:999px;font-size:12px;font-weight:800;background:rgba(255,255,255,.25)}
 
 @media(max-width:860px){
-  .tq3-hero-grid,.tq3-concept-grid,.tq3-about-grid{grid-template-columns:1fr}
-  .tq3-hero-grid{gap:38px}
-  .tq3-mosaic{height:300px}
+  .tq3-concept-grid,.tq3-about-grid{grid-template-columns:1fr}
   .tq3-cat-grid{grid-template-columns:repeat(2,1fr)}
   .tq3-head{display:block}
   .tq3-head p{margin-top:12px}
@@ -124,10 +118,8 @@ body.page-id-2983 .l-content{padding-top:0!important}
   .tq3-hero h1{font-size:40px;line-height:1.14}
   .tq3-hero-lead{font-size:16px;line-height:1.8}
   .tq3-hero-text{font-size:13px;line-height:1.9}
-  .tq3-mosaic{height:238px;grid-template-columns:1fr 1fr;grid-template-rows:1.15fr .85fr}
-  .tq3-mosaic figure:first-child{grid-column:1/3;grid-row:1}
   .tq3-party{padding:10px 0 14px}
-  .tq3-party img{width:100%}
+  .tq3-party img{width:100%;max-height:220px}
   .tq3-section{padding:62px 0}
   .tq3-head{margin-bottom:24px}
   .tq3-head h2{font-size:30px}
@@ -159,17 +151,12 @@ body.page-id-2983 .l-content{padding-top:0!important}
         <p class="tq3-hero-lead">釣ったり、食べたり、ふらっと出かけたり。<br>ときどきクルマの話も。</p>
         <p class="tq3-hero-text">広島・中国地方を中心に、実際に遊んだ場所、食べたもの、釣った魚、走った道を残しています。大げさな冒険じゃなくても、ちょっと面白ければ立派な休日。</p>
       </div>
-      <div class="tq3-mosaic" aria-label="つりくえ！の休日">
-        <figure><img src="https://tsurikue.com/wp-content/uploads/2026/06/img_7279-1024x256.jpg" alt="おでかけの風景"></figure>
-        <figure><img src="https://tsurikue.com/wp-content/uploads/2026/06/img_7278-1024x256.jpg" alt="釣りの風景"></figure>
-        <figure><img src="https://tsurikue.com/wp-content/uploads/2026/06/5c60de71-fc9e-4f4e-85a6-2639fc6eac8d-1024x256.jpg" alt="グルメの風景"></figure>
-      </div>
     </div>
   </section>
 
   <section class="tq3-party" aria-label="つりくえ！一家">
     <div class="tq3-wrap">
-      <img src="https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/main/experimental-pages/top-design-lab/assets/family-party.webp" alt="つりくえ！一家のドット絵">
+      <img src="https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/f20628b32f86f83a9fb098eb947b13ebd3398100/experimental-pages/top-design-lab/assets/family-party.webp" alt="つりくえ！一家のドット絵">
     </div>
   </section>
 
@@ -183,7 +170,7 @@ body.page-id-2983 .l-content{padding-top:0!important}
         <p>ガチじゃなくて大丈夫。近場の寄り道から1泊2日の旅行まで、その日の気分でどうぞ。</p>
       </div>
       <div class="tq3-cat-grid">
-        <a class="tq3-cat" style="--cat-bg:url('https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/main/experimental-pages/top-design-lab/assets/dolphin-jump.webp');--cat-pos:center 46%;--cat-opacity:.30" href="/category/sightseeing-leisure/">
+        <a class="tq3-cat" style="--cat-bg:url('https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/f20628b32f86f83a9fb098eb947b13ebd3398100/experimental-pages/top-design-lab/assets/dolphin-jump.webp');--cat-pos:center 46%;--cat-opacity:.30" href="/category/sightseeing-leisure/">
           <div class="tq3-cat-body"><small>GO OUT</small><h3>おでかけ</h3><p>遊び場、観光、温泉、ふらっと寄った場所。</p><span class="tq3-subcat">旅行・モデルコースもこちら</span></div>
         </a>
         <a class="tq3-cat" style="--cat-bg:url('https://tsurikue.com/wp-content/uploads/2026/05/img_2559.jpg');--cat-pos:48% 52%;--cat-opacity:.25" href="/category/gourmet/">
