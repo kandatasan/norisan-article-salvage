@@ -1,4 +1,4 @@
-name: Inspect tsurikue header and mobile menu
+name: Inspect rendered top header prototype
 
 on:
   push:
@@ -18,14 +18,11 @@ jobs:
         with:
           node-version: '22'
       - name: Install browser tooling
-        shell: bash
         run: |
-          set -euo pipefail
           npm init -y >/dev/null 2>&1
           npm install playwright@1.55.0 >/dev/null 2>&1
           npx playwright install chromium >/dev/null 2>&1
-      - name: Inspect inline state
-        shell: bash
+      - name: Inspect rendered prototype
         run: |
           cat > inspect.js <<'JS'
           const { chromium } = require('playwright');
@@ -34,17 +31,15 @@ jobs:
             const page=await browser.newPage({viewport:{width:390,height:844}});
             await page.goto('https://tsurikue.com/',{waitUntil:'domcontentloaded',timeout:60000});
             await page.waitForTimeout(1800);
-            const snap=async(label)=>{
-              const d=await page.evaluate(()=>{
-                const one=s=>{const e=document.querySelector(s);if(!e)return null;return {cls:e.className,style:e.getAttribute('style'),ariaHidden:e.getAttribute('aria-hidden'),data:[...e.attributes].filter(a=>a.name.startsWith('data-')).reduce((o,a)=>(o[a.name]=a.value,o),{})}};
-                return {spMenu:one('#sp_menu'),inner:one('#sp_menu .p-spMenu__inner'),overlay:one('#sp_menu .p-spMenu__overlay'),headerBtn:one('.l-header__menuBtn .-menuBtn')};
-              });
-              console.log(label+'='+JSON.stringify(d));
-            };
-            await snap('INLINE_CLOSED');
-            await page.locator('.l-header__menuBtn .-menuBtn').first().click({force:true,timeout:3000,noWaitAfter:true});
-            await page.waitForTimeout(900);
-            await snap('INLINE_OPEN');
+            const d=await page.evaluate(()=>{
+              const q=s=>document.querySelector(s);
+              return {
+                details:q('.tq-site-menu')?.outerHTML || null,
+                nav:q('.tq-site-nav')?.outerHTML || null,
+                customHtml:[...document.querySelectorAll('.post_content details, .post_content nav')].map(e=>e.outerHTML).slice(0,10)
+              };
+            });
+            console.log('PROTOTYPE_RENDERED='+JSON.stringify(d,null,2));
             await browser.close();
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
