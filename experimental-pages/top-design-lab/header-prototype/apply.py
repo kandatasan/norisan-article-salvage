@@ -32,7 +32,7 @@ headers = {
     'Authorization': 'Basic ' + token,
     'Accept': 'application/json',
     'Content-Type': 'application/json; charset=utf-8',
-    'User-Agent': 'tsurikue-header-prototype-v1/1.0',
+    'User-Agent': 'tsurikue-header-prototype-v2/1.0',
 }
 
 
@@ -79,7 +79,7 @@ content = re.sub(
 
 css = r'''
 /* TQ HEADER DRAWER PROTOTYPE v1 */
-/* Scope the prototype to the static front page by the presence of .tq4. */
+/* Front page header skin. The static front page has no reliable body page-id class. */
 body:has(.tq4) #header{
   position:sticky!important;top:0;z-index:99980;
   background:rgba(255,255,255,.94)!important;
@@ -107,39 +107,55 @@ body:has(.tq4) #header .l-header__customBtn .c-iconBtn{
 body:has(.tq4) #header .l-header__menuBtn{opacity:0!important;pointer-events:none!important}
 body:has(.tq4) #gnav{display:none!important}
 
-/* Pure HTML/CSS mobile hamburger. */
-.tq-site-menu{position:fixed;left:0;top:0;z-index:99996;width:0;height:0;margin:0!important}
-.tq-site-menu>summary{
-  position:fixed;left:7px;top:12px;z-index:99999;width:48px;height:48px;
-  display:flex;align-items:center;justify-content:center;list-style:none;cursor:pointer;
-  border-radius:50%;background:transparent
+/* Hash-target mobile hamburger. No JavaScript required and no conflict with SWELL toggleMenu. */
+.tq-site-menu-trigger{
+  position:fixed;left:7px;top:12px;z-index:99998;width:48px;height:48px;
+  display:flex;align-items:center;justify-content:center;border-radius:50%;
+  color:#20211f!important;text-decoration:none!important;background:transparent
 }
-.tq-site-menu>summary::-webkit-details-marker{display:none}
 .tq-site-menu__bars,.tq-site-menu__bars:before,.tq-site-menu__bars:after{
-  display:block;width:25px;height:2px;border-radius:99px;background:#20211f;content:"";
-  transition:transform .22s ease,opacity .22s ease
+  display:block;width:25px;height:2px;border-radius:99px;background:#20211f;content:""
 }
 .tq-site-menu__bars{position:relative}
 .tq-site-menu__bars:before{position:absolute;top:-8px;left:0}
 .tq-site-menu__bars:after{position:absolute;top:8px;left:0}
-.tq-site-menu[open] .tq-site-menu__bars{background:transparent}
-.tq-site-menu[open] .tq-site-menu__bars:before{top:0;transform:rotate(45deg)}
-.tq-site-menu[open] .tq-site-menu__bars:after{top:0;transform:rotate(-45deg)}
-.tq-site-menu[open]:before{
-  content:"";position:fixed;inset:0;z-index:99990;background:rgba(22,24,21,.45);
-  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);pointer-events:none
+
+.tq-site-menu{
+  position:fixed;inset:0;z-index:99999;margin:0!important;
+  opacity:0;visibility:hidden;pointer-events:none;
+  transition:opacity .2s ease,visibility 0s linear .2s
+}
+.tq-site-menu:target{
+  opacity:1;visibility:visible;pointer-events:auto;
+  transition:opacity .2s ease
+}
+.tq-site-menu__overlay{
+  position:absolute;inset:0;display:block;background:rgba(22,24,21,.45);
+  backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)
 }
 .tq-site-menu__drawer{
-  position:fixed;left:0;top:0;z-index:99995;width:min(88vw,360px);height:100dvh;
-  overflow:auto;padding:82px 24px 28px;background:#f7f5ef;border-right:1px solid #dedbd1;
-  box-shadow:18px 0 50px rgba(18,20,17,.16)
+  position:absolute;left:0;top:0;z-index:2;width:min(88vw,360px);height:100dvh;
+  overflow:auto;padding:78px 24px 28px;background:#f7f5ef;border-right:1px solid #dedbd1;
+  box-shadow:18px 0 50px rgba(18,20,17,.16);transform:translateX(-102%);
+  transition:transform .24s cubic-bezier(.2,.75,.2,1)
 }
+.tq-site-menu:target .tq-site-menu__drawer{transform:translateX(0)}
+.tq-site-menu__close{
+  position:absolute;left:8px;top:12px;width:48px;height:48px;display:flex;
+  align-items:center;justify-content:center;border-radius:50%;color:#20211f!important;
+  text-decoration:none!important;background:#fff;border:1px solid #e4e0d6
+}
+.tq-site-menu__close:before,.tq-site-menu__close:after{
+  content:"";position:absolute;width:24px;height:2px;border-radius:99px;background:#20211f
+}
+.tq-site-menu__close:before{transform:rotate(45deg)}
+.tq-site-menu__close:after{transform:rotate(-45deg)}
 .tq-site-menu__eyebrow{margin:0 0 7px;font-size:10px;font-weight:900;letter-spacing:.18em;color:#77786f}
 .tq-site-menu__title{margin:0 0 22px;font-size:27px;line-height:1.25;letter-spacing:-.035em;font-weight:900;color:#20211f}
 .tq-site-menu__quest{display:grid;gap:8px;margin:0}
 .tq-site-menu__quest a{
   position:relative;display:block;padding:15px 44px 15px 16px;border:1px solid #dedbd1;
-  border-radius:14px;background:#fff;color:#20211f;text-decoration:none!important
+  border-radius:14px;background:#fff;color:#20211f!important;text-decoration:none!important
 }
 .tq-site-menu__quest a:after{content:"→";position:absolute;right:16px;top:50%;transform:translateY(-50%);font-size:18px}
 .tq-site-menu__quest small{display:block;margin:0 0 3px;font-size:9px;letter-spacing:.14em;font-weight:900;color:#77786f}
@@ -150,7 +166,7 @@ body:has(.tq4) #gnav{display:none!important}
 .tq-site-menu__quest a:nth-child(3){border-left:5px solid #8fb56e}
 .tq-site-menu__quest a:nth-child(4){border-left:5px solid #b8a7c7}
 .tq-site-menu__utility{display:flex;flex-wrap:wrap;gap:8px 14px;margin:22px 2px 0;padding-top:18px;border-top:1px solid #dedbd1}
-.tq-site-menu__utility a{font-size:11px;font-weight:800;color:#555750;text-decoration:none!important}
+.tq-site-menu__utility a{font-size:11px;font-weight:800;color:#555750!important;text-decoration:none!important}
 .tq-site-menu__family{margin:24px 0 0;padding:15px 10px 6px;border-radius:14px;background:#fff;border:1px solid #e4e0d6}
 .tq-site-menu__family img{display:block;width:100%;height:auto;max-height:110px;object-fit:contain}
 .tq-site-menu__family p{margin:6px 0 0;text-align:center;font-size:9px;font-weight:800;letter-spacing:.08em;color:#85867f}
@@ -174,8 +190,9 @@ body:has(.tq4) #gnav{display:none!important}
 
 @media(max-width:782px){
   body.admin-bar:has(.tq4) #header{top:46px}
-  body.admin-bar .tq-site-menu>summary{top:58px}
-  body.admin-bar .tq-site-menu__drawer{padding-top:128px}
+  body.admin-bar .tq-site-menu-trigger{top:58px}
+  body.admin-bar .tq-site-menu__drawer{padding-top:124px}
+  body.admin-bar .tq-site-menu__close{top:58px}
 }
 @media(max-width:959px){
   .tq-site-nav{display:none!important}
@@ -183,11 +200,11 @@ body:has(.tq4) #gnav{display:none!important}
   body:has(.tq4) #header .c-headLogo__link{font-size:22px!important}
 }
 @media(min-width:960px){
-  .tq-site-menu{display:none!important}
+  .tq-site-menu-trigger,.tq-site-menu{display:none!important}
   body:has(.tq4) #header .l-header__logo{min-width:170px}
 }
 @media(prefers-reduced-motion:reduce){
-  .tq-site-menu__bars,.tq-site-menu__bars:before,.tq-site-menu__bars:after,.tq-site-nav a{transition:none!important}
+  .tq-site-menu,.tq-site-menu__drawer,.tq-site-nav a{transition:none!important}
 }
 /* END TQ HEADER DRAWER PROTOTYPE v1 */
 '''
@@ -196,9 +213,11 @@ content = content.replace('</style>', css + '\n</style>', 1)
 menu_html = f'''
 {HTML_START}
 <!-- wp:html -->
-<details class="tq-site-menu">
-  <summary aria-label="メニューを開閉"><span class="tq-site-menu__bars" aria-hidden="true"></span></summary>
+<a class="tq-site-menu-trigger" href="#tq-holiday-menu" aria-label="メニューを開く"><span class="tq-site-menu__bars" aria-hidden="true"></span></a>
+<div id="tq-holiday-menu" class="tq-site-menu" aria-label="つりくえ！休日メニュー">
+  <a class="tq-site-menu__overlay" href="#menu-close" aria-label="メニューを閉じる"></a>
   <div class="tq-site-menu__drawer">
+    <a class="tq-site-menu__close" href="#menu-close" aria-label="メニューを閉じる"></a>
     <p class="tq-site-menu__eyebrow">TSURIKUE! / HOLIDAY MENU</p>
     <p class="tq-site-menu__title">今日は、<br>なにして遊ぶ？</p>
     <nav class="tq-site-menu__quest" aria-label="休日メニュー">
@@ -213,7 +232,7 @@ menu_html = f'''
     </div>
     <div class="tq-site-menu__family"><img src="{FAMILY}" alt="つりくえ！一家のドット絵"><p>のんびり冒険中。</p></div>
   </div>
-</details>
+</div>
 <nav class="tq-site-nav" aria-label="つりくえ！メインナビ">
   <a href="{LINKS['おでかけ']}">おでかけ</a>
   <a href="{LINKS['グルメ']}">グルメ</a>
@@ -265,5 +284,5 @@ cfg = json.loads(cfg_path.read_text(encoding='utf-8'))
 cfg['expected_current_content_sha256'] = hashlib.sha256(after_content.encode()).hexdigest()
 cfg_path.write_text(json.dumps(cfg, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
 
-print('SUCCESS_HEADER_PROTOTYPE')
+print('SUCCESS_HEADER_PROTOTYPE_TARGET_V2')
 print('status=' + str(after.get('status')))
