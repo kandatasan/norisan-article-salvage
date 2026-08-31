@@ -43,7 +43,7 @@ jobs:
               'Authorization': 'Basic ' + token,
               'Accept': 'application/json',
               'Content-Type': 'application/json; charset=utf-8',
-              'User-Agent': 'tsurikue-center-family/1.0',
+              'User-Agent': 'tsurikue-center-family/1.1',
           }
 
           def get_page():
@@ -82,15 +82,15 @@ jobs:
 
           content = original
 
-          # Move the native image/group block from below the hero to above it.
-          family = '''<!-- wp:group {"align":"full","className":"tq4-party","layout":{"type":"constrained"}} -->
-<div class="wp-block-group alignfull tq4-party">
-<!-- wp:image {"id":2992,"sizeSlug":"full","linkDestination":"none","align":"center","className":"tq4-party-image"} -->
-<figure class="wp-block-image aligncenter size-full tq4-party-image"><img src="https://tsurikue.com/wp-content/uploads/2026/08/e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg" alt="つりくえ！一家のドット絵" class="wp-image-2992"/></figure>
-<!-- /wp:image -->
-</div>
-<!-- /wp:group -->'''
-
+          family = '\n'.join([
+              '<!-- wp:group {"align":"full","className":"tq4-party","layout":{"type":"constrained"}} -->',
+              '<div class="wp-block-group alignfull tq4-party">',
+              '<!-- wp:image {"id":2992,"sizeSlug":"full","linkDestination":"none","align":"center","className":"tq4-party-image"} -->',
+              '<figure class="wp-block-image aligncenter size-full tq4-party-image"><img src="https://tsurikue.com/wp-content/uploads/2026/08/e9134f4d-3d71-45fd-a6e7-cf47982bb93d.jpg" alt="つりくえ！一家のドット絵" class="wp-image-2992"/></figure>',
+              '<!-- /wp:image -->',
+              '</div>',
+              '<!-- /wp:group -->',
+          ])
           hero_start = '<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"'
           if content.count(family) != 1:
               raise SystemExit('BLOCKED_FAMILY_BLOCK_NOT_UNIQUE')
@@ -99,74 +99,25 @@ jobs:
           content = content.replace(family + '\n\n', '', 1)
           content = content.replace(hero_start, family + '\n\n' + hero_start, 1)
 
-          css = r'''
-/* GUTENBERG CENTER + FAMILY TOP FIX v1 */
-/* alignfull already handles the full-width block; undo the legacy HTML full-bleed offset. */
-.tq4{
-  width:100%!important;
-  max-width:none!important;
-  margin-left:0!important;
-  margin-right:0!important;
-}
-body.page-id-2983 .post_content>.tq4,
-body.page-id-2983 .post_content>.wp-block-group.tq4{
-  margin-left:auto!important;
-  margin-right:auto!important;
-}
-.tq4>.wp-block-cover.alignfull,
-.tq4>.wp-block-group.alignfull{
-  width:100%!important;
-  max-width:none!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-}
-/* Family party now lives in the quiet space before the hero. */
-.tq4 .tq4-party{
-  padding:16px 0 10px!important;
-  background:#fff!important;
-  border-bottom:0!important;
-}
-.tq4 .tq4-party>.wp-block-group__inner-container{
-  width:min(1080px,91vw)!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-}
-.tq4 .tq4-party-image{
-  width:100%!important;
-  max-width:560px!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-}
-.tq4 .tq4-party-image img{
-  display:block!important;
-  width:100%!important;
-  max-width:560px!important;
-  max-height:180px!important;
-  height:auto!important;
-  object-fit:contain!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-}
-/* Keep all primary inner rails centered on the same axis. */
-.tq4 .tq4-hero-inner,
-.tq4 .tq4-section>.wp-block-group__inner-container,
-.tq4 .tq4-final>.wp-block-group__inner-container,
-.tq4 .tq4-wrap{
-  width:min(1080px,91vw)!important;
-  margin-left:auto!important;
-  margin-right:auto!important;
-}
-@media(max-width:560px){
-  .tq4 .tq4-party{padding:10px 0 6px!important}
-  .tq4 .tq4-party-image{max-width:360px!important}
-  .tq4 .tq4-party-image img{max-width:360px!important;max-height:132px!important}
-}
-'''
+          css = '\n'.join([
+              '',
+              '/* GUTENBERG CENTER + FAMILY TOP FIX v1 */',
+              '/* alignfull already handles full width; undo the legacy HTML full-bleed offset. */',
+              '.tq4{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}',
+              'body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4{margin-left:auto!important;margin-right:auto!important}',
+              '.tq4>.wp-block-cover.alignfull,.tq4>.wp-block-group.alignfull{width:100%!important;max-width:none!important;margin-left:auto!important;margin-right:auto!important}',
+              '.tq4 .tq4-party{padding:16px 0 10px!important;background:#fff!important;border-bottom:0!important}',
+              '.tq4 .tq4-party>.wp-block-group__inner-container{width:min(1080px,91vw)!important;margin-left:auto!important;margin-right:auto!important}',
+              '.tq4 .tq4-party-image{width:100%!important;max-width:560px!important;margin-left:auto!important;margin-right:auto!important}',
+              '.tq4 .tq4-party-image img{display:block!important;width:100%!important;max-width:560px!important;max-height:180px!important;height:auto!important;object-fit:contain!important;margin-left:auto!important;margin-right:auto!important}',
+              '.tq4 .tq4-hero-inner,.tq4 .tq4-section>.wp-block-group__inner-container,.tq4 .tq4-final>.wp-block-group__inner-container,.tq4 .tq4-wrap{width:min(1080px,91vw)!important;margin-left:auto!important;margin-right:auto!important}',
+              '@media(max-width:560px){.tq4 .tq4-party{padding:10px 0 6px!important}.tq4 .tq4-party-image{max-width:360px!important}.tq4 .tq4-party-image img{max-width:360px!important;max-height:132px!important}}',
+              '',
+          ])
           if '</style>' not in content:
               raise SystemExit('BLOCKED_STYLE_END_MISSING')
-          content = content.replace('</style>', css + '\n</style>', 1)
+          content = content.replace('</style>', css + '</style>', 1)
 
-          # Re-read immediately before writing so a concurrent manual edit cannot be overwritten.
           latest = get_page()
           latest_content = raw_content(latest)
           if latest.get('status') != 'draft' or hashlib.sha256(latest_content.encode()).hexdigest() != hashlib.sha256(original.encode()).hexdigest():
@@ -188,7 +139,9 @@ body.page-id-2983 .post_content>.wp-block-group.tq4{
               raise SystemExit('VERIFY_STATUS_CHANGED')
           if FIX_TAG not in after_content:
               raise SystemExit('VERIFY_CENTER_FIX_MISSING')
-          if after_content.find('tq4-party') > after_content.find('tq4-hero'):
+          hero_pos = after_content.find('<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/05/img_4588.jpg"')
+          family_pos = after_content.find('<!-- wp:group {"align":"full","className":"tq4-party"')
+          if family_pos < 0 or hero_pos < 0 or family_pos > hero_pos:
               raise SystemExit('VERIFY_FAMILY_NOT_BEFORE_HERO')
           if MARKER not in after_content:
               raise SystemExit('VERIFY_MARKER_MISSING')
