@@ -63,15 +63,17 @@ body.page-id-2983 .l-content{padding-top:0!important}
 /* CATEGORY */
 .tq3-cats{background:#fff}
 .tq3-cat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-.tq3-cat{overflow:hidden;border:1px solid var(--line);border-radius:16px;background:#fff;transition:transform .2s ease,box-shadow .2s ease}
+.tq3-cat{position:relative;isolation:isolate;overflow:hidden;min-height:270px;border:1px solid var(--line);border-radius:16px;background:#fff;transition:transform .2s ease,box-shadow .2s ease}
+.tq3-cat::before{content:"";position:absolute;inset:0;z-index:-2;background-image:var(--cat-bg);background-position:var(--cat-pos,center);background-size:cover;background-repeat:no-repeat;opacity:var(--cat-opacity,.14);filter:saturate(.85) contrast(.95);transition:opacity .25s ease,transform .35s ease}
+.tq3-cat::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(180deg,rgba(255,255,255,.18),rgba(255,255,255,.64) 82%,rgba(255,255,255,.82))}
 .tq3-cat:hover{transform:translateY(-3px);box-shadow:0 14px 32px rgba(32,33,31,.08)}
-.tq3-cat-img{height:150px;overflow:hidden;background:#eee}
-.tq3-cat-img img{display:block;width:100%;height:100%;object-fit:cover}
-.tq3-cat-body{padding:22px 20px 24px}
-.tq3-cat small{display:block;margin-bottom:7px;color:#8b8b84;font-size:10px;font-weight:800;letter-spacing:.12em}
-.tq3-cat h3{margin:0;font-size:26px;letter-spacing:-.025em}
-.tq3-cat p{margin:12px 0 0;color:var(--sub);font-size:12px;line-height:1.75}
-.tq3-subcat{display:inline-block;margin-top:15px;padding:6px 9px;border-radius:999px;background:#f0eee8;font-size:10px;font-weight:800}
+.tq3-cat:hover::before{opacity:calc(var(--cat-opacity,.14) + .035);transform:scale(1.025)}
+.tq3-cat-img{display:none}
+.tq3-cat-body{position:relative;z-index:1;min-height:270px;padding:26px 20px 24px;display:flex;flex-direction:column;justify-content:flex-end}
+.tq3-cat small{display:block;margin-bottom:7px;color:#70716b;font-size:10px;font-weight:850;letter-spacing:.12em}
+.tq3-cat h3{margin:0;font-size:27px;letter-spacing:-.025em}
+.tq3-cat p{margin:12px 0 0;color:#4f514c;font-size:12px;line-height:1.75;font-weight:550}
+.tq3-subcat{display:inline-block;align-self:flex-start;margin-top:15px;padding:6px 9px;border-radius:999px;background:rgba(247,245,239,.86);border:1px solid rgba(32,33,31,.06);font-size:10px;font-weight:800}
 
 /* CONCEPT */
 .tq3-concept{background:var(--green)}
@@ -139,9 +141,8 @@ body.page-id-2983 .l-content{padding-top:0!important}
   .tq3-head{margin-bottom:24px}
   .tq3-head h2{font-size:30px}
   .tq3-cat-grid{gap:9px}
-  .tq3-cat{border-radius:13px}
-  .tq3-cat-img{height:95px}
-  .tq3-cat-body{padding:16px 13px 18px}
+  .tq3-cat{min-height:205px;border-radius:13px}
+  .tq3-cat-body{min-height:205px;padding:19px 14px 18px}
   .tq3-cat h3{font-size:21px}
   .tq3-cat p{font-size:11px;line-height:1.65}
   .tq3-subcat{font-size:9px;padding:5px 7px}
@@ -198,20 +199,16 @@ body.page-id-2983 .l-content{padding-top:0!important}
         <p>ガチじゃなくて大丈夫。近場の寄り道から1泊2日の旅行まで、その日の気分でどうぞ。</p>
       </div>
       <div class="tq3-cat-grid">
-        <a class="tq3-cat" href="/category/sightseeing-leisure/">
-          <div class="tq3-cat-img"><img src="https://tsurikue.com/wp-content/uploads/2026/06/img_7279-1024x256.jpg" alt="おでかけ"></div>
+        <a class="tq3-cat" style="--cat-bg:url('https://tsurikue.com/wp-content/uploads/2026/05/img_2419.jpg');--cat-pos:center;--cat-opacity:.17" href="/category/sightseeing-leisure/">
           <div class="tq3-cat-body"><small>GO OUT</small><h3>おでかけ</h3><p>遊び場、観光、温泉、ふらっと寄った場所。</p><span class="tq3-subcat">旅行・モデルコースもこちら</span></div>
         </a>
-        <a class="tq3-cat" href="/category/gourmet/">
-          <div class="tq3-cat-img"><img src="https://tsurikue.com/wp-content/uploads/2026/06/5c60de71-fc9e-4f4e-85a6-2639fc6eac8d-1024x256.jpg" alt="グルメ"></div>
+        <a class="tq3-cat" style="--cat-bg:url('https://tsurikue.com/wp-content/uploads/2026/06/5c60de71-fc9e-4f4e-85a6-2639fc6eac8d-1024x256.jpg');--cat-pos:center;--cat-opacity:.13" href="/category/gourmet/">
           <div class="tq3-cat-body"><small>EAT</small><h3>グルメ</h3><p>街のラーメン、旅先のごはん、気になった店。</p></div>
         </a>
-        <a class="tq3-cat" href="/category/fishing/">
-          <div class="tq3-cat-img"><img src="https://tsurikue.com/wp-content/uploads/2026/06/img_7278-1024x256.jpg" alt="釣り"></div>
+        <a class="tq3-cat" style="--cat-bg:url('https://tsurikue.com/wp-content/uploads/2026/06/IMG_9050.jpeg');--cat-pos:58% 62%;--cat-opacity:.12" href="/category/fishing/">
           <div class="tq3-cat-body"><small>FISH</small><h3>釣り</h3><p>気軽な釣り、ちょっとした実験、野食・魚料理。</p><span class="tq3-subcat">野食・魚料理</span></div>
         </a>
-        <a class="tq3-cat" href="/category/car/">
-          <div class="tq3-cat-img"><img src="https://tsurikue.com/wp-content/uploads/2026/06/img_7281-1024x256.png" alt="クルマ"></div>
+        <a class="tq3-cat" style="--cat-bg:url('https://tsurikue.com/wp-content/uploads/2026/05/img_3554.jpg');--cat-pos:center 58%;--cat-opacity:.16" href="/category/car/">
           <div class="tq3-cat-body"><small>CAR</small><h3>クルマ</h3><p>レクサスUXの実体験、洗車、カー用品など。</p><span class="tq3-subcat">カー用品・洗車</span></div>
         </a>
       </div>
