@@ -47,6 +47,45 @@ jobs:
           print('SOURCE_OK bytes=',len(s.encode('utf-8')))
           PY
 
+      - name: Harden nested trip and route groups for desktop
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('category-hubs/outing/content.html')
+          s=p.read_text(encoding='utf-8')
+          for cls in ('tq-out-trip-card','tq-out-trip-copy','tq-out-route-list','tq-out-route-card','tq-out-route-copy'):
+              s=s.replace(
+                  f'{{"className":"{cls}","layout":{{"type":"constrained"}}}}',
+                  f'{{"className":"{cls}","layout":{{"type":"default"}}}}'
+              )
+          start='<!-- tq-outing-pc-card-width-fix:v1 start -->'
+          end='<!-- tq-outing-pc-card-width-fix:v1 end -->'
+          s=re.sub(re.escape(start)+r'.*?'+re.escape(end),'',s,flags=re.S)
+          patch='''
+          <!-- wp:html -->
+          <!-- tq-outing-pc-card-width-fix:v1 start -->
+          <style>
+          @media(min-width:861px){
+            .tq-out .tq-out-trip-card{display:grid!important;grid-template-columns:82px minmax(0,1fr)!important;gap:18px!important;align-items:center!important}
+            .tq-out .tq-out-route-card{display:grid!important;grid-template-columns:145px minmax(0,1fr) auto!important;gap:24px!important;align-items:center!important}
+            .tq-out .tq-out-trip-card>*,.tq-out .tq-out-route-card>*{min-width:0!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+            .tq-out .tq-out-trip-copy,.tq-out .tq-out-route-copy{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important}
+            .tq-out .tq-out-trip-copy>.wp-block-group__inner-container,.tq-out .tq-out-route-copy>.wp-block-group__inner-container{display:block!important;width:100%!important;min-width:0!important;max-width:none!important;margin:0!important;padding:0!important}
+            .tq-out .tq-out-trip-copy>*,.tq-out .tq-out-trip-copy>.wp-block-group__inner-container>*,.tq-out .tq-out-route-copy>*,.tq-out .tq-out-route-copy>.wp-block-group__inner-container>*{width:100%!important;min-width:0!important;max-width:none!important;margin-left:0!important;margin-right:0!important;writing-mode:horizontal-tb!important;text-orientation:mixed!important}
+            .tq-out .tq-out-trip-copy h3,.tq-out .tq-out-trip-copy h3 a,.tq-out .tq-out-trip-copy p,.tq-out .tq-out-route-copy h3,.tq-out .tq-out-route-copy h3 a,.tq-out .tq-out-route-copy p{white-space:normal!important;word-break:normal!important;overflow-wrap:break-word!important;writing-mode:horizontal-tb!important}
+            .tq-out .tq-out-trip-label{white-space:nowrap!important;word-break:keep-all!important}
+            .tq-out .tq-out-route-list,.tq-out .tq-out-route-list>.wp-block-group__inner-container{width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important}
+          }
+          </style>
+          <!-- tq-outing-pc-card-width-fix:v1 end -->
+          <!-- /wp:html -->
+          '''
+          s=s.rstrip()+'\n'+patch
+          p.write_text(s,encoding='utf-8')
+          print('OUTING_DESKTOP_GUARD_APPLIED')
+          PY
+
       - name: Create or update outing hub as WordPress draft
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
@@ -66,4 +105,4 @@ jobs:
       - name: Success summary
         run: echo 'OUTING_CATEGORY_HUB_DRAFT_CREATED_AND_VERIFIED'
 
-# operational redeploy: one-column outing shell
+# operational redeploy: desktop nested-group guard
