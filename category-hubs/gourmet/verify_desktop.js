@@ -34,14 +34,71 @@ const isWhite = value => {
   const rendered = draft.content?.rendered || draft.content?.raw || '';
   assert(rendered.includes('tq-gourmet'), 'Rendered gourmet content is missing');
 
-  const heroCandidates = [
+  const mediaQueries = [
+    ['search-4017', '/media?context=edit&search=4017&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
+    ['slug-img-4017', '/media?context=edit&slug=img_4017&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
+    ['search-yakiniku', '/media?context=edit&search=' + encodeURIComponent('焼肉') + '&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
+    ['search-meat', '/media?context=edit&search=' + encodeURIComponent('肉') + '&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
+    ['recent-media', '/media?context=edit&per_page=100&orderby=date&order=desc&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
+  ];
+  const discovered = [];
+  const discoveryLog = [];
+  for (const [label, path] of mediaQueries) {
+    try {
+      const mediaListResponse = await fetch(
+        'https://tsurikue.com/wp-json/wp/v2' + path,
+        {
+          headers: {
+            Authorization: `Basic ${auth}`,
+            Accept: 'application/json',
+            'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.0',
+          },
+          signal: AbortSignal.timeout(35000),
+        },
+      );
+      if (!mediaListResponse.ok) {
+        discoveryLog.push({ label, status: mediaListResponse.status, matches: [] });
+        continue;
+      }
+      const items = await mediaListResponse.json();
+      const matches = items.filter(item => {
+        const metadata = JSON.stringify({
+          source_url: item.source_url,
+          slug: item.slug,
+          alt_text: item.alt_text,
+          title: item.title,
+          caption: item.caption,
+        });
+        return /(4017|焼肉|肉|ステーキ|カルビ)/i.test(metadata);
+      });
+      discoveryLog.push({
+        label,
+        status: mediaListResponse.status,
+        matches: matches.map(item => ({
+          id: item.id,
+          source_url: item.source_url,
+          slug: item.slug,
+          alt_text: item.alt_text,
+        })),
+      });
+      for (const item of matches) {
+        if (item.source_url) discovered.push(item.source_url);
+      }
+    } catch (error) {
+      discoveryLog.push({ label, error: String(error), matches: [] });
+    }
+  }
+  console.log('GOURMET_HERO_MEDIA_DISCOVERY', JSON.stringify(discoveryLog));
+
+  const heroCandidates = [...new Set([
+    ...discovered,
     'https://tsurikue.com/wp-content/uploads/2026/05/img_2618-1.jpg',
     'https://tsurikue.com/wp-content/uploads/2026/05/img_2612-1.jpg',
     'https://tsurikue.com/wp-content/uploads/2026/05/img_9478.jpg',
     'https://tsurikue.com/wp-content/uploads/2026/05/img_9476.jpg',
     'https://tsurikue.com/wp-content/uploads/2026/05/img_9475.jpg',
     'https://tsurikue.com/wp-content/uploads/2026/05/img_9533.jpg',
-  ];
+  ])];
 
   let heroSource = '';
   let imageType = '';
