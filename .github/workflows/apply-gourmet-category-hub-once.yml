@@ -6,7 +6,7 @@ on:
 jobs:
   apply:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
         with:
@@ -52,6 +52,26 @@ jobs:
             fi
           done
           exit 1
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install desktop verifier
+        run: |
+          npm init -y >/dev/null 2>&1
+          npm install playwright@1.55.0 >/dev/null 2>&1
+          npx playwright install chromium >/dev/null 2>&1
+      - name: Verify 1024px and 1440px desktop layouts
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: node category-hubs/gourmet/verify_desktop.js
+      - name: Save desktop preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: gourmet-desktop-preview
+          path: gourmet-desktop-1440.png
+          if-no-files-found: error
+          retention-days: 7
       - name: Success
-        run: echo 'GOURMET_CATEGORY_HUB_DRAFT_CREATED_AND_VERIFIED'
-# fixed-category-id retry
+        run: echo 'GOURMET_CATEGORY_HUB_DRAFT_AND_DESKTOP_VERIFIED'
+# desktop-visual-verification
