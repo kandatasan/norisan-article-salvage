@@ -1,0 +1,125 @@
+name: Apply outing PC layout live fix once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-outing-pc-layout-live-fix-once.yml'
+      - 'ops/outing-pc-layout-fix/**'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Validate fix source
+        run: |
+          python -m py_compile ops/outing-pc-layout-fix/apply.py ops/outing-pc-layout-fix/verify_live.py
+          grep -q 'tq-outing-pc-shell-align-fix:v1 start' ops/outing-pc-layout-fix/apply.py
+          grep -q '@media(min-width:861px)' ops/outing-pc-layout-fix/apply.py
+          grep -q "EXPECTED_CURRENT_SHA256 = '74cb29217bb7f3d89257d6f7f19b360efc2e1502425776054ceb3b5b2d1d15e2'" ops/outing-pc-layout-fix/apply.py
+
+      - name: Apply minimal CSS patch to published outing page
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python ops/outing-pc-layout-fix/apply.py | tee outing-pc-layout-apply-audit.json
+          test -s outing-pc-layout-apply-audit.json
+          python - <<'PY'
+          import json
+          data=json.load(open('outing-pc-layout-apply-audit.json', encoding='utf-8'))
+          assert data['post_id'] == 3154
+          assert data['slug'] == 'odekake'
+          assert data['status'] == 'publish'
+          assert data['wordpress_write_count'] in (0, 1)
+          assert data['publish_count'] == 0
+          assert data['delete_count'] == 0
+          assert data['public_before'] == data['public_after']
+          assert data['custom_html_blocks'] == 2
+          assert data['group_blocks'] == 51
+          assert all(data['identity_before'].values())
+          assert all(data['identity_after'].values())
+          assert all(data['before_structure'].values())
+          assert all(data['final_structure'].values())
+          assert data['existing_pc_card_fix_preserved'] is True
+          assert data['new_pc_shell_fix_present'] is True
+          PY
+
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+
+      - name: Verify actual public page at desktop and mobile widths
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python ops/outing-pc-layout-fix/verify_live.py | tee outing-pc-layout-live-verify-console.json
+          test -s outing-pc-layout-live-verify.json
+          python - <<'PY'
+          import json
+          data=json.load(open('outing-pc-layout-live-verify.json', encoding='utf-8'))
+          assert data['post_id'] == 3154
+          assert data['slug'] == 'odekake'
+          assert data['status'] == 'publish'
+          assert all(data['checks']['content'].values())
+          assert all(data['checks']['desktop'].values())
+          assert all(data['checks']['mobile'].values())
+          PY
+
+      - name: Upload audit and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-pc-layout-live-fix-audit
+          path: |
+            outing-pc-layout-apply-audit.json
+            outing-pc-layout-live-verify.json
+            outing-pc-layout-live-verify-console.json
+            outing-pc-layout-before.html
+            outing-pc-layout-after.html
+            outing-pc-layout-live-desktop-1440.png
+            outing-pc-layout-live-mobile-390.png
+          if-no-files-found: warn
+
+      - name: Add audit log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Outing published PC layout fix'
+            if [ -s outing-pc-layout-apply-audit.json ]; then
+              echo
+              echo '**WordPress apply audit**'
+              echo '```json'
+              cat outing-pc-layout-apply-audit.json
+              echo '```'
+            else
+              echo
+              echo 'WordPress apply audit was not produced. Check the workflow log; do not treat this run as success.'
+            fi
+            if [ -s outing-pc-layout-live-verify-console.json ]; then
+              echo
+              echo '**Live browser verification**'
+              echo '```json'
+              cat outing-pc-layout-live-verify-console.json
+              echo '```'
+            else
+              echo
+              echo 'Live browser verification was not produced or did not run.'
+            fi
+          } > /tmp/outing-audit.md
+          gh issue comment 22 --body-file /tmp/outing-audit.md
