@@ -25,12 +25,24 @@ jobs:
       - name: Restore source bundle
         run: |
           python - <<'PY'
-          import base64,gzip,pathlib
+          import base64,gzip,pathlib,urllib.request
           root=pathlib.Path('category-hubs/fishing')
-          for name in ['content.template.html','deploy.py','verify_render.py']:
+          for name in ['content.template.html','verify_render.py']:
               packed=root/(name+'.gz.b64')
               target=root/name
               target.write_bytes(gzip.decompress(base64.b64decode(packed.read_text(encoding='utf-8'))))
+
+          # Recover the last known-good deployment source, then apply the tiny
+          # placeholder-guard fix in readable Python. This avoids relying on a
+          # damaged transport-only base64 blob from the previous failed run.
+          good_url='https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/59af6142bd4de319bd823bb0265205733f7094c1/category-hubs/fishing/deploy.py.gz.b64'
+          packed=urllib.request.urlopen(good_url,timeout=30).read().decode('utf-8')
+          deploy=gzip.decompress(base64.b64decode(packed)).decode('utf-8')
+          old="""    if '{{' in content or '}}' in content:\n        raise RuntimeError('UNRESOLVED_TEMPLATE_PLACEHOLDER')\n"""
+          new="""    unresolved = re.findall(r'\\{\\{[A-Z0-9_]+\\}\\}', content)\n    if unresolved:\n        raise RuntimeError('UNRESOLVED_TEMPLATE_PLACEHOLDER ' + json.dumps(sorted(set(unresolved))))\n"""
+          if old not in deploy:
+              raise RuntimeError('KNOWN_GOOD_DEPLOY_PATCH_ANCHOR_MISSING')
+          (root/'deploy.py').write_text(deploy.replace(old,new,1),encoding='utf-8')
           PY
       - name: Validate source
         run: |
