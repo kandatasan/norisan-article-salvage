@@ -74,4 +74,4 @@ jobs:
           retention-days: 7
       - name: Success
         run: echo 'GOURMET_CATEGORY_HUB_DRAFT_AND_DESKTOP_VERIFIED'
-# desktop-visual-verification-embedded-media
+# desktop-visual-verification-meat-probe
