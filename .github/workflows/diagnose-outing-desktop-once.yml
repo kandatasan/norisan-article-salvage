@@ -24,18 +24,17 @@ jobs:
         run: |
           which google-chrome || which chromium || which chromium-browser
           (google-chrome --version || chromium --version || chromium-browser --version)
-      - name: Diagnose live outing page at desktop width
+      - name: Test live outing desktop fix proposal v2
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python ops/outing-desktop-diagnose/diagnose.py
+        run: python ops/outing-desktop-diagnose/test_v2.py
       - name: Upload diagnostic
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: outing-desktop-diagnostic
+          name: outing-desktop-diagnostic-v2
           path: |
-            outing-desktop-diagnostic.json
-            outing-desktop-1440.png
-            outing-desktop-proposal-1440.png
-            outing-live-content.html
-          if-no-files-found: error
+            outing-desktop-proposal-v2.json
+            outing-desktop-proposal-v2-1440.png
+          if-no-files-found: warn
