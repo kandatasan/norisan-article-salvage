@@ -208,7 +208,7 @@ def verify_content(content, hero_media):
     hero_url = str(hero_media['source_url'])
     checks = {
         'marker': MARKER in content,
-        'category_id': f'"categories":[{CATEGORY_ID}]' in content,
+        'category_id': f'"categories":[{{"id":{CATEGORY_ID}}}]' in content,
         'latest_block': 'wp:latest-posts' in content,
         'hero': '今日は、<br>なに食べる？' in content,
         'hero_image_url': hero_url in content,
