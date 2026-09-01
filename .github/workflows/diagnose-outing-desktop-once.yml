@@ -36,4 +36,5 @@ jobs:
           path: |
             outing-desktop-diagnostic.json
             outing-desktop-1440.png
+            outing-live-content.html
           if-no-files-found: error
