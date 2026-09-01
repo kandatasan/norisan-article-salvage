@@ -34,116 +34,10 @@ const isWhite = value => {
   const rendered = draft.content?.rendered || draft.content?.raw || '';
   assert(rendered.includes('tq-gourmet'), 'Rendered gourmet content is missing');
 
-  const mediaQueries = [
-    ['search-4017', '/media?context=edit&search=4017&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
-    ['slug-img-4017', '/media?context=edit&slug=img_4017&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
-    ['search-yakiniku', '/media?context=edit&search=' + encodeURIComponent('焼肉') + '&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
-    ['search-meat', '/media?context=edit&search=' + encodeURIComponent('肉') + '&per_page=30&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
-    ['recent-media', '/media?context=edit&per_page=100&orderby=date&order=desc&_fields=id,source_url,slug,alt_text,title,caption,mime_type,date'],
-  ];
-  const discovered = [];
-  const discoveryLog = [];
-  for (const [label, path] of mediaQueries) {
-    try {
-      const mediaListResponse = await fetch(
-        'https://tsurikue.com/wp-json/wp/v2' + path,
-        {
-          headers: {
-            Authorization: `Basic ${auth}`,
-            Accept: 'application/json',
-            'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.0',
-          },
-          signal: AbortSignal.timeout(35000),
-        },
-      );
-      if (!mediaListResponse.ok) {
-        discoveryLog.push({ label, status: mediaListResponse.status, matches: [] });
-        continue;
-      }
-      const items = await mediaListResponse.json();
-      const matches = items.filter(item => {
-        const metadata = JSON.stringify({
-          source_url: item.source_url,
-          slug: item.slug,
-          alt_text: item.alt_text,
-          title: item.title,
-          caption: item.caption,
-        });
-        return /(4017|焼肉|肉|ステーキ|カルビ)/i.test(metadata);
-      });
-      discoveryLog.push({
-        label,
-        status: mediaListResponse.status,
-        matches: matches.map(item => ({
-          id: item.id,
-          source_url: item.source_url,
-          slug: item.slug,
-          alt_text: item.alt_text,
-        })),
-      });
-      for (const item of matches) {
-        if (item.source_url) discovered.push(item.source_url);
-      }
-    } catch (error) {
-      discoveryLog.push({ label, error: String(error), matches: [] });
-    }
-  }
-  console.log('GOURMET_HERO_MEDIA_DISCOVERY', JSON.stringify(discoveryLog));
-
-  const heroCandidates = [...new Set([
-    ...discovered,
-    'https://tsurikue.com/wp-content/uploads/2026/05/img_2618-1.jpg',
-    'https://tsurikue.com/wp-content/uploads/2026/05/img_2612-1.jpg',
-    'https://tsurikue.com/wp-content/uploads/2026/05/img_9478.jpg',
-    'https://tsurikue.com/wp-content/uploads/2026/05/img_9476.jpg',
-    'https://tsurikue.com/wp-content/uploads/2026/05/img_9475.jpg',
-    'https://tsurikue.com/wp-content/uploads/2026/05/img_9533.jpg',
-    // Layout-only fallback. Do not persist this over the intended meat hero.
-    'https://tsurikue.com/wp-content/uploads/2026/05/img_1215.jpg',
-  ])];
-
-  let heroSource = '';
-  let imageType = '';
-  let imageBuffer = null;
-  const probeResults = [];
-  for (const candidate of heroCandidates) {
-    const candidateResponse = await fetch(candidate, {
-      headers: {
-        Referer: 'https://tsurikue.com/',
-        'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.0',
-      },
-    });
-    const contentType = candidateResponse.headers.get('content-type') || '';
-    probeResults.push({
-      url: candidate,
-      status: candidateResponse.status,
-      contentType,
-    });
-    if (!candidateResponse.ok || !contentType.startsWith('image/')) continue;
-    const bytes = Buffer.from(await candidateResponse.arrayBuffer());
-    if (bytes.length <= 1000) continue;
-    heroSource = candidate;
-    imageType = contentType;
-    imageBuffer = bytes;
-    break;
-  }
-
-  console.log('GOURMET_HERO_CANDIDATE_PROBES', JSON.stringify(probeResults));
-  assert(heroSource && imageBuffer, 'No valid food photo was found for layout verification');
-  const imageDataUrl = `data:${imageType};base64,${imageBuffer.toString('base64')}`;
-  const renderedForRender = rendered.replace(
-    /https:\/\/tsurikue\.com\/wp-content\/uploads\/2026\/08\/img_4017\.jpg/g,
-    imageDataUrl,
-  );
-  assert(renderedForRender.includes(imageDataUrl), 'Invalid draft hero URL was not replaced');
-  console.log(
-    'GOURMET_HERO_CANDIDATE_SELECTED',
-    JSON.stringify({
-      source_url: heroSource,
-      mime_type: imageType,
-      bytes: imageBuffer.length,
-    }),
-  );
+  assert(/7358/i.test(rendered), 'IMG_7358 is not present in the saved draft');
+  assert(!/img_4017\.jpg/i.test(rendered), 'The broken former hero remains in the draft');
+  const renderedForRender = rendered;
+  console.log('GOURMET_HERO_SAVED', JSON.stringify({ media_match: '7358' }));
 
   const browser = await chromium.launch({ headless: true });
   try {
@@ -206,6 +100,8 @@ const isWhite = value => {
           heroTitleColor: getComputedStyle(q('.tq-gourmet-hero h1')).color,
           heroImage: q('.tq-gourmet-hero img')?.src || '',
           heroImageLoaded: Boolean(q('.tq-gourmet-hero img')?.naturalWidth),
+          heroImageNaturalWidth: q('.tq-gourmet-hero img')?.naturalWidth || 0,
+          heroImageNaturalHeight: q('.tq-gourmet-hero img')?.naturalHeight || 0,
           wrap: rect('.tq-gourmet-wrap'),
           chooseColumns: columns('.tq-gourmet-choose-grid'),
           chooseCount: chooseCards.length,
@@ -244,6 +140,14 @@ const isWhite = value => {
       assert(
         metrics.heroImageLoaded,
         `Hero image failed at ${viewport.width}px: ${metrics.heroImage}`,
+      );
+      assert(
+        /7358/i.test(metrics.heroImage),
+        `Unexpected hero image at ${viewport.width}px: ${metrics.heroImage}`,
+      );
+      assert(
+        metrics.heroImageNaturalWidth >= 1000 && metrics.heroImageNaturalHeight >= 500,
+        `Hero image is too small at ${viewport.width}px: ${metrics.heroImageNaturalWidth}x${metrics.heroImageNaturalHeight}`,
       );
       assert(
         metrics.chooseCount === 4 && metrics.chooseColumns.length === 4,
