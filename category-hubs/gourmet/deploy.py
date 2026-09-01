@@ -15,7 +15,8 @@ TITLE = 'グルメ｜広島・旅先で実際に食べたラーメン・ご当�
 MARKER_V1 = '<!-- tsurikue-category-hub:v1:gourmet-blocks -->'
 MARKER_V2 = '<!-- tsurikue-category-hub:v2:gourmet-editor-blocks -->'
 EXPECTED_CURRENT_SHA256 = '7319af82faa013d428b9a33aa410dbdc7a82f5f450acc448dd4f8012d533ac20'
-EXPECTED_NEW_SHA256 = '5b5b17ff228a3985e63b58c14217b43607fd2372f55789d2c5adfd5eb1993205'
+EXPECTED_TEMPLATE_SHA256 = '5b5b17ff228a3985e63b58c14217b43607fd2372f55789d2c5adfd5eb1993205'
+EXPECTED_NEW_SHA256 = 'c113e197086fc84096d34c644b4ae0b51ffa821b5664227caf19c67bf814ee55'
 HERO_MEDIA_ID = 3291
 HERO_URL = 'https://tsurikue.com/wp-content/uploads/2026/09/img_7358.jpg'
 HERE = pathlib.Path(__file__).resolve().parent
@@ -63,6 +64,23 @@ def get_public_total(kind):
     if total is None:
         raise RuntimeError(f'PUBLIC_TOTAL_HEADER_MISSING kind={kind}')
     return int(total)
+
+
+def apply_mobile_consistency_fix(content):
+    old = """  .tq-gourmet .tq-gourmet-grid{grid-template-columns:1fr!important}
+  .tq-gourmet .tq-gourmet-card--main{grid-column:auto!important;min-height:290px}
+  .tq-gourmet .tq-gourmet-final-actions,.tq-gourmet .tq-gourmet-final-button,.tq-gourmet .tq-gourmet-final-button .wp-block-button__link{width:100%}
+}"""
+    new = """  .tq-gourmet .tq-gourmet-choice h3{font-size:17px!important}
+  .tq-gourmet .tq-gourmet-grid{grid-template-columns:1fr!important}
+  .tq-gourmet .tq-gourmet-card--main{grid-column:auto!important;min-height:290px}
+  .tq-gourmet .tq-gourmet-card h3,.tq-gourmet .tq-gourmet-card--main h3{font-size:26px!important}
+  .tq-gourmet .tq-gourmet-final-actions,.tq-gourmet .tq-gourmet-final-button{width:100%}
+  .tq-gourmet .tq-gourmet-final-button .wp-block-button__link{width:100%;margin-top:0!important}
+}"""
+    if old not in content:
+        raise RuntimeError('MOBILE_FIX_ANCHOR_MISSING')
+    return content.replace(old, new, 1)
 
 
 def validate_source(content):
@@ -126,7 +144,11 @@ def validate_current(page):
 
 
 def main():
-    source = SOURCE.read_text(encoding='utf-8')
+    template = SOURCE.read_text(encoding='utf-8')
+    template_hash = sha256_text(template)
+    if template_hash != EXPECTED_TEMPLATE_SHA256:
+        raise RuntimeError(f'TEMPLATE_HASH_MISMATCH expected={EXPECTED_TEMPLATE_SHA256} actual={template_hash}')
+    source = apply_mobile_consistency_fix(template)
     source_checks = validate_source(source)
     media_checks = validate_media()
 
