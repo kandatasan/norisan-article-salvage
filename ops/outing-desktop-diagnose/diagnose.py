@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import time
@@ -14,6 +15,7 @@ BASE = 'https://tsurikue.com/wp-json/wp/v2'
 PUBLIC_URL = 'https://tsurikue.com/odekake/?layout_diag=20260901'
 OUT = Path('outing-desktop-diagnostic.json')
 SHOT = Path('outing-desktop-1440.png')
+LIVE_CONTENT = Path('outing-live-content.html')
 
 
 def wp_get_page() -> dict:
@@ -25,7 +27,7 @@ def wp_get_page() -> dict:
     req = urllib.request.Request(url, headers={
         'Authorization': f'Basic {token}',
         'Accept': 'application/json',
-        'User-Agent': 'tsurikue-outing-layout-diagnostic/1.0',
+        'User-Agent': 'tsurikue-outing-layout-diagnostic/1.1',
     })
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r)
@@ -41,6 +43,8 @@ def raw(obj: dict, key: str) -> str:
 def main() -> None:
     page = wp_get_page()
     content = raw(page, 'content')
+    LIVE_CONTENT.write_text(content, encoding='utf-8')
+    content_sha256 = hashlib.sha256(content.encode('utf-8')).hexdigest()
 
     options = Options()
     options.add_argument('--headless=new')
@@ -141,7 +145,6 @@ def main() -> None:
         '''
         layout = driver.execute_script(js)
 
-        # Capture a tall desktop screenshot for human inspection.
         full_h = min(int(driver.execute_script('return document.documentElement.scrollHeight')), 12000)
         driver.set_window_size(1440, max(1200, full_h))
         time.sleep(0.5)
@@ -157,6 +160,7 @@ def main() -> None:
                 'modified': page.get('modified'),
                 'featured_media': page.get('featured_media'),
                 'content_bytes': len(content.encode('utf-8')),
+                'content_sha256': content_sha256,
                 'has_v1_marker': '<!-- tsurikue-category-hub:v1:outing -->' in content,
                 'has_v2_marker': '<!-- tsurikue-category-hub:v2:outing-blocks -->' in content,
                 'custom_html_blocks': content.count('<!-- wp:html -->'),
