@@ -36,6 +36,33 @@ const isWhite = value => {
 
   assert(/7358/i.test(rendered), 'IMG_7358 is not present in the saved draft');
   assert(!/img_4017\.jpg/i.test(rendered), 'The broken former hero remains in the draft');
+  const gourmetPostsResponse = await fetch(
+    'https://tsurikue.com/wp-json/wp/v2/posts?categories=9&per_page=100&_fields=id,link',
+    {
+      headers: {
+        Accept: 'application/json',
+        'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.1',
+      },
+      signal: AbortSignal.timeout(35000),
+    },
+  );
+  assert(
+    gourmetPostsResponse.ok,
+    'Gourmet post lookup failed: HTTP ' + gourmetPostsResponse.status,
+  );
+  const gourmetPosts = await gourmetPostsResponse.json();
+  assert(gourmetPosts.length > 0, 'No posts were returned for gourmet category 9');
+  const normalizeLink = value => {
+    const url = new URL(value);
+    return url.origin + url.pathname.replace(/\/+$/, '');
+  };
+  const expectedGourmetLinks = new Set(
+    gourmetPosts.map(post => normalizeLink(post.link)),
+  );
+  console.log(
+    'GOURMET_EXPECTED_POSTS',
+    JSON.stringify(gourmetPosts.map(post => ({ id: post.id, link: post.link }))),
+  );
   const renderedForRender = rendered;
   console.log('GOURMET_HERO_SAVED', JSON.stringify({ media_match: '7358' }));
 
@@ -112,6 +139,7 @@ const isWhite = value => {
           latestColumns: columns('.tq-gourmet-latest-list'),
           latestCount: latestItems.length,
           latestWidths: latestItems.map(item => item.getBoundingClientRect().width),
+          latestLinks: [...new Set(qa('.tq-gourmet-latest-list a').map(link => link.href))],
           headingWritingModes: headings.map(
             heading => getComputedStyle(heading).writingMode,
           ),
@@ -160,6 +188,17 @@ const isWhite = value => {
       assert(
         metrics.latestCount > 0 && metrics.latestColumns.length === 3,
         `Latest cards are not three columns at ${viewport.width}px`,
+      );
+      assert(
+        metrics.latestCount === Math.min(6, gourmetPosts.length),
+        'Unexpected gourmet card count at ' + viewport.width + 'px: ' + metrics.latestCount,
+      );
+      const wrongLatestLinks = metrics.latestLinks.filter(
+        link => !expectedGourmetLinks.has(normalizeLink(link)),
+      );
+      assert(
+        wrongLatestLinks.length === 0,
+        'Non-gourmet posts detected at ' + viewport.width + 'px: ' + wrongLatestLinks.join(', '),
       );
       assert(
         metrics.chooseWidths.every(width => width > 150),
