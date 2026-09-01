@@ -25,10 +25,20 @@ def main():
     auth = updater.auth_header(user, password)
     before_counts = updater.public_counts(auth)
     before = updater.fetch_post(cfg, auth)
-    if before.get('id') != 2630 or before.get('slug') != 'gulpalivepowder' or before.get('status') != 'draft':
-        raise RuntimeError('target post identity/status changed')
     current = updater.raw_field(before, 'content')
     current_sha = hashlib.sha256(current.encode()).hexdigest()
+    if before.get('id') != 2630 or before.get('slug') != 'gulpalivepowder' or before.get('status') != 'draft':
+        raise RuntimeError(
+            'target post identity/status changed: '
+            + json.dumps({
+                'id': before.get('id'),
+                'slug': before.get('slug'),
+                'status': before.get('status'),
+                'featured_media': int(before.get('featured_media') or 0),
+                'content_sha256': current_sha,
+                'target_phrase_present': 'ずっとやってみたかった' in current,
+            }, ensure_ascii=False)
+        )
 
     if current.strip() == full.strip():
         action = 'ALREADY_UP_TO_DATE'
