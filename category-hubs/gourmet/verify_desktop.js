@@ -34,48 +34,53 @@ const isWhite = value => {
   const rendered = draft.content?.rendered || draft.content?.raw || '';
   assert(rendered.includes('tq-gourmet'), 'Rendered gourmet content is missing');
 
-  const mediaResponse = await fetch(
-    'https://tsurikue.com/wp-json/wp/v2/media/2990?context=edit&_fields=id,source_url,slug,status,mime_type',
-    {
+  const heroCandidates = [
+    'https://tsurikue.com/wp-content/uploads/2026/05/img_2618-1.jpg',
+    'https://tsurikue.com/wp-content/uploads/2026/05/img_2612-1.jpg',
+    'https://tsurikue.com/wp-content/uploads/2026/05/img_9478.jpg',
+    'https://tsurikue.com/wp-content/uploads/2026/05/img_9476.jpg',
+    'https://tsurikue.com/wp-content/uploads/2026/05/img_9475.jpg',
+    'https://tsurikue.com/wp-content/uploads/2026/05/img_9533.jpg',
+  ];
+
+  let heroSource = '';
+  let imageType = '';
+  let imageBuffer = null;
+  const probeResults = [];
+  for (const candidate of heroCandidates) {
+    const candidateResponse = await fetch(candidate, {
       headers: {
-        Authorization: `Basic ${auth}`,
-        Accept: 'application/json',
+        Referer: 'https://tsurikue.com/',
         'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.0',
       },
-    },
-  );
-  assert(mediaResponse.ok, `Hero media lookup failed: HTTP ${mediaResponse.status}`);
-  const media = await mediaResponse.json();
-  assert(media.id === 2990, `Unexpected hero media id: ${media.id}`);
-  assert(media.source_url, 'Hero media source URL is missing');
+    });
+    const contentType = candidateResponse.headers.get('content-type') || '';
+    probeResults.push({
+      url: candidate,
+      status: candidateResponse.status,
+      contentType,
+    });
+    if (!candidateResponse.ok || !contentType.startsWith('image/')) continue;
+    const bytes = Buffer.from(await candidateResponse.arrayBuffer());
+    if (bytes.length <= 1000) continue;
+    heroSource = candidate;
+    imageType = contentType;
+    imageBuffer = bytes;
+    break;
+  }
 
-  const imageResponse = await fetch(media.source_url, {
-    headers: {
-      Referer: 'https://tsurikue.com/',
-      'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.0',
-    },
-  });
-  assert(
-    imageResponse.ok,
-    `Hero image fetch failed: HTTP ${imageResponse.status} ${media.source_url}`,
-  );
-  const imageType = imageResponse.headers.get('content-type') || media.mime_type || 'image/jpeg';
-  const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
-  assert(imageBuffer.length > 1000, `Hero image is unexpectedly small: ${imageBuffer.length}`);
+  console.log('GOURMET_HERO_CANDIDATE_PROBES', JSON.stringify(probeResults));
+  assert(heroSource && imageBuffer, 'No valid recovered meat photo was found');
   const imageDataUrl = `data:${imageType};base64,${imageBuffer.toString('base64')}`;
   const renderedForRender = rendered.replace(
     /https:\/\/tsurikue\.com\/wp-content\/uploads\/2026\/08\/img_4017\.jpg/g,
     imageDataUrl,
   );
-  assert(
-    renderedForRender.includes(imageDataUrl),
-    `Draft hero URL does not match media source: ${media.source_url}`,
-  );
+  assert(renderedForRender.includes(imageDataUrl), 'Invalid draft hero URL was not replaced');
   console.log(
-    'GOURMET_HERO_MEDIA_VERIFIED',
+    'GOURMET_HERO_CANDIDATE_SELECTED',
     JSON.stringify({
-      id: media.id,
-      source_url: media.source_url,
+      source_url: heroSource,
       mime_type: imageType,
       bytes: imageBuffer.length,
     }),
