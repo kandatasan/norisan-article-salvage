@@ -1,0 +1,122 @@
+name: Create fishing category hub draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/create-fishing-category-hub-draft-once.yml'
+      - 'category-hubs/fishing/content.template.html.gz.b64'
+      - 'category-hubs/fishing/deploy.py.gz.b64'
+      - 'category-hubs/fishing/verify_render.py.gz.b64'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Restore source bundle
+        run: |
+          python - <<'PY'
+          import base64,gzip,pathlib
+          root=pathlib.Path('category-hubs/fishing')
+          for name in ['content.template.html','deploy.py','verify_render.py']:
+              packed=root/(name+'.gz.b64')
+              target=root/name
+              target.write_bytes(gzip.decompress(base64.b64decode(packed.read_text(encoding='utf-8'))))
+          PY
+      - name: Validate source
+        run: |
+          python -m py_compile category-hubs/fishing/deploy.py category-hubs/fishing/verify_render.py
+          grep -q 'tsurikue-category-hub:v2:fishing-editor-blocks' category-hubs/fishing/content.template.html
+          test "$(grep -c '<!-- wp:html -->' category-hubs/fishing/content.template.html)" -eq 1
+          grep -q "STATUS = 'draft'" category-hubs/fishing/deploy.py
+          grep -q "SLUG = 'fishing-guide'" category-hubs/fishing/deploy.py
+      - name: Create or verify fishing draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing/deploy.py | tee fishing-hub-deploy-audit.json
+          test -s fishing-hub-deploy-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('fishing-hub-deploy-audit.json',encoding='utf-8'))
+          assert d['slug']=='fishing-guide'
+          assert d['status']=='draft'
+          assert d['publish_count']==0
+          assert d['delete_count']==0
+          assert d['public_before']==d['public_after']
+          assert d['block_counts']['html']==1
+          assert d['block_counts']['group']>=30
+          assert d['block_counts']['heading']>=17
+          assert d['block_counts']['paragraph']>=42
+          assert all(d['identity_final'].values())
+          assert all(d['shape_checks'].values())
+          PY
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+      - name: Render-check draft at desktop and mobile widths
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing/verify_render.py | tee fishing-hub-render-console.json
+          test -s fishing-hub-render-check.json
+          python - <<'PY'
+          import json
+          d=json.load(open('fishing-hub-render-check.json',encoding='utf-8'))
+          assert d['status']=='draft'
+          assert all(d['checks'].values())
+          PY
+      - name: Upload audit and preview screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-category-hub-draft-audit
+          path: |
+            fishing-hub-deploy-audit.json
+            fishing-hub-render-check.json
+            fishing-hub-render-console.json
+            fishing-hub-rendered-local.html
+            fishing-hub-draft-desktop-1440.png
+            fishing-hub-draft-mobile-390.png
+          if-no-files-found: warn
+      - name: Add audit log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Fishing category hub draft'
+            if [ -s fishing-hub-deploy-audit.json ]; then
+              echo
+              echo '**WordPress draft audit**'
+              echo '```json'
+              cat fishing-hub-deploy-audit.json
+              echo '```'
+            else
+              echo
+              echo 'Deploy audit missing. Do not treat this run as success.'
+            fi
+            if [ -s fishing-hub-render-check.json ]; then
+              echo
+              echo '**Draft render check**'
+              echo '```json'
+              cat fishing-hub-render-check.json
+              echo '```'
+            else
+              echo
+              echo 'Render check missing.'
+            fi
+          } > /tmp/fishing-hub-audit.md
+          gh issue comment 22 --body-file /tmp/fishing-hub-audit.md
