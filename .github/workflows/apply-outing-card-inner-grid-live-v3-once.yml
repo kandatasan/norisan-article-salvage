@@ -1,0 +1,122 @@
+name: Apply outing card inner-grid live v3 once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-outing-card-inner-grid-live-v3-once.yml'
+      - 'ops/outing-card-internals/apply_live_v3.py'
+      - 'ops/outing-card-internals/verify_live_v3.py'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Validate source
+        run: |
+          python -m py_compile ops/outing-card-internals/apply_live_v3.py ops/outing-card-internals/verify_live_v3.py
+          grep -q "EXPECTED_CURRENT_SHA256 = 'a00d75705ff9dfc50de016d40496e47bf5087a82e43d6b4b0e7bb48a721f0e67'" ops/outing-card-internals/apply_live_v3.py
+          grep -q 'tq-outing-pc-card-inner-grid-fix:v3 start' ops/outing-card-internals/apply_live_v3.py
+          grep -q '@media(min-width:861px)' ops/outing-card-internals/apply_live_v3.py
+
+      - name: Apply minimal card CSS patch
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python ops/outing-card-internals/apply_live_v3.py | tee outing-card-inner-grid-live-apply-audit.json
+          test -s outing-card-inner-grid-live-apply-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('outing-card-inner-grid-live-apply-audit.json',encoding='utf-8'))
+          assert d['post_id']==3154
+          assert d['slug']=='odekake'
+          assert d['status']=='publish'
+          assert d['wordpress_write_count']==1
+          assert d['publish_count']==0
+          assert d['delete_count']==0
+          assert d['public_before']==d['public_after']
+          assert d['custom_html_blocks']==2
+          assert d['group_blocks']==51
+          assert all(d['identity_before'].values())
+          assert all(d['identity_after'].values())
+          assert all(d['before_structure'].values())
+          assert all(d['final_checks'].values())
+          PY
+
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+
+      - name: Verify actual public page desktop and mobile
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python ops/outing-card-internals/verify_live_v3.py | tee outing-card-inner-grid-live-verify-console.json
+          test -s outing-card-inner-grid-live-verify.json
+          python - <<'PY'
+          import json
+          d=json.load(open('outing-card-inner-grid-live-verify.json',encoding='utf-8'))
+          assert d['post_id']==3154
+          assert d['status']=='publish'
+          assert all(d['checks']['content'].values())
+          assert all(d['checks']['desktop'].values())
+          assert all(d['checks']['mobile'].values())
+          PY
+
+      - name: Upload audit and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-card-inner-grid-live-v3-audit
+          path: |
+            outing-card-inner-grid-live-apply-audit.json
+            outing-card-inner-grid-live-verify.json
+            outing-card-inner-grid-live-verify-console.json
+            outing-card-inner-grid-live-before.html
+            outing-card-inner-grid-live-after.html
+            outing-card-inner-grid-live-desktop-1440.png
+            outing-card-inner-grid-live-mobile-390.png
+          if-no-files-found: warn
+
+      - name: Add audit log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Outing ROAD TRIP / REAL ROUTES PC card fix v3'
+            if [ -s outing-card-inner-grid-live-apply-audit.json ]; then
+              echo
+              echo '**WordPress apply audit**'
+              echo '```json'
+              cat outing-card-inner-grid-live-apply-audit.json
+              echo '```'
+            else
+              echo
+              echo 'Apply audit missing. Do not treat this run as success.'
+            fi
+            if [ -s outing-card-inner-grid-live-verify-console.json ]; then
+              echo
+              echo '**Live browser verification**'
+              echo '```json'
+              cat outing-card-inner-grid-live-verify-console.json
+              echo '```'
+            else
+              echo
+              echo 'Live browser verification missing.'
+            fi
+          } > /tmp/outing-card-v3-audit.md
+          gh issue comment 22 --body-file /tmp/outing-card-v3-audit.md
