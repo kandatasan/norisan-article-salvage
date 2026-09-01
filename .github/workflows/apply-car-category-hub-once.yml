@@ -79,4 +79,4 @@ jobs:
           retention-days: 7
       - name: Success
         run: echo 'CAR_CATEGORY_HUB_DRAFT_AND_DESKTOP_VERIFIED'
-# initial-car-category-hub
+# refine-car-hero-copy-position
