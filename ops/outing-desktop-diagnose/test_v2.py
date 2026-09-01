@@ -10,8 +10,9 @@ from selenium.webdriver.chrome.options import Options
 from diagnose import FIX_CSS, MEASURE_JS, PUBLIC_URL, raw, wp_get_page
 
 EXTRA_CSS = r'''
-/* TQ OUTING PC SHELL ALIGN FIX v2 root correction */
+/* TQ OUTING PC SHELL ALIGN FIX v3 root + hero correction */
 .tq-out.wp-block-group{left:auto!important;right:auto!important}
+.tq-out .tq-out-hero{left:0!important;right:auto!important;width:100%!important;max-width:none!important;margin-left:0!important;margin-right:0!important;padding-left:0!important;padding-right:0!important}
 '''
 OUT = Path('outing-desktop-proposal-v2.json')
 SHOT = Path('outing-desktop-proposal-v2-1440.png')
@@ -33,7 +34,7 @@ def main() -> None:
         time.sleep(3)
         before = driver.execute_script(MEASURE_JS)
         driver.execute_script(
-            "const s=document.createElement('style');s.id='tq-outing-pc-shell-align-proposal-v2';s.textContent=arguments[0];document.head.appendChild(s);",
+            "const s=document.createElement('style');s.id='tq-outing-pc-shell-align-proposal-v3';s.textContent=arguments[0];document.head.appendChild(s);",
             FIX_CSS + EXTRA_CSS,
         )
         time.sleep(0.5)
@@ -73,7 +74,7 @@ def main() -> None:
         OUT.write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
         print(json.dumps(result, ensure_ascii=False, indent=2))
         if not all(checks.values()):
-            raise RuntimeError('PROPOSAL_V2_FAILED ' + json.dumps(checks, ensure_ascii=False))
+            raise RuntimeError('PROPOSAL_V3_FAILED ' + json.dumps(checks, ensure_ascii=False))
     finally:
         driver.quit()
 
