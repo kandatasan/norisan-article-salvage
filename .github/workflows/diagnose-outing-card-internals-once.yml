@@ -1,0 +1,43 @@
+name: Diagnose outing card internals once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-outing-card-internals-once.yml'
+      - 'ops/outing-card-internals/**'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate diagnostic
+        run: python -m py_compile ops/outing-card-internals/test_flex_fix.py
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+      - name: Test card flex fix in browser only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python ops/outing-card-internals/test_flex_fix.py | tee outing-card-internals-console.json
+      - name: Upload diagnostic
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-card-internals-diagnostic
+          path: |
+            outing-card-internals-test.json
+            outing-card-internals-console.json
+            outing-card-internals-before-1440.png
+            outing-card-internals-after-flex-1440.png
+          if-no-files-found: warn
