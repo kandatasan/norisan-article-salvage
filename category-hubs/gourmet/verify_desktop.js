@@ -54,7 +54,14 @@ const isWhite = value => {
       await page.waitForSelector('.tq-gourmet .tq-gourmet-hero h1', {
         timeout: 30000,
       });
-      await page.waitForTimeout(1500);
+      await page.waitForFunction(
+        () => {
+          const image = document.querySelector('.tq-gourmet-hero img');
+          return Boolean(image?.complete && image?.naturalWidth);
+        },
+        { timeout: 30000 },
+      );
+      await page.waitForTimeout(500);
 
       const metrics = await page.evaluate(() => {
         const q = selector => document.querySelector(selector);
