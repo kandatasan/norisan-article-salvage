@@ -34,6 +34,53 @@ const isWhite = value => {
   const rendered = draft.content?.rendered || draft.content?.raw || '';
   assert(rendered.includes('tq-gourmet'), 'Rendered gourmet content is missing');
 
+  const mediaResponse = await fetch(
+    'https://tsurikue.com/wp-json/wp/v2/media/2990?context=edit&_fields=id,source_url,slug,status,mime_type',
+    {
+      headers: {
+        Authorization: `Basic ${auth}`,
+        Accept: 'application/json',
+        'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.0',
+      },
+    },
+  );
+  assert(mediaResponse.ok, `Hero media lookup failed: HTTP ${mediaResponse.status}`);
+  const media = await mediaResponse.json();
+  assert(media.id === 2990, `Unexpected hero media id: ${media.id}`);
+  assert(media.source_url, 'Hero media source URL is missing');
+
+  const imageResponse = await fetch(media.source_url, {
+    headers: {
+      Referer: 'https://tsurikue.com/',
+      'User-Agent': 'tsurikue-gourmet-desktop-verifier/1.0',
+    },
+  });
+  assert(
+    imageResponse.ok,
+    `Hero image fetch failed: HTTP ${imageResponse.status} ${media.source_url}`,
+  );
+  const imageType = imageResponse.headers.get('content-type') || media.mime_type || 'image/jpeg';
+  const imageBuffer = Buffer.from(await imageResponse.arrayBuffer());
+  assert(imageBuffer.length > 1000, `Hero image is unexpectedly small: ${imageBuffer.length}`);
+  const imageDataUrl = `data:${imageType};base64,${imageBuffer.toString('base64')}`;
+  const renderedForRender = rendered.replace(
+    /https:\/\/tsurikue\.com\/wp-content\/uploads\/2026\/08\/img_4017\.jpg/g,
+    imageDataUrl,
+  );
+  assert(
+    renderedForRender.includes(imageDataUrl),
+    `Draft hero URL does not match media source: ${media.source_url}`,
+  );
+  console.log(
+    'GOURMET_HERO_MEDIA_VERIFIED',
+    JSON.stringify({
+      id: media.id,
+      source_url: media.source_url,
+      mime_type: imageType,
+      bytes: imageBuffer.length,
+    }),
+  );
+
   const browser = await chromium.launch({ headless: true });
   try {
     for (const viewport of [
@@ -50,7 +97,7 @@ const isWhite = value => {
         const target = document.querySelector('.post_content');
         target.innerHTML = html;
         window.scrollTo(0, 0);
-      }, rendered);
+      }, renderedForRender);
       await page.waitForSelector('.tq-gourmet .tq-gourmet-hero h1', {
         timeout: 30000,
       });
@@ -131,7 +178,7 @@ const isWhite = value => {
         `Hero title is not white at ${viewport.width}px: ${metrics.heroTitleColor}`,
       );
       assert(
-        metrics.heroImage.includes('img_4017.jpg') && metrics.heroImageLoaded,
+        metrics.heroImageLoaded,
         `Hero image failed at ${viewport.width}px: ${metrics.heroImage}`,
       );
       assert(
