@@ -1,0 +1,51 @@
+name: Apply gourmet block editor migration
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'category-hubs/gourmet/content.html'
+      - 'category-hubs/gourmet/deploy.py'
+      - '.github/workflows/apply-gourmet-block-editor-on-push.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate source files
+        run: |
+          python -m py_compile category-hubs/gourmet/deploy.py
+          grep -q 'tsurikue-category-hub:v2:gourmet-editor-blocks' category-hubs/gourmet/content.html
+          test "$(grep -o '<!-- wp:html -->' category-hubs/gourmet/content.html | wc -l)" -eq 1
+          ! grep -q '<a class="tq-gourmet-card' category-hubs/gourmet/content.html
+      - name: Update gourmet draft safely
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python category-hubs/gourmet/deploy.py | tee gourmet-block-editor-audit.json
+      - name: Add audit log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f gourmet-block-editor-audit.json ]; then
+            {
+              echo '### Gourmet block editor migration'
+              echo '```json'
+              cat gourmet-block-editor-audit.json
+              echo '```'
+            } > /tmp/audit.md
+          else
+            printf '### Gourmet block editor migration\nWorkflow failed before audit JSON was produced.\n' > /tmp/audit.md
+          fi
+          gh issue comment 22 --body-file /tmp/audit.md
