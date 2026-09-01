@@ -12,15 +12,46 @@ jobs:
         with:
           ref: feat/gourmet-category-hub-v2
       - uses: actions/setup-python@v5
-        with: {python-version: '3.x'}
+        with:
+          python-version: '3.x'
       - name: Validate source
         run: |
+          python -m py_compile category-hubs/gourmet/deploy.py
           grep -q 'tsurikue-category-hub:v1:gourmet-blocks' category-hubs/gourmet/content.html
           grep -q 'img_4017.jpg' category-hubs/gourmet/content.html
           grep -q '__GOURMET_CATEGORY_ID__' category-hubs/gourmet/content.html
-      - name: Create gourmet draft
+          grep -q 'CATEGORY_ID = 9' category-hubs/gourmet/deploy.py
+          python - <<'PY'
+          from pathlib import Path
+          source = Path('category-hubs/gourmet/content.html').read_text(encoding='utf-8')
+          assert source.count('<!-- wp:group') == source.count('<!-- /wp:group -->')
+          assert source.count('<!-- wp:cover') == source.count('<!-- /wp:cover -->')
+          assert source.count('<!-- wp:html -->') == source.count('<!-- /wp:html -->')
+          assert source.count('__GOURMET_CATEGORY_ID__') == 1
+          forbidden = (
+              'tq-global-site-nav-ref',
+              'TQ HEADER DRAWER PROTOTYPE',
+              'TQ HEADER NAV PROTOTYPE',
+              'TQ SITEWIDE HOLIDAY MENU',
+          )
+          assert not any(marker in source for marker in forbidden)
+          print('GOURMET_SOURCE_VALID')
+          PY
+      - name: Create or update gourmet draft
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python category-hubs/gourmet/deploy.py
-# clean-source retry
+        run: |
+          for attempt in 1 2 3; do
+            echo "gourmet deploy attempt ${attempt}/3"
+            if python category-hubs/gourmet/deploy.py; then
+              exit 0
+            fi
+            if [ "${attempt}" -lt 3 ]; then
+              sleep 10
+            fi
+          done
+          exit 1
+      - name: Success
+        run: echo 'GOURMET_CATEGORY_HUB_DRAFT_CREATED_AND_VERIFIED'
+# fixed-category-id retry
