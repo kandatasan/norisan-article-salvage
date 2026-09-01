@@ -1,0 +1,146 @@
+name: Verify existing fishing category hub draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/retry2-fishing-category-hub-draft-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  verify-existing-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Restore and patch validated sources
+        run: |
+          python - <<'PY'
+          import base64, gzip, pathlib, urllib.request
+          root = pathlib.Path('category-hubs/fishing')
+          for name in ['content.template.html', 'verify_render.py']:
+              packed = (root / (name + '.gz.b64')).read_text(encoding='utf-8')
+              text = gzip.decompress(base64.b64decode(packed)).decode('utf-8')
+              if name == 'verify_render.py':
+                  old = "/pages?context=edit&per_page=100&_fields=id,slug,status,title,content,link"
+                  new = "/pages?context=edit&status=draft&per_page=100&_fields=id,slug,status,title,content,link"
+                  if old not in text:
+                      raise RuntimeError('VERIFY_DRAFT_QUERY_PATCH_ANCHOR_MISSING')
+                  text = text.replace(old, new, 1)
+              (root / name).write_text(text, encoding='utf-8')
+
+          good_url = 'https://raw.githubusercontent.com/kandatasan/norisan-article-salvage/59af6142bd4de319bd823bb0265205733f7094c1/category-hubs/fishing/deploy.py.gz.b64'
+          packed = urllib.request.urlopen(good_url, timeout=30).read().decode('utf-8')
+          deploy = gzip.decompress(base64.b64decode(packed)).decode('utf-8')
+
+          old_placeholder = """    if '{{' in content or '}}' in content:\n        raise RuntimeError('UNRESOLVED_TEMPLATE_PLACEHOLDER')\n"""
+          new_placeholder = """    unresolved = re.findall(r'\\{\\{[A-Z0-9_]+\\}\\}', content)\n    if unresolved:\n        raise RuntimeError('UNRESOLVED_TEMPLATE_PLACEHOLDER ' + json.dumps(sorted(set(unresolved))))\n"""
+          if old_placeholder not in deploy:
+              raise RuntimeError('PLACEHOLDER_PATCH_ANCHOR_MISSING')
+          deploy = deploy.replace(old_placeholder, new_placeholder, 1)
+
+          old_mobile = "        'mobile_single_column_rule': '.tq-fishing-feature-grid>.wp-block-group__inner-container{grid-template-columns:1fr!important}' in content,"
+          new_mobile = "        'mobile_single_column_rule': '@media(max-width:560px)' in content and '.tq-fishing-feature-grid,.tq-fishing-feature-grid>.wp-block-group__inner-container,.tq-fishing-lab-grid,.tq-fishing-lab-grid>.wp-block-group__inner-container{grid-template-columns:1fr!important}' in content,"
+          if old_mobile not in deploy:
+              raise RuntimeError('MOBILE_CHECK_PATCH_ANCHOR_MISSING')
+          deploy = deploy.replace(old_mobile, new_mobile, 1)
+
+          old_query = "/pages?context=edit&per_page=100&_fields=id,slug,status,title,content,link,modified"
+          new_query = "/pages?context=edit&status=draft&per_page=100&_fields=id,slug,status,title,content,link,modified"
+          if old_query not in deploy:
+              raise RuntimeError('DEPLOY_DRAFT_QUERY_PATCH_ANCHOR_MISSING')
+          deploy = deploy.replace(old_query, new_query, 1)
+          (root / 'deploy.py').write_text(deploy, encoding='utf-8')
+          PY
+
+      - name: Validate source
+        run: |
+          python -m py_compile category-hubs/fishing/deploy.py category-hubs/fishing/verify_render.py
+          grep -q 'status=draft' category-hubs/fishing/deploy.py
+          grep -q 'status=draft' category-hubs/fishing/verify_render.py
+
+      - name: Verify existing fishing draft without creating another
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing/deploy.py | tee fishing-hub-deploy-audit.json
+          test -s fishing-hub-deploy-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('fishing-hub-deploy-audit.json',encoding='utf-8'))
+          assert d['action']=='VERIFIED_EXISTING_FISHING_CATEGORY_HUB_DRAFT'
+          assert d['slug']=='fishing-guide'
+          assert d['status']=='draft'
+          assert d['wordpress_create_count']==0
+          assert d['wordpress_update_count']==0
+          assert d['publish_count']==0
+          assert d['delete_count']==0
+          assert d['public_before']==d['public_after']
+          assert d['block_counts']['html']==1
+          assert d['block_counts']['group']>=30
+          assert all(d['identity_final'].values())
+          assert all(d['shape_checks'].values())
+          PY
+
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+
+      - name: Render-check draft at desktop and mobile widths
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing/verify_render.py | tee fishing-hub-render-console.json
+          test -s fishing-hub-render-check.json
+          python - <<'PY'
+          import json
+          d=json.load(open('fishing-hub-render-check.json',encoding='utf-8'))
+          assert d['status']=='draft'
+          assert all(d['checks'].values())
+          PY
+
+      - name: Upload audit and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-category-hub-existing-draft-audit
+          path: |
+            fishing-hub-deploy-audit.json
+            fishing-hub-render-check.json
+            fishing-hub-render-console.json
+            fishing-hub-rendered-local.html
+            fishing-hub-draft-desktop-1440.png
+            fishing-hub-draft-mobile-390.png
+          if-no-files-found: warn
+
+      - name: Add audit log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Fishing category hub — existing draft verification'
+            if [ -s fishing-hub-deploy-audit.json ]; then
+              echo
+              echo '```json'
+              cat fishing-hub-deploy-audit.json
+              echo '```'
+            fi
+            if [ -s fishing-hub-render-check.json ]; then
+              echo
+              echo '```json'
+              cat fishing-hub-render-check.json
+              echo '```'
+            fi
+          } > /tmp/fishing-existing-draft-audit.md
+          gh issue comment 22 --body-file /tmp/fishing-existing-draft-audit.md
