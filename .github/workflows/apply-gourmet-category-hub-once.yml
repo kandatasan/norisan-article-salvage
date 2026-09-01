@@ -31,6 +31,7 @@ jobs:
           assert source.count('<!-- wp:cover') == source.count('<!-- /wp:cover -->')
           assert source.count('<!-- wp:html -->') == source.count('<!-- /wp:html -->')
           assert source.count('__GOURMET_CATEGORY_ID__') == 1
+          assert '"categories":[{"id":__GOURMET_CATEGORY_ID__}]' in source
           assert source.count('__GOURMET_HERO_URL__') == 2
           assert source.count('__GOURMET_HERO_ID__') == 2
           assert 'img_4017.jpg' not in source
@@ -80,4 +81,4 @@ jobs:
           retention-days: 7
       - name: Success
         run: echo 'GOURMET_CATEGORY_HUB_DRAFT_AND_DESKTOP_VERIFIED'
-# apply-uploaded-img-7358-and-verify-desktop
+# fix-gourmet-latest-category-filter-and-reverify
