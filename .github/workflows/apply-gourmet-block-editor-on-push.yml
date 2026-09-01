@@ -27,18 +27,33 @@ jobs:
           grep -q 'tsurikue-category-hub:v2:gourmet-editor-blocks' category-hubs/gourmet/content.html
           test "$(grep -o '<!-- wp:html -->' category-hubs/gourmet/content.html | wc -l)" -eq 1
           ! grep -q '<a class="tq-gourmet-card' category-hubs/gourmet/content.html
-      - name: Update gourmet draft safely
+      - name: Verify or update gourmet draft safely
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: |
+          set -o pipefail
           python category-hubs/gourmet/deploy.py | tee gourmet-block-editor-audit.json
+          test -s gourmet-block-editor-audit.json
+          python - <<'PY'
+          import json
+          p='gourmet-block-editor-audit.json'
+          data=json.load(open(p, encoding='utf-8'))
+          assert data['post_id'] == 3289
+          assert data['slug'] == 'gourmet-guide'
+          assert data['status'] == 'draft'
+          assert data['custom_html_blocks'] == 1
+          assert data['public_before'] == data['public_after']
+          assert all(data['identity_after'].values())
+          assert all(data['media_checks'].values())
+          assert all(data['final_shape_checks'].values())
+          PY
       - name: Add audit log to Issue 22
         if: always()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ -f gourmet-block-editor-audit.json ]; then
+          if [ -s gourmet-block-editor-audit.json ]; then
             {
               echo '### Gourmet block editor migration'
               echo '```json'
@@ -46,6 +61,6 @@ jobs:
               echo '```'
             } > /tmp/audit.md
           else
-            printf '### Gourmet block editor migration\nWorkflow failed before audit JSON was produced.\n' > /tmp/audit.md
+            printf '### Gourmet block editor migration: FAILED\nThe verification step did not produce a non-empty audit JSON. Check the workflow job log; do not treat this run as success.\n' > /tmp/audit.md
           fi
           gh issue comment 22 --body-file /tmp/audit.md
