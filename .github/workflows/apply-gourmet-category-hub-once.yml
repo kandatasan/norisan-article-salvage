@@ -18,7 +18,10 @@ jobs:
         run: |
           python -m py_compile category-hubs/gourmet/deploy.py
           grep -q 'tsurikue-category-hub:v1:gourmet-blocks' category-hubs/gourmet/content.html
-          grep -q 'img_4017.jpg' category-hubs/gourmet/content.html
+          grep -q '__GOURMET_HERO_URL__' category-hubs/gourmet/content.html
+          grep -q '__GOURMET_HERO_ID__' category-hubs/gourmet/content.html
+          grep -q "HERO_MATCH = '7358'" category-hubs/gourmet/deploy.py
+          ! grep -q 'img_4017.jpg' category-hubs/gourmet/content.html
           grep -q '__GOURMET_CATEGORY_ID__' category-hubs/gourmet/content.html
           grep -q 'CATEGORY_ID = 9' category-hubs/gourmet/deploy.py
           python - <<'PY'
@@ -28,6 +31,9 @@ jobs:
           assert source.count('<!-- wp:cover') == source.count('<!-- /wp:cover -->')
           assert source.count('<!-- wp:html -->') == source.count('<!-- /wp:html -->')
           assert source.count('__GOURMET_CATEGORY_ID__') == 1
+          assert source.count('__GOURMET_HERO_URL__') == 2
+          assert source.count('__GOURMET_HERO_ID__') == 2
+          assert 'img_4017.jpg' not in source
           forbidden = (
               'tq-global-site-nav-ref',
               'TQ HEADER DRAWER PROTOTYPE',
@@ -74,4 +80,4 @@ jobs:
           retention-days: 7
       - name: Success
         run: echo 'GOURMET_CATEGORY_HUB_DRAFT_AND_DESKTOP_VERIFIED'
-# desktop-layout-verification-food-fallback
+# apply-uploaded-img-7358-and-verify-desktop
