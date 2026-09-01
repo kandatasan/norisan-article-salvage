@@ -1,0 +1,39 @@
+name: Diagnose outing desktop layout once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/diagnose-outing-desktop-once.yml'
+      - 'ops/outing-desktop-diagnose/**'
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+      - name: Show Chrome
+        run: |
+          which google-chrome || which chromium || which chromium-browser
+          (google-chrome --version || chromium --version || chromium-browser --version)
+      - name: Diagnose live outing page at desktop width
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python ops/outing-desktop-diagnose/diagnose.py
+      - name: Upload diagnostic
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-desktop-diagnostic
+          path: |
+            outing-desktop-diagnostic.json
+            outing-desktop-1440.png
+          if-no-files-found: error
