@@ -13,7 +13,10 @@ SLUG = 'gourmet-guide'
 TITLE = 'グルメ｜広島・旅先で実際に食べたラーメン・ご当地グルメ'
 STATUS = 'draft'
 MARKER = '<!-- tsurikue-category-hub:v1:gourmet-blocks -->'
-PLACEHOLDER = '__GOURMET_CATEGORY_ID__'
+CATEGORY_CATEGORY_PLACEHOLDER = '__GOURMET_CATEGORY_ID__'
+HERO_URL_CATEGORY_PLACEHOLDER = '__GOURMET_HERO_URL__'
+HERO_ID_CATEGORY_PLACEHOLDER = '__GOURMET_HERO_ID__'
+HERO_MATCH = '7358'
 HERE = pathlib.Path(__file__).resolve().parent
 SOURCE = HERE / 'content.html'
 
@@ -24,7 +27,7 @@ HEADERS = {
     'Authorization': 'Basic ' + token,
     'Accept': 'application/json',
     'Content-Type': 'application/json; charset=utf-8',
-    'User-Agent': 'tsurikue-gourmet-hub-deploy/1.3',
+    'User-Agent': 'tsurikue-gourmet-hub-deploy/1.4',
 }
 
 
@@ -58,18 +61,135 @@ def raw(obj, field):
     return value.get('raw') or value.get('rendered') or ''
 
 
-def build_content():
+def scalar_text(value):
+    if isinstance(value, dict):
+        return ' '.join(str(part) for part in value.values() if part)
+    return '' if value is None else str(value)
+
+
+def hero_media_matches(item):
+    fields = (
+        item.get('source_url'),
+        item.get('slug'),
+        item.get('alt_text'),
+        item.get('title'),
+        item.get('caption'),
+    )
+    haystack = ' '.join(scalar_text(field) for field in fields).lower()
+    mime_type = str(item.get('mime_type') or '')
+    return HERO_MATCH in haystack and mime_type.startswith('image/')
+
+
+def image_url_is_live(url):
+    if not str(url).startswith('https://tsurikue.com/wp-content/uploads/'):
+        return False
+    headers = {
+        'Accept': 'image/avif,image/webp,image/apng,image/*,*/*;q=0.8',
+        'Referer': 'https://tsurikue.com/',
+        'User-Agent': 'tsurikue-gourmet-hero-check/1.0',
+    }
+    req = urllib.request.Request(str(url), headers=headers, method='GET')
+    try:
+        with urllib.request.urlopen(req, timeout=35) as response:
+            content_type = response.headers.get('Content-Type', '')
+            sample = response.read(1024)
+            return response.status < 400 and content_type.startswith('image/') and bool(sample)
+    except Exception:
+        return False
+
+
+def find_hero_media():
+    fields = 'id,source_url,slug,alt_text,title,caption,mime_type,date'
+    queries = [
+        urllib.parse.urlencode({
+            'context': 'edit',
+            'slug': 'img_7358',
+            'per_page': 20,
+            '_fields': fields,
+        }),
+        urllib.parse.urlencode({
+            'context': 'edit',
+            'search': HERO_MATCH,
+            'per_page': 100,
+            'orderby': 'date',
+            'order': 'desc',
+            '_fields': fields,
+        }),
+        urllib.parse.urlencode({
+            'context': 'edit',
+            'per_page': 100,
+            'orderby': 'date',
+            'order': 'desc',
+            '_fields': fields,
+        }),
+    ]
+
+    candidates = {}
+    errors = []
+    for query in queries:
+        try:
+            items = request('/media?' + query, attempts=3, timeout=40)
+        except Exception as error:
+            errors.append(f'{type(error).__name__}: {error}')
+            continue
+        for item in items:
+            if hero_media_matches(item) and item.get('id') and item.get('source_url'):
+                candidates[item['id']] = item
+
+    ordered = sorted(
+        candidates.values(),
+        key=lambda item: (str(item.get('date') or ''), int(item.get('id') or 0)),
+        reverse=True,
+    )
+    for item in ordered:
+        if image_url_is_live(item['source_url']):
+            selected = {
+                'id': int(item['id']),
+                'source_url': str(item['source_url']),
+                'slug': str(item.get('slug') or ''),
+                'date': str(item.get('date') or ''),
+            }
+            print('GOURMET_HERO_MEDIA_FOUND ' + json.dumps(selected, ensure_ascii=False))
+            return selected
+
+    raise RuntimeError(
+        'IMG_7358_MEDIA_NOT_FOUND_OR_NOT_LIVE '
+        + json.dumps({
+            'candidate_ids': [item.get('id') for item in ordered],
+            'errors': errors,
+        }, ensure_ascii=False)
+    )
+
+
+def build_content(hero_media):
     content = SOURCE.read_text(encoding='utf-8')
     if MARKER not in content:
         raise RuntimeError('SOURCE_MARKER_MISSING')
-    if content.count(PLACEHOLDER) != 1:
+
+    expected_counts = {
+        CATEGORY_PLACEHOLDER: 1,
+        HERO_URL_PLACEHOLDER: 2,
+        HERO_ID_PLACEHOLDER: 2,
+    }
+    actual_counts = {
+        token: content.count(token)
+        for token in expected_counts
+    }
+    if actual_counts != expected_counts:
         raise RuntimeError(
-            f'PLACEHOLDER_COUNT_INVALID count={content.count(PLACEHOLDER)}'
+            'PLACEHOLDER_COUNTS_INVALID '
+            + json.dumps(actual_counts, ensure_ascii=False)
         )
 
-    content = content.replace(PLACEHOLDER, str(CATEGORY_ID))
-    if PLACEHOLDER in content:
-        raise RuntimeError('UNRESOLVED_TEMPLATE_TOKEN')
+    content = content.replace(CATEGORY_PLACEHOLDER, str(CATEGORY_ID))
+    content = content.replace(HERO_URL_PLACEHOLDER, hero_media['source_url'])
+    content = content.replace(HERO_ID_PLACEHOLDER, str(hero_media['id']))
+    unresolved = [
+        token for token in expected_counts
+        if token in content
+    ]
+    if unresolved:
+        raise RuntimeError('UNRESOLVED_TEMPLATE_TOKENS ' + repr(unresolved))
 
     forbidden = (
         'tq-global-site-nav-ref',
@@ -83,14 +203,26 @@ def build_content():
 
     return content
 
-
-def verify_content(content):
+def verify_content(content, hero_media):
+    hero_id = int(hero_media['id'])
+    hero_url = str(hero_media['source_url'])
     checks = {
         'marker': MARKER in content,
         'category_id': f'"categories":[{CATEGORY_ID}]' in content,
         'latest_block': 'wp:latest-posts' in content,
         'hero': '今日は、<br>なに食べる？' in content,
-        'hero_image': 'img_4017.jpg' in content,
+        'hero_image_url': hero_url in content,
+        'hero_image_id': (
+            f'"id":{hero_id}' in content
+            and f'wp-image-{hero_id}' in content
+        ),
+        'hero_filename': HERO_MATCH in hero_url.lower(),
+        'hero_alt': '皿に盛られた霜降りの焼肉' in content,
+        'old_hero_absent': 'img_4017.jpg' not in content,
+        'hero_tokens_resolved': (
+            HERO_URL_PLACEHOLDER not in content
+            and HERO_ID_PLACEHOLDER not in content
+        ),
         'archive_link': '/category/gourmet/' in content,
         'temp_nav_absent': 'tq-global-site-nav-ref' not in content,
         'custom_menu_absent': 'TQ SITEWIDE HOLIDAY MENU' not in content,
@@ -100,7 +232,6 @@ def verify_content(content):
             'VERIFY_CONTENT_FAILED ' + json.dumps(checks, ensure_ascii=False)
         )
     return checks
-
 
 def find_existing():
     query = urllib.parse.urlencode({
@@ -126,8 +257,9 @@ def find_existing():
 
 
 def main():
-    content = build_content()
-    verify_content(content)
+    hero_media = find_hero_media()
+    content = build_content(hero_media)
+    verify_content(content, hero_media)
     existing = find_existing()
 
     payload = {
@@ -184,7 +316,7 @@ def main():
         attempts=2,
         timeout=30,
     )
-    checks = verify_content(raw(check, 'content'))
+    checks = verify_content(raw(check, 'content'), hero_media)
     checks.update({
         'id': check.get('id') == page_id,
         'slug': check.get('slug') == SLUG,
@@ -204,6 +336,7 @@ def main():
         'preview_link': f'https://tsurikue.com/?page_id={page_id}&preview=true',
         'gourmet_category_id': CATEGORY_ID,
         'temporary_nav': 'absent',
+        'hero_media': hero_media,
         'checks': checks,
     }, ensure_ascii=False))
 
