@@ -1,0 +1,42 @@
+name: Audit legacy car hub page 3294
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-car-page-3294-20260902.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read page 3294 and car-guide across statuses
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,urllib.error,urllib.parse,urllib.request
+          BASE='https://tsurikue.com/wp-json/wp/v2'
+          tok=base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          H={'Authorization':'Basic '+tok,'Accept':'application/json','User-Agent':'tsurikue-car-page-audit/1.0'}
+          def get(path):
+              req=urllib.request.Request(BASE+path,headers=H)
+              try:
+                  with urllib.request.urlopen(req,timeout=40) as r:return r.status,json.loads(r.read().decode())
+              except urllib.error.HTTPError as e:
+                  return e.code, e.read().decode(errors='replace')
+          code,item=get('/pages/3294?context=edit&_fields=id,slug,status,title,content,link')
+          if isinstance(item,dict):
+              raw=((item.get('content') or {}).get('raw') or '')
+              one={'id':item['id'],'slug':item['slug'],'status':item['status'],'title':item['title']['rendered'],'link':item.get('link'),'markers':[m for m in ['tsurikue-category-hub:v1:car-blocks','tsurikue-category-hub:v1:car'] if m in raw]}
+          else: one={'http':code,'body':str(item)[:300]}
+          q=urllib.parse.urlencode({'slug':'car-guide','context':'edit','status':'publish,draft,pending,private,future,trash','per_page':20,'_fields':'id,slug,status,title,link'})
+          code2,items=get('/pages?'+q)
+          print('CAR_PAGE_3294_AUDIT '+json.dumps({'id3294':one,'slug_matches':items if isinstance(items,list) else {'http':code2,'body':str(items)[:300]}},ensure_ascii=False))
+          PY
