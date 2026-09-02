@@ -35,27 +35,37 @@ try:
         client=d.execute_script('return document.documentElement.clientWidth')
         scroll=d.execute_script('return document.documentElement.scrollWidth')
         auto=d.execute_script('return document.documentElement.dataset.tqOutingAuto || ""')
-        rr=d.execute_script('const r=arguments[0].getBoundingClientRect(); return {left:r.left,right:r.right,width:r.width};',root)
-        hr=d.execute_script('const r=arguments[0].getBoundingClientRect(); return {left:r.left,right:r.right,width:r.width};',hero)
-        root_left=float(rr['left']); root_right=float(client-rr['right'])
-        hero_left=float(hr['left']); hero_right=float(client-hr['right'])
+        geo=d.execute_script('''
+          const root=arguments[0], hero=arguments[1], parent=root.parentElement;
+          const r=root.getBoundingClientRect(), h=hero.getBoundingClientRect(), p=parent.getBoundingClientRect();
+          return {
+            root:{left:r.left,right:r.right,width:r.width},
+            hero:{left:h.left,right:h.right,width:h.width},
+            parent:{left:p.left,right:p.right,width:p.width,cls:parent.className},
+            leftBreak:p.left-r.left,
+            rightBreak:r.right-p.right,
+            rootWidth:getComputedStyle(root).width,
+            rootMarginLeft:getComputedStyle(root).marginLeft,
+            rootMarginRight:getComputedStyle(root).marginRight
+          };
+        ''',root,hero)
         lines=[x.strip() for x in h1.text.splitlines() if x.strip()]
         src=hero_img.get_attribute('src') or ''
         object_position=hero_img.value_of_css_property('object-position')
         metrics[label]={
             'client_width':client,'scroll_width':scroll,
-            'root':{'left':round(root_left,2),'right_gutter':round(root_right,2),'width':round(rr['width'],2)},
-            'hero':{'left':round(hero_left,2),'right_gutter':round(hero_right,2),'width':round(hr['width'],2),'height':round(hero.rect['height'],2)},
+            'geometry':geo,
+            'hero_height':round(hero.rect['height'],2),
             'hero_src':src,'object_position':object_position,'h1_lines':lines,
             'h1_font':float(h1.value_of_css_property('font-size').replace('px','')),
             'details':len(details),'purpose_links':len(purpose),'far_items':len(far),'auto_state':auto,
         }
         checks[label+'_dolphin_hero']=src.split('?')[0]==EXPECTED_HERO
         checks[label+'_heading_two_lines']=lines==['今日は、','どこ行く？']
-        checks[label+'_centered_root']=abs(root_left-root_right)<=3
-        checks[label+'_centered_hero']=abs(hero_left-hero_right)<=3
-        checks[label+'_hero_matches_root']=abs(hero_left-root_left)<=2 and abs(hr['width']-rr['width'])<=3
-        checks[label+'_focal_point']=object_position.replace(' ','') in ('58%45%','58%45%')
+        checks[label+'_symmetric_breakout']=abs(float(geo['leftBreak'])-float(geo['rightBreak']))<=3
+        checks[label+'_root_not_narrower_than_parent']=float(geo['root']['width'])>=float(geo['parent']['width'])-2
+        checks[label+'_hero_matches_root']=abs(float(geo['hero']['left'])-float(geo['root']['left']))<=2 and abs(float(geo['hero']['width'])-float(geo['root']['width']))<=3
+        checks[label+'_focal_point']=object_position.replace(' ','')=='58%45%'
         checks[label+'_five_accordions']=len(details)==5
         checks[label+'_four_purpose_links']=len(purpose)==4
         checks[label+'_far_has_posts']=len(far)>=1
