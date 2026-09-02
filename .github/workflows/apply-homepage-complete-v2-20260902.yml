@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/apply-homepage-complete-v2-20260902.yml'
+      - '.github/scripts/patch-homepage-complete-v2.py'
       - 'experimental-pages/top-design-lab/content.html'
       - 'experimental-pages/top-design-lab/config.json'
       - 'experimental-pages/top-design-lab/complete-v2/**'
@@ -64,7 +65,7 @@ jobs:
           done
           test "$ok" -eq 1
 
-      - name: Update published homepage
+      - name: Patch published homepage only at known live snapshot
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -72,7 +73,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python experimental-pages/top-design-lab/complete-v2/deploy_live.py | tee /tmp/homepage-complete-v2-deploy.log
+          python .github/scripts/patch-homepage-complete-v2.py | tee /tmp/homepage-complete-v2-deploy.log
 
       - name: Install render audit dependencies
         shell: bash
