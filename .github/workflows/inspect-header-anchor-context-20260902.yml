@@ -1,0 +1,73 @@
+name: Inspect header anchor context 20260902
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/inspect-header-anchor-context-20260902.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compare tsurikue and security-blog header anchor ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' | tee header-anchor-context.json
+          import json, urllib.request
+          from html.parser import HTMLParser
+
+          class P(HTMLParser):
+              def __init__(self):
+                  super().__init__(); self.stack=[]; self.anchor=None; self.out=[]
+              def handle_starttag(self,tag,attrs):
+                  d=dict(attrs); self.stack.append((tag,d))
+                  if tag=='a': self.anchor={'attrs':d,'text':'','ancestors':list(self.stack[:-1])}
+              def handle_startendtag(self,tag,attrs): pass
+              def handle_data(self,data):
+                  if self.anchor is not None: self.anchor['text']+=data
+              def handle_endtag(self,tag):
+                  if tag=='a' and self.anchor is not None:
+                      a=self.anchor; a['text']=' '.join(a['text'].split())
+                      if a['text']: self.out.append(a)
+                      self.anchor=None
+                  for i in range(len(self.stack)-1,-1,-1):
+                      if self.stack[i][0]==tag:
+                          self.stack=self.stack[:i]; break
+
+          def fetch(url):
+              r=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 tsurikue-header-context/1.0'})
+              with urllib.request.urlopen(r,timeout=45) as x:return x.read().decode('utf-8','replace')
+
+          def path(a):
+              items=[]
+              for tag,d in a['ancestors']:
+                  if tag in ('header','nav','div','ul','li'):
+                      ident=('#'+d['id']) if d.get('id') else ''
+                      cls='.'+'.'.join(d.get('class','').split()) if d.get('class') else ''
+                      items.append(tag+ident+cls)
+              return items[-9:]
+
+          sites={
+            'tsurikue':('https://tsurikue.com/', {'おでかけ','釣り','グルメ','クルマ'}),
+            'security':('https://my-keibi-career.com/', {'警備員の仕事とは','資格 キャリア','給料の悩み','中卒・低学歴'})
+          }
+          result={}
+          for name,(url,wanted) in sites.items():
+              html=fetch(url); p=P(); p.feed(html)
+              matches=[]
+              for a in p.out:
+                  if a['text'] in wanted:
+                      matches.append({'text':a['text'],'href':a['attrs'].get('href'),'class':a['attrs'].get('class'),'ancestors':path(a)})
+              result[name]={'matches':matches,'html_bytes':len(html.encode())}
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          PY
