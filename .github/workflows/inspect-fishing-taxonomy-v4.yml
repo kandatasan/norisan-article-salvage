@@ -1,0 +1,77 @@
+name: Inspect fishing taxonomy v4
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/inspect-fishing-taxonomy-v4.yml'
+permissions:
+  contents: read
+  issues: write
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Inspect WordPress taxonomy (GET only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python - <<'PY' | tee fishing-taxonomy-v4.json
+          import base64, json, os, urllib.request, urllib.parse, hashlib
+          BASE='https://tsurikue.com/wp-json/wp/v2'
+          auth='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          def get(path):
+              req=urllib.request.Request(BASE+path,headers={'Authorization':auth,'User-Agent':'tsurikue-fishing-taxonomy/1.0'})
+              with urllib.request.urlopen(req,timeout=45) as r:
+                  return json.load(r)
+          cats=get('/categories?per_page=100&hide_empty=false&_fields=id,name,slug,parent,count')
+          tags=get('/tags?per_page=100&hide_empty=false&_fields=id,name,slug,count')
+          posts=get('/posts?categories=1&status=publish&per_page=100&orderby=date&order=desc&_fields=id,slug,link,title,categories,tags,date')
+          # include direct children of fishing and any category named/slugged like 野食
+          catmap={c['id']:c for c in cats}; tagmap={t['id']:t for t in tags}
+          rows=[]
+          for p in posts:
+              rows.append({
+                  'id':p['id'],'title':p['title']['rendered'],'slug':p['slug'],'link':p['link'],'date':p['date'],
+                  'categories':[catmap.get(i,{'id':i}) for i in p.get('categories',[])],
+                  'tags':[tagmap.get(i,{'id':i}) for i in p.get('tags',[])],
+              })
+          page=get('/pages/3316?context=edit&_fields=id,slug,status,title,content')
+          raw=page['content']['raw']
+          out={
+              'mode':'GET_ONLY','wordpress_write_count':0,
+              'page':{'id':page['id'],'slug':page['slug'],'status':page['status'],'title':page['title']['raw'],'sha256':hashlib.sha256(raw.encode()).hexdigest()},
+              'fishing_category':catmap.get(1),
+              'fishing_children':[c for c in cats if c.get('parent')==1],
+              'wild_food_candidates':[c for c in cats if '野食' in c.get('name','') or c.get('slug') in ('yashoku','wild-food','wildfood')],
+              'all_categories':cats,
+              'all_tags':tags,
+              'fishing_post_count':len(rows),
+              'fishing_posts':rows,
+          }
+          print(json.dumps(out,ensure_ascii=False,indent=2))
+          PY
+          test -s fishing-taxonomy-v4.json
+      - name: Upload taxonomy audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-taxonomy-v4
+          path: fishing-taxonomy-v4.json
+      - name: Log to Issue 22
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Fishing taxonomy v4 — GET-only inspection'
+            echo
+            echo '```json'
+            cat fishing-taxonomy-v4.json
+            echo '```'
+          } >/tmp/fishing-taxonomy-v4.md
+          gh issue comment 22 --body-file /tmp/fishing-taxonomy-v4.md
