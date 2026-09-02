@@ -1,0 +1,50 @@
+name: Create Kochi 1-night 2-day drive draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial/kochi-1night-2days-drive/content.html'
+      - 'scripts/create_kochi_1night_2days_draft_once.py'
+      - '.github/workflows/create-kochi-1night-2days-draft-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/create_kochi_1night_2days_draft_once.py
+      - name: Create guarded WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_kochi_1night_2days_draft_once.py
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Kochi 1-night/2-day drive draft: SUCCESS'
+            echo
+            cat reports/kochi-1night-2days-create/summary.md
+          } > /tmp/kochi-create-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/kochi-create-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: kochi-1night-2days-draft-create
+          path: reports/kochi-1night-2days-create/
+          if-no-files-found: warn
