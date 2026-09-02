@@ -53,7 +53,16 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python experimental-pages/top-design-lab/complete-v2/live_backup.py backup
+          ok=0
+          for attempt in 1 2 3 4; do
+            if python experimental-pages/top-design-lab/complete-v2/live_backup.py backup; then
+              ok=1
+              break
+            fi
+            echo "Homepage backup attempt ${attempt}/4 failed; retrying..." >&2
+            sleep $((attempt * 5))
+          done
+          test "$ok" -eq 1
 
       - name: Update published homepage
         env:
@@ -90,8 +99,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          python experimental-pages/top-design-lab/complete-v2/live_backup.py rollback
-          echo 'Homepage render audit failed; old homepage restored.' >&2
+          ok=0
+          for attempt in 1 2 3; do
+            if python experimental-pages/top-design-lab/complete-v2/live_backup.py rollback; then
+              ok=1
+              break
+            fi
+            echo "Homepage rollback attempt ${attempt}/3 failed; retrying..." >&2
+            sleep $((attempt * 5))
+          done
+          test "$ok" -eq 1
+          echo 'Render audit failed; published homepage was restored.' >&2
           exit 1
 
       - name: Record success audit
