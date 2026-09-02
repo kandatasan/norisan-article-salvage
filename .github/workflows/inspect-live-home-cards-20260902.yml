@@ -1,0 +1,26 @@
+name: Inspect live homepage cards 20260902
+on:
+  push:
+    branches: [fix/homepage-render-hit-scroll-20260902]
+    paths:
+      - '.github/scripts/inspect-live-home-cards.py'
+      - '.github/workflows/inspect-live-home-cards-20260902.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/homepage-render-hit-scroll-20260902
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Inspect live cards read-only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python .github/scripts/inspect-live-home-cards.py
