@@ -1,0 +1,41 @@
+name: Prepare homepage complete v2 20260902
+
+on:
+  push:
+    branches: [feat/homepage-complete-v2-20260902]
+    paths:
+      - '.github/workflows/prepare-homepage-complete-v2-20260902.yml'
+      - 'experimental-pages/top-design-lab/prepare_complete_v2.py'
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/homepage-complete-v2-20260902
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Prepare canonical homepage source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python experimental-pages/top-design-lab/prepare_complete_v2.py
+      - name: Commit generated canonical source to feature branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json; then
+            echo 'No source changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add experimental-pages/top-design-lab/content.html experimental-pages/top-design-lab/config.json
+          git commit -m 'Prepare homepage complete v2 canonical source'
+          git push origin HEAD:feat/homepage-complete-v2-20260902
