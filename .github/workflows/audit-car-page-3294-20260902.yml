@@ -13,7 +13,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Read full current page 3294
+      - name: Extract current page structure
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -21,23 +21,30 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY'
-          import base64,hashlib,json,os,urllib.request
+          import base64,collections,hashlib,html,json,os,re,urllib.request
           BASE='https://tsurikue.com/wp-json/wp/v2'
           tok=base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
-          H={'Authorization':'Basic '+tok,'Accept':'application/json','User-Agent':'tsurikue-car-current-audit/1.0'}
+          H={'Authorization':'Basic '+tok,'Accept':'application/json','User-Agent':'tsurikue-car-current-structure-audit/1.0'}
           req=urllib.request.Request(BASE+'/pages/3294?context=edit&_fields=id,slug,status,title,content,link',headers=H)
           with urllib.request.urlopen(req,timeout=40) as r:
               item=json.loads(r.read().decode())
           raw=((item.get('content') or {}).get('raw') or '')
+          def txt(s):
+              s=re.sub(r'<br\s*/?>',' / ',s,flags=re.I)
+              s=re.sub(r'<[^>]+>',' ',s)
+              return re.sub(r'\s+',' ',html.unescape(s)).strip()
+          headings=[{'level':int(level),'text':txt(body)} for level,body in re.findall(r'<h([1-4])\b[^>]*>(.*?)</h\1>',raw,re.S|re.I)]
+          links=[]
+          for href,body in re.findall(r'<a\b[^>]*href=["\']([^"\']+)["\'][^>]*>(.*?)</a>',raw,re.S|re.I):
+              links.append({'text':txt(body),'href':html.unescape(href)})
+          paragraphs=[txt(x) for x in re.findall(r'<p\b[^>]*>(.*?)</p>',raw,re.S|re.I)]
+          paragraphs=[x for x in paragraphs if x]
+          blocks=collections.Counter(re.findall(r'<!--\s+wp:([a-z0-9_/-]+)',raw,re.I))
           result={
-              'id':item['id'],
-              'slug':item['slug'],
-              'status':item['status'],
-              'title':item['title']['rendered'],
-              'link':item.get('link'),
-              'sha256':hashlib.sha256(raw.encode()).hexdigest(),
-              'length':len(raw),
-              'raw_b64':base64.b64encode(raw.encode()).decode(),
+              'id':item['id'],'slug':item['slug'],'status':item['status'],'title':item['title']['rendered'],
+              'sha256':hashlib.sha256(raw.encode()).hexdigest(),'length':len(raw),
+              'block_counts':dict(sorted(blocks.items())),
+              'headings':headings,'links':links,'paragraphs':paragraphs,
           }
-          print('CAR_CURRENT_FULL_AUDIT '+json.dumps(result,ensure_ascii=False))
+          print('CAR_CURRENT_STRUCTURE_AUDIT '+json.dumps(result,ensure_ascii=False))
           PY
