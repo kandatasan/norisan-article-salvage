@@ -1,0 +1,57 @@
+name: Audit car taxonomy v2
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-car-taxonomy-v2-20260902.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read current WordPress car taxonomy and draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,json,os,urllib.parse,urllib.request
+          BASE='https://tsurikue.com/wp-json/wp/v2'
+          tok=base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          H={'Authorization':'Basic '+tok,'Accept':'application/json','User-Agent':'tsurikue-car-taxonomy-audit/2.0'}
+          def get(path):
+              req=urllib.request.Request(BASE+path,headers=H)
+              with urllib.request.urlopen(req,timeout=40) as r:return json.loads(r.read().decode())
+          def q(path, **params):
+              return get(path+'?'+urllib.parse.urlencode(params))
+          car=q('/categories',slug='car',context='edit',per_page=10,_fields='id,name,slug,parent,count')
+          if len(car)!=1: raise SystemExit('CAR_CATEGORY_NOT_UNIQUE '+repr(car))
+          car_id=car[0]['id']
+          children=q('/categories',parent=car_id,context='edit',per_page=100,_fields='id,name,slug,parent,count')
+          posts=[]
+          page=1
+          while True:
+              items=q('/posts',categories=car_id,context='edit',status='publish,draft,pending,private,future',per_page=100,page=page,_fields='id,slug,status,title,categories,link')
+              posts.extend(items)
+              if len(items)<100: break
+              page+=1
+          wash=[]
+          for c in children:
+              if c['slug']=='car-goods-wash' or '洗車' in c['name']:
+                  wash=q('/posts',categories=c['id'],context='edit',status='publish,draft,pending,private,future',per_page=100,_fields='id,slug,status,title,categories,link')
+          drafts=q('/pages',slug='car-guide',status='draft',context='edit',per_page=10,_fields='id,slug,status,title,content,link')
+          out={
+            'car':car[0],
+            'children':children,
+            'car_posts':[{'id':p['id'],'slug':p['slug'],'status':p['status'],'title':p['title']['rendered'],'categories':p['categories']} for p in posts],
+            'wash_posts':[{'id':p['id'],'slug':p['slug'],'status':p['status'],'title':p['title']['rendered'],'categories':p['categories']} for p in wash],
+            'car_drafts':[{'id':p['id'],'slug':p['slug'],'status':p['status'],'title':p['title']['rendered'],'has_v1_marker':'tsurikue-category-hub:v1:car-blocks' in (p['content'].get('raw') or '')} for p in drafts],
+          }
+          print('CAR_TAXONOMY_AUDIT '+json.dumps(out,ensure_ascii=False))
+          PY
