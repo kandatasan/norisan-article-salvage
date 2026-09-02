@@ -16,7 +16,7 @@ EXPECTED_SHA='542616509f56104830dcefdab2cf53d8e9fa08203b88413a9b0bb43e810d6160'
 MARKER='<!-- tsurikue-experimental-page:v1:top-design-lab -->'
 PATCH_START='/* TQ TOP CARD RESPONSE + HUB LINKS v2 */'
 PATCH_END='/* END TQ TOP CARD RESPONSE + HUB LINKS v2 */'
-INSERT_BEFORE='/* TQ HEADER DRAWER PROTOTYPE v1 */'
+STYLE_CLOSE='</style>'
 AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
 OUT=pathlib.Path(os.environ.get('TQ_HOME_RESULT_PATH','/tmp/homepage-complete-v2-result.json'))
 writes=0
@@ -70,7 +70,7 @@ CSS=r'''
 
 def req(path,method='GET',data=None,retries=4):
     global writes
-    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-home-live-patch-v2/1.0'}
+    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-home-live-patch-v2/1.1'}
     body=None
     if data is not None:
         body=json.dumps(data,ensure_ascii=False).encode('utf-8')
@@ -116,7 +116,7 @@ def structural_checks(text):
         'four_cards':all(c in text for c in ['tq4-cat--outing','tq4-cat--gourmet','tq4-cat--fishing','tq4-cat--car']),
         'hero_copy':'休日、' in text and 'なにして遊ぶ？' in text,
         'choose_copy':'今日はどれ？' in text,
-        'header_marker':INSERT_BEFORE in text,
+        'style_block':text.count('<style>')>=1 and text.count(STYLE_CLOSE)>=1,
     }
 
 
@@ -165,9 +165,12 @@ patched,n1=re.subn(r'\n?/\* MOBILE VIEWPORT CENTER FIX v2 \*/.*?(?=/\* MOBILE FU
 patched,n2=re.subn(r'\n?/\* MOBILE FULL-WIDTH FIX v3 \*/.*?/\* END MOBILE FULL-WIDTH FIX v3 \*/\n?','\n',patched,flags=re.S)
 if n1!=1 or n2!=1:
     raise RuntimeError('HOME_VIEWPORT_BLOCK_COUNT_REFUSED '+json.dumps({'v2':n1,'v3':n2}))
-if INSERT_BEFORE not in patched:
-    raise RuntimeError('HOME_INSERT_MARKER_MISSING')
-patched=patched.replace(INSERT_BEFORE,CSS+'\n'+INSERT_BEFORE,1)
+
+# The old custom-header prototype was intentionally removed. Insert the card
+# interaction CSS into the existing homepage style block instead.
+if STYLE_CLOSE not in patched:
+    raise RuntimeError('HOME_STYLE_CLOSE_MISSING')
+patched=patched.replace(STYLE_CLOSE,CSS+'\n'+STYLE_CLOSE,1)
 
 pre_final=final_checks(patched,patched)
 if not all(pre_final.values()):
