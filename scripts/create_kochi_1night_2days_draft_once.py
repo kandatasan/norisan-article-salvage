@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create the Hiroshima-to-Kochi 1-night/2-day drive article as a guarded WordPress draft."""
+"""Create or safely update the Hiroshima-to-Kochi 1-night/2-day WordPress draft."""
 from __future__ import annotations
 
 import base64
@@ -14,16 +14,18 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-kochi-drive-create/1.0"
+USER_AGENT = "tsurikue-kochi-drive-create/2.0"
 TITLE = "広島から高知1泊2日ドライブ｜道後温泉・四国カルスト・桂浜・仁淀ブルーを巡るモデルコース"
 SLUG = "kochi-1night-2days-drive"
+EXPECTED_POST_ID = 3384
 CATEGORY_ID = 8
 FEATURED_MEDIA_ID = 3376
-EXCERPT = "広島から高知へ1泊2日で実際に走ったドライブコース。道後温泉、四国カルスト、ひろめ市場、OMO7高知、桂浜・桂浜水族館、安居渓谷の仁淀ブルーまで写真と動画で紹介します。"
+EXCERPT = "広島から高知へ1泊2日で実際に走ったドライブ旅。しまなみ海道、道後、四国カルストの豪雨、ひろめ市場、OMO7高知のよさこい、桂浜、安居渓谷の仁淀ブルーまで、ハプニング込みで追体験できる旅行記です。"
 CONTENT_PATH = Path("editorial/kochi-1night-2days-drive/content.html")
 OUT = Path("reports/kochi-1night-2days-create")
-EDITORIAL_MARKER = "<!-- editorial:kochi-1night-2days-drive:create-guard:v1 -->"
-BODY_MARKER = "<!-- editorial:kochi-1night-2days-drive:v1 updated=2026-09-02 -->"
+EDITORIAL_MARKER = "<!-- editorial:kochi-1night-2days-drive:create-guard:v2 -->"
+BODY_MARKER = "<!-- editorial:kochi-1night-2days-drive:v2 updated=2026-09-03 -->"
+OLD_V1_CONTENT_SHA256 = "d58f2aca7e72fa5b4224ddd875aa7c4822af83ec4b677d10116b7b9a97e3e01d"
 
 EXPECTED_MEDIA = {
     1685: "/wp-content/uploads/2026/05/img_4545.jpg",
@@ -31,28 +33,24 @@ EXPECTED_MEDIA = {
     1707: "/wp-content/uploads/2026/05/img_4556.jpg",
     1745: "/wp-content/uploads/2026/05/img_4565.jpg",
     1704: "/wp-content/uploads/2026/05/img_4568.jpg",
-    1703: "/wp-content/uploads/2026/05/img_4570.jpg",
     3377: "/wp-content/uploads/2026/09/img_4577.jpg",
     3376: "/wp-content/uploads/2026/09/img_4579.jpg",
-    1718: "/wp-content/uploads/2026/05/img_4583.jpg",
     1743: "/wp-content/uploads/2026/05/img_4600.jpg",
-    1732: "/wp-content/uploads/2026/05/img_4603.jpg",
     3378: "/wp-content/uploads/2026/09/img_4605.jpg",
-    1738: "/wp-content/uploads/2026/05/img_4606.jpg",
+    1732: "/wp-content/uploads/2026/05/img_4603.jpg",
     1730: "/wp-content/uploads/2026/05/img_4607.jpg",
     1747: "/wp-content/uploads/2026/05/img_4611.jpg",
     1739: "/wp-content/uploads/2026/05/img_4612.jpg",
     1749: "/wp-content/uploads/2026/05/img_4624.jpg",
+    1744: "/wp-content/uploads/2026/05/img_4623.jpg",
     1759: "/wp-content/uploads/2026/05/img_4629.jpg",
     1756: "/wp-content/uploads/2026/05/img_4632.jpg",
     1762: "/wp-content/uploads/2026/05/img_4636.jpg",
     1773: "/wp-content/uploads/2026/05/img_4641.jpg",
     1798: "/wp-content/uploads/2026/05/img_4642.mp4",
-    1774: "/wp-content/uploads/2026/05/img_4643.jpg",
     1781: "/wp-content/uploads/2026/05/img_4652.jpg",
     1779: "/wp-content/uploads/2026/05/img_4656.jpg",
     1787: "/wp-content/uploads/2026/05/img_4659.jpg",
-    1786: "/wp-content/uploads/2026/05/img_4660.jpg",
     3382: "/wp-content/uploads/2026/09/img_4665.jpg",
 }
 
@@ -126,7 +124,8 @@ def build_content() -> str:
     if content.count(BODY_MARKER) != 1:
         raise RuntimeError("body editorial marker missing or duplicated")
     for media_id, expected_path in EXPECTED_MEDIA.items():
-        if f"wp-image-{media_id}" not in content and not (media_id == 1798 and 'wp:video {"id":1798}' in content):
+        has_id = f"wp-image-{media_id}" in content or (media_id == 1798 and 'wp:video {"id":1798}' in content)
+        if not has_id:
             raise RuntimeError(f"confirmed media missing from content: {media_id}")
         if expected_path not in content:
             raise RuntimeError(f"confirmed media path missing from content: {expected_path}")
@@ -142,7 +141,9 @@ def fetch_posts_by_slug(auth: str, status: str) -> list[dict[str, Any]]:
     return list(rows)
 
 
-def validate_draft(row: dict[str, Any], expected_content: str) -> None:
+def validate_metadata(row: dict[str, Any]) -> None:
+    if int(row.get("id") or 0) != EXPECTED_POST_ID:
+        raise RuntimeError(f"post id mismatch: {row.get('id')}")
     if row.get("status") != "draft":
         raise RuntimeError("target is not draft")
     if str(row.get("slug") or "") != SLUG:
@@ -154,16 +155,20 @@ def validate_draft(row: dict[str, Any], expected_content: str) -> None:
     categories = [int(value) for value in (row.get("categories") or [])]
     if categories != [CATEGORY_ID]:
         raise RuntimeError(f"category mismatch: {categories}")
+
+
+def validate_final(row: dict[str, Any], expected_content: str) -> None:
+    validate_metadata(row)
     actual_content = raw_field(row, "content").strip()
     if actual_content != expected_content.strip():
-        raise RuntimeError("existing draft content differs; refusing overwrite: " + sha256_text(actual_content))
+        raise RuntimeError("draft content mismatch after apply: " + sha256_text(actual_content))
 
 
 def write_report(report: dict[str, Any]) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     (OUT / "result.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     lines = [
-        "# Kochi 1-night/2-day drive draft creation", "",
+        "# Kochi 1-night/2-day drive draft apply", "",
         f"- action: **{report['action']}**",
         f"- post_id: **{report['post_id']}**",
         f"- status: **{report['status']}**",
@@ -176,6 +181,7 @@ def write_report(report: dict[str, Any]) -> None:
         f"- wordpress_write_count: **{report['wordpress_write_count']}**",
         f"- published_before: **{report['public_before']['published_total']}**",
         f"- published_after: **{report['public_after']['published_total']}**",
+        f"- old_content_sha256: `{report.get('old_content_sha256')}`",
         f"- content_sha256: `{report['content_sha256']}`",
         "- publish_count: **0**",
     ]
@@ -195,18 +201,40 @@ def main() -> int:
 
     published = fetch_posts_by_slug(auth, "publish")
     if published:
-        raise RuntimeError(f"published /{SLUG}/ already exists; refusing create")
+        raise RuntimeError(f"published /{SLUG}/ exists; refusing write")
 
     drafts = fetch_posts_by_slug(auth, "draft")
     if len(drafts) > 1:
         raise RuntimeError(f"multiple /{SLUG}/ drafts found: {[row.get('id') for row in drafts]}")
 
+    old_content_sha = None
     if drafts:
         row = drafts[0]
-        validate_draft(row, expected_content)
-        action = "ALREADY_UP_TO_DATE"
-        post_id = int(row.get("id") or 0)
-        post_write_count = 0
+        validate_metadata(row)
+        actual_content = raw_field(row, "content").strip()
+        old_content_sha = sha256_text(actual_content)
+        if actual_content == expected_content.strip():
+            action = "ALREADY_UP_TO_DATE"
+            post_id = int(row.get("id") or 0)
+            post_write_count = 0
+        elif old_content_sha == OLD_V1_CONTENT_SHA256:
+            payload = {
+                "title": TITLE,
+                "slug": SLUG,
+                "status": "draft",
+                "content": expected_content,
+                "excerpt": EXCERPT,
+                "featured_media": FEATURED_MEDIA_ID,
+                "categories": [CATEGORY_ID],
+            }
+            updated, _ = request_json(f"{SITE_URL}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}", auth, method="POST", payload=payload, timeout=90)
+            post_id = int(updated.get("id") or 0)
+            if post_id != EXPECTED_POST_ID or updated.get("status") != "draft":
+                raise RuntimeError(f"unexpected update response: id={post_id} status={updated.get('status')}")
+            action = "UPDATE_DRAFT"
+            post_write_count = 1
+        else:
+            raise RuntimeError("draft changed since v1; refusing overwrite: " + old_content_sha)
     else:
         payload = {
             "title": TITLE,
@@ -226,7 +254,7 @@ def main() -> int:
 
     q = urllib.parse.urlencode({"context": "edit", "_fields": "id,slug,status,title,content,excerpt,featured_media,categories,modified,link"})
     after_row, _ = request_json(f"{SITE_URL}/wp-json/wp/v2/posts/{post_id}?{q}", auth)
-    validate_draft(after_row, expected_content)
+    validate_final(after_row, expected_content)
 
     after_counts = public_counts(auth)
     if before_counts != after_counts:
@@ -245,6 +273,7 @@ def main() -> int:
         "wordpress_write_count": post_write_count,
         "public_before": before_counts,
         "public_after": after_counts,
+        "old_content_sha256": old_content_sha,
         "content_sha256": sha256_text(expected_content.strip()),
         "publish_count": 0,
     }
