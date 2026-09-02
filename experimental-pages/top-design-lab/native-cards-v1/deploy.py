@@ -21,6 +21,12 @@ LINKS={
     '/category/car/':'/car-guide/',
 }
 TARGETS=list(LINKS.values())
+OLD_COVER_DIVS=[
+    'class="wp-block-cover has-custom-content-position is-position-bottom-left tq4-cat tq4-cat--outing"',
+    'class="wp-block-cover has-custom-content-position is-position-bottom-left tq4-cat tq4-cat--gourmet"',
+    'class="wp-block-cover has-custom-content-position is-position-bottom-left tq4-cat tq4-cat--fishing"',
+    'class="wp-block-cover has-custom-content-position is-position-bottom-left tq4-cat tq4-cat--car"',
+]
 
 CSS=r'''
 /* TQ TOP NATIVE IMAGE CARDS v1 */
@@ -68,7 +74,7 @@ CSS=r'''
 
 def req(path,method='GET',data=None,retries=4):
     global writes
-    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-home-native-cards-v1/1.0'}
+    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-home-native-cards-v1/1.1'}
     body=None
     if data is not None:
         body=json.dumps(data,ensure_ascii=False).encode('utf-8'); headers['Content-Type']='application/json; charset=utf-8'
@@ -108,7 +114,7 @@ def checks(text,rendered_text=''):
       'native_image_blocks_four':text.count('linkDestination":"custom"')>=4 and text.count('class="wp-block-image size-large tq4-native-image"')==4,
       'image_links':all(f'<a href="{t}"><img' in text for t in TARGETS),
       'title_links':all(f'<a href="{t}">' in text for t in TARGETS),
-      'old_cover_cards_gone':not any(x in text for x in ['tq4-cat--outing','tq4-cat--gourmet','tq4-cat--fishing','tq4-cat--car']),
+      'old_cover_cards_gone':not any(x in text for x in OLD_COVER_DIVS),
       'old_category_links_gone':not any(x in text for x in LINKS),
       'native_css_once':text.count(CSS_MARK)==1,
       'no_viewport_hacks':not any(x in text for x in ['100vw','100dvw','50vw','50dvw']),
