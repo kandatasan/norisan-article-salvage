@@ -32,14 +32,12 @@ CSS=r'''
 /* TQ TOP CARD RESPONSE + HUB LINKS v2 */
 .tq4 .tq4-cat{
   position:relative!important;
+  overflow:hidden!important;
   isolation:isolate;
   cursor:pointer;
   touch-action:manipulation;
   -webkit-tap-highlight-color:transparent;
 }
-/* SWELL positions headings; neutralize that containing block so the anchor
-   pseudo-element can stretch against the positioned card itself. */
-.tq4 .tq4-cat h3{position:static!important}
 .tq4 .tq4-cat h3 a{
   position:static!important;
   -webkit-tap-highlight-color:transparent;
@@ -47,9 +45,8 @@ CSS=r'''
 .tq4 .tq4-cat h3 a::after{
   content:"";
   position:absolute;
-  inset:0;
+  inset:-999px;
   z-index:6;
-  border-radius:inherit;
   background:transparent;
   transition:background-color .12s ease;
 }
@@ -73,7 +70,7 @@ CSS=r'''
 
 def req(path,method='GET',data=None,retries=4):
     global writes
-    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-home-live-patch-v2/1.2'}
+    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-home-live-patch-v2/1.3'}
     body=None
     if data is not None:
         body=json.dumps(data,ensure_ascii=False).encode('utf-8')
@@ -129,7 +126,7 @@ def final_checks(text,rendered_text):
         'patch_once':text.count(PATCH_START)==1 and text.count(PATCH_END)==1,
         'old_category_links_gone':not any(k in text for k in LINKS),
         'hub_links':all(f'href="{v}"' in text for v in LINKS.values()),
-        'full_card_css':'h3 a::after' in text and 'position:absolute' in text and 'inset:0' in text and 'h3{position:static!important}' in text,
+        'full_card_css':'h3 a::after' in text and 'position:absolute' in text and 'inset:-999px' in text and 'overflow:hidden!important' in text,
         'touch_response':'touch-action:manipulation' in text and 'a:active::after' in text,
         'no_viewport_hacks':not any(x in text for x in ['100vw','100dvw','50vw','50dvw']),
         'rendered_patch':PATCH_START in rendered_text,
