@@ -23,10 +23,11 @@ jobs:
           p=Path('experimental-pages/top-design-lab/native-cards-v1/card-grid.html')
           s=p.read_text(encoding='utf-8')
           targets=['/odekake/','/gourmet-guide/','/fishing-guide/','/car-guide/']
-          assert s.count('tq4-native-card tq4-native-card--')==4
-          assert s.count('linkDestination":"custom"')==4
+          assert s.count('class="wp-block-group tq4-native-card tq4-native-card--')==4
+          assert s.count('"linkDestination":"custom"')==4
+          assert s.count('class="wp-block-image size-large tq4-native-image"')==4
           assert all(f'<a href="{x}"><img' in s for x in targets)
-          assert 'wp:cover' not in s
+          assert '<!-- wp:cover ' not in s
           print('NATIVE_CARD_TEMPLATE_OK')
           PY
       - name: Backup published homepage
