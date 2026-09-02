@@ -12,6 +12,9 @@ NEW_HERO='https://tsurikue.com/wp-content/uploads/2026/09/img_2419.jpg'
 OLD_H1='<h1 class="wp-block-heading">今日は、どこ行く？</h1>'
 NEW_H1='<h1 class="wp-block-heading">今日は、<br>どこ行く？</h1>'
 FIX_MARK='/* tq-outing-hero-fix:v4:dolphin-centered */'
+FOCAL_JSON_RE=re.compile(r'"focalPoint"\s*:\s*\{\s*"x"\s*:\s*[0-9.]+\s*,\s*"y"\s*:\s*[0-9.]+\s*\}')
+STYLE_POS_RE=re.compile(r'style="object-position:[^"]+"')
+DATA_POS_RE=re.compile(r'data-object-position="[^"]+"')
 AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
 OUT=pathlib.Path(os.environ.get('TQ_OUTING_V4_RESULT_PATH','/tmp/outing-v4-result.json'))
 writes=0
@@ -30,7 +33,7 @@ CSS='''/* tq-outing-hero-fix:v4:dolphin-centered */
 
 def req(path,method='GET',data=None,retries=4):
     global writes
-    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v4-live-fix/1.0'}
+    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v4-live-fix/1.1'}
     body=None
     if data is not None:
         body=json.dumps(data,ensure_ascii=False).encode('utf-8')
@@ -76,7 +79,8 @@ def checks(text, rendered_text=''):
         'forced_heading_once': text.count(NEW_H1)==1,
         'old_heading_gone': OLD_H1 not in text,
         'focal_json': '"focalPoint":{"x":0.58,"y":0.45}' in text,
-        'focal_inline_twice': text.count('58% 45%')==2,
+        'focal_style': 'style="object-position:58% 45%"' in text,
+        'focal_data': 'data-object-position="58% 45%"' in text,
         'center_rule': '.tq-outing-v3.alignfull{' in text and 'margin-left:auto!important' in text and 'margin-right:auto!important' in text,
         'five_details': text.count('class="wp-block-details tq-accordion ') == 5,
         'far_group': 'ちょっと遠くへ' in text,
@@ -95,17 +99,20 @@ if FIX_MARK in before_raw:
     raise RuntimeError('OUTING_V4_ALREADY_PRESENT')
 if before_raw.count('<style>')<1:
     raise RuntimeError('OUTING_V4_STYLE_INSERTION_POINT_MISSING')
-if before_raw.count('"focalPoint":{"x":0.5,"y":0.55}')!=1:
-    raise RuntimeError('OUTING_V4_FOCAL_JSON_MISMATCH')
-if before_raw.count('50% 55%')!=2:
-    raise RuntimeError('OUTING_V4_FOCAL_INLINE_MISMATCH')
+if len(FOCAL_JSON_RE.findall(before_raw))!=1:
+    raise RuntimeError('OUTING_V4_FOCAL_JSON_COUNT_MISMATCH')
+if len(STYLE_POS_RE.findall(before_raw))!=1 or len(DATA_POS_RE.findall(before_raw))!=1:
+    raise RuntimeError('OUTING_V4_FOCAL_INLINE_COUNT_MISMATCH')
 
 patched=before_raw
 patched=patched.replace('<style>','<style>\n'+CSS,1)
 patched=patched.replace(OLD_HERO,NEW_HERO)
 patched=patched.replace(OLD_H1,NEW_H1)
-patched=patched.replace('"focalPoint":{"x":0.5,"y":0.55}','"focalPoint":{"x":0.58,"y":0.45}',1)
-patched=patched.replace('50% 55%','58% 45%')
+patched,n_json=FOCAL_JSON_RE.subn('"focalPoint":{"x":0.58,"y":0.45}',patched,count=1)
+patched,n_style=STYLE_POS_RE.subn('style="object-position:58% 45%"',patched,count=1)
+patched,n_data=DATA_POS_RE.subn('data-object-position="58% 45%"',patched,count=1)
+if (n_json,n_style,n_data)!=(1,1,1):
+    raise RuntimeError('OUTING_V4_FOCAL_REPLACE_FAILED')
 pre=checks(patched)
 if not all(pre.values()):
     raise RuntimeError('OUTING_V4_PREWRITE_CHECK_FAILED '+json.dumps(pre,ensure_ascii=False))
