@@ -30,12 +30,23 @@ for old, new in links.items():
     elif new not in content:
         raise SystemExit(f'HOMEPAGE_LINK_TARGET_MISSING old={old} new={new}')
 
-# Remove the old viewport-unit full-width workaround. Later stable v4/v5 rules
-# already make the homepage full width using percentages and parent sizing.
+# Remove old viewport-unit full-width workarounds. The later v4/v5 rules already
+# make the homepage full width using parent sizing and percentages, so these are
+# redundant and are the source of the editor/mobile width recalculation wobble.
 content = content.replace(
     '  width:100vw;\n  margin-left:calc(50% - 50vw);',
     '  width:100%;\n  max-width:100%;\n  margin-left:0;\n  margin-right:0;',
     1,
+)
+for start, end in [
+    ('MOBILE VIEWPORT CENTER FIX v2', 'MOBILE FULL-WIDTH FIX v3'),
+]:
+    pass
+content = re.sub(
+    r'\n?/\* MOBILE VIEWPORT CENTER FIX v2 \*/.*?(?=/\* MOBILE FULL-WIDTH FIX v3 \*/)',
+    '\n',
+    content,
+    flags=re.S,
 )
 content = re.sub(
     r'\n?/\* MOBILE FULL-WIDTH FIX v3 \*/.*?/\* END MOBILE FULL-WIDTH FIX v3 \*/\n?',
