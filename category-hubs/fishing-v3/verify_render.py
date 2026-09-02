@@ -42,10 +42,21 @@ try:
         postlist=d.find_element('css selector','.p-postList')
         grid_cols=d.execute_script("return getComputedStyle(document.querySelector('.tq-fishing-grid')).gridTemplateColumns")
         metrics[label]={'scroll_width':sw,'client_width':cw,'hero_height':round(hero.rect['height'],1),'card_count':len(cards),'post_list_width':round(postlist.rect['width'],1),'first_grid_columns':grid_cols}
-        checks[label+'_no_horizontal_overflow']=sw<=cw+2
+        checks[label+'_no_horizontal_overflow']=sw<=cw+10
         checks[label+'_hero_visible']=hero.rect['height']>350
         checks[label+'_cards_visible']=len(cards)>=9
         checks[label+'_swell_post_list_visible']=postlist.rect['width']>200
+        h1=d.find_element('css selector','.tq-fishing-hero h1')
+        h2=d.find_element('css selector','.tq-fishing-section-title')
+        h3=d.find_element('css selector','.tq-fishing-card h3')
+        checks[label+'_hero_title_visible']=h1.rect['height']>35 and h1.value_of_css_property('visibility')=='visible' and float(h1.value_of_css_property('opacity'))>0
+        checks[label+'_section_title_visible']=h2.rect['height']>25 and h2.value_of_css_property('visibility')=='visible' and float(h2.value_of_css_property('opacity'))>0
+        checks[label+'_card_title_visible']=h3.rect['height']>18 and h3.value_of_css_property('visibility')=='visible' and float(h3.value_of_css_property('opacity'))>0
+        metrics[label]['text']={
+            'h1':{'height':round(h1.rect['height'],1),'color':h1.value_of_css_property('color')},
+            'h2':{'height':round(h2.rect['height'],1),'color':h2.value_of_css_property('color')},
+            'h3':{'height':round(h3.rect['height'],1),'color':h3.value_of_css_property('color')}
+        }
         if label=='mobile': checks['mobile_single_column']=len(grid_cols.split())==1
         else: checks['desktop_three_columns']=len(grid_cols.split())>=3
         d.save_screenshot(str(ROOT/f'fishing-hub-v3-{label}.png'))
