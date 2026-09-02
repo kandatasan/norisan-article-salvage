@@ -1,1 +1,0 @@
-Retry header deployment after transient WordPress REST timeout.
