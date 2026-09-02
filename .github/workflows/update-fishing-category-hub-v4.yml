@@ -1,0 +1,83 @@
+name: Update fishing category hub v4 accordion
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-fishing-category-hub-v4.yml'
+      - 'category-hubs/fishing-v4/**'
+permissions:
+  contents: read
+  issues: write
+jobs:
+  update-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate source
+        run: |
+          python -m py_compile category-hubs/fishing-v4/deploy.py category-hubs/fishing-v4/verify_render.py
+          grep -q 'tsurikue-category-hub:v4:fishing-accordion' category-hubs/fishing-v4/content.template.html
+          grep -q 'tq-fishing-auto-index:v4' category-hubs/fishing-v4/content.template.html
+          test "$(grep -c '<!-- wp:details ' category-hubs/fishing-v4/content.template.html)" -eq 4
+          test "$(grep -c '<!-- wp:html -->' category-hubs/fishing-v4/content.template.html)" -eq 1
+          grep -q '"catID":"1"' category-hubs/fishing-v4/content.template.html
+      - name: Update fishing draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing-v4/deploy.py | tee fishing-v4-deploy-audit.json
+          test -s fishing-v4-deploy-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('fishing-v4-deploy-audit.json',encoding='utf-8'))
+          assert d['page_id']==3316
+          assert d['slug']=='fishing-guide'
+          assert d['status']=='draft'
+          assert d['public_before']==d['public_after']
+          assert all(d['checks'].values())
+          PY
+      - name: Install Japanese font and Selenium
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          python -m pip install --disable-pip-version-check selenium
+      - name: PC and mobile render check
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing-v4/verify_render.py | tee fishing-v4-render-console.json
+          test -s fishing-v4-render-check.json
+      - name: Upload audit and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-category-hub-v4-audit
+          path: |
+            fishing-v4-deploy-audit.json
+            fishing-v4-render-check.json
+            fishing-v4-render-console.json
+            fishing-v4-rendered.html
+            fishing-v4-desktop-closed.png
+            fishing-v4-desktop-open.png
+            fishing-v4-mobile-closed.png
+      - name: Log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Fishing category hub v4 — accordion rebuild'
+            for f in fishing-v4-deploy-audit.json fishing-v4-render-check.json; do
+              if [ -s "$f" ]; then echo; echo '```json'; cat "$f"; echo '```'; fi
+            done
+          } >/tmp/fishing-v4.md
+          gh issue comment 22 --body-file /tmp/fishing-v4.md
