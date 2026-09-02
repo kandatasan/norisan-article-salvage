@@ -12,7 +12,7 @@ NEW_HERO='https://tsurikue.com/wp-content/uploads/2026/09/img_2419.jpg'
 OLD_H1='<h1 class="wp-block-heading">今日は、どこ行く？</h1>'
 NEW_H1='<h1 class="wp-block-heading">今日は、<br>どこ行く？</h1>'
 FIX_MARK='/* tq-outing-hero-fix:v4:dolphin-centered */'
-FOCAL_JSON_RE=re.compile(r'"focalPoint"\s*:\s*\{\s*"x"\s*:\s*[0-9.]+\s*,\s*"y"\s*:\s*[0-9.]+\s*\}')
+FOCAL_JSON_RE=re.compile(r'"focalPoint"\s*:\s*\{\s*"x"\s*:\s*"?([0-9.]+)"?\s*,\s*"y"\s*:\s*"?([0-9.]+)"?\s*\}')
 STYLE_POS_RE=re.compile(r'style="object-position:[^"]+"')
 DATA_POS_RE=re.compile(r'data-object-position="[^"]+"')
 AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
@@ -33,7 +33,7 @@ CSS='''/* tq-outing-hero-fix:v4:dolphin-centered */
 
 def req(path,method='GET',data=None,retries=4):
     global writes
-    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v4-live-fix/1.1'}
+    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v4-live-fix/1.2'}
     body=None
     if data is not None:
         body=json.dumps(data,ensure_ascii=False).encode('utf-8')
@@ -69,6 +69,12 @@ def counts():
     _,p=req('/posts?status=publish&per_page=1&_fields=id')
     _,g=req('/pages?status=publish&per_page=1&_fields=id')
     return {'posts':int(p or 0),'pages':int(g or 0)}
+def focal_json_ok(text):
+    matches=FOCAL_JSON_RE.findall(text)
+    if len(matches)!=1:
+        return False
+    x,y=map(float,matches[0])
+    return abs(x-0.58)<=0.005 and abs(y-0.45)<=0.005
 
 
 def checks(text, rendered_text=''):
@@ -78,7 +84,7 @@ def checks(text, rendered_text=''):
         'old_hero_gone': OLD_HERO not in text,
         'forced_heading_once': text.count(NEW_H1)==1,
         'old_heading_gone': OLD_H1 not in text,
-        'focal_json': '"focalPoint":{"x":0.58,"y":0.45}' in text,
+        'focal_json_numeric': focal_json_ok(text),
         'focal_style': 'style="object-position:58% 45%"' in text,
         'focal_data': 'data-object-position="58% 45%"' in text,
         'center_rule': '.tq-outing-v3.alignfull{' in text and 'margin-left:auto!important' in text and 'margin-right:auto!important' in text,
