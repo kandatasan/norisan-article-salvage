@@ -1,0 +1,66 @@
+name: Audit outing v2 inputs 20260902
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-outing-v2-20260902.yml']
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read WordPress only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' | tee /tmp/outing-v2-audit.json
+          import base64,hashlib,json,os,urllib.parse,urllib.request
+          SITE='https://tsurikue.com'
+          tok=base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          H={'Authorization':'Basic '+tok,'Accept':'application/json','User-Agent':'tsurikue-outing-v2-audit/1.0'}
+          def get(path,params=None):
+              if params: path += '?' + urllib.parse.urlencode(params)
+              r=urllib.request.Request(SITE+path,headers=H,method='GET')
+              with urllib.request.urlopen(r,timeout=60) as x:return json.loads(x.read().decode()),dict(x.headers)
+          page,_=get('/wp-json/wp/v2/pages/3154',{'context':'edit','_fields':'id,slug,status,title,content,link'})
+          cats,_=get('/wp-json/wp/v2/categories',{'context':'edit','per_page':100,'hide_empty':'false','_fields':'id,name,slug,parent,count,link'})
+          tags,_=get('/wp-json/wp/v2/tags',{'context':'edit','per_page':100,'hide_empty':'false','_fields':'id,name,slug,count,link'})
+          outing=next((c for c in cats if c['slug']=='sightseeing-leisure'),None)
+          if not outing: raise SystemExit('OUTING_CATEGORY_NOT_FOUND')
+          posts,_=get('/wp-json/wp/v2/posts',{'context':'edit','status':'publish','categories':outing['id'],'per_page':100,'_fields':'id,slug,title,tags,categories,link,date'})
+          wanted=['hiroshima','etajima','yamaguchi','sanin','road-trip','stay','family-outing','experience-spot']
+          tagmap={t['slug']:t for t in tags if t['slug'] in wanted}
+          if set(tagmap)!=set(wanted): raise SystemExit('MISSING_TAGS '+repr(sorted(set(wanted)-set(tagmap))))
+          counts={s:sum(1 for p in posts if tagmap[s]['id'] in p.get('tags',[])) for s in wanted}
+          content=(page.get('content') or {}).get('raw') or ''
+          report={'ok':True,'page':{'id':page['id'],'slug':page['slug'],'status':page['status'],'link':page['link'],'content_sha256':hashlib.sha256(content.encode()).hexdigest(),'html_blocks':content.count('<!-- wp:html -->'),'group_blocks':content.count('<!-- wp:group')},'outing_category':outing,'published_outing_posts':len(posts),'tags':{s:{'id':tagmap[s]['id'],'name':tagmap[s]['name'],'count_total':tagmap[s]['count'],'count_in_outing':counts[s],'link':tagmap[s]['link']} for s in wanted},'public_write_count':0,'wordpress_write_count':0}
+          print(json.dumps(report,ensure_ascii=False,indent=2))
+          PY
+      - name: Record audit
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Outing v2 read-only audit'
+            echo '```json'
+            cat /tmp/outing-v2-audit.json
+            echo '```'
+          } >/tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        with:
+          name: outing-v2-audit
+          path: /tmp/outing-v2-audit.json
