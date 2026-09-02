@@ -31,23 +31,29 @@ try:
         scroll=d.execute_script('return document.documentElement.scrollWidth')
         client=d.execute_script('return document.documentElement.clientWidth')
         hrefs=[a.get_attribute('href') for a in links]
+        rects=[c.rect for c in cards]
         hit=[]; pseudo=[]
         for c,a,target in zip(cards,links,TARGETS):
+            # elementFromPoint() accepts viewport coordinates. Make each card
+            # visible before testing its top-left, center and bottom-right hit areas.
+            d.execute_script("arguments[0].scrollIntoView({block:'center',inline:'nearest'});",c)
+            time.sleep(.12)
             info=d.execute_script('''
                 const card=arguments[0], link=arguments[1];
                 const r=card.getBoundingClientRect();
                 const pts=[[.08,.10],[.50,.50],[.92,.88]];
                 const hits=pts.map(([px,py])=>{
-                  const el=document.elementFromPoint(r.left+r.width*px,r.top+r.height*py);
+                  const x=r.left+r.width*px, y=r.top+r.height*py;
+                  if(x<0 || y<0 || x>=window.innerWidth || y>=window.innerHeight) return false;
+                  const el=document.elementFromPoint(x,y);
                   const anchor=el && el.closest ? el.closest('a') : null;
                   return !!anchor && anchor===link;
                 });
                 const ps=getComputedStyle(link,'::after');
-                return {hits:hits,pseudoWidth:parseFloat(ps.width)||0,pseudoHeight:parseFloat(ps.height)||0,cardWidth:r.width,cardHeight:r.height,content:ps.content,position:ps.position};
+                return {hits:hits,pseudoWidth:parseFloat(ps.width)||0,pseudoHeight:parseFloat(ps.height)||0,cardWidth:r.width,cardHeight:r.height,content:ps.content,position:ps.position,viewportRect:{left:r.left,top:r.top,right:r.right,bottom:r.bottom}};
             ''',c,a)
             hit.append(all(info['hits']))
             pseudo.append(info)
-        rects=[c.rect for c in cards]
         metrics[label]={
             'scroll_width':scroll,'client_width':client,'h1_font':float(h1.value_of_css_property('font-size').replace('px','')),
             'card_rects':[{'x':round(r['x'],1),'y':round(r['y'],1),'w':round(r['width'],1),'h':round(r['height'],1)} for r in rects],
@@ -63,6 +69,8 @@ try:
             checks['desktop_four_columns']=max(abs(rects[i]['y']-rects[0]['y']) for i in range(4))<4
         else:
             checks['mobile_two_columns']=abs(rects[0]['y']-rects[1]['y'])<4 and rects[2]['y']>rects[0]['y']+rects[0]['height']-4
+        d.execute_script('window.scrollTo(0,0)')
+        time.sleep(.15)
         d.save_screenshot(str(ROOT/f'homepage-complete-v2-{label}.png'))
 finally:
     d.quit()
