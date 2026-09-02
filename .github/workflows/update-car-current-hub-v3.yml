@@ -1,0 +1,90 @@
+name: Update current car hub v3 preview
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-car-current-hub-v3.yml'
+      - 'category-hubs/car-current-v3/**'
+permissions:
+  contents: read
+  issues: write
+jobs:
+  update-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile category-hubs/car-current-v3/deploy.py category-hubs/car-current-v3/verify_render.py
+          grep -q 'tsurikue-category-hub:v3:car-current-improved' category-hubs/car-current-v3/content.template.html
+          test "$(grep -c '<!-- wp:html -->' category-hubs/car-current-v3/content.template.html)" -eq 1
+          test "$(grep -c '<!-- wp:details ' category-hubs/car-current-v3/content.template.html)" -eq 4
+          test "$(grep -c 'class="tq-pick"' category-hubs/car-current-v3/content.template.html)" -eq 4
+          test "$(grep -c 'class="tq-stat"' category-hubs/car-current-v3/content.template.html)" -eq 4
+          grep -q '"catID":"10"' category-hubs/car-current-v3/content.template.html
+          ! grep -q 'ランドクルーザーFJ' category-hubs/car-current-v3/content.template.html
+      - name: Update preview draft only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python category-hubs/car-current-v3/deploy.py | tee car-current-v3-deploy-audit.json
+          test -s car-current-v3-deploy-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('car-current-v3-deploy-audit.json',encoding='utf-8'))
+          assert d['ok'] is True
+          assert d['page_id']==3350
+          assert d['status']=='draft'
+          assert d['live_page']['id']==3294 and d['live_page']['unchanged'] is True
+          assert d['public_before']==d['public_after']
+          assert all(d['checks'].values())
+          PY
+      - name: Install Japanese font and Selenium
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          python -m pip install --disable-pip-version-check selenium
+      - name: PC and mobile render check
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python category-hubs/car-current-v3/verify_render.py | tee car-current-v3-render-console.json
+          test -s car-current-v3-render-check.json
+      - name: Upload audit and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: car-current-hub-v3-audit
+          path: |
+            car-current-v3-deploy-audit.json
+            car-current-v3-render-check.json
+            car-current-v3-render-console.json
+            car-current-v3-rendered.html
+            car-current-v3-desktop-closed.png
+            car-current-v3-desktop-open.png
+            car-current-v3-mobile-closed.png
+      - name: Log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Car category hub v3 — current UX-focused usability pass'
+            for f in car-current-v3-deploy-audit.json car-current-v3-render-check.json; do
+              if [ -s "$f" ]; then echo; echo '```json'; cat "$f"; echo '```'; fi
+            done
+          } >/tmp/car-current-v3.md
+          gh issue comment 22 --body-file /tmp/car-current-v3.md
