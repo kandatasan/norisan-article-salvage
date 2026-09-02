@@ -1,0 +1,154 @@
+name: Apply sitewide tag plan 20260902
+
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/apply-sitewide-tag-plan-20260902.yml']
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Preflight and generate 71 guarded configs
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import base64,hashlib,html,json,os,urllib.parse,urllib.request
+          from pathlib import Path
+          SITE='https://tsurikue.com'
+          PLAN=[(1883,'aoriika-nikki',['fd','sa']),(1887,'etajima-sightseeing',['et','dr']),(1892,'higashihiroshima-ramen',['hi','ra']),(1911,'hiroshima-bokujyou',['hi','fa']),(1939,'hiroshima-sanin-1night-2days',['sa','dr']),(1955,'sera-sightseeing',['hi','dr']),(1996,'serakankounokotsu',['hi','fa']),(2011,'yuki-town-drive',['hi','fa']),(2026,'yuki-hotaru',['hi']),(2041,'hiroshima-sightseeing',['hi','dr']),(2063,'hiroshima-hajimarinoteras',['et']),(2075,'uminos-spa-resort',['et','st']),(2096,'oliveoil',['et']),(2115,'mamegashima',['et']),(2125,'human-beach-nagase',['et']),(2135,'kantan-aoriika',['fh']),(2152,'aoriika-oisiiyo',['ce']),(2157,'inkonohane-tsuretayo',['ex','fd']),(2180,'irohasushi',['hi','se']),(2222,'ux-resale',['sl']),(2240,'ux-mitsumori',['bu']),(2329,'ux300h',['bu','ho']),(2350,'kanritsuriba',['fd']),(2358,'everyman-iiyo',['fg']),(2391,'trout-cooking',['ce']),(2408,'muvalley',['ya','xp']),(2437,'motonosumi',['ya']),(2456,'kulabotaisyoukan',['ya','st']),(2479,'tsunoshima',['ya','dr']),(2517,'ux-koukai',['ho']),(2530,'lexus-spindle-grille-carwash',['wa']),(2575,'ccwatergold',['wa']),(2621,'agetate-tenpura-hongo',['hi']),(2622,'catfish',['fh']),(2623,'chibou',['hi','ex']),(2625,'gekiyasu-metal-vibration',['fg']),(2628,'gopro-jidoribou',['ex','fg']),(2629,'gulp-powder',['ex']),(2630,'gulpalivepowder',['ex']),(2632,'hiroshima-gourmet',['hi']),(2633,'hiroshima-koorogi',['hi','ex']),(2635,'hiroshima-oita-1night-2days-drive',['dr']),(2639,'komugikodesakanatsureruyo',['ex']),(2640,'kotamagai-seafood-gathering',['ce','sa']),(2641,'kotamagairyouri',['ce','sa']),(2644,'matubagani',['sa','se']),(2647,'orizuru-tower',['hi','xp']),(2651,'sabiki-beginner',['fh']),(2653,'sayori',['fd','et']),(2654,'sayori-taberu',['ce','et']),(2655,'sayori-tsurikata',['fh']),(2656,'shiosoba-maeda-hiroshima',['hi','ra']),(2657,'totoya-iiyo',['sa','st']),(2658,'tottori-drive',['sa','dr']),(2659,'tougorouiwashi',['ce']),(2660,'tsureruurawaza',['ex']),(2664,'yamaguchi-drive',['ya','dr']),(2665,'yariika-fishing',['fh','sa']),(2870,'lexus-ux-review',['ho','us']),(2874,'lexus-ux-poor',['ho']),(2881,'lexus-ux-buyer',['bu']),(2886,'lexus-ux-size',['us']),(2897,'lexus-ux-interior',['ho','us']),(2902,'lexus-ux-rear-seat',['us']),(2907,'lexus-ux-cargo',['us']),(2927,'dqisland',['xp']),(2941,'saijo-sakagura-dori',['hi','xp']),(2948,'lexus-ux-used',['bu']),(2956,'lexus-ux-price',['bu']),(2962,'lexus-ux-discount',['bu']),(2975,'lexus-ux-model-change',['bu'])]
+          TAGS={'fh':('釣り方','fishing-howto'),'fd':('釣り日記','fishing-diary'),'ex':('実験','experiment'),'fg':('釣具レビュー','fishing-gear'),'ce':('とって食べる','catch-and-eat'),'hi':('広島','hiroshima'),'et':('江田島','etajima'),'ya':('山口','yamaguchi'),'sa':('山陰','sanin'),'dr':('ドライブ','road-trip'),'st':('宿泊','stay'),'fa':('子どもと遊ぶ','family-outing'),'xp':('体験スポット','experience-spot'),'ra':('ラーメン','ramen'),'se':('海鮮','seafood'),'bu':('買う','buy-car'),'us':('使い勝手','car-usability'),'ho':('本音','honest-review'),'wa':('洗車','car-wash'),'sl':('売る','sell-car')}
+          tok=base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          H={'Authorization':'Basic '+tok,'Accept':'application/json','User-Agent':'tsurikue-sitewide-tag-preflight/1.0'}
+          def get(url):
+              r=urllib.request.Request(url,headers=H,method='GET')
+              with urllib.request.urlopen(r,timeout=60) as x:return json.loads(x.read().decode()),dict(x.headers)
+          def all_rows(kind,params):
+              out=[];page=1
+              while True:
+                  q=urllib.parse.urlencode({**params,'per_page':100,'page':page})
+                  rows,h=get(f"{SITE}/wp-json/wp/v2/{kind}?{q}");out+=rows
+                  if page>=int(h.get('X-WP-TotalPages','1')):return out
+                  page+=1
+          fields='id,slug,status,title,content,featured_media,categories,tags'
+          posts=all_rows('posts',{'context':'edit','status':'publish','_fields':fields})
+          byid={int(p['id']):p for p in posts};expected={pid:slug for pid,slug,_ in PLAN}
+          if set(byid)!=set(expected):raise SystemExit('PUBLISHED_POST_SET_MISMATCH '+repr((sorted(set(byid)-set(expected)),sorted(set(expected)-set(byid)))))
+          bad=[(pid,byid[pid]['slug'],slug) for pid,slug,_ in PLAN if byid[pid]['slug']!=slug]
+          if bad:raise SystemExit('SLUG_MISMATCH '+repr(bad))
+          nonempty={pid:p.get('tags') for pid,p in byid.items() if p.get('tags')}
+          if nonempty:raise SystemExit('EXPECTED_ZERO_EXISTING_POST_TAGS '+repr(nonempty))
+          terms=all_rows('tags',{'context':'edit','hide_empty':'false','_fields':'id,name,slug'})
+          bn={html.unescape(t['name']).casefold():t for t in terms};bs={t['slug'].casefold():t for t in terms};conflicts=[]
+          for key,(name,slug) in TAGS.items():
+              a=bn.get(html.unescape(name).casefold());b=bs.get(slug.casefold())
+              if a and a['slug'].casefold()!=slug.casefold():conflicts.append((name,slug,'name',a))
+              if b and html.unescape(b['name']).casefold()!=html.unescape(name).casefold():conflicts.append((name,slug,'slug',b))
+              if a and b and a['id']!=b['id']:conflicts.append((name,slug,'split',a,b))
+          if conflicts:raise SystemExit('TAG_CONFLICTS '+repr(conflicts))
+          def raw(x):return x.get('raw') if isinstance(x,dict) else x
+          snap={str(pid):{'slug':p['slug'],'status':p['status'],'title':raw(p['title']),'content_sha':hashlib.sha256((raw(p['content']) or '').encode()).hexdigest(),'featured_media':p.get('featured_media',0),'categories':p.get('categories',[]),'tags':p.get('tags',[])} for pid,p in byid.items()}
+          Path('/tmp/sitewide-tag-before.json').write_text(json.dumps(snap,ensure_ascii=False),encoding='utf-8')
+          root=Path('/tmp/tag-configs');root.mkdir()
+          for pid,slug,keys in PLAN:
+              cfg={'post_id':pid,'slug':slug,'expected_status':'publish','mode':'add_only','allow_create_tags':True,'tags':[{'name':TAGS[k][0],'slug':TAGS[k][1]} for k in keys]}
+              (root/f'{pid}.json').write_text(json.dumps(cfg,ensure_ascii=False),encoding='utf-8')
+          Path('/tmp/sitewide-plan.json').write_text(json.dumps({str(pid):[TAGS[k][1] for k in keys] for pid,_,keys in PLAN},ensure_ascii=False),encoding='utf-8')
+          print(json.dumps({'ok':True,'published_posts':len(posts),'configs':len(PLAN),'tag_specs':len(TAGS)},ensure_ascii=False))
+          PY
+      - name: Apply guarded add-only patches
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          for config in /tmp/tag-configs/*.json; do
+            python scripts/apply_tag_patch_once.py --config "$config"
+          done
+      - name: Verify exact final state
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' | tee /tmp/sitewide-tag-final.json
+          import base64,hashlib,json,os,urllib.request
+          from pathlib import Path
+          SITE='https://tsurikue.com';before=json.loads(Path('/tmp/sitewide-tag-before.json').read_text());plan=json.loads(Path('/tmp/sitewide-plan.json').read_text())
+          tok=base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode();H={'Authorization':'Basic '+tok,'Accept':'application/json','User-Agent':'tsurikue-sitewide-tag-verify/1.0'}
+          def get(path):
+              r=urllib.request.Request(SITE+path,headers=H,method='GET')
+              with urllib.request.urlopen(r,timeout=60) as x:return json.loads(x.read().decode()),dict(x.headers)
+          def raw(x):return x.get('raw') if isinstance(x,dict) else x
+          for pid,s in before.items():
+              p,_=get(f"/wp-json/wp/v2/posts/{pid}?context=edit&_fields=id,slug,status,title,content,featured_media,categories,tags")
+              immutable=(p['slug']==s['slug'] and p['status']==s['status'] and raw(p['title'])==s['title'] and hashlib.sha256((raw(p['content']) or '').encode()).hexdigest()==s['content_sha'] and p.get('featured_media',0)==s['featured_media'] and p.get('categories',[])==s['categories'])
+              if not immutable:raise SystemExit('IMMUTABLE_CHANGED '+pid)
+              slugs=[]
+              for tid in p.get('tags',[]):
+                  row,_=get(f"/wp-json/wp/v2/tags/{tid}?context=edit&_fields=id,name,slug");slugs.append(row['slug'])
+              if sorted(slugs)!=sorted(plan[pid]):raise SystemExit('TAG_SET_MISMATCH '+pid+' '+repr((slugs,plan[pid])))
+          _,h=get('/wp-json/wp/v2/posts?status=publish&per_page=1&_fields=id')
+          if int(h.get('X-WP-Total','0'))!=71:raise SystemExit('PUBLISHED_POST_COUNT_CHANGED')
+          print(json.dumps({'ok':True,'verified_posts':len(before),'all_exact':True,'content_changes':0,'category_changes':0,'status_changes':0},ensure_ascii=False))
+          PY
+      - name: Roll back post tags if failed
+        if: failure()
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          test -f /tmp/sitewide-tag-before.json || exit 0
+          python - <<'PY'
+          import base64,json,os,urllib.request
+          from pathlib import Path
+          SITE='https://tsurikue.com';snap=json.loads(Path('/tmp/sitewide-tag-before.json').read_text())
+          tok=base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          for pid,s in snap.items():
+              data=json.dumps({'tags':s['tags']}).encode()
+              r=urllib.request.Request(f"{SITE}/wp-json/wp/v2/posts/{pid}",data=data,headers={'Authorization':'Basic '+tok,'Content-Type':'application/json','User-Agent':'tsurikue-tag-rollback/1.0'},method='POST')
+              with urllib.request.urlopen(r,timeout=60) as x:x.read()
+          print('POST_TAG_ROLLBACK_COMPLETE')
+          PY
+      - name: Record audit
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Sitewide tag plan 2026-09-02: SUCCESS'
+            echo
+            echo '- published posts verified: **71/71**'
+            echo '- tag design: **20 tags**'
+            echo '- article content/category/status writes: **0**'
+            echo '- every post matches the approved 1-2 tag plan'
+          } >/tmp/tag-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/tag-comment.md
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sitewide-tag-plan-20260902-audit
+          path: |
+            /tmp/sitewide-tag-before.json
+            /tmp/sitewide-plan.json
+            /tmp/sitewide-tag-final.json
+            reports/
+          if-no-files-found: warn
