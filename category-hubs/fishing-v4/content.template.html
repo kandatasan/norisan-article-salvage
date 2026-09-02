@@ -1,0 +1,188 @@
+<!-- tsurikue-category-hub:v4:fishing-accordion -->
+<!-- wp:html -->
+<style>
+.tq-fishing-v4{--ink:#20262b;--muted:#6f7674;--line:#e4e8e5;--soft:#f5f7f4;--accent:#4f6f59;color:var(--ink)}
+.tq-fishing-v4 a{text-decoration:none}
+.tq-fishing-v4 .tq-inner{max-width:980px;margin:0 auto;padding-left:28px;padding-right:28px}
+.tq-fishing-v4 .tq-hero{min-height:470px!important}
+.tq-fishing-v4 .tq-hero .wp-block-cover__inner-container{width:min(980px,calc(100% - 56px));margin:0 auto}
+.tq-fishing-v4 .tq-hero-copy{max-width:650px}
+.tq-fishing-v4 .tq-hero-kicker{margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.18em;color:#fff!important}
+.tq-fishing-v4 .tq-hero h1{margin:0 0 18px!important;padding:0!important;background:none!important;border:0!important;font-size:48px!important;line-height:1.2!important;color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.tq-fishing-v4 .tq-hero-lead{max-width:620px;margin:0 0 12px;font-size:19px;line-height:1.8;font-weight:700;color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.tq-fishing-v4 .tq-hero-note{max-width:620px;margin:0;font-size:15px;line-height:1.9;color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.35)}
+.tq-fishing-v4 .tq-choose{padding-top:64px;padding-bottom:68px}
+.tq-fishing-v4 .tq-choose-intro{max-width:720px;margin:0 0 30px;font-size:16px;line-height:1.95;color:var(--muted)}
+.tq-fishing-v4 .tq-accordions{border-top:1px solid var(--line)}
+.tq-fishing-v4 .tq-accordion{margin:0!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important}
+.tq-fishing-v4 .tq-accordion summary{position:relative;display:flex;align-items:center;gap:12px;list-style:none;cursor:pointer;padding:24px 46px 24px 2px;font-size:24px;font-weight:700;line-height:1.4;color:var(--ink)}
+.tq-fishing-v4 .tq-accordion summary::-webkit-details-marker{display:none}
+.tq-fishing-v4 .tq-accordion summary::after{content:"＋";position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:24px;font-weight:400;color:var(--accent)}
+.tq-fishing-v4 .tq-accordion[open] summary::after{content:"−"}
+.tq-fishing-v4 .tq-count{margin-left:auto;font-size:12px;font-weight:700;color:var(--muted)}
+.tq-fishing-v4 .tq-accordion-copy{margin:0 0 16px!important;font-size:15px;line-height:1.9;color:var(--muted)!important}
+.tq-fishing-v4 .tq-auto-list{list-style:none;margin:0 0 24px!important;padding:0!important}
+.tq-fishing-v4 .tq-auto-list li{display:flex;align-items:flex-start;gap:12px;margin:0!important;padding:12px 0!important;border-top:1px dashed var(--line);line-height:1.65}
+.tq-fishing-v4 .tq-auto-list li:first-child{border-top:0}
+.tq-fishing-v4 .tq-auto-list a{color:var(--ink)!important;font-weight:600}
+.tq-fishing-v4 .tq-auto-list a:hover{text-decoration:underline}
+.tq-fishing-v4 .tq-method{flex:0 0 auto;display:inline-block;margin-top:2px;padding:2px 8px;border-radius:999px;background:var(--soft);font-size:11px;font-weight:700;color:var(--accent);white-space:nowrap}
+.tq-fishing-v4 .tq-latest{padding-top:58px;padding-bottom:60px;border-top:1px solid var(--line)}
+.tq-fishing-v4 h2.tq-section-title{margin:0 0 10px!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;font-size:30px!important;line-height:1.4!important;font-weight:700!important;color:var(--ink)!important}
+.tq-fishing-v4 h2.tq-section-title::before,.tq-fishing-v4 h2.tq-section-title::after{display:none!important;content:none!important}
+.tq-fishing-v4 .tq-section-lead{margin:0 0 28px!important;color:var(--muted)!important;line-height:1.9}
+.tq-fishing-v4 .tq-latest .p-postList{margin-top:24px}
+.tq-fishing-v4 .tq-final{text-align:center;padding-top:8px;padding-bottom:74px}
+.tq-fishing-v4 .tq-final .wp-block-button__link{border-radius:999px;padding:14px 26px;font-weight:700}
+@media(max-width:760px){
+.tq-fishing-v4 .tq-inner{padding-left:20px;padding-right:20px}
+.tq-fishing-v4 .tq-hero{min-height:410px!important}
+.tq-fishing-v4 .tq-hero .wp-block-cover__inner-container{width:calc(100% - 40px)}
+.tq-fishing-v4 .tq-hero h1{font-size:34px!important}
+.tq-fishing-v4 .tq-hero-lead{font-size:17px}
+.tq-fishing-v4 .tq-hero-note{font-size:14px}
+.tq-fishing-v4 .tq-choose{padding-top:44px;padding-bottom:48px}
+.tq-fishing-v4 .tq-choose-intro{font-size:15px;margin-bottom:20px}
+.tq-fishing-v4 .tq-accordion summary{padding:20px 42px 20px 0;font-size:20px}
+.tq-fishing-v4 .tq-count{font-size:11px}
+.tq-fishing-v4 .tq-accordion-copy{font-size:14px}
+.tq-fishing-v4 .tq-auto-list li{gap:8px;padding:11px 0!important}
+.tq-fishing-v4 .tq-method{font-size:10px}
+.tq-fishing-v4 .tq-latest{padding-top:44px;padding-bottom:46px}
+.tq-fishing-v4 h2.tq-section-title{font-size:24px!important}
+.tq-fishing-v4 .tq-final{padding-bottom:58px}
+}
+</style>
+<script>
+/* tq-fishing-auto-index:v4 */
+(function(){
+  const API='https://tsurikue.com/wp-json/wp/v2';
+  const decodeTitle=(html)=>{const t=document.createElement('textarea');t.innerHTML=html||'';return t.value;};
+  const tagName=(tag)=>((tag&&((tag.name||'')+' '+(tag.slug||'')))||'').toLowerCase();
+  const classify=(post,tagMap)=>{
+    const tags=(post.tags||[]).map(id=>tagName(tagMap[id])).join(' ');
+    if(/実験|experiment|(^|\s)lab(\s|$)/i.test(tags)) return 'experiment';
+    if(/釣り日記|釣行記|fishing.?diary|(^|\s)diary(\s|$)/i.test(tags)) return 'diary';
+    if(/釣り方|初心者|how.?to|beginner/i.test(tags)) return 'howto';
+    const title=decodeTitle(post.title&&post.title.rendered);
+    if(/実験|試して|試した|釣れる[？?]|効果は[？?]|激安|裏技|GoPro|GOPRO|ガルプ|小麦粉|羽で|粉/.test(title)) return 'experiment';
+    if(/釣り方|初心者|ガイド|初めて|初フライ|仕掛け|コツ/.test(title)) return 'howto';
+    if(/釣行記|体験記|釣り日記|釣行|爆釣/.test(title)) return 'diary';
+    if(/レビュー|インプレ/.test(title)) return 'howto';
+    return 'howto';
+  };
+  const method=(title)=>{
+    if(/サビキ/.test(title)) return 'サビキ';
+    if(/ヤリイカ/.test(title)) return 'ヤリイカ';
+    if(/アオリイカ|エギング/.test(title)) return 'アオリイカ';
+    if(/サヨリ/.test(title)) return 'サヨリ';
+    if(/ナマズ/.test(title)) return 'ナマズ';
+    if(/フライ|管理釣り場/.test(title)) return 'フライ';
+    if(/ルアー|ワーム/.test(title)) return 'ルアー';
+    return '釣り方';
+  };
+  const makeItem=(post,kind)=>{
+    const li=document.createElement('li');
+    const title=decodeTitle(post.title&&post.title.rendered);
+    if(kind==='howto'){const s=document.createElement('span');s.className='tq-method';s.textContent=method(title);li.appendChild(s);}
+    const a=document.createElement('a');a.href=post.link;a.textContent=title;li.appendChild(a);
+    return li;
+  };
+  const render=(kind,posts)=>{
+    const list=document.querySelector('.tq-auto-'+kind);
+    const count=document.querySelector('[data-count="'+kind+'"]');
+    if(!list) return;
+    list.innerHTML='';
+    posts.forEach(p=>list.appendChild(makeItem(p,kind)));
+    if(count) count.textContent=posts.length+'記事';
+  };
+  async function refresh(){
+    try{
+      const [posts,tags,wild]=await Promise.all([
+        fetch(API+'/posts?categories=1&status=publish&per_page=100&orderby=date&order=desc&_fields=id,slug,link,title,tags,date').then(r=>r.ok?r.json():Promise.reject(r.status)),
+        fetch(API+'/tags?per_page=100&hide_empty=false&_fields=id,name,slug').then(r=>r.ok?r.json():Promise.reject(r.status)),
+        fetch(API+'/posts?categories=5&status=publish&per_page=100&orderby=date&order=desc&_fields=id,slug,link,title,date').then(r=>r.ok?r.json():Promise.reject(r.status))
+      ]);
+      const tagMap={};tags.forEach(t=>tagMap[t.id]=t);
+      const groups={howto:[],experiment:[],diary:[]};
+      posts.forEach(p=>groups[classify(p,tagMap)].push(p));
+      render('howto',groups.howto);render('experiment',groups.experiment);render('diary',groups.diary);render('wild',wild);
+      document.documentElement.dataset.tqFishingAuto='ready';
+    }catch(e){document.documentElement.dataset.tqFishingAuto='fallback';}
+  }
+  if(document.readyState==='loading') document.addEventListener('DOMContentLoaded',refresh,{once:true}); else refresh();
+})();
+</script>
+<!-- /wp:html -->
+
+<!-- wp:group {"align":"full","className":"tq-fishing-v4","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull tq-fishing-v4">
+
+<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/06/IMG_9050-768x1024.jpeg","dimRatio":40,"overlayColor":"black","focalPoint":{"x":0.5,"y":0.56},"minHeight":470,"minHeightUnit":"px","contentPosition":"center center","className":"tq-hero"} -->
+<div class="wp-block-cover tq-hero" style="min-height:470px"><span aria-hidden="true" class="wp-block-cover__background has-black-background-color has-background-dim-40 has-background-dim"></span><img class="wp-block-cover__image-background" alt="手元の小さなルアーと、ランディングネットに入った魚" src="https://tsurikue.com/wp-content/uploads/2026/06/IMG_9050-768x1024.jpeg" style="object-position:50% 56%" data-object-fit="cover" data-object-position="50% 56%"/><div class="wp-block-cover__inner-container">
+<!-- wp:group {"className":"tq-hero-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-hero-copy">
+<!-- wp:paragraph {"className":"tq-hero-kicker"} --><p class="tq-hero-kicker">TSURIKUE! FISHING</p><!-- /wp:paragraph -->
+<!-- wp:heading {"level":1} --><h1 class="wp-block-heading">今日は、なに釣る？</h1><!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-hero-lead"} --><p class="tq-hero-lead">サビキでのんびり。イカを狙って海へ。<br>気になったら、ちょっと変なことも試してみる。</p><!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-hero-note"} --><p class="tq-hero-note">上手な釣りより、やってみて面白かった釣りを集めました。</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+</div></div>
+<!-- /wp:cover -->
+
+<!-- wp:group {"className":"tq-inner tq-choose","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-inner tq-choose">
+<!-- wp:paragraph {"className":"tq-choose-intro"} --><p class="tq-choose-intro">釣り方を探す。実験をのぞく。釣行記を読む。釣ったあとは食べる。<br>気になるところを開いてみてください。</p><!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-accordions","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-accordions">
+
+<!-- wp:details {"className":"tq-accordion tq-accordion-howto"} -->
+<details class="wp-block-details tq-accordion tq-accordion-howto"><summary>はじめての釣り・釣り方 <span class="tq-count" data-count="howto">{{HOWTO_COUNT}}記事</span></summary>
+<!-- wp:paragraph {"className":"tq-accordion-copy"} --><p class="tq-accordion-copy">まずは1匹。気になる釣りから始めよう。</p><!-- /wp:paragraph -->
+<!-- wp:list {"className":"tq-auto-list tq-auto-howto"} --><ul class="wp-block-list tq-auto-list tq-auto-howto">{{HOWTO_ITEMS}}</ul><!-- /wp:list -->
+</details>
+<!-- /wp:details -->
+
+<!-- wp:details {"className":"tq-accordion tq-accordion-experiment"} -->
+<details class="wp-block-details tq-accordion tq-accordion-experiment"><summary>実験 <span class="tq-count" data-count="experiment">{{EXPERIMENT_COUNT}}記事</span></summary>
+<!-- wp:paragraph {"className":"tq-accordion-copy"} --><p class="tq-accordion-copy">気になったので、やってみた。</p><!-- /wp:paragraph -->
+<!-- wp:list {"className":"tq-auto-list tq-auto-experiment"} --><ul class="wp-block-list tq-auto-list tq-auto-experiment">{{EXPERIMENT_ITEMS}}</ul><!-- /wp:list -->
+</details>
+<!-- /wp:details -->
+
+<!-- wp:details {"className":"tq-accordion tq-accordion-diary"} -->
+<details class="wp-block-details tq-accordion tq-accordion-diary"><summary>釣り日記 <span class="tq-count" data-count="diary">{{DIARY_COUNT}}記事</span></summary>
+<!-- wp:paragraph {"className":"tq-accordion-copy"} --><p class="tq-accordion-copy">釣れた日も、そうでもない日も。海や川で遊んだ記録。</p><!-- /wp:paragraph -->
+<!-- wp:list {"className":"tq-auto-list tq-auto-diary"} --><ul class="wp-block-list tq-auto-list tq-auto-diary">{{DIARY_ITEMS}}</ul><!-- /wp:list -->
+</details>
+<!-- /wp:details -->
+
+<!-- wp:details {"className":"tq-accordion tq-accordion-wild"} -->
+<details class="wp-block-details tq-accordion tq-accordion-wild"><summary>とったら食べる！ <span class="tq-count" data-count="wild">{{WILD_COUNT}}記事</span></summary>
+<!-- wp:paragraph {"className":"tq-accordion-copy"} --><p class="tq-accordion-copy">自分でとったら、うまさは別格。</p><!-- /wp:paragraph -->
+<!-- wp:list {"className":"tq-auto-list tq-auto-wild"} --><ul class="wp-block-list tq-auto-list tq-auto-wild">{{WILD_ITEMS}}</ul><!-- /wp:list -->
+</details>
+<!-- /wp:details -->
+
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-inner tq-latest","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-inner tq-latest">
+<!-- wp:heading {"className":"tq-section-title"} --><h2 class="wp-block-heading tq-section-title">最近の釣り。</h2><!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-section-lead"} --><p class="tq-section-lead">新しく遊んだものから。</p><!-- /wp:paragraph -->
+<!-- wp:loos/post-list {"catID":"1","catPos":"none","listCount":6,"spCol":"1","hTag":"h3"} /-->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-inner tq-final","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-inner tq-final">
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} --><div class="wp-block-buttons"><!-- wp:button {"className":"is-style-fill"} --><div class="wp-block-button is-style-fill"><a class="wp-block-button__link wp-element-button" href="https://tsurikue.com/category/fishing/">釣りの記事を全部見る →</a></div><!-- /wp:button --></div><!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+</div>
+<!-- /wp:group -->
