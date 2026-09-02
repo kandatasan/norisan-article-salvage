@@ -1,0 +1,26 @@
+name: Test tag patch tool
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/apply_tag_patch_once.py'
+      - 'tests/test_apply_tag_patch_once.py'
+      - '.github/workflows/apply-tag-patches-on-push.yml'
+      - '.github/workflows/test-tag-patch-tool.yml'
+      - 'tag-patches/README.md'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run tag patch safety tests
+        run: python -m unittest tests/test_apply_tag_patch_once.py -v
