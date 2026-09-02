@@ -21,19 +21,15 @@ writes=0
 
 CSS='''/* tq-outing-hero-fix:v4:dolphin-centered */
 .tq-outing-v3.alignfull{
-  margin-left:auto!important;
-  margin-right:auto!important;
-}
-.tq-outing-v3 .tq-hero{
-  margin-left:auto!important;
-  margin-right:auto!important;
+  width:auto!important;
+  max-width:none!important;
 }
 '''
 
 
 def req(path,method='GET',data=None,retries=4):
     global writes
-    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v4-live-fix/1.2'}
+    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v4-live-fix/1.3'}
     body=None
     if data is not None:
         body=json.dumps(data,ensure_ascii=False).encode('utf-8')
@@ -87,7 +83,7 @@ def checks(text, rendered_text=''):
         'focal_json_numeric': focal_json_ok(text),
         'focal_style': 'style="object-position:58% 45%"' in text,
         'focal_data': 'data-object-position="58% 45%"' in text,
-        'center_rule': '.tq-outing-v3.alignfull{' in text and 'margin-left:auto!important' in text and 'margin-right:auto!important' in text,
+        'alignfull_width_rule': '.tq-outing-v3.alignfull{' in text and 'width:auto!important' in text and 'max-width:none!important' in text,
         'five_details': text.count('class="wp-block-details tq-accordion ') == 5,
         'far_group': 'ちょっと遠くへ' in text,
         'no_viewport_hacks': not any(x in text for x in ['100vw','100dvw','50vw','50dvw']),
