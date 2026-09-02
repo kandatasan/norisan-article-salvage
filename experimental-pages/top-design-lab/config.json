@@ -3,6 +3,7 @@
   "title": "つりくえ！トップデザイン実験室",
   "marker": "<!-- tsurikue-experimental-page:v1:top-design-lab -->",
   "content_file": "content.html",
-  "expected_current_content_sha256": "8d01e3c0e8d4d5d37f65d380c092e0f071db8dfbeee9d52759088e569788ea93",
-  "media_host": "tsurikue.com"
+  "expected_current_content_sha256": "55b2ea7f399f317db24059a68b19382e4e07a34eda1eaa96b69602c58b97dc3c",
+  "media_host": "tsurikue.com",
+  "homepage_revision": "complete-v2-card-response-hub-links"
 }

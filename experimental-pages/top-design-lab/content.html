@@ -14,8 +14,10 @@ body.page-id-2983 .l-content{padding-top:0!important}
   --yellow:#f3b92f;
   --green:#e6eddc;
   --blue:#e3edf7;
-  width:100vw;
-  margin-left:calc(50% - 50vw);
+  width:100%;
+  max-width:100%;
+  margin-left:0;
+  margin-right:0;
   overflow:hidden;
   background:var(--paper);
   color:var(--ink);
@@ -220,22 +222,6 @@ body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-g
 .tq4 .tq4-hero-inner,.tq4 .tq4-section>.wp-block-group__inner-container,.tq4 .tq4-final>.wp-block-group__inner-container,.tq4 .tq4-wrap{width:min(1080px,91vw)!important;margin-left:auto!important;margin-right:auto!important}
 @media(max-width:560px){.tq4 .tq4-party{padding:8px 0 4px!important}.tq4 .tq4-party-image{max-width:360px!important}.tq4 .tq4-party-image img{max-width:360px!important;max-height:132px!important}}
 
-/* MOBILE VIEWPORT CENTER FIX v2 */
-body.page-id-2983{overflow-x:hidden!important}
-body.page-id-2983 .post_content{overflow:visible!important}
-body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4{width:100vw!important;max-width:100vw!important;position:relative!important;left:50%!important;transform:translateX(-50%)!important;margin-left:0!important;margin-right:0!important;box-sizing:border-box!important}
-body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfull,body.page-id-2983 .tq4>.wp-block-group.alignfull{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
-body.page-id-2983 .tq4 .tq4-party{width:100%!important;max-width:100%!important}
-@media(max-width:782px){body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4{width:100dvw!important;max-width:100dvw!important}}
-
-/* MOBILE FULL-WIDTH FIX v3 */
-html,body.page-id-2983{overflow-x:hidden!important}
-body.page-id-2983 .l-content,body.page-id-2983 .l-container,body.page-id-2983 .l-mainContent,body.page-id-2983 .post_content{max-width:none!important}
-body.page-id-2983 .post_content{width:100%!important;padding-left:0!important;padding-right:0!important}
-body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4,body.page-id-2983 .alignfull.tq4{width:100vw!important;max-width:100vw!important;margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;position:relative!important;left:auto!important;right:auto!important;transform:none!important;box-sizing:border-box!important}
-body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfull,body.page-id-2983 .tq4>.wp-block-group.alignfull,body.page-id-2983 .tq4 .tq4-party,body.page-id-2983 .tq4 .tq4-hero,body.page-id-2983 .tq4 .tq4-cats{width:100%!important;max-width:100%!important;margin-left:0!important;margin-right:0!important}
-@supports(width:100dvw){@media(max-width:782px){body.page-id-2983 .post_content>.tq4,body.page-id-2983 .post_content>.wp-block-group.tq4,body.page-id-2983 .alignfull.tq4{width:100dvw!important;max-width:100dvw!important;margin-left:calc(50% - 50dvw)!important;margin-right:calc(50% - 50dvw)!important}}}
-/* END MOBILE FULL-WIDTH FIX v3 */
 
 /* MOBILE OUTER PADDING FIX v4 */
 body.page-id-2983 .l-content{padding-left:0!important;padding-right:0!important;max-width:none!important}
@@ -380,6 +366,46 @@ body.page-id-2983 .tq4>.alignfull,body.page-id-2983 .tq4>.wp-block-cover.alignfu
   }
 }
 /* END TQ TOP PHOTO-FIRST REFRESH v1 */
+
+
+/* TQ TOP CARD RESPONSE + HUB LINKS v2 */
+/* The existing H3 anchor becomes the real hit target for the entire photo card. */
+.tq4 .tq4-cat{
+  position:relative!important;
+  isolation:isolate;
+  cursor:pointer;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+.tq4 .tq4-cat h3 a{
+  position:static!important;
+  -webkit-tap-highlight-color:transparent;
+}
+.tq4 .tq4-cat h3 a::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  z-index:6;
+  border-radius:inherit;
+  background:transparent;
+  transition:background-color .12s ease;
+}
+.tq4 .tq4-cat h3 a:active::after{background:rgba(255,255,255,.13)}
+@supports selector(.tq4-cat:has(h3 a:active)){
+  .tq4 .tq4-cat:has(h3 a:active){
+    transform:translateY(1px) scale(.985)!important;
+    box-shadow:0 5px 14px rgba(32,33,31,.10)!important;
+    transition-duration:.08s!important;
+  }
+}
+@media(hover:none){
+  .tq4 .tq4-cat:hover{transform:none;box-shadow:none}
+  .tq4 .tq4-cat:hover img{transform:none!important}
+}
+/* Keep the block editor editable; the stretched hit area is frontend-only. */
+.editor-styles-wrapper .tq4 .tq4-cat h3 a::after,
+.block-editor-block-list__layout .tq4 .tq4-cat h3 a::after{display:none!important}
+/* END TQ TOP CARD RESPONSE + HUB LINKS v2 */
 
 /* TQ HEADER DRAWER PROTOTYPE v1 */
 body:has(.tq4) #header{
@@ -599,10 +625,10 @@ body:has(.tq4) #header .l-header__menuBtn{
     <p class="tq-site-menu__eyebrow">TSURIKUE! / HOLIDAY MENU</p>
     <p class="tq-site-menu__title">今日は、<br>なにして遊ぶ？</p>
     <nav class="tq-site-menu__quest" aria-label="休日メニュー">
-      <a href="/category/sightseeing-leisure/"><small>GO OUT</small><strong>おでかけ</strong><span>遊び場・観光・温泉・旅行</span></a>
-      <a href="/category/gourmet/"><small>EAT</small><strong>グルメ</strong><span>街のごはん・旅先グルメ</span></a>
-      <a href="/category/fishing/"><small>FISH</small><strong>釣り</strong><span>気軽な釣り・野食・魚料理</span></a>
-      <a href="/category/car/"><small>CAR</small><strong>クルマ</strong><span>レクサスUX・洗車・カー用品</span></a>
+      <a href="/odekake/"><small>GO OUT</small><strong>おでかけ</strong><span>遊び場・観光・温泉・旅行</span></a>
+      <a href="/gourmet-guide/"><small>EAT</small><strong>グルメ</strong><span>街のごはん・旅先グルメ</span></a>
+      <a href="/fishing-guide/"><small>FISH</small><strong>釣り</strong><span>気軽な釣り・野食・魚料理</span></a>
+      <a href="/car-guide/"><small>CAR</small><strong>クルマ</strong><span>レクサスUX・洗車・カー用品</span></a>
     </nav>
     <div class="tq-site-menu__utility">
       <a href="/profile/">つりくえ！について</a>
@@ -613,10 +639,10 @@ body:has(.tq4) #header .l-header__menuBtn{
   </div>
 </div>
 <nav class="tq-site-nav" aria-label="つりくえ！メインナビ">
-  <a href="/category/sightseeing-leisure/">おでかけ</a>
-  <a href="/category/gourmet/">グルメ</a>
-  <a href="/category/fishing/">釣り</a>
-  <a href="/category/car/">クルマ</a>
+  <a href="/odekake/">おでかけ</a>
+  <a href="/gourmet-guide/">グルメ</a>
+  <a href="/fishing-guide/">釣り</a>
+  <a href="/car-guide/">クルマ</a>
   <a href="/profile/">ABOUT</a>
 </nav>
 <!-- /wp:html -->
@@ -681,7 +707,7 @@ body:has(.tq4) #header .l-header__menuBtn{
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading"><a href="/category/sightseeing-leisure/">おでかけ</a></h3>
+<h3 class="wp-block-heading"><a href="/odekake/">おでかけ</a></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-card-desc"} -->
@@ -701,7 +727,7 @@ body:has(.tq4) #header .l-header__menuBtn{
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading"><a href="/category/gourmet/">グルメ</a></h3>
+<h3 class="wp-block-heading"><a href="/gourmet-guide/">グルメ</a></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-card-desc"} -->
@@ -721,7 +747,7 @@ body:has(.tq4) #header .l-header__menuBtn{
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading"><a href="/category/fishing/">釣り</a></h3>
+<h3 class="wp-block-heading"><a href="/fishing-guide/">釣り</a></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-card-desc"} -->
@@ -741,7 +767,7 @@ body:has(.tq4) #header .l-header__menuBtn{
 <!-- /wp:paragraph -->
 
 <!-- wp:heading {"level":3} -->
-<h3 class="wp-block-heading"><a href="/category/car/">クルマ</a></h3>
+<h3 class="wp-block-heading"><a href="/car-guide/">クルマ</a></h3>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph {"className":"tq4-card-desc"} -->
@@ -938,19 +964,19 @@ body:has(.tq4) #header .l-header__menuBtn{
 
 <!-- wp:buttons {"className":"tq4-final-links"} -->
 <div class="wp-block-buttons tq4-final-links"><!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/category/sightseeing-leisure/">おでかけ</a></div>
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/odekake/">おでかけ</a></div>
 <!-- /wp:button -->
 
 <!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/category/gourmet/">グルメ</a></div>
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/gourmet-guide/">グルメ</a></div>
 <!-- /wp:button -->
 
 <!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/category/fishing/">釣り</a></div>
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/fishing-guide/">釣り</a></div>
 <!-- /wp:button -->
 
 <!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/category/car/">クルマ</a></div>
+<div class="wp-block-button"><a class="wp-block-button__link wp-element-button" href="/car-guide/">クルマ</a></div>
 <!-- /wp:button --></div>
 <!-- /wp:buttons --></div>
 <!-- /wp:group --></div>
