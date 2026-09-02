@@ -1,0 +1,126 @@
+<!-- tsurikue-category-hub:v2:car-model-first-preview -->
+<!-- wp:html -->
+<style>
+.tq-car-v2{--ink:#20262b;--muted:#6f7674;--line:#e4e8e5;--soft:#f5f7f4;--accent:#52697c;color:var(--ink)}
+.tq-car-v2 a{text-decoration:none}
+.tq-car-v2 .tq-inner{max-width:980px;margin:0 auto;padding-left:28px;padding-right:28px}
+.tq-car-v2 .tq-hero{min-height:470px!important}
+.tq-car-v2 .tq-hero .wp-block-cover__inner-container{width:min(980px,calc(100% - 56px));margin:0 auto}
+.tq-car-v2 .tq-hero-copy{max-width:690px}
+.tq-car-v2 .tq-hero-kicker{margin:0 0 12px;font-size:12px;font-weight:700;letter-spacing:.18em;color:#fff!important}
+.tq-car-v2 .tq-hero h1{margin:0 0 18px!important;padding:0!important;background:none!important;border:0!important;font-size:48px!important;line-height:1.2!important;color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.38)}
+.tq-car-v2 .tq-hero-lead{max-width:650px;margin:0 0 12px;font-size:19px;line-height:1.8;font-weight:700;color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.38)}
+.tq-car-v2 .tq-hero-note{max-width:650px;margin:0;font-size:15px;line-height:1.9;color:#fff!important;text-shadow:0 2px 18px rgba(0,0,0,.38)}
+.tq-car-v2 .tq-choose{padding-top:64px;padding-bottom:68px}
+.tq-car-v2 h2.tq-section-title{margin:0 0 10px!important;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;font-size:30px!important;line-height:1.4!important;font-weight:700!important;color:var(--ink)!important}
+.tq-car-v2 h2.tq-section-title::before,.tq-car-v2 h2.tq-section-title::after{display:none!important;content:none!important}
+.tq-car-v2 .tq-section-lead{max-width:720px;margin:0 0 30px!important;font-size:16px;line-height:1.95;color:var(--muted)!important}
+.tq-car-v2 .tq-accordions{border-top:1px solid var(--line)}
+.tq-car-v2 .tq-accordion{margin:0!important;border:0!important;border-bottom:1px solid var(--line)!important;border-radius:0!important;background:transparent!important}
+.tq-car-v2 .tq-accordion summary{position:relative;display:block;list-style:none;cursor:pointer;padding:25px 48px 25px 2px;font-size:25px;font-weight:750;line-height:1.4;color:var(--ink);-webkit-tap-highlight-color:transparent}
+.tq-car-v2 .tq-accordion summary::-webkit-details-marker{display:none}
+.tq-car-v2 .tq-accordion summary::after{content:"＋";position:absolute;right:4px;top:50%;transform:translateY(-50%);font-size:25px;font-weight:400;color:var(--accent)}
+.tq-car-v2 .tq-accordion[open] summary::after{content:"−"}
+.tq-car-v2 .tq-accordion summary:active{opacity:.65}
+.tq-car-v2 .tq-accordion-body{padding:0 2px 26px}
+.tq-car-v2 .tq-accordion-copy{max-width:760px;margin:0 0 16px!important;font-size:15px;line-height:1.9;color:var(--muted)!important}
+.tq-car-v2 .tq-model-list{list-style:none;margin:0!important;padding:0!important}
+.tq-car-v2 .tq-model-list li{margin:0!important;padding:12px 0!important;border-top:1px dashed var(--line);line-height:1.65}
+.tq-car-v2 .tq-model-list li:first-child{border-top:0}
+.tq-car-v2 .tq-model-list a{display:block;color:var(--ink)!important;font-weight:600}
+.tq-car-v2 .tq-model-list a:hover{text-decoration:underline}
+.tq-car-v2 .tq-coming{display:inline-block;margin:2px 0 18px!important;padding:6px 11px;border-radius:999px;background:var(--soft);font-size:11px;font-weight:700;color:var(--accent)!important}
+.tq-car-v2 .tq-latest{padding-top:58px;padding-bottom:60px;border-top:1px solid var(--line)}
+.tq-car-v2 .tq-latest .p-postList{margin-top:24px}
+.tq-car-v2 .tq-final{text-align:center;padding-top:8px;padding-bottom:74px}
+.tq-car-v2 .tq-final .wp-block-button__link{border-radius:999px;padding:14px 26px;font-weight:700}
+@media(max-width:760px){
+.tq-car-v2 .tq-inner{padding-left:20px;padding-right:20px}
+.tq-car-v2 .tq-hero{min-height:410px!important}
+.tq-car-v2 .tq-hero .wp-block-cover__inner-container{width:calc(100% - 40px)}
+.tq-car-v2 .tq-hero h1{font-size:34px!important}
+.tq-car-v2 .tq-hero-lead{font-size:17px}
+.tq-car-v2 .tq-hero-note{font-size:14px}
+.tq-car-v2 .tq-choose{padding-top:44px;padding-bottom:48px}
+.tq-car-v2 h2.tq-section-title{font-size:24px!important}
+.tq-car-v2 .tq-section-lead{font-size:15px;margin-bottom:20px!important}
+.tq-car-v2 .tq-accordion summary{padding:21px 42px 21px 0;font-size:21px}
+.tq-car-v2 .tq-accordion-copy{font-size:14px}
+.tq-car-v2 .tq-model-list li{padding:12px 0!important}
+.tq-car-v2 .tq-latest{padding-top:44px;padding-bottom:46px}
+.tq-car-v2 .tq-final{padding-bottom:58px}
+}
+</style>
+<!-- /wp:html -->
+
+<!-- wp:group {"align":"full","className":"tq-car-v2","layout":{"type":"constrained"}} -->
+<div class="wp-block-group alignfull tq-car-v2">
+
+<!-- wp:cover {"url":"https://tsurikue.com/wp-content/uploads/2026/07/IMG_2012.jpeg","dimRatio":38,"overlayColor":"black","focalPoint":{"x":0.5,"y":0.55},"minHeight":470,"minHeightUnit":"px","contentPosition":"center center","className":"tq-hero"} -->
+<div class="wp-block-cover tq-hero" style="min-height:470px"><span aria-hidden="true" class="wp-block-cover__background has-black-background-color has-background-dim-40 has-background-dim"></span><img class="wp-block-cover__image-background" alt="青空の下に停まる白いレクサスUX" src="https://tsurikue.com/wp-content/uploads/2026/07/IMG_2012.jpeg" style="object-position:50% 55%" data-object-fit="cover" data-object-position="50% 55%"/><div class="wp-block-cover__inner-container">
+<!-- wp:group {"className":"tq-hero-copy","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-hero-copy">
+<!-- wp:paragraph {"className":"tq-hero-kicker"} --><p class="tq-hero-kicker">TSURIKUE! CARS</p><!-- /wp:paragraph -->
+<!-- wp:heading {"level":1} --><h1 class="wp-block-heading">クルマで、どこ行こう。</h1><!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-hero-lead"} --><p class="tq-hero-lead">レクサスUXで走った話。<br>これから増えていくランドクルーザーFJの話。</p><!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-hero-note"} --><p class="tq-hero-note">買って、乗って、出かけてみて分かったことを、実体験から残しています。</p><!-- /wp:paragraph -->
+</div>
+<!-- /wp:group -->
+</div></div>
+<!-- /wp:cover -->
+
+<!-- wp:group {"className":"tq-inner tq-choose","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-inner tq-choose">
+<!-- wp:heading {"className":"tq-section-title"} --><h2 class="wp-block-heading tq-section-title">どのクルマを見る？</h2><!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-section-lead"} --><p class="tq-section-lead">まずは、気になるクルマから。<br>車種を開くと、そのクルマの記事がまとめて出てきます。</p><!-- /wp:paragraph -->
+<!-- wp:group {"className":"tq-accordions","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-accordions">
+
+<!-- wp:details {"className":"tq-accordion tq-model-ux"} -->
+<details class="wp-block-details tq-accordion tq-model-ux"><summary>レクサスUX</summary>
+<!-- wp:group {"className":"tq-accordion-body","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-accordion-body">
+<!-- wp:paragraph {"className":"tq-accordion-copy"} --><p class="tq-accordion-copy">買って、乗って、1万km。最後に売るところまで。<br>レクサスUXと過ごして分かったことをまとめています。</p><!-- /wp:paragraph -->
+<!-- wp:latest-posts {"categories":[{{UX_CATEGORY_ID}}],"postsToShow":100,"displayPostDate":false,"className":"tq-model-list"} /-->
+</div>
+<!-- /wp:group -->
+</details>
+<!-- /wp:details -->
+
+<!-- wp:details {"className":"tq-accordion tq-model-fj"} -->
+<details class="wp-block-details tq-accordion tq-model-fj"><summary>ランドクルーザーFJ</summary>
+<!-- wp:group {"className":"tq-accordion-body","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-accordion-body">
+<!-- wp:paragraph {"className":"tq-accordion-copy"} --><p class="tq-accordion-copy">ここから始まる、新しいクルマ遊び。<br>納車後の使い勝手や遊び方を、少しずつ増やしていきます。</p><!-- /wp:paragraph -->
+<!-- wp:paragraph {"className":"tq-coming"} --><p class="tq-coming">記事はこれから。</p><!-- /wp:paragraph -->
+<!-- wp:latest-posts {"categories":[{{FJ_CATEGORY_ID}}],"postsToShow":100,"displayPostDate":false,"className":"tq-model-list"} /-->
+</div>
+<!-- /wp:group -->
+</details>
+<!-- /wp:details -->
+
+</div>
+<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-inner tq-latest","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-inner tq-latest">
+<!-- wp:heading {"className":"tq-section-title"} --><h2 class="wp-block-heading tq-section-title">最近のクルマ。</h2><!-- /wp:heading -->
+<!-- wp:paragraph {"className":"tq-section-lead"} --><p class="tq-section-lead">新しく乗ったこと、試したことから。</p><!-- /wp:paragraph -->
+<!-- wp:loos/post-list {"catID":"10","catPos":"none","listCount":6,"spCol":"1","hTag":"h3"} /-->
+</div>
+<!-- /wp:group -->
+
+<!-- wp:group {"className":"tq-inner tq-final","layout":{"type":"constrained"}} -->
+<div class="wp-block-group tq-inner tq-final">
+<!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+<div class="wp-block-buttons"><!-- wp:button {"className":"is-style-outline"} -->
+<div class="wp-block-button is-style-outline"><a class="wp-block-button__link wp-element-button" href="https://tsurikue.com/category/car/">クルマの記事を全部見る</a></div>
+<!-- /wp:button --></div>
+<!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+</div>
+<!-- /wp:group -->
