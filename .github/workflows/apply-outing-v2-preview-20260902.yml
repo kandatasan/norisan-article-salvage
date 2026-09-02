@@ -1,0 +1,87 @@
+name: Apply outing v2 preview 20260902
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-outing-v2-preview-20260902.yml'
+      - 'category-hubs/outing-v2/content.template.html'
+      - 'category-hubs/outing-v2/deploy.py'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Validate outing v2 template
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('category-hubs/outing-v2/content.template.html')
+          s=p.read_text(encoding='utf-8')
+          required=[
+            'tsurikue-category-hub:v2:outing-region-accordion-preview',
+            'tq-outing-auto-index:v2',
+            '今日は、どこ行く？',
+            '{{OUTING_CATEGORY_ID}}',
+            '{{HIROSHIMA_TAG_ID}}','{{ETAJIMA_TAG_ID}}','{{YAMAGUCHI_TAG_ID}}','{{SANIN_TAG_ID}}',
+            '{{HIROSHIMA_COUNT}}','{{ETAJIMA_COUNT}}','{{YAMAGUCHI_COUNT}}','{{SANIN_COUNT}}',
+            '{{HIROSHIMA_ITEMS}}','{{ETAJIMA_ITEMS}}','{{YAMAGUCHI_ITEMS}}','{{SANIN_ITEMS}}',
+            'https://tsurikue.com/tag/road-trip/',
+            'https://tsurikue.com/tag/stay/',
+            'https://tsurikue.com/tag/family-outing/',
+            'https://tsurikue.com/tag/experience-spot/',
+            '<!-- wp:loos/post-list {"catID":"7"',
+            'https://tsurikue.com/category/sightseeing-leisure/'
+          ]
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('MISSING_REQUIRED='+repr(missing))
+          if s.count('<!-- wp:html -->') != 1: raise SystemExit('CUSTOM_HTML_COUNT='+str(s.count('<!-- wp:html -->')))
+          if s.count('<!-- wp:details ') != 4: raise SystemExit('DETAILS_COUNT='+str(s.count('<!-- wp:details ')))
+          if '100vw' in s or '50% - 50vw' in s or 'margin-left:calc(50%' in s: raise SystemExit('VIEWPORT_WIDTH_HACK_FOUND')
+          if re.search('[\U0001F300-\U0001FAFF]',s): raise SystemExit('ARTICLE_EMOJI_FOUND')
+          print('OUTING_V2_TEMPLATE_OK bytes=',len(s.encode('utf-8')))
+          PY
+
+      - name: Create or update separate outing v2 draft preview
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python category-hubs/outing-v2/deploy.py | tee /tmp/outing-v2-result.json
+
+      - name: Record audit
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Outing v2 preview: SUCCESS'
+            echo '```json'
+            cat /tmp/outing-v2-result.json
+            echo '```'
+          } >/tmp/outing-v2-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/outing-v2-comment.md
+
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-v2-preview-audit
+          path: /tmp/outing-v2-result.json
+          if-no-files-found: warn
