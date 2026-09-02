@@ -1,0 +1,38 @@
+name: Update car category hub v2
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-car-category-hub-v2.yml'
+      - 'category-hubs/car-v2/**'
+permissions:
+  contents: read
+jobs:
+  deploy-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compile deployer
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile category-hubs/car-v2/deploy.py
+      - name: Reorganize car taxonomy and create draft preview
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python category-hubs/car-v2/deploy.py | tee car-v2-audit.json
+      - name: Verify audit result exists
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -q 'CAR_MODEL_FIRST_V2_AUDIT' car-v2-audit.json
+          grep -q '"ok": true' car-v2-audit.json
+          echo 'CAR_MODEL_FIRST_V2_DEPLOYED_AS_DRAFT_AND_VERIFIED'
