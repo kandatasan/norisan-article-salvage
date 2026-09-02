@@ -1,0 +1,42 @@
+name: Inspect WordPress global CSS route 20260902
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/inspect-wp-global-css-route-20260902.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Inspect REST routes and post types (GET only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY' | tee wp-global-css-route.json
+          import base64,json,os,urllib.request
+          root='https://tsurikue.com/wp-json'
+          auth='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          def get(url):
+              r=urllib.request.Request(url,headers={'Authorization':auth,'User-Agent':'tsurikue-css-route-inspect/1.0'})
+              with urllib.request.urlopen(r,timeout=45) as x:return json.load(x)
+          index=get(root+'/')
+          types=get(root+'/wp/v2/types?context=edit')
+          settings=get(root+'/wp/v2/settings?context=edit')
+          routes=[k for k in index.get('routes',{}) if any(s in k.lower() for s in ('custom','css','style','theme','menu','widget'))]
+          interesting_types={k:{a:v.get(a) for a in ('name','slug','rest_base','rest_namespace')} for k,v in types.items() if any(s in k.lower() for s in ('css','style','menu','widget','wp_block'))}
+          interesting_settings={k:v for k,v in settings.items() if any(s in k.lower() for s in ('css','theme','menu','style'))}
+          print(json.dumps({'routes':routes,'types':interesting_types,'settings':interesting_settings,'wordpress_write_count':0},ensure_ascii=False,indent=2))
+          PY
