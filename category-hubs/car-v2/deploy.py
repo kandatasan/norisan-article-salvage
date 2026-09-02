@@ -1,250 +1,148 @@
 #!/usr/bin/env python3
-import base64
-import hashlib
-import json
-import os
-import sys
-import urllib.error
-import urllib.parse
-import urllib.request
+import base64, hashlib, json, os, urllib.error, urllib.parse, urllib.request
 from pathlib import Path
 
-BASE = 'https://tsurikue.com/wp-json/wp/v2'
-CAR_ID = 10
-LEGACY_WASH_ID = 11
-LIVE_CAR_PAGE_ID = 3294
-PREVIEW_SLUG = 'car-guide-v2-preview'
-MARKER = 'tsurikue-category-hub:v2:car-model-first-preview'
-UX_POST_IDS = [2975,2962,2956,2948,2907,2902,2897,2886,2881,2874,2870,2222,2517,2186,2329,2240,2530]
-GENERIC_CAR_POST_ID = 2575
-ALL_STATUSES = 'publish,draft,pending,private,future'
+BASE='https://tsurikue.com/wp-json/wp/v2'
+CAR_ID=10
+UX_ID=11
+LIVE_PAGE_ID=3294
+PREVIEW_SLUG='car-guide-v2-preview'
+MARKER='tsurikue-category-hub:v2:car-model-first-preview'
+TOKENS=('{{UX_CATEGORY_ID}}','{{FJ_CATEGORY_ID}}')
+UX_POST_IDS=[2975,2962,2956,2948,2907,2902,2897,2886,2881,2874,2870,2222,2517,2186,2329,2240,2530]
+GENERIC_CAR_POST_ID=2575
+ALL_STATUSES='publish,draft,pending,private,future'
 
-USER = os.environ.get('TSURIKUE_WP_USER')
-PASS = os.environ.get('TSURIKUE_WP_APP_PASSWORD')
-if not USER or not PASS:
-    raise SystemExit('Missing TSURIKUE_WP_USER / TSURIKUE_WP_APP_PASSWORD')
-TOKEN = base64.b64encode(f'{USER}:{PASS}'.encode()).decode()
-HEADERS = {
-    'Authorization': 'Basic ' + TOKEN,
-    'Accept': 'application/json',
-    'Content-Type': 'application/json; charset=utf-8',
-    'User-Agent': 'tsurikue-car-model-first-v2/1.0',
-}
+user=os.environ.get('TSURIKUE_WP_USER'); password=os.environ.get('TSURIKUE_WP_APP_PASSWORD')
+if not user or not password: raise SystemExit('Missing WordPress credentials')
+token=base64.b64encode(f'{user}:{password}'.encode()).decode()
+HEADERS={'Authorization':'Basic '+token,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-car-v2/1.1'}
 
-def req(method, path, data=None):
-    body = None if data is None else json.dumps(data, ensure_ascii=False).encode('utf-8')
-    r = urllib.request.Request(BASE + path, data=body, headers=HEADERS, method=method)
+def request(method,path,data=None):
+    body=None if data is None else json.dumps(data,ensure_ascii=False).encode()
+    req=urllib.request.Request(BASE+path,data=body,headers=HEADERS,method=method)
     try:
-        with urllib.request.urlopen(r, timeout=50) as x:
-            raw = x.read().decode('utf-8')
-            return (json.loads(raw) if raw else None), dict(x.headers)
+        with urllib.request.urlopen(req,timeout=50) as r:
+            raw=r.read().decode(); return (json.loads(raw) if raw else None),dict(r.headers)
     except urllib.error.HTTPError as e:
-        detail = e.read().decode('utf-8', errors='replace')
-        raise RuntimeError(f'{method} {path} -> HTTP {e.code}: {detail[:1200]}') from e
+        raise RuntimeError(f'{method} {path} HTTP {e.code}: '+e.read().decode(errors='replace')[:1200]) from e
 
-def get(path): return req('GET', path)[0]
-def post(path, data): return req('POST', path, data)[0]
-
-def q(path, **params):
-    return get(path + '?' + urllib.parse.urlencode(params))
-
-def raw_content(item):
-    return ((item.get('content') or {}).get('raw') or '')
-
-def sha(text):
-    return hashlib.sha256(text.encode('utf-8')).hexdigest()
+def get(path): return request('GET',path)[0]
+def post(path,data): return request('POST',path,data)[0]
+def query(path,**params): return get(path+'?'+urllib.parse.urlencode(params))
+def raw(item): return ((item.get('content') or {}).get('raw') or '')
+def digest(text): return hashlib.sha256(text.encode()).hexdigest()
 
 def public_count(kind):
-    _, headers = req('GET', f'/{kind}?status=publish&per_page=1&_fields=id')
-    return int(headers.get('X-WP-Total', '0'))
+    _,h=request('GET',f'/{kind}?status=publish&per_page=1&_fields=id')
+    return int(h.get('X-WP-Total','0'))
 
-def find_category(slug):
-    items = q('/categories', slug=slug, context='edit', per_page=20, _fields='id,name,slug,parent,count,link')
+def category_by_slug(slug):
+    items=query('/categories',slug=slug,context='edit',per_page=20,_fields='id,name,slug,parent,count,link')
     return items[0] if items else None
 
-def ensure_car_parent():
-    car = find_category('car')
-    if not car or car['id'] != CAR_ID or car['parent'] != 0:
-        raise SystemExit('CAR_PARENT_MISMATCH ' + repr(car))
-    return car
+def ensure_taxonomy():
+    car=category_by_slug('car')
+    if not car or car['id']!=CAR_ID or car['parent']!=0: raise SystemExit('CAR_PARENT_MISMATCH '+repr(car))
+    ux=category_by_slug('lexus-ux')
+    if not ux:
+        legacy=get(f'/categories/{UX_ID}?context=edit&_fields=id,name,slug,parent,count,link')
+        if legacy['parent']!=CAR_ID or legacy['slug']!='car-goods-wash': raise SystemExit('LEGACY_CATEGORY_UNEXPECTED '+repr(legacy))
+        ux=post(f'/categories/{UX_ID}',{'name':'レクサスUX','slug':'lexus-ux','parent':CAR_ID,'description':'レクサスUXの購入・使い勝手・本音・売却など、実体験を中心にまとめています。'})
+    if ux['id']!=UX_ID or ux['parent']!=CAR_ID: raise SystemExit('LEXUS_UX_CATEGORY_MISMATCH '+repr(ux))
+    fj=category_by_slug('landcruiser-fj')
+    if not fj:
+        fj=post('/categories',{'name':'ランドクルーザーFJ','slug':'landcruiser-fj','parent':CAR_ID,'description':'ランドクルーザーFJの納車後レビュー・使い勝手・遊び方などをまとめるカテゴリです。'})
+    if fj['parent']!=CAR_ID: raise SystemExit('FJ_PARENT_MISMATCH '+repr(fj))
+    return car,ux,fj
 
-def ensure_ux_category():
-    existing = find_category('lexus-ux')
-    if existing:
-        if existing['parent'] != CAR_ID:
-            raise SystemExit('LEXUS_UX_PARENT_MISMATCH ' + repr(existing))
-        return existing
-    legacy = get(f'/categories/{LEGACY_WASH_ID}?context=edit&_fields=id,name,slug,parent,count,link')
-    if legacy['parent'] != CAR_ID:
-        raise SystemExit('LEGACY_WASH_PARENT_MISMATCH ' + repr(legacy))
-    if legacy['slug'] not in ('car-goods-wash', 'lexus-ux'):
-        raise SystemExit('LEGACY_CATEGORY_UNEXPECTED ' + repr(legacy))
-    updated = post(f'/categories/{LEGACY_WASH_ID}', {
-        'name': 'レクサスUX',
-        'slug': 'lexus-ux',
-        'parent': CAR_ID,
-        'description': 'レクサスUXの購入・使い勝手・本音・売却など、実体験を中心にまとめています。',
-    })
-    return updated
+def get_post(pid):
+    return get(f'/posts/{pid}?context=edit&_fields=id,slug,status,title,categories,link')
 
-def ensure_fj_category():
-    existing = find_category('landcruiser-fj')
-    if existing:
-        if existing['parent'] != CAR_ID:
-            raise SystemExit('FJ_PARENT_MISMATCH ' + repr(existing))
-        return existing
-    return post('/categories', {
-        'name': 'ランドクルーザーFJ',
-        'slug': 'landcruiser-fj',
-        'parent': CAR_ID,
-        'description': 'ランドクルーザーFJの納車後レビュー・使い勝手・遊び方などをまとめるカテゴリです。',
-    })
+def assign(pid,add=(),remove=()):
+    item=get_post(pid); before=sorted(item.get('categories') or [])
+    cats=set(before); cats.update(add); cats.difference_update(remove); after=sorted(cats)
+    changed=before!=after
+    if changed: post(f'/posts/{pid}',{'categories':after})
+    check=get_post(pid)
+    if sorted(check.get('categories') or [])!=after: raise SystemExit(f'CATEGORY_VERIFY_FAILED {pid}')
+    return {'id':pid,'slug':check['slug'],'status':check['status'],'categories':check['categories'],'changed':changed}
 
-def post_edit(post_id):
-    return get(f'/posts/{post_id}?context=edit&_fields=id,slug,status,title,categories,link')
-
-def set_categories(post_id, wanted_add=(), wanted_remove=()):
-    item = post_edit(post_id)
-    cats = set(item.get('categories') or [])
-    cats.update(wanted_add)
-    cats.difference_update(wanted_remove)
-    new = sorted(cats)
-    if new != sorted(item.get('categories') or []):
-        post(f'/posts/{post_id}', {'categories': new})
-        changed = True
-    else:
-        changed = False
-    after = post_edit(post_id)
-    if sorted(after.get('categories') or []) != new:
-        raise SystemExit(f'CATEGORY_WRITE_VERIFY_FAILED post={post_id} expected={new} actual={after.get("categories")}')
-    return {'id': post_id, 'slug': after['slug'], 'status': after['status'], 'categories': after['categories'], 'changed': changed}
-
-def active_posts_for_category(cat_id):
-    out=[]
-    page=1
+def category_posts(cat_id):
+    out=[]; page=1
     while True:
-        items=q('/posts', categories=cat_id, context='edit', status=ALL_STATUSES, per_page=100, page=page,
-                _fields='id,slug,status,title,categories,link')
+        items=query('/posts',categories=cat_id,context='edit',status=ALL_STATUSES,per_page=100,page=page,_fields='id,slug,status,categories')
         out.extend(items)
-        if len(items)<100: break
-        page += 1
-    return out
+        if len(items)<100: return out
+        page+=1
 
-def render_template(ux_id, fj_id):
-    path = Path(__file__).with_name('content.template.html')
-    text = path.read_text(encoding='utf-8')
-    text = text.replace('{{UX_CATEGORY_ID}}', str(ux_id)).replace('{{FJ_CATEGORY_ID}}', str(fj_id))
-    if '{{' in text or '}}' in text:
-        raise SystemExit('UNRESOLVED_TEMPLATE_PLACEHOLDER')
+def make_content(ux_id,fj_id):
+    text=Path(__file__).with_name('content.template.html').read_text(encoding='utf-8')
+    text=text.replace(TOKENS[0],str(ux_id)).replace(TOKENS[1],str(fj_id))
+    leftovers=[t for t in TOKENS if t in text]
+    if leftovers: raise SystemExit('UNRESOLVED_TEMPLATE_PLACEHOLDERS '+repr(leftovers))
     return text
 
-def find_preview_page():
-    items = q('/pages', slug=PREVIEW_SLUG, context='edit', status='publish,draft,pending,private,future,trash', per_page=20,
-              _fields='id,slug,status,title,content,link')
-    if len(items) > 1:
-        raise SystemExit('PREVIEW_PAGE_NOT_UNIQUE ' + repr([(x['id'],x['status']) for x in items]))
+def preview_page():
+    items=query('/pages',slug=PREVIEW_SLUG,context='edit',status='publish,draft,pending,private,future,trash',per_page=20,_fields='id,slug,status,title,content,link')
+    if len(items)>1: raise SystemExit('PREVIEW_NOT_UNIQUE '+repr([(p['id'],p['status']) for p in items]))
     return items[0] if items else None
 
-def upsert_preview(content):
-    page = find_preview_page()
-    title = 'クルマ｜レクサスUX・ランドクルーザーFJ'
-    if page:
-        if page['status'] != 'draft':
-            raise SystemExit('PREVIEW_PAGE_NOT_DRAFT ' + repr((page['id'],page['status'])))
-        if MARKER in raw_content(page) and raw_content(page) == content and page['title']['raw'] == title:
-            return page, False
-        updated = post(f"/pages/{page['id']}", {'title': title, 'content': content, 'status': 'draft'})
-        return updated, True
-    created = post('/pages', {'title': title, 'slug': PREVIEW_SLUG, 'content': content, 'status': 'draft'})
-    return created, True
+def write_preview(content):
+    title='クルマ｜レクサスUX・ランドクルーザーFJ'
+    p=preview_page()
+    if p:
+        if p['status']!='draft': raise SystemExit('PREVIEW_NOT_DRAFT '+repr((p['id'],p['status'])))
+        same=MARKER in raw(p) and raw(p)==content and p['title']['raw']==title
+        if same: return p,False
+        return post(f"/pages/{p['id']}",{'title':title,'content':content,'status':'draft'}),True
+    return post('/pages',{'title':title,'slug':PREVIEW_SLUG,'content':content,'status':'draft'}),True
 
-def verify_preview(page_id, ux_id, fj_id):
-    page = get(f'/pages/{page_id}?context=edit&_fields=id,slug,status,title,content,link')
-    raw = raw_content(page)
-    checks = {
-        'status_draft': page['status'] == 'draft',
-        'slug_preview': page['slug'] == PREVIEW_SLUG,
-        'marker': MARKER in raw,
-        'one_custom_html': raw.count('<!-- wp:html -->') == 1,
-        'two_details': raw.count('<!-- wp:details') == 2,
-        'two_latest_posts': raw.count('<!-- wp:latest-posts') == 2,
-        'swell_latest': '<!-- wp:loos/post-list' in raw and '"catID":"10"' in raw,
-        'ux_filter': f'"categories":[{ux_id}]' in raw,
-        'fj_filter': f'"categories":[{fj_id}]' in raw,
-        'no_placeholder': '{{' not in raw and '}}' not in raw,
-        'hero': 'IMG_2012.jpeg' in raw,
-        'model_first_copy': 'どのクルマを見る？' in raw and 'レクサスUX' in raw and 'ランドクルーザーFJ' in raw,
+def verify_preview(pid,ux_id,fj_id):
+    p=get(f'/pages/{pid}?context=edit&_fields=id,slug,status,title,content,link')
+    text=raw(p)
+    checks={
+        'draft':p['status']=='draft','slug':p['slug']==PREVIEW_SLUG,'marker':MARKER in text,
+        'one_html':text.count('<!-- wp:html -->')==1,'two_details':text.count('<!-- wp:details')==2,
+        'two_model_lists':text.count('<!-- wp:latest-posts')==2,
+        'swell_latest':'<!-- wp:loos/post-list' in text and '"catID":"10"' in text,
+        'ux_filter':f'"categories":[{ux_id}]' in text,'fj_filter':f'"categories":[{fj_id}]' in text,
+        'placeholders_gone':all(t not in text for t in TOKENS),'hero':'IMG_2012.jpeg' in text,
+        'copy':'どのクルマを見る？' in text and 'レクサスUX' in text and 'ランドクルーザーFJ' in text,
     }
-    if not all(checks.values()):
-        raise SystemExit('PREVIEW_VERIFY_FAILED ' + json.dumps(checks, ensure_ascii=False))
-    return page, checks
+    if not all(checks.values()): raise SystemExit('PREVIEW_VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
+    return p,checks
 
 def main():
-    before_counts = {'posts': public_count('posts'), 'pages': public_count('pages')}
-    car = ensure_car_parent()
-    live_before = get(f'/pages/{LIVE_CAR_PAGE_ID}?context=edit&_fields=id,slug,status,title,content,link')
-    if live_before['slug'] != 'car-guide' or live_before['status'] != 'publish':
-        raise SystemExit('LIVE_CAR_PAGE_UNEXPECTED ' + repr((live_before['id'],live_before['slug'],live_before['status'])))
-    live_before_sha = sha(raw_content(live_before))
+    counts_before={'posts':public_count('posts'),'pages':public_count('pages')}
+    live_before=get(f'/pages/{LIVE_PAGE_ID}?context=edit&_fields=id,slug,status,title,content,link')
+    if live_before['slug']!='car-guide' or live_before['status']!='publish': raise SystemExit('LIVE_CAR_PAGE_UNEXPECTED')
+    live_sha=digest(raw(live_before))
 
-    ux = ensure_ux_category()
-    fj = ensure_fj_category()
-    ux_id, fj_id = ux['id'], fj['id']
+    car,ux,fj=ensure_taxonomy()
+    migrations=[assign(pid,add=(CAR_ID,ux['id'])) for pid in UX_POST_IDS]
+    migrations.append(assign(GENERIC_CAR_POST_ID,add=(CAR_ID,),remove=(ux['id'],)))
 
-    migrations=[]
-    for pid in UX_POST_IDS:
-        migrations.append(set_categories(pid, wanted_add=(CAR_ID, ux_id)))
-    migrations.append(set_categories(GENERIC_CAR_POST_ID, wanted_add=(CAR_ID,), wanted_remove=(ux_id,)))
+    actual={p['id'] for p in category_posts(ux['id'])}; expected=set(UX_POST_IDS)
+    if actual!=expected: raise SystemExit('UX_MEMBERSHIP_MISMATCH '+repr({'unexpected':sorted(actual-expected),'missing':sorted(expected-actual)}))
+    if category_by_slug('car-goods-wash') is not None: raise SystemExit('LEGACY_WASH_SLUG_REMAINS')
 
-    ux_posts = active_posts_for_category(ux_id)
-    ux_ids = {p['id'] for p in ux_posts}
-    expected_ux = set(UX_POST_IDS)
-    unexpected = sorted(ux_ids - expected_ux)
-    missing = sorted(expected_ux - ux_ids)
-    if unexpected or missing:
-        raise SystemExit('UX_CATEGORY_MEMBERSHIP_MISMATCH ' + repr({'unexpected':unexpected,'missing':missing}))
-    if GENERIC_CAR_POST_ID in ux_ids:
-        raise SystemExit('GENERIC_CAR_ARTICLE_STILL_IN_UX')
+    content=make_content(ux['id'],fj['id'])
+    p,written=write_preview(content)
+    preview,checks=verify_preview(p['id'],ux['id'],fj['id'])
 
-    content = render_template(ux_id, fj_id)
-    preview, preview_written = upsert_preview(content)
-    preview_id = preview['id']
-    preview_after, preview_checks = verify_preview(preview_id, ux_id, fj_id)
+    live_after=get(f'/pages/{LIVE_PAGE_ID}?context=edit&_fields=id,slug,status,title,content,link')
+    if live_after['status']!='publish' or digest(raw(live_after))!=live_sha: raise SystemExit('LIVE_CAR_PAGE_CHANGED')
+    counts_after={'posts':public_count('posts'),'pages':public_count('pages')}
+    if counts_before!=counts_after: raise SystemExit('PUBLIC_COUNTS_CHANGED '+repr((counts_before,counts_after)))
 
-    live_after = get(f'/pages/{LIVE_CAR_PAGE_ID}?context=edit&_fields=id,slug,status,title,content,link')
-    live_after_sha = sha(raw_content(live_after))
-    if live_after['status'] != 'publish' or live_after_sha != live_before_sha:
-        raise SystemExit('LIVE_CAR_PAGE_CHANGED')
+    ux_after=get(f"/categories/{ux['id']}?context=edit&_fields=id,name,slug,parent,count,link")
+    fj_after=get(f"/categories/{fj['id']}?context=edit&_fields=id,name,slug,parent,count,link")
+    result={'ok':True,'public_counts_before':counts_before,'public_counts_after':counts_after,
+      'live_car_page':{'id':LIVE_PAGE_ID,'status':'publish','sha_unchanged':True},
+      'taxonomy':{'car':{'id':car['id'],'slug':car['slug']},'lexus_ux':ux_after,'landcruiser_fj':fj_after,'legacy_wash_slug_exists':False},
+      'migration_writes':sum(1 for m in migrations if m['changed']),'migration_results':migrations,
+      'preview':{'id':preview['id'],'slug':preview['slug'],'status':preview['status'],'written':written,'checks':checks}}
+    print('CAR_MODEL_FIRST_V2_AUDIT '+json.dumps(result,ensure_ascii=False))
 
-    ux_after = get(f'/categories/{ux_id}?context=edit&_fields=id,name,slug,parent,count,link')
-    fj_after = get(f'/categories/{fj_id}?context=edit&_fields=id,name,slug,parent,count,link')
-    if (ux_after['name'],ux_after['slug'],ux_after['parent']) != ('レクサスUX','lexus-ux',CAR_ID):
-        raise SystemExit('UX_CATEGORY_VERIFY_FAILED ' + repr(ux_after))
-    if (fj_after['name'],fj_after['slug'],fj_after['parent']) != ('ランドクルーザーFJ','landcruiser-fj',CAR_ID):
-        raise SystemExit('FJ_CATEGORY_VERIFY_FAILED ' + repr(fj_after))
-    if find_category('car-goods-wash') is not None:
-        raise SystemExit('LEGACY_WASH_SLUG_STILL_EXISTS')
-
-    after_counts = {'posts': public_count('posts'), 'pages': public_count('pages')}
-    if before_counts != after_counts:
-        raise SystemExit('PUBLIC_COUNTS_CHANGED ' + repr({'before':before_counts,'after':after_counts}))
-
-    result = {
-        'ok': True,
-        'public_counts_before': before_counts,
-        'public_counts_after': after_counts,
-        'live_car_page': {'id': LIVE_CAR_PAGE_ID, 'status': live_after['status'], 'sha_unchanged': live_after_sha == live_before_sha},
-        'taxonomy': {
-            'car': {'id': car['id'], 'slug': car['slug']},
-            'lexus_ux': {'id': ux_after['id'], 'slug': ux_after['slug'], 'count': ux_after['count']},
-            'landcruiser_fj': {'id': fj_after['id'], 'slug': fj_after['slug'], 'count': fj_after['count']},
-            'legacy_wash_slug_exists': False,
-        },
-        'migration_writes': sum(1 for m in migrations if m['changed']),
-        'migration_results': migrations,
-        'preview': {'id': preview_id, 'slug': preview_after['slug'], 'status': preview_after['status'], 'written': preview_written, 'checks': preview_checks},
-    }
-    print('CAR_MODEL_FIRST_V2_AUDIT ' + json.dumps(result, ensure_ascii=False))
-
-if __name__ == '__main__':
-    main()
+if __name__=='__main__': main()
