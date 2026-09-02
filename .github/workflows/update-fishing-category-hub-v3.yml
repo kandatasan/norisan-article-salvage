@@ -1,0 +1,90 @@
+name: Update fishing category hub v3 simple
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/update-fishing-category-hub-v3.yml'
+      - 'category-hubs/fishing-v3/**'
+permissions:
+  contents: read
+  issues: write
+jobs:
+  update-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate source
+        run: |
+          python -m py_compile category-hubs/fishing-v3/deploy.py category-hubs/fishing-v3/verify_render.py
+          grep -q 'tsurikue-category-hub:v3:fishing-simple' category-hubs/fishing-v3/content.template.html
+          test "$(grep -c '<!-- wp:html -->' category-hubs/fishing-v3/content.template.html)" -eq 1
+          grep -q '<!-- wp:loos/post-list' category-hubs/fishing-v3/content.template.html
+          grep -q '"catID":"1"' category-hubs/fishing-v3/content.template.html
+      - name: Update fishing draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing-v3/deploy.py | tee fishing-hub-v3-deploy-audit.json
+          test -s fishing-hub-v3-deploy-audit.json
+          python - <<'PY'
+          import json
+          d=json.load(open('fishing-hub-v3-deploy-audit.json',encoding='utf-8'))
+          assert d['page_id']==3316
+          assert d['slug']=='fishing-guide'
+          assert d['status']=='draft'
+          assert d['public_before']==d['public_after']
+          assert all(d['checks'].values())
+          PY
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+      - name: PC and mobile render check
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing-v3/verify_render.py | tee fishing-hub-v3-render-console.json
+          test -s fishing-hub-v3-render-check.json
+      - name: Upload audit and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-category-hub-v3-audit
+          path: |
+            fishing-hub-v3-deploy-audit.json
+            fishing-hub-v3-render-check.json
+            fishing-hub-v3-render-console.json
+            fishing-hub-v3-rendered.html
+            fishing-hub-v3-desktop.png
+            fishing-hub-v3-mobile.png
+          if-no-files-found: warn
+      - name: Add audit to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Fishing category hub v3 — simple'
+            if [ -s fishing-hub-v3-deploy-audit.json ]; then
+              echo
+              echo '```json'
+              cat fishing-hub-v3-deploy-audit.json
+              echo '```'
+            else
+              echo
+              echo 'Deploy audit missing. Do not treat as success.'
+            fi
+            if [ -s fishing-hub-v3-render-check.json ]; then
+              echo
+              echo '```json'
+              cat fishing-hub-v3-render-check.json
+              echo '```'
+            fi
+          } > /tmp/fishing-v3-audit.md
+          gh issue comment 22 --body-file /tmp/fishing-v3-audit.md
