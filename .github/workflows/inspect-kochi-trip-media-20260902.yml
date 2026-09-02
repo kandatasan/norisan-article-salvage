@@ -5,6 +5,7 @@ on:
     branches: [main]
     paths:
       - 'scripts/inspect_kochi_trip_media.py'
+      - 'scripts/inspect_kochi_current_draft.py'
       - '.github/workflows/inspect-kochi-trip-media-20260902.yml'
   workflow_dispatch:
 
@@ -22,12 +23,16 @@ jobs:
         with:
           python-version: '3.x'
       - name: Syntax check
-        run: python -m py_compile scripts/inspect_kochi_trip_media.py
-      - name: Inspect WordPress media read-only
+        run: |
+          python -m py_compile scripts/inspect_kochi_trip_media.py
+          python -m py_compile scripts/inspect_kochi_current_draft.py
+      - name: Inspect WordPress media and current draft read-only
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/inspect_kochi_trip_media.py
+        run: |
+          python scripts/inspect_kochi_trip_media.py
+          python scripts/inspect_kochi_current_draft.py
       - name: Record result on salvage audit issue
         if: success()
         env:
@@ -35,9 +40,11 @@ jobs:
         shell: bash
         run: |
           {
-            echo '### Kochi trip media inspection: SUCCESS'
+            echo '### Kochi trip inspection: SUCCESS'
             echo
             cat reports/kochi-trip-media-audit/summary.md
+            echo
+            cat reports/kochi-current-draft-audit/summary.md
           } > /tmp/kochi-trip-media-comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/kochi-trip-media-comment.md
       - name: Upload result
@@ -45,5 +52,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: kochi-trip-media-audit
-          path: reports/kochi-trip-media-audit/
+          path: |
+            reports/kochi-trip-media-audit/
+            reports/kochi-current-draft-audit/
           if-no-files-found: warn
