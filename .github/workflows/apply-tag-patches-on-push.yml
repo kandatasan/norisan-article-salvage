@@ -4,7 +4,7 @@ on:
   push:
     branches: [main]
     paths:
-      - 'tag-patches/**'
+      - 'tag-patches/*/config.json'
   workflow_dispatch:
     inputs:
       config_path:
