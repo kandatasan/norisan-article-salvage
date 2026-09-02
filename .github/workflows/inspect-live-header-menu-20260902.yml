@@ -28,7 +28,7 @@ jobs:
         run: |
           set -euo pipefail
           python - <<'PY' | tee header-wp-audit.json
-          import base64, hashlib, json, os, re, urllib.request
+          import base64, hashlib, json, os, urllib.request
           base='https://tsurikue.com/wp-json/wp/v2'
           auth='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
           def get(path):
@@ -71,7 +71,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cat > /tmp/header-inspect.js <<'JS'
+          cat > header-inspect.js <<'JS'
           const { chromium } = require('playwright');
           (async()=>{
             const browser=await chromium.launch({headless:true});
@@ -109,7 +109,7 @@ jobs:
             console.log(JSON.stringify(out,null,2));
           })().catch(e=>{console.error(e);process.exit(1)});
           JS
-          node /tmp/header-inspect.js | tee header-dom-audit.json
+          node header-inspect.js | tee header-dom-audit.json
 
       - uses: actions/upload-artifact@v4
         with:
