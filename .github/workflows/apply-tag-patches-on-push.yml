@@ -1,0 +1,73 @@
+name: Apply tag patches on push
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'tag-patches/**'
+  workflow_dispatch:
+    inputs:
+      config_path:
+        description: 'Tag patch config path, e.g. tag-patches/lexus-ux-review/config.json'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply-tag-patches:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Run tag patch safety tests
+        run: python -m unittest tests/test_apply_tag_patch_once.py -v
+      - name: Resolve configs
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
+            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+          else
+            git diff --name-only HEAD^ HEAD -- 'tag-patches/*/config.json' \
+              | awk -F/ 'NF>=3 {print $1 "/" $2 "/config.json"}' \
+              | sort -u > /tmp/configs.txt
+          fi
+          test -s /tmp/configs.txt
+          cat /tmp/configs.txt
+      - name: Apply guarded add-only tag patches
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          while IFS= read -r config; do
+            python scripts/apply_tag_patch_once.py --config "$config"
+          done < /tmp/configs.txt
+      - name: Record results on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### WordPress tag patch: SUCCESS'
+            echo
+            find reports -name summary.md -print -exec cat {} \;
+          } > /tmp/tag-patch-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/tag-patch-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tag-patch-result
+          path: reports/
+          if-no-files-found: warn
