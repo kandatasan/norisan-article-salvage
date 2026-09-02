@@ -33,15 +33,29 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          : > /tmp/configs.txt
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            printf '%s\n' '${{ inputs.config_path }}' > /tmp/configs.txt
+            config='${{ inputs.config_path }}'
+            test -f "$config"
+            printf '%s\n' "$config" > /tmp/configs.txt
           else
             git diff --name-only HEAD^ HEAD -- 'editorial/*/config.json' 'editorial/*/content.html' \
               | awk -F/ 'NF>=3 {print $1 "/" $2 "/config.json"}' \
-              | sort -u > /tmp/configs.txt
+              | sort -u > /tmp/config-candidates.txt
+            while IFS= read -r config; do
+              [[ -z "$config" ]] && continue
+              if [[ -f "$config" ]]; then
+                printf '%s\n' "$config" >> /tmp/configs.txt
+              else
+                echo "Skipping editorial package without generic config: $config"
+              fi
+            done < /tmp/config-candidates.txt
           fi
-          test -s /tmp/configs.txt
-          cat /tmp/configs.txt
+          if [[ -s /tmp/configs.txt ]]; then
+            cat /tmp/configs.txt
+          else
+            echo 'No generic editorial configs to apply.'
+          fi
       - name: Apply only guarded draft packages
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
@@ -50,6 +64,7 @@ jobs:
         run: |
           set -euo pipefail
           while IFS= read -r config; do
+            [[ -z "$config" ]] && continue
             python scripts/apply_editorial_draft_once.py --config "$config"
           done < /tmp/configs.txt
       - name: Record results on salvage audit issue
@@ -61,7 +76,11 @@ jobs:
           {
             echo '### Editorial draft update: SUCCESS'
             echo
-            find reports -name summary.md -print -exec cat {} \;
+            if find reports -name summary.md -print -quit | grep -q .; then
+              find reports -name summary.md -print -exec cat {} \;
+            else
+              echo 'No generic editorial package was applicable for this push.'
+            fi
           } > /tmp/editorial-comment.md
           gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/editorial-comment.md
       - name: Upload result
