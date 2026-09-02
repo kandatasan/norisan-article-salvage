@@ -1,0 +1,30 @@
+name: Diagnose homepage card ancestors 20260902
+
+on:
+  push:
+    branches: [audit/homepage-card-ancestors-20260902]
+    paths:
+      - '.github/workflows/diagnose-homepage-card-ancestors-20260902.yml'
+      - '.github/scripts/diagnose-homepage-card-ancestors.py'
+
+permissions:
+  contents: read
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: audit/homepage-card-ancestors-20260902
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install browser dependency
+        run: python -m pip install --quiet selenium
+      - name: Inspect homepage card stacking ancestors
+        shell: bash
+        run: |
+          set -euo pipefail
+          python .github/scripts/diagnose-homepage-card-ancestors.py
