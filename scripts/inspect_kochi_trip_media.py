@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-kochi-trip-media-audit/1.0"
+USER_AGENT = "tsurikue-kochi-trip-media-audit/1.1"
 OUT = Path("reports/kochi-trip-media-audit")
 
 # Chat uploads may gain '(1)' style suffixes. Match the original iPhone filename key.
@@ -99,6 +99,7 @@ def compact_media(row: dict[str, Any]) -> dict[str, Any]:
     return {
         "id": int(row.get("id") or 0),
         "date": row.get("date"),
+        "slug": row.get("slug"),
         "source_url": row.get("source_url"),
         "mime_type": row.get("mime_type"),
         "width": details.get("width"),
@@ -162,6 +163,7 @@ def main() -> int:
 
     missing = [key for key, values in matches.items() if not values]
     ambiguous = [key for key, values in matches.items() if len(values) > 1]
+    recent_media = [compact_media(row) for row in media[:30]]
     categories = fetch_categories(auth)
     relevant_categories = [
         row for row in categories
@@ -177,6 +179,7 @@ def main() -> int:
         "missing": missing,
         "ambiguous": ambiguous,
         "matches": matches,
+        "recent_media": recent_media,
         "relevant_categories": relevant_categories,
         "possible_duplicate_posts": possible_duplicates,
         "media_rows_scanned": len(media),
@@ -212,6 +215,13 @@ def main() -> int:
                 f"- `{key}` -> media **{row['id']}**, `{row['mime_type']}`, "
                 f"{row.get('width')}x{row.get('height')}, `{urllib.parse.urlparse(row['source_url']).path}`"
             )
+    lines += ["", "## Recent media (latest 30)"]
+    for row in recent_media:
+        lines.append(
+            f"- media **{row['id']}** | `{row['date']}` | `{row['mime_type']}` | "
+            f"{row.get('width')}x{row.get('height')} | `{row.get('slug')}` | "
+            f"`{urllib.parse.urlparse(row['source_url']).path}` | {row.get('title')}"
+        )
     lines += ["", "## Relevant categories"]
     for row in relevant_categories:
         lines.append(f"- id **{row['id']}** | {row['name']} | `{row['slug']}` | parent={row['parent']}")
@@ -224,7 +234,18 @@ def main() -> int:
         lines.append("- none")
 
     (OUT / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-    print(json.dumps({k: report[k] for k in ("mode", "wanted_count", "matched_count", "missing", "ambiguous", "relevant_categories", "possible_duplicate_posts", "media_rows_scanned", "wordpress_write_count")}, ensure_ascii=False, indent=2))
+    print(json.dumps({
+        "mode": report["mode"],
+        "wanted_count": report["wanted_count"],
+        "matched_count": report["matched_count"],
+        "missing": report["missing"],
+        "ambiguous": report["ambiguous"],
+        "recent_media": recent_media[:10],
+        "relevant_categories": report["relevant_categories"],
+        "possible_duplicate_posts": report["possible_duplicate_posts"],
+        "media_rows_scanned": report["media_rows_scanned"],
+        "wordpress_write_count": report["wordpress_write_count"],
+    }, ensure_ascii=False, indent=2))
     return 0
 
 
