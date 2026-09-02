@@ -1,0 +1,32 @@
+name: Inspect outing hero media 20260903
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_outing_hero_media_once.py'
+      - '.github/workflows/inspect-outing-hero-media-20260903.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read WordPress media only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python scripts/inspect_outing_hero_media_once.py | tee /tmp/outing-hero-media.json
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-hero-media-audit
+          path: /tmp/outing-hero-media.json
+          if-no-files-found: warn
