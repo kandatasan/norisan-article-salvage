@@ -1,0 +1,95 @@
+name: Apply homepage native overlay v2 20260902
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-homepage-native-overlay-v2-20260902.yml'
+      - 'experimental-pages/top-design-lab/native-cards-overlay-v2/**'
+permissions:
+  contents: read
+jobs:
+  deploy-and-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Validate overlay implementation
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('experimental-pages/top-design-lab/native-cards-overlay-v2/patch.py').read_text(encoding='utf-8')
+          required=['EXPECTED_SHA=\'31bef153107d2d2531492ec397b82e6c220d88d1dd06ff35c764fa889b8bc368\'','TQ TOP NATIVE IMAGE CARDS OVERLAY v2','.tq4 .tq4-native-body{','pointer-events:none','.tq4 .tq4-native-card:after{','aspect-ratio:4/5']
+          missing=[x for x in required if x not in s]
+          if missing: raise SystemExit('OVERLAY_SOURCE_MISSING='+repr(missing))
+          print('OVERLAY_SOURCE_OK')
+          PY
+      - name: Backup published homepage
+        id: backup
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          TQ_HOME_BACKUP_PATH: /tmp/homepage-native-overlay-v2-backup.json
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in 1 2 3 4; do
+            if python experimental-pages/top-design-lab/complete-v2/live_backup.py backup; then ok=1; break; fi
+            echo "Backup attempt ${attempt}/4 failed; retrying..." >&2
+            sleep $((attempt * 5))
+          done
+          test "$ok" -eq 1
+      - name: Apply overlay card styling to published homepage
+        id: deploy
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          TQ_OVERLAY_RESULT_PATH: /tmp/homepage-native-overlay-v2-result.json
+        run: |
+          set -euo pipefail
+          python experimental-pages/top-design-lab/native-cards-overlay-v2/patch.py | tee /tmp/homepage-native-overlay-v2-deploy.log
+      - name: Install render audit dependencies
+        if: steps.deploy.outcome == 'success'
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+          python -m pip install --quiet selenium
+      - name: Verify desktop and mobile overlay cards
+        id: verify
+        if: steps.deploy.outcome == 'success'
+        run: |
+          set -euo pipefail
+          python experimental-pages/top-design-lab/native-cards-overlay-v2/verify_render.py | tee /tmp/homepage-native-overlay-v2-render.log
+      - name: Roll back homepage if render audit fails
+        if: failure() && steps.deploy.outcome == 'success' && steps.verify.outcome == 'failure'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          TQ_HOME_BACKUP_PATH: /tmp/homepage-native-overlay-v2-backup.json
+        run: |
+          set -euo pipefail
+          ok=0
+          for attempt in 1 2 3; do
+            if python experimental-pages/top-design-lab/complete-v2/live_backup.py rollback; then ok=1; break; fi
+            sleep $((attempt * 5))
+          done
+          test "$ok" -eq 1
+          echo 'Overlay render audit failed; published homepage restored.' >&2
+          exit 1
+      - name: Upload overlay audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: homepage-native-overlay-v2-audit
+          path: |
+            /tmp/homepage-native-overlay-v2-result.json
+            /tmp/homepage-native-overlay-v2-deploy.log
+            /tmp/homepage-native-overlay-v2-render.log
+            homepage-native-overlay-v2-render.json
+            homepage-native-overlay-v2-desktop.png
+            homepage-native-overlay-v2-mobile.png
+          if-no-files-found: warn
