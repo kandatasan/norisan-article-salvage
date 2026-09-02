@@ -117,7 +117,8 @@ def build_desired():
         '{{WILD_ITEMS}}':'\n'.join(li(p,'wild') for p in wild_posts),
     }
     for a,b in repl.items(): tpl=tpl.replace(a,b)
-    if '{{' in tpl or '}}' in tpl: raise RuntimeError('UNRESOLVED_TEMPLATE_PLACEHOLDER')
+    unresolved=[key for key in repl if key in tpl]
+    if unresolved: raise RuntimeError('UNRESOLVED_TEMPLATE_PLACEHOLDER '+json.dumps(unresolved))
     return tpl, {'fishing_posts':len(posts),'wild_posts':len(wild_posts),'groups':{k:len(v) for k,v in groups.items()},'tag_count':len(tags)}
 
 
