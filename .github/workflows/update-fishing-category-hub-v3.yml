@@ -20,7 +20,7 @@ jobs:
       - name: Validate source
         run: |
           python -m py_compile category-hubs/fishing-v3/deploy.py category-hubs/fishing-v3/verify_render.py
-          grep -q 'tsurikue-category-hub:v3:fishing-simple' category-hubs/fishing-v3/content.template.html
+          grep -q 'tsurikue-category-hub:v3.1:fishing-simple' category-hubs/fishing-v3/content.template.html
           test "$(grep -c '<!-- wp:html -->' category-hubs/fishing-v3/content.template.html)" -eq 1
           grep -q '<!-- wp:loos/post-list' category-hubs/fishing-v3/content.template.html
           grep -q '"catID":"1"' category-hubs/fishing-v3/content.template.html
@@ -70,7 +70,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           {
-            echo '### Fishing category hub v3 — simple'
+            echo '### Fishing category hub v3.1 — text render fix'
             if [ -s fishing-hub-v3-deploy-audit.json ]; then
               echo
               echo '```json'
