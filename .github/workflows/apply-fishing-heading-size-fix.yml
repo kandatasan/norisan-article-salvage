@@ -1,0 +1,154 @@
+name: Apply fishing heading size fix
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/apply-fishing-heading-size-fix.yml'
+permissions:
+  contents: read
+  issues: write
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Patch fishing draft CSS only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python - <<'PY' | tee fishing-heading-fix-audit.json
+          import base64, hashlib, json, os, urllib.request
+          BASE='https://tsurikue.com/wp-json/wp/v2'
+          PAGE_ID=3316
+          EXPECTED_SHA='9a5a8a94a025bb4b64a074903f46dcb72fdee44ff0e8e8a9ffbf388771fa33b1'
+          OLD_MARKER='tsurikue-category-hub:v3.1:fishing-simple'
+          NEW_MARKER='tsurikue-category-hub:v3.2:fishing-simple'
+          FIX_MARKER='tq-fishing-heading-size-fix:v3.2'
+          user=os.environ['TSURIKUE_WP_USER']; pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          auth='Basic '+base64.b64encode(f'{user}:{pw}'.encode()).decode()
+          writes=0
+          def req(path, method='GET', data=None):
+              global writes
+              headers={'Authorization':auth,'User-Agent':'tsurikue-fishing-heading-fix/1.0'}
+              body=None
+              if data is not None:
+                  body=json.dumps(data,ensure_ascii=False).encode(); headers['Content-Type']='application/json; charset=utf-8'
+              r=urllib.request.Request(BASE+path,headers=headers,data=body,method=method)
+              with urllib.request.urlopen(r,timeout=45) as res:
+                  raw=res.read(); total=res.headers.get('X-WP-Total')
+                  if method not in ('GET','HEAD'): writes+=1
+                  return json.loads(raw.decode()), total
+          def count_public():
+              _,a=req('/posts?status=publish&per_page=1&_fields=id'); _,b=req('/pages?status=publish&per_page=1&_fields=id')
+              return {'posts':int(a or 0),'pages':int(b or 0)}
+          before=count_public()
+          p,_=req(f'/pages/{PAGE_ID}?context=edit&_fields=id,slug,status,title,content')
+          if p['id']!=3316 or p['slug']!='fishing-guide' or p['status']!='draft': raise RuntimeError('IDENTITY_MISMATCH')
+          raw=p['content']['raw']
+          sha=hashlib.sha256(raw.encode()).hexdigest()
+          if NEW_MARKER in raw and FIX_MARKER in raw:
+              after=count_public()
+              print(json.dumps({'action':'VERIFIED_EXISTING_V3_2','page_id':3316,'status':'draft','wordpress_write_count':0,'public_before':before,'public_after':after,'content_sha256':sha},ensure_ascii=False)); raise SystemExit
+          if sha!=EXPECTED_SHA: raise RuntimeError('STALE_DRAFT_REFUSED '+json.dumps({'expected':EXPECTED_SHA,'actual':sha}))
+          if raw.count(OLD_MARKER)!=1 or raw.count('</style>')<1: raise RuntimeError('PATCH_ANCHOR_MISSING')
+          css='''\n/* tq-fishing-heading-size-fix:v3.2 */\n.tq-fishing .tq-fishing-section{padding-top:64px!important;padding-bottom:64px!important}\n.tq-fishing h2.tq-fishing-section-title{display:block!important;margin:0 0 12px!important;padding:0!important;border:0!important;background:none!important;background-color:transparent!important;box-shadow:none!important;font-size:32px!important;line-height:1.35!important;font-weight:700!important;letter-spacing:-.02em!important;color:#20262b!important}\n.tq-fishing h2.tq-fishing-section-title::before,.tq-fishing h2.tq-fishing-section-title::after{display:none!important;content:none!important}\n.tq-fishing .tq-fishing-section-lead{margin-bottom:26px!important}\n.tq-fishing .tq-fishing-hero h1{font-size:64px!important;line-height:1.05!important}\n.tq-fishing .tq-fishing-card{padding:22px!important}\n.tq-fishing .tq-fishing-card h3{font-size:19px!important;line-height:1.5!important}\n@media(max-width:760px){\n.tq-fishing .tq-fishing-section{padding-top:44px!important;padding-bottom:44px!important}\n.tq-fishing h2.tq-fishing-section-title{font-size:26px!important;line-height:1.4!important}\n.tq-fishing .tq-fishing-hero h1{font-size:44px!important}\n.tq-fishing .tq-fishing-card{padding:18px!important}\n.tq-fishing .tq-fishing-card h3{font-size:18px!important}\n.tq-fishing .tq-fishing-section-lead{margin-bottom:22px!important}\n}\n'''
+          desired=raw.replace(OLD_MARKER,NEW_MARKER,1).replace('</style>',css+'</style>',1)
+          req(f'/pages/{PAGE_ID}',method='POST',data={'content':desired,'status':'draft'})
+          f,_=req(f'/pages/{PAGE_ID}?context=edit&_fields=id,slug,status,content')
+          saved=f['content']['raw']
+          checks={
+            'status_draft':f['status']=='draft','slug':f['slug']=='fishing-guide','new_marker_once':saved.count(NEW_MARKER)==1,
+            'fix_marker_once':saved.count(FIX_MARKER)==1,'old_marker_absent':OLD_MARKER not in saved,
+            'h2_pc_32':'font-size:32px!important' in saved,'h2_mobile_26':'font-size:26px!important' in saved,
+            'h2_reset':'background-color:transparent!important' in saved and 'content:none!important' in saved,
+            'swell_post_list':'<!-- wp:loos/post-list' in saved,'single_custom_html':saved.count('<!-- wp:html -->')==1
+          }
+          if not all(checks.values()): raise RuntimeError('FINAL_CHECK_FAILED '+json.dumps(checks))
+          after=count_public()
+          if before!=after: raise RuntimeError('PUBLIC_COUNTS_CHANGED')
+          print(json.dumps({'action':'PATCHED_FISHING_HEADING_SIZE_V3_2','page_id':3316,'status':'draft','wordpress_write_count':writes,'public_before':before,'public_after':after,'checks':checks,'old_sha':sha,'final_sha':hashlib.sha256(saved.encode()).hexdigest()},ensure_ascii=False))
+          PY
+          test -s fishing-heading-fix-audit.json
+      - name: Install Japanese font and Selenium
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y --no-install-recommends fonts-noto-cjk
+          fc-cache -f
+          python -m pip install --disable-pip-version-check selenium
+      - name: Render and verify real sizes
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python - <<'PY' | tee fishing-heading-render-audit.json
+          import base64,json,os,pathlib,re,time,urllib.request
+          from selenium import webdriver
+          from selenium.webdriver.chrome.options import Options
+          BASE='https://tsurikue.com/wp-json/wp/v2'; PAGE_ID=3316
+          auth='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
+          def get(url):
+              r=urllib.request.Request(url,headers={'Authorization':auth,'User-Agent':'tsurikue-render-v3.2/1.0'})
+              with urllib.request.urlopen(r,timeout=45) as x:return json.load(x)
+          p=get(f'{BASE}/pages/{PAGE_ID}?context=edit&_fields=id,slug,status,content')
+          if p['status']!='draft' or p['slug']!='fishing-guide':raise RuntimeError('IDENTITY_FAILED')
+          rendered=p['content']['rendered']
+          if 'p-postList' not in rendered or 'tq-fishing-heading-size-fix:v3.2' not in rendered:raise RuntimeError('RENDER_SOURCE_FAILED')
+          home=urllib.request.urlopen(urllib.request.Request('https://tsurikue.com/',headers={'User-Agent':'Mozilla/5.0'}),timeout=45).read().decode('utf-8','ignore')
+          styles='\n'.join(re.findall(r'<link[^>]+rel=["\'][^"\']*stylesheet[^"\']*["\'][^>]+>',home,re.I))
+          html='<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">'+styles+'<style>body{margin:0;background:#fff;font-family:"Noto Sans CJK JP",sans-serif}</style></head><body class="page page-template-default"><main>'+rendered+'</main></body></html>'
+          path=pathlib.Path('fishing-heading-rendered.html');path.write_text(html,encoding='utf-8')
+          opts=Options();opts.add_argument('--headless=new');opts.add_argument('--no-sandbox');opts.add_argument('--disable-dev-shm-usage');opts.add_argument('--force-device-scale-factor=1')
+          d=webdriver.Chrome(options=opts); checks={}; metrics={}
+          try:
+              for label,w,h in [('desktop',1440,1200),('mobile',390,1000)]:
+                  d.set_window_size(w,h);d.get(path.resolve().as_uri());time.sleep(2)
+                  h1=d.find_element('css selector','.tq-fishing-hero h1');h2=d.find_element('css selector','h2.tq-fishing-section-title');h3=d.find_element('css selector','.tq-fishing-card h3');post=d.find_element('css selector','.p-postList')
+                  sw=d.execute_script('return document.documentElement.scrollWidth');cw=d.execute_script('return document.documentElement.clientWidth')
+                  fs=lambda e:float(e.value_of_css_property('font-size').replace('px',''))
+                  metrics[label]={'h1_font':fs(h1),'h2_font':fs(h2),'h3_font':fs(h3),'h2_color':h2.value_of_css_property('color'),'h2_bg':h2.value_of_css_property('background-color'),'h2_text':h2.text,'scroll_width':sw,'client_width':cw,'post_list_width':round(post.rect['width'],1)}
+                  checks[label+'_jp_text']=len(h2.text)>2
+                  checks[label+'_h2_dark']=h2.value_of_css_property('color')=='rgba(32, 38, 43, 1)'
+                  checks[label+'_h2_clear_bg']=h2.value_of_css_property('background-color')=='rgba(0, 0, 0, 0)'
+                  checks[label+'_no_overflow']=sw<=cw+10
+                  checks[label+'_post_list']=post.rect['width']>200
+                  if label=='desktop':
+                      checks['desktop_h2_32']=31.5<=fs(h2)<=32.5; checks['desktop_h1_64']=63.5<=fs(h1)<=64.5; checks['desktop_h3_19']=18.5<=fs(h3)<=19.5
+                  else:
+                      checks['mobile_h2_26']=25.5<=fs(h2)<=26.5; checks['mobile_h1_44']=43.5<=fs(h1)<=44.5; checks['mobile_h3_18']=17.5<=fs(h3)<=18.5
+                  d.save_screenshot(f'fishing-heading-{label}.png')
+          finally:d.quit()
+          if not all(checks.values()):raise RuntimeError('RENDER_CHECK_FAILED '+json.dumps({'checks':checks,'metrics':metrics},ensure_ascii=False))
+          print(json.dumps({'page_id':3316,'status':'draft','checks':checks,'metrics':metrics},ensure_ascii=False))
+          PY
+          test -s fishing-heading-render-audit.json
+      - name: Upload screenshots and audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-heading-size-fix-v3-2
+          path: |
+            fishing-heading-fix-audit.json
+            fishing-heading-render-audit.json
+            fishing-heading-rendered.html
+            fishing-heading-desktop.png
+            fishing-heading-mobile.png
+          if-no-files-found: warn
+      - name: Log to Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Fishing hub v3.2 — heading readability and size fix'
+            for f in fishing-heading-fix-audit.json fishing-heading-render-audit.json; do
+              if [ -s "$f" ]; then echo; echo '```json'; cat "$f"; echo '```'; fi
+            done
+          } >/tmp/fishing-v32.md
+          gh issue comment 22 --body-file /tmp/fishing-v32.md
