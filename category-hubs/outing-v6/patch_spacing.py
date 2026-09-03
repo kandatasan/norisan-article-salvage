@@ -16,7 +16,7 @@ OUT=pathlib.Path(os.environ.get('TQ_OUTING_V6_RESULT_PATH','/tmp/outing-v6-resul
 writes=0
 
 CSS='''\n/* tq-outing-spacing:v6:compact-vertical */
-body.page-id-3154 .post_content{margin-top:0!important}
+.page-id-3154 .post_content{margin-top:0!important}
 .tq-outing-v3 .tq-hero{margin-bottom:0!important}
 .tq-outing-v3 .tq-choose{padding-top:32px!important}
 @media(max-width:760px){.tq-outing-v3 .tq-choose{padding-top:24px!important}}
@@ -24,7 +24,7 @@ body.page-id-3154 .post_content{margin-top:0!important}
 
 def req(path,method='GET',data=None,retries=4):
     global writes
-    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v6-spacing/1.0'}
+    headers={'Authorization':AUTH,'Accept':'application/json','User-Agent':'tsurikue-outing-v6-spacing/1.1'}
     body=None
     if data is not None:
         body=json.dumps(data,ensure_ascii=False).encode('utf-8')
@@ -64,7 +64,7 @@ def checks(text, rendered_text=''):
         'v6_marker_once':text.count(V6_MARK)==1,
         'dolphin_twice':text.count(DOLPHIN)==2,
         'heading_once':text.count(H1)==1,
-        'post_margin_rule':'body.page-id-3154 .post_content{margin-top:0!important}' in text,
+        'post_margin_rule':'.page-id-3154 .post_content{margin-top:0!important}' in text,
         'hero_margin_rule':'.tq-outing-v3 .tq-hero{margin-bottom:0!important}' in text,
         'choose_desktop_rule':'.tq-outing-v3 .tq-choose{padding-top:32px!important}' in text,
         'choose_mobile_rule':'@media(max-width:760px){.tq-outing-v3 .tq-choose{padding-top:24px!important}}' in text,
