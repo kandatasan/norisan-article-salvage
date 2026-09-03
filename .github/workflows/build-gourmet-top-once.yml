@@ -18,7 +18,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - run: python -m pip install --disable-pip-version-check selenium
+      - name: Install Selenium with retry
+        shell: bash
+        run: |
+          for attempt in 1 2 3; do
+            python -m pip install --disable-pip-version-check selenium && exit 0
+            echo "selenium install retry ${attempt}/3"
+            sleep 8
+          done
+          exit 1
       - name: Include newly published Ask the Meat article
         run: |
           python - <<'PY'
