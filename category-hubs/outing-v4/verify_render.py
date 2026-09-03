@@ -43,11 +43,13 @@ try:
         src=hero_img.get_attribute('src') or ''
         object_position=hero_img.value_of_css_property('object-position')
         left_gutter=float(geo['root']['left']); right_gutter=float(client-geo['root']['right'])
-        metrics[label]={'client_width':client,'scroll_width':scroll,'geometry':geo,'viewport_gutters':{'left':round(left_gutter,2),'right':round(right_gutter,2)},'hero_height':round(hero.rect['height'],2),'hero_src':src,'object_position':object_position,'h1_lines':lines,'h1_font':float(h1.value_of_css_property('font-size').replace('px','')),'details':len(details),'purpose_links':len(purpose),'far_items':len(far),'auto_state':auto}
+        inset_left=float(geo['root']['left'])-float(geo['parent']['left'])
+        inset_right=float(geo['parent']['right'])-float(geo['root']['right'])
+        metrics[label]={'client_width':client,'scroll_width':scroll,'geometry':geo,'viewport_gutters':{'left':round(left_gutter,2),'right':round(right_gutter,2)},'parent_insets':{'left':round(inset_left,2),'right':round(inset_right,2)},'hero_height':round(hero.rect['height'],2),'hero_src':src,'object_position':object_position,'h1_lines':lines,'h1_font':float(h1.value_of_css_property('font-size').replace('px','')),'details':len(details),'purpose_links':len(purpose),'far_items':len(far),'auto_state':auto}
         checks[label+'_dolphin_hero']=src.split('?')[0]==EXPECTED_HERO
         checks[label+'_heading_two_lines']=lines==['今日は、','どこ行く？']
         checks[label+'_no_alignfull_class']='alignfull' not in str(geo['rootClass']).split()
-        checks[label+'_root_matches_parent']=abs(float(geo['root']['left'])-float(geo['parent']['left']))<=2 and abs(float(geo['root']['right'])-float(geo['parent']['right']))<=2 and abs(float(geo['root']['width'])-float(geo['parent']['width']))<=3
+        checks[label+'_root_centered_in_parent']=inset_left>=-2 and inset_right>=-2 and abs(inset_left-inset_right)<=3
         checks[label+'_hero_matches_root']=abs(float(geo['hero']['left'])-float(geo['root']['left']))<=2 and abs(float(geo['hero']['width'])-float(geo['root']['width']))<=3
         checks[label+'_focal_point']=object_position.replace(' ','')=='58%45%'
         checks[label+'_five_accordions']=len(details)==5
@@ -55,9 +57,12 @@ try:
         checks[label+'_far_has_posts']=len(far)>=1
         checks[label+'_auto_ready']=auto=='ready'
         checks[label+'_no_overflow']=scroll<=client+8
-        if label=='desktop': checks['desktop_h1_size']=45<=metrics[label]['h1_font']<=55
+        if label=='desktop':
+            checks['desktop_h1_size']=45<=metrics[label]['h1_font']<=55
+            checks['desktop_inset_reasonable']=0<=inset_left<=24 and 0<=inset_right<=24
         else:
             checks['mobile_h1_size']=32<=metrics[label]['h1_font']<=36
+            checks['mobile_root_matches_parent']=abs(float(geo['root']['left'])-float(geo['parent']['left']))<=2 and abs(float(geo['root']['right'])-float(geo['parent']['right']))<=2
             checks['mobile_viewport_centered']=abs(left_gutter-right_gutter)<=3
         d.save_screenshot(str(ROOT/f'outing-v4-{label}.png'))
 finally:
