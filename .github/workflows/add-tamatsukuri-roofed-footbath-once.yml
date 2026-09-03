@@ -1,0 +1,31 @@
+name: Add Tamatsukuri roofed footbath once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/add_tamatsukuri_roofed_footbath_once.py'
+      - '.github/workflows/add-tamatsukuri-roofed-footbath-once.yml'
+  workflow_dispatch:
+jobs:
+  patch:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.x'}
+      - run: python -m py_compile scripts/add_tamatsukuri_roofed_footbath_once.py
+      - name: Add roofed footbath image
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/add_tamatsukuri_roofed_footbath_once.py | tee /tmp/tamatsukuri-roofed-footbath.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tamatsukuri-roofed-footbath-audit
+          path: /tmp/tamatsukuri-roofed-footbath.json
+          if-no-files-found: warn
