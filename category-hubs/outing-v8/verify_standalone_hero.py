@@ -2,7 +2,6 @@
 import json, pathlib, time
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from selenium.webdriver.common.by import By
 
 URL='https://tsurikue.com/odekake/?tq_audit=v8'
 DOLPHIN='https://tsurikue.com/wp-content/uploads/2026/09/img_2419.jpg'
@@ -51,6 +50,9 @@ desktop=run(1440,1000); mobile=run(500,850)
 def ok(m,mode):
     hero=m['hero']; header=m['header']; group=m['group']; post=m['post']
     gap=(hero['top']-header['bottom']) if hero and header else 999
+    left_gap=(hero['left']-post['left']) if hero and post else 999
+    right_gap=(post['right']-hero['right']) if hero and post else 999
+    centered=abs(left_gap-right_gap)<=2 and left_gap>=-1 and right_gap>=-1 and max(left_gap,right_gap)<=32
     checks={
       'hero_exists':bool(hero),
       'group_exists':bool(group),
@@ -63,15 +65,15 @@ def ok(m,mode):
       'five_details':m['details']==5,
       'no_overflow':m['scrollW']<=m['clientW']+2,
       'top_gap_not_worse':gap <= (70 if mode=='desktop' else 50),
-      'hero_width_sane':bool(hero and post and hero['width']<=post['width']+2 and hero['width']>=post['width']-4),
+      'hero_centered_in_post':centered,
       'auto_index':m['auto'] in ('ready','fallback'),
     }
     if mode=='mobile': checks['mobile_h1_size']=float(m['h1Font'].replace('px',''))<=36.5
-    return checks,gap
+    return checks,{'top':gap,'left':left_gap,'right':right_gap}
 
-dc,dgap=ok(desktop,'desktop'); mc,mgap=ok(mobile,'mobile')
+dc,dgaps=ok(desktop,'desktop'); mc,mgaps=ok(mobile,'mobile')
 checks={**{'desktop_'+k:v for k,v in dc.items()},**{'mobile_'+k:v for k,v in mc.items()}}
-report={'checks':checks,'gaps':{'desktop':dgap,'mobile':mgap},'metrics':{'desktop':desktop,'mobile':mobile}}
+report={'checks':checks,'gaps':{'desktop':dgaps,'mobile':mgaps},'metrics':{'desktop':desktop,'mobile':mobile}}
 OUT.write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
 print(json.dumps(report,ensure_ascii=False,indent=2))
 if not all(checks.values()): raise SystemExit(1)
