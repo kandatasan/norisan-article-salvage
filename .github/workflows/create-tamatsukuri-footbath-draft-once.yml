@@ -1,0 +1,31 @@
+name: Create Tamatsukuri footbath draft once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/create_tamatsukuri_footbath_draft_once.py'
+      - '.github/workflows/create-tamatsukuri-footbath-draft-once.yml'
+  workflow_dispatch:
+jobs:
+  create:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.x'}
+      - run: python -m py_compile scripts/create_tamatsukuri_footbath_draft_once.py
+      - name: Create WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/create_tamatsukuri_footbath_draft_once.py | tee /tmp/tamatsukuri-footbath-draft.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tamatsukuri-footbath-draft-audit
+          path: /tmp/tamatsukuri-footbath-draft.json
+          if-no-files-found: warn
