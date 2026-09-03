@@ -1,0 +1,40 @@
+name: Audit outing live cache and far tag 20260903
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/audit-outing-live-cache-and-far-tag-20260903.yml'
+      - 'category-hubs/outing-v9/**'
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install browser audit dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+          python -m pip install --quiet selenium
+      - name: Audit published outing and far tag
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python category-hubs/outing-v9/audit_live_and_far.py | tee /tmp/outing-v9-audit.log
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-v9-readonly-audit
+          path: |
+            /tmp/outing-v9-audit.json
+            /tmp/outing-v9-audit.log
+          if-no-files-found: warn
