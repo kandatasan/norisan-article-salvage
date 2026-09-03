@@ -109,11 +109,11 @@ def content():
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>焼肉で約5,000円と聞くと安い金額ではありません。<br>ただ、実際に出てきた肉を食べると、私は<strong>「これならまた来たい」</strong>と思える内容でした。</p>
+<p>焼肉で約5,000円と聞くと安い金額ではありません。<br>ただ、私にとっては<strong>「今まで食べた焼肉の中でも最強クラスかもしれない」</strong>と思うくらい、満足度の高い肉でした。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>肉好きで集まる日や、家族・親戚でちょっといい焼肉を食べたい日に合うと思います。</p>
+<p>家族や親戚で、ちょっといい焼肉を食べたい日に候補にしやすいと思います。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading -->
@@ -121,7 +121,7 @@ def content():
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
-<p>ここはかなり人気があります。<br>私なら、ふらっと行くより<strong>事前に予約してから行きます。</strong></p>
+<p>ここはかなり人気があります。<br>行くなら<strong>事前予約がおすすめ</strong>です。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -137,7 +137,7 @@ def content():
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>私は「店舗前に数台」という記憶だったので、ここは現在情報も確認しました。<br>6人など複数人で行く場合は、車をまとめられるならまとめた方が動きやすいと思います。</p>
+<p>私の記憶も「店舗前に数台」という感じでした。<br>6人など複数人で行く場合は、車をまとめられるならまとめた方が動きやすいと思います。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:heading -->
@@ -157,7 +157,7 @@ def content():
 <!-- /wp:paragraph -->
 
 <!-- wp:heading -->
-<h2 class="wp-block-heading">肉の名前は分からん。でも、また食べたい</h2>
+<h2 class="wp-block-heading">肉の名前は分からん。でも、とにかく旨かった</h2>
 <!-- /wp:heading -->
 
 <!-- wp:paragraph -->
