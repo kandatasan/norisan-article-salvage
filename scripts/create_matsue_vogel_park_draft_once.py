@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-matsue-vogel-park-create/1.0"
+USER_AGENT = "tsurikue-matsue-vogel-park-create/1.1"
 TITLE = "松江フォーゲルパークへ行ってきた！鳥との距離が近すぎる園内を5時間満喫"
 SLUG = "matsue-vogel-park"
 CATEGORY_ID = 7
@@ -101,17 +101,17 @@ def build_content() -> str:
     for media_id, path in EXPECTED_MEDIA.items():
         if f"wp-image-{media_id}" not in body or path not in body:
             raise RuntimeError(f"expected media missing from body: {media_id}")
-    if "😀" in body or "🔥" in body or "🚀" in body:
+    if any(x in body for x in ("😀", "🔥", "🚀")):
         raise RuntimeError("article body contains emoji")
     return MARKER + "\n" + body
 
-def fetch_by_slug(auth: str, status: str):
-    q = urllib.parse.urlencode({"context":"edit","status":status,"slug":SLUG,"per_page":100,"_fields":"id,slug,status,title,content,excerpt,featured_media,categories,tags,link"})
+def fetch_exact_slug_any_status(auth: str):
+    q = urllib.parse.urlencode({"context":"edit","status":"any","slug":SLUG,"per_page":100,"_fields":"id,slug,status,title,content,excerpt,featured_media,categories,tags,link"})
     rows, _ = request_json(f"{SITE_URL}/wp-json/wp/v2/posts?{q}", auth)
     return list(rows)
 
 def fetch_title_search(auth: str):
-    q = urllib.parse.urlencode({"context":"edit","status":"publish,draft,pending,private,future","search":"松江フォーゲルパーク","per_page":100,"_fields":"id,slug,status,title"})
+    q = urllib.parse.urlencode({"context":"edit","status":"any","search":"松江フォーゲルパーク","per_page":100,"_fields":"id,slug,status,title"})
     rows, _ = request_json(f"{SITE_URL}/wp-json/wp/v2/posts?{q}", auth)
     return list(rows)
 
@@ -145,14 +145,13 @@ def main() -> int:
     validate_media(auth); validate_taxonomy(auth)
     content=build_content()
 
-    if fetch_by_slug(auth, "publish"):
-        raise RuntimeError(f"published /{SLUG}/ already exists; refusing create")
-    drafts=fetch_by_slug(auth, "draft")
-    if len(drafts)>1: raise RuntimeError("multiple exact-slug drafts found")
-
-    if drafts:
-        validate_draft(drafts[0], content)
-        post_id=int(drafts[0]["id"]); action="ALREADY_UP_TO_DATE"; write_count=0
+    exact=fetch_exact_slug_any_status(auth)
+    if len(exact)>1: raise RuntimeError("multiple exact-slug posts found")
+    if exact:
+        if exact[0].get("status") != "draft":
+            raise RuntimeError(f"/{SLUG}/ already exists with status={exact[0].get('status')}; refusing create")
+        validate_draft(exact[0], content)
+        post_id=int(exact[0]["id"]); action="ALREADY_UP_TO_DATE"; write_count=0
     else:
         title_matches=fetch_title_search(auth)
         if title_matches:
