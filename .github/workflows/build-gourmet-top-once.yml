@@ -19,6 +19,20 @@ jobs:
         with:
           python-version: '3.x'
       - run: python -m pip install --disable-pip-version-check selenium
+      - name: Include newly published Ask the Meat article
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/build_gourmet_top_once.py')
+          s=p.read_text(encoding='utf-8')
+          old="'agetate-tenpura-hongo':[]}"
+          new="'agetate-tenpura-hongo':[],'ask-the-meat':['meat-hearty']}"
+          if old not in s and "'ask-the-meat':['meat-hearty']" not in s:
+              raise SystemExit('CURATED_PATCH_ANCHOR_MISSING')
+          if old in s:
+              s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
+          PY
       - run: python -m py_compile scripts/build_gourmet_top_once.py
       - name: Curate tags, publish gourmet top and verify
         env:
