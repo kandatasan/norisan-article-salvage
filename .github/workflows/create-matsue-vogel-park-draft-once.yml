@@ -1,0 +1,50 @@
+name: Create Matsue Vogel Park draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial/matsue-vogel-park/content.html'
+      - 'scripts/create_matsue_vogel_park_draft_once.py'
+      - '.github/workflows/create-matsue-vogel-park-draft-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/create_matsue_vogel_park_draft_once.py
+      - name: Create guarded WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_matsue_vogel_park_draft_once.py
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Matsue Vogel Park draft: SUCCESS'
+            echo
+            cat reports/matsue-vogel-park-create/summary.md
+          } > /tmp/matsue-vogel-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/matsue-vogel-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matsue-vogel-park-draft-create
+          path: reports/matsue-vogel-park-create/
+          if-no-files-found: warn
