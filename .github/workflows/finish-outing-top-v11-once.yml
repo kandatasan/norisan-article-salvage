@@ -1,0 +1,55 @@
+name: Finish outing top V11 once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/finish_outing_top_v11.py'
+      - '.github/workflows/finish-outing-top-v11-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install browser verifier
+        run: python -m pip install --disable-pip-version-check selenium
+      - name: Syntax check
+        run: python -m py_compile scripts/finish_outing_top_v11.py
+      - name: Apply V11 and verify live page
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/finish_outing_top_v11.py | tee /tmp/outing-v11.log
+      - name: Record success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Outing top V11: SUCCESS'
+            echo
+            echo 'ヒーロー全幅化と5アコーディオンの実データ参照を反映・検証しました。'
+            echo
+            echo '```json'
+            cat /tmp/outing-v11.log
+            echo '```'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-v11-audit
+          path: /tmp/outing-v11.log
+          if-no-files-found: warn
