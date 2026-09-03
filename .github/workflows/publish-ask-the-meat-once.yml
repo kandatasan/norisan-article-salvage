@@ -1,0 +1,51 @@
+name: Publish Ask the Meat once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/publish_ask_the_meat_once.py'
+      - '.github/workflows/publish-ask-the-meat-once.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  publish-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python -m py_compile scripts/publish_ask_the_meat_once.py
+      - name: Publish Ask the Meat and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/publish_ask_the_meat_once.py | tee /tmp/ask-the-meat.json
+      - name: Record success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Ask the Meat: PUBLISHED'
+            echo
+            echo '熟成肉コースの一次体験記事をグルメカテゴリ＋広島／肉・がっつりタグで公開しました。'
+            echo
+            echo '```json'
+            cat /tmp/ask-the-meat.json
+            echo '```'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: ask-the-meat-publish-audit
+          path: /tmp/ask-the-meat.json
+          if-no-files-found: warn
