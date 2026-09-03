@@ -37,3 +37,4 @@ def main():
  if not all(checks.values()):raise RuntimeError('VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
  print(json.dumps({'ok':True,'action':'KURASHIKI_BIKAN_DRAFT_CREATED','post_id':p['id'],'preview':p['link'],'media':{s:m[s]['id'] for s in STEMS},'category':cat,'tag':tag,'checks':checks,'public_before':before,'public_after':after},ensure_ascii=False,indent=2))
 if __name__=='__main__':main()
+# retry-after-img-7654-upload
