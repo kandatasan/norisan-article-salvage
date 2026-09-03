@@ -1,0 +1,51 @@
+name: Organize gourmet tags once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/organize_gourmet_tags_once.py'
+      - '.github/workflows/organize-gourmet-tags-once.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  organize-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python -m py_compile scripts/organize_gourmet_tags_once.py
+      - name: Audit, create missing gourmet tags, assign and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/organize_gourmet_tags_once.py | tee /tmp/gourmet-tags.json
+      - name: Record success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Gourmet tags: ORGANIZED'
+            echo
+            echo '既存タグを優先し、足りない料理ジャンルタグだけ作成して公開済みグルメ記事へ付与しました。既存タグは削除していません。'
+            echo
+            echo '```json'
+            cat /tmp/gourmet-tags.json
+            echo '```'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gourmet-tag-organization-audit
+          path: /tmp/gourmet-tags.json
+          if-no-files-found: warn
