@@ -10,7 +10,7 @@ PAGE_SLUG='odekake'
 PAGE_TITLE='おでかけ'
 ROOT_CLASS='tq-outing-v3'
 MARK='/* tq-outing-v11-fullbleed */'
-UA='tsurikue-outing-v11/1.1'
+UA='tsurikue-outing-v11/1.2'
 GROUPS={
     'hiroshima':('hiroshima','広島'),
     'etajima':('etajima','江田島'),
@@ -86,9 +86,9 @@ def li_html(posts):
 def inject_fullbleed(raw):
     sel=f'.{ROOT_CLASS}.tq-hero'
     css=(MARK+'\n'
-         f'{sel}'+'{max-width:none!important;width:auto!important;'
-         'margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;}\n'
-         f'@supports(width:100dvw)'+'{'+f'{sel}'+'{margin-left:calc(50% - 50dvw)!important;margin-right:calc(50% - 50dvw)!important;}}\n')
+         f'{sel}'+'{position:relative!important;left:50%!important;max-width:100vw!important;width:100vw!important;'
+         'margin-left:-50vw!important;margin-right:0!important;}\n'
+         f'@supports(width:100dvw)'+'{'+f'{sel}'+'{max-width:100dvw!important;width:100dvw!important;left:50%!important;margin-left:-50dvw!important;margin-right:0!important;}}\n')
     if MARK in raw:
         return re.sub(r'/\* tq-outing-v11-fullbleed \*/.*?(?=</style>)',css,raw,count=1,flags=re.S)
     pos=raw.find('</style>')
@@ -113,6 +113,7 @@ def patch_group(raw,key,tag_id,posts,cat_ids,tag_slug):
     block=m.group(1)
     block=re.sub(r'\n?<!-- tq-outing-far-tag-link:v1 -->\n?','\n',block)
     block=re.sub(r'<!-- wp:paragraph \{"className":"tq-(?:far-)?tag-link"\} --><p class="tq-(?:far-)?tag-link"><a href="[^"]+">.*?</a></p><!-- /wp:paragraph -->\n?','',block,flags=re.S)
+    block=re.sub(r'<!-- wp:paragraph \{"className":"tq-tag-link"\} --><p class="tq-tag-link"><a href="[^"]+">.*?</a></p><!-- /wp:paragraph -->\n?','',block,flags=re.S)
     archive_block=(f'\n<!-- wp:paragraph {{"className":"tq-tag-link"}} -->'
                    f'<p class="tq-tag-link"><a href="{archive}">{text}</a></p><!-- /wp:paragraph -->\n')
     new=block+archive_block+m.group(2)
@@ -175,6 +176,6 @@ def main():
         if metrics['groups'][key]['count']!=f'{len(expected)}記事': raise RuntimeError('COUNT_MISMATCH_'+key)
         if not metrics['groups'][key]['archive'] or normalize_links([metrics['groups'][key]['archive']])[0]!=normalize_links([archives[key]])[0]: raise RuntimeError('ARCHIVE_MISMATCH_'+key)
         audit[key]={'tag_id':v['term']['id'],'tag_slug':v['term']['slug'],'count':len(expected),'slugs':[p['slug'] for p in v['posts']],'archive':archives[key]}
-    print(json.dumps({'ok':True,'action':'OUTING_V11_FULL_HERO_PERFECT_ACCORDIONS','page_id':page['id'],'root_class':ROOT_CLASS,'categories':cat_ids,'groups':audit,'hero':metrics['hero'],'viewport':metrics['vw'],'public_before':before,'public_after':after_counts},ensure_ascii=False,indent=2))
+    print(json.dumps({'ok':True,'action':'OUTING_V11_FULL_HERO_PERFECT_ACCORDIONS','page_id':page['id'],'root_class':ROOT_CLASS,'categories':cat_ids,'groups':audit,'hero':metrics['hero'],'viewport':metrics['vw'],'scroll_width':metrics['sw'],'public_before':before,'public_after':after_counts},ensure_ascii=False,indent=2))
 
 if __name__=='__main__': main()
