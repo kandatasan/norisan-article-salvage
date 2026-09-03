@@ -4,7 +4,7 @@ import base64,json,os,re,urllib.parse,urllib.request
 SITE='https://tsurikue.com';BASE=SITE+'/wp-json/wp/v2';SLUG='tamatsukuri-onsen-footbath'
 TITLE='玉造温泉の足湯は無料！アッッッツイけど気持ちいい｜美肌温泉も持ち帰ってみた'
 AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode()
-H={'Authorization':AUTH,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-tamatsukuri-footbath/1.0'}
+H={'Authorization':AUTH,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-tamatsukuri-footbath/1.1'}
 def req(path,method='GET',payload=None):
  d=None if payload is None else json.dumps(payload,ensure_ascii=False).encode();r=urllib.request.Request(BASE+path,data=d,headers=H,method=method)
  with urllib.request.urlopen(r,timeout=60) as x:return json.loads(x.read().decode()),dict(x.headers)
@@ -35,7 +35,7 @@ def main():
  if existing:
   print(json.dumps({'ok':True,'action':'ALREADY_EXISTS','post':existing},ensure_ascii=False,indent=2));return
  before={'posts':total('posts'),'pages':total('pages')};rows=all_media()
- stems=['img_7023','img_7019','img_7013','img_7015','img_7017','img_7018','img_7014']
+ stems=['img_7023','img_7019','img_7013','img_7015','img_7017','img_7018']
  ms={s:pick(rows,s) for s in stems}
  category=term('categories','sightseeing-leisure');sanin=term('tags','sanin')
  content='\n\n'.join([
@@ -46,7 +46,6 @@ def main():
  h2('玉造温泉の足湯は無料。現在は3か所'),
  p('玉造温泉の公式サイトでは、現在<strong>無料で楽しめる足湯が3か所</strong>案内されています。<br>玉湯川沿いに2か所、もう1か所は屋根付きの姫神広場です。'),
  p('川沿いをぶらぶら歩いて、そのまま足湯へ寄れるのが玉造温泉のいいところ。<br>雨や日差しが気になる日は、屋根付きの姫神広場も使いやすそうです。'),
- img(ms['img_7014'],'玉造温泉の姫神広場にある屋根付き足湯'),
  h2('まずは「美肌温泉ボトル」をゲット'),
  p('今回の目的のひとつが、妻が聞きつけた温泉水。<br>湯薬師広場では、<strong>玉造温泉の源泉をボトルに入れて持ち帰れます。</strong>'),
  img(ms['img_7019'],'玉造温泉の湯薬師広場で手に入れた美肌温泉ボトル'),
@@ -83,6 +82,5 @@ def main():
  after={'posts':total('posts'),'pages':total('pages')}
  checks={'slug':v['slug']==SLUG,'draft':v['status']=='draft','title':v['title']['raw']==TITLE,'category':category in v['categories'],'sanin':sanin in v['tags'],'featured':v['featured_media']==int(ms['img_7018']['id']),'marker':'tamatsukuri-footbath:v1' in v['content']['raw'],'images':all(f'wp-image-{int(ms[s]["id"])}' in v['content']['raw'] for s in stems),'public_unchanged':before==after}
  if not all(checks.values()):raise RuntimeError('VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
- print(json.dumps({'ok':True,'action':'TAMATSUKURI_FOOTBATH_DRAFT_CREATED','post_id':pid,'slug':SLUG,'status':v['status'],'title':TITLE,'featured_media':v['featured_media'],'media':{s:int(ms[s]['id']) for s in stems},'checks':checks,'public_before':before,'public_after':after},ensure_ascii=False,indent=2))
+ print(json.dumps({'ok':True,'action':'TAMATSUKURI_FOOTBATH_DRAFT_CREATED','post_id':pid,'slug':SLUG,'status':v['status'],'title':TITLE,'featured_media':v['featured_media'],'media':{s:int(ms[s]['id']) for s in stems},'missing_media_note':'img_7014 roofed footbath was not in WordPress media; add later','checks':checks,'public_before':before,'public_after':after},ensure_ascii=False,indent=2))
 if __name__=='__main__':main()
-# workflow trigger: 2026-09-04
