@@ -29,7 +29,10 @@ jobs:
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/finish_outing_top_v11.py | tee /tmp/outing-v11.log
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/finish_outing_top_v11.py | tee /tmp/outing-v11.log
       - name: Record success
         if: success()
         env:
