@@ -1,0 +1,41 @@
+name: Audit Matsue Vogel Park 20260903
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_matsue_vogel_park_once.py'
+      - '.github/workflows/audit-matsue-vogel-park-20260903.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/audit_matsue_vogel_park_once.py
+      - name: Run read-only audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_matsue_vogel_park_once.py
+      - name: Record result
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { echo '### Matsue Vogel Park audit: SUCCESS'; echo; cat reports/matsue-vogel-park-audit/summary.md; } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: matsue-vogel-park-audit
+          path: reports/matsue-vogel-park-audit/
+          if-no-files-found: warn
