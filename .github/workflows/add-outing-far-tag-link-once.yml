@@ -1,0 +1,53 @@
+name: Add outing far tag link once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/add_outing_far_tag_link_once.py'
+      - '.github/workflows/add-outing-far-tag-link-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  patch-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/add_outing_far_tag_link_once.py
+      - name: Add tag archive link and verify public render
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/add_outing_far_tag_link_once.py | tee /tmp/outing-far-tag-link.log
+      - name: Record result
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Outing far-tag archive link: SUCCESS'
+            echo
+            echo '公開中のおでかけトップ「ちょっと遠くへ」に、同名タグアーカイブへの「記事を全部見る」導線を追加しました。'
+            echo
+            echo '```'
+            cat /tmp/outing-far-tag-link.log
+            echo '```'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload audit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-far-tag-link-audit
+          path: /tmp/outing-far-tag-link.log
+          if-no-files-found: warn
