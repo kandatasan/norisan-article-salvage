@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Correct top-level hero source guard
+      - name: Correct v10 source guards
         shell: bash
         run: |
           set -euo pipefail
@@ -24,11 +24,17 @@ jobs:
           from pathlib import Path
           p=Path('category-hubs/outing-v10/rebuild_and_swap.py')
           s=p.read_text(encoding='utf-8')
-          old="'hero_first':s.find('<!-- wp:cover')<s.find('<!-- wp:html')<s.find('<!-- wp:group'),"
-          new="'hero_first':s.find('<!-- wp:cover')>=0 and s.find('<!-- wp:cover')<s.find('<!-- wp:html'),"
-          if old not in s:
-              raise SystemExit('expected hero_first guard not found')
-          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          replacements={
+            "'hero_first':s.find('<!-- wp:cover')<s.find('<!-- wp:html')<s.find('<!-- wp:group'),":
+            "'hero_first':s.find('<!-- wp:cover')>=0 and s.find('<!-- wp:cover')<s.find('<!-- wp:html'),",
+            "'no_alignfull':'alignfull' not in s,":
+            "'root_no_alignfull':'<div class=\"wp-block-group tq-outing-clean\">' in s and '<div class=\"wp-block-group alignfull tq-outing-clean\">' not in s,",
+          }
+          for old,new in replacements.items():
+              if old not in s:
+                  raise SystemExit('expected v10 guard not found: '+old)
+              s=s.replace(old,new,1)
+          p.write_text(s,encoding='utf-8')
           PY
       - name: Syntax check
         run: python -m py_compile category-hubs/outing-v10/rebuild_and_swap.py
