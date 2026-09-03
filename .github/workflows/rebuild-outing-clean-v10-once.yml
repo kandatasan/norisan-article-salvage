@@ -16,7 +16,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-      - name: Correct v10 source guards and add fresh-page diagnostics
+      - name: Apply final clean-page source corrections
         shell: bash
         run: |
           set -euo pipefail
@@ -25,16 +25,21 @@ jobs:
           p=Path('category-hubs/outing-v10/rebuild_and_swap.py')
           s=p.read_text(encoding='utf-8')
           replacements={
-            "TEMP_SLUG='odekake-clean-v10-preview'":"TEMP_SLUG='odekake-clean-v10b-preview'",
+            "TEMP_SLUG='odekake-clean-v10-preview'":"TEMP_SLUG='odekake-clean-v10c-preview'",
             "'hero_first':s.find('<!-- wp:cover')<s.find('<!-- wp:html')<s.find('<!-- wp:group'),":"'hero_first':s.find('<!-- wp:cover')>=0 and s.find('<!-- wp:cover')<s.find('<!-- wp:html'),",
             "'no_alignfull':'alignfull' not in s,":"'root_no_alignfull':'<div class=\"wp-block-group tq-outing-clean\">' in s and '<div class=\"wp-block-group alignfull tq-outing-clean\">' not in s,",
             "farText:far?far.innerText:'',title:q('.c-pageTitle')?getComputedStyle(q('.c-pageTitle')).display:null,breadcrumb:q('.p-breadcrumb')?getComputedStyle(q('.p-breadcrumb')).display:null,auto:document.documentElement.dataset.tqOutingAuto||null};":
-            "farText:far?far.textContent:'',content:r(q('#content')),main:r(q('#main_content')),inner:r(q('.l-mainContent__inner')),contentStyle:q('#content')?{marginTop:getComputedStyle(q('#content')).marginTop,paddingTop:getComputedStyle(q('#content')).paddingTop}:null,contentPrev:q('#content')&&q('#content').previousElementSibling?{tag:q('#content').previousElementSibling.tagName,cls:q('#content').previousElementSibling.className,display:getComputedStyle(q('#content').previousElementSibling).display,rect:r(q('#content').previousElementSibling)}:null,bodyChildren:q('#body_wrap')?Array.from(q('#body_wrap').children).map(e=>({tag:e.tagName,id:e.id,cls:e.className,display:getComputedStyle(e).display,marginTop:getComputedStyle(e).marginTop,paddingTop:getComputedStyle(e).paddingTop,rect:r(e)})):[],title:q('.c-pageTitle')?getComputedStyle(q('.c-pageTitle')).display:null,breadcrumb:q('.p-breadcrumb')?getComputedStyle(q('.p-breadcrumb')).display:null,auto:document.documentElement.dataset.tqOutingAuto||null};"
+            "farText:far?far.textContent:'',title:q('.c-pageTitle')?getComputedStyle(q('.c-pageTitle')).display:null,breadcrumb:q('.p-breadcrumb')?getComputedStyle(q('.p-breadcrumb')).display:null,auto:document.documentElement.dataset.tqOutingAuto||null};"
           }
           for old,new in replacements.items():
               if old not in s:
-                  raise SystemExit('expected v10 diagnostic target not found: '+old[:90])
+                  raise SystemExit('expected v10 final target not found: '+old[:90])
               s=s.replace(old,new,1)
+          old_css="#content.l-content{padding-top:0!important}"
+          new_css="#content.l-content{padding-top:0!important}\\n#body_wrap:has(.tq-outing-clean) #content,#body_wrap:has(.tq-outing-clean) #main_content,#body_wrap:has(.tq-outing-clean) .l-mainContent__inner,#body_wrap:has(.tq-outing-clean) .post_content{margin-top:0!important;padding-top:0!important}"
+          if old_css not in s:
+              raise SystemExit('expected SWELL spacing CSS target not found')
+          s=s.replace(old_css,new_css,1)
           p.write_text(s,encoding='utf-8')
           PY
       - name: Syntax check
@@ -45,7 +50,7 @@ jobs:
           sudo apt-get update -qq
           sudo apt-get install -y -qq fonts-noto-cjk
           python -m pip install --quiet selenium
-      - name: Build fresh diagnostic page and verify
+      - name: Build clean page, verify, and swap
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
