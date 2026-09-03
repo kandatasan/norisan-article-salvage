@@ -8,8 +8,9 @@ SITE='https://tsurikue.com'
 BASE=SITE+'/wp-json/wp/v2'
 PAGE_SLUG='odekake'
 PAGE_TITLE='おでかけ'
+ROOT_CLASS='tq-outing-v3'
 MARK='/* tq-outing-v11-fullbleed */'
-UA='tsurikue-outing-v11/1.0'
+UA='tsurikue-outing-v11/1.1'
 GROUPS={
     'hiroshima':('hiroshima','広島'),
     'etajima':('etajima','江田島'),
@@ -83,10 +84,11 @@ def li_html(posts):
 
 
 def inject_fullbleed(raw):
+    sel=f'.{ROOT_CLASS}.tq-hero'
     css=(MARK+'\n'
-         '.tq-outing-clean.tq-hero{max-width:none!important;width:auto!important;'
+         f'{sel}'+'{max-width:none!important;width:auto!important;'
          'margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;}\n'
-         '@supports(width:100dvw){.tq-outing-clean.tq-hero{margin-left:calc(50% - 50dvw)!important;margin-right:calc(50% - 50dvw)!important;}}\n')
+         f'@supports(width:100dvw)'+'{'+f'{sel}'+'{margin-left:calc(50% - 50dvw)!important;margin-right:calc(50% - 50dvw)!important;}}\n')
     if MARK in raw:
         return re.sub(r'/\* tq-outing-v11-fullbleed \*/.*?(?=</style>)',css,raw,count=1,flags=re.S)
     pos=raw.find('</style>')
@@ -123,15 +125,15 @@ def browser_metrics():
     d=webdriver.Chrome(options=o)
     try:
         d.get(SITE+'/odekake/?tq_v11='+str(int(time.time()))); time.sleep(5)
-        return d.execute_script('''
-const out={vw:document.documentElement.clientWidth,sw:document.documentElement.scrollWidth};
-const h=document.querySelector('.tq-outing-clean.tq-hero'); const r=h&&h.getBoundingClientRect();
-out.hero=r?{left:r.left,right:r.right,width:r.width}:null; out.auto=document.documentElement.dataset.tqOutingAuto||null; out.groups={};
-for (const key of ['hiroshima','etajima','yamaguchi','sanin','far']) {
+        return d.execute_script(f'''
+const out={{vw:document.documentElement.clientWidth,sw:document.documentElement.scrollWidth}};
+const h=document.querySelector('.{ROOT_CLASS}.tq-hero'); const r=h&&h.getBoundingClientRect();
+out.hero=r?{{left:r.left,right:r.right,width:r.width}}:null; out.auto=document.documentElement.dataset.tqOutingAuto||null; out.groups={{}};
+for (const key of ['hiroshima','etajima','yamaguchi','sanin','far']) {{
  const links=[...document.querySelectorAll('.tq-auto-'+key+' a')].map(a=>a.href);
  const count=document.querySelector('[data-count="'+key+'"]'); const archive=document.querySelector('.tq-accordion-'+key+' .tq-tag-link a');
- out.groups[key]={links:links,count:count?count.textContent.trim():null,archive:archive?archive.href:null};
-}
+ out.groups[key]={{links:links,count:count?count.textContent.trim():null,archive:archive?archive.href:null}};
+}}
 return out;''')
     finally: d.quit()
 
@@ -152,7 +154,7 @@ def main():
         if not posts: raise RuntimeError('EMPTY_'+key)
         resolved[key]={'term':term,'posts':posts}
     raw=(page.get('content') or {}).get('raw') or ''
-    if 'tq-outing-clean' not in raw or raw.count('tq-accordion-')<5: raise RuntimeError('UNEXPECTED_LIVE_STRUCTURE')
+    if ROOT_CLASS not in raw or raw.count('<!-- wp:details')!=5 or raw.count('tq-accordion-')<5: raise RuntimeError('UNEXPECTED_LIVE_STRUCTURE')
     patched=inject_fullbleed(raw); archives={}
     for key,v in resolved.items():
         patched,archives[key]=patch_group(patched,key,int(v['term']['id']),v['posts'],cat_ids,v['term']['slug'])
@@ -173,6 +175,6 @@ def main():
         if metrics['groups'][key]['count']!=f'{len(expected)}記事': raise RuntimeError('COUNT_MISMATCH_'+key)
         if not metrics['groups'][key]['archive'] or normalize_links([metrics['groups'][key]['archive']])[0]!=normalize_links([archives[key]])[0]: raise RuntimeError('ARCHIVE_MISMATCH_'+key)
         audit[key]={'tag_id':v['term']['id'],'tag_slug':v['term']['slug'],'count':len(expected),'slugs':[p['slug'] for p in v['posts']],'archive':archives[key]}
-    print(json.dumps({'ok':True,'action':'OUTING_V11_FULL_HERO_PERFECT_ACCORDIONS','page_id':page['id'],'categories':cat_ids,'groups':audit,'hero':metrics['hero'],'viewport':metrics['vw'],'public_before':before,'public_after':after_counts},ensure_ascii=False,indent=2))
+    print(json.dumps({'ok':True,'action':'OUTING_V11_FULL_HERO_PERFECT_ACCORDIONS','page_id':page['id'],'root_class':ROOT_CLASS,'categories':cat_ids,'groups':audit,'hero':metrics['hero'],'viewport':metrics['vw'],'public_before':before,'public_after':after_counts},ensure_ascii=False,indent=2))
 
 if __name__=='__main__': main()
