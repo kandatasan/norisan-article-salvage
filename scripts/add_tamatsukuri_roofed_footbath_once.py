@@ -34,3 +34,4 @@ def main():
  if not all(checks.values()):raise RuntimeError('VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
  print(json.dumps({'ok':True,'action':'TAMATSUKURI_ROOFED_FOOTBATH_ADDED','post_id':POST_ID,'media_id':mid,'media_url':src,'checks':checks,'public_before':before,'public_after':after},ensure_ascii=False,indent=2))
 if __name__=='__main__':main()
+# trigger: 2026-09-04
