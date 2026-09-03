@@ -2,7 +2,7 @@
 from __future__ import annotations
 import base64,json,os,re,urllib.parse,urllib.request
 SITE='https://tsurikue.com';BASE=SITE+'/wp-json/wp/v2';SLUG='ask-the-meat';MARK='<!-- ask-the-meat-trim:v1 -->'
-AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode();H={'Authorization':AUTH,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-ask-meat-trim/1.0'}
+AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode();H={'Authorization':AUTH,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-ask-meat-trim/1.1'}
 def req(path,method='GET',payload=None):
  d=None if payload is None else json.dumps(payload,ensure_ascii=False).encode();r=urllib.request.Request(BASE+path,data=d,headers=H,method=method)
  with urllib.request.urlopen(r,timeout=60) as x:return json.loads(x.read().decode()),dict(x.headers)
@@ -18,24 +18,20 @@ def main():
  p=post();old=p['content']['raw'];before={'posts':total('posts'),'pages':total('pages')}
  if MARK in old:
   print(json.dumps({'ok':True,'action':'ALREADY_TRIMMED','url':p['link']},ensure_ascii=False));return
- # Preserve exactly the images the user chose to keep in the editor, in their current order.
  imgs=re.findall(r'<!-- wp:image .*?<!-- /wp:image -->',old,flags=re.S)
  if not imgs:raise RuntimeError('NO_USER_SELECTED_IMAGES')
- # Keep the current store-info table and small dated note so verified facts are not rewritten.
  table=re.search(r'<!-- wp:table -->.*?<!-- /wp:table -->',old,flags=re.S)
  note=re.search(r'<!-- wp:paragraph \{[^\n]*"fontSize":"small"[^\n]*\} -->.*?<!-- /wp:paragraph -->',old,flags=re.S)
  if not table or not note:raise RuntimeError('STORE_INFO_BLOCKS_MISSING')
- # Image-forward article: short copy, no repeated explanation after every photo.
  chunks=[MARK,
  para('広島市安佐南区緑井の「アスク ザ ミート（ask the meat）」へ、親戚6人で行ってきました。<br>今回食べたのは、<strong>熟成肉料理のみコース 4,980円〜</strong>です。'),
  para('先に感想を言うと、<strong>めちゃくちゃ旨い。</strong><br>これまで食べてきた焼肉の中でも、最強クラスかもしれません。'),imgs[0],
  heading('肉の名前は分からん。でも、とにかく旨い'),
- para('肉の部位はほとんど覚えていません🤣<br>でも、写真を見返すと「これ旨かったなあ」と味の記憶はしっかり残っています。'),
+ para('肉の部位はほとんど覚えていません。<br>でも、写真を見返すと「これ旨かったなあ」と味の記憶はしっかり残っています。'),
  para('柔らかいだけではなく、なんというか<strong>肉そのものの味が濃い</strong>。<br>噛んだときに「あ、いい肉食べてるわ」と分かる感じでした。')]
- # Let photos do the talking. Spread remaining user-kept images with only one tiny bridge midway.
  rest=imgs[1:];cut=(len(rest)+1)//2
  chunks+=rest[:cut]
- if rest:chunks.append(para('食レポはこれ以上うまく言えません。<br><strong>とにかく旨かった。</strong>たぶん、この一言がいちばん正確です🤣'))
+ if rest:chunks.append(para('食レポはこれ以上うまく言えません。<br><strong>とにかく旨かった。</strong>たぶん、この一言がいちばん正確です。'))
  chunks+=rest[cut:]
  chunks += [heading('熟成肉コースは4,980円〜'),
  para('今回利用したコースは<strong>4,980円（税込）〜</strong>。<br>仕入れによって内容が毎回変わるため、予約時に内容や料金を確認するのがおすすめです。'),
