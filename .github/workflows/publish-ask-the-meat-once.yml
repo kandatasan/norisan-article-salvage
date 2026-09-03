@@ -18,6 +18,15 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Escape Gutenberg JSON inside Python f-string
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('scripts/publish_ask_the_meat_once.py')
+          s=p.read_text(encoding='utf-8')
+          s=s.replace('<!-- wp:paragraph {"fontSize":"small"} -->','<!-- wp:paragraph {{"fontSize":"small"}} -->')
+          p.write_text(s,encoding='utf-8')
+          PY
       - run: python -m py_compile scripts/publish_ask_the_meat_once.py
       - name: Publish Ask the Meat and verify
         env:
