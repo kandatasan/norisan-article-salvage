@@ -1,0 +1,56 @@
+name: Rebuild outing clean v10 once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'category-hubs/outing-v10/rebuild_and_swap.py'
+      - '.github/workflows/rebuild-outing-clean-v10-once.yml'
+permissions:
+  contents: read
+jobs:
+  rebuild-swap-audit:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Correct top-level hero source guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('category-hubs/outing-v10/rebuild_and_swap.py')
+          s=p.read_text(encoding='utf-8')
+          old="'hero_first':s.find('<!-- wp:cover')<s.find('<!-- wp:html')<s.find('<!-- wp:group'),"
+          new="'hero_first':s.find('<!-- wp:cover')>=0 and s.find('<!-- wp:cover')<s.find('<!-- wp:html'),"
+          if old not in s:
+              raise SystemExit('expected hero_first guard not found')
+          p.write_text(s.replace(old,new,1),encoding='utf-8')
+          PY
+      - name: Syntax check
+        run: python -m py_compile category-hubs/outing-v10/rebuild_and_swap.py
+      - name: Install render audit dependencies
+        run: |
+          set -euo pipefail
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq fonts-noto-cjk
+          python -m pip install --quiet selenium
+      - name: Build new page, verify, and swap
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python category-hubs/outing-v10/rebuild_and_swap.py | tee /tmp/outing-v10.log
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-v10-clean-rebuild-audit
+          path: |
+            /tmp/outing-v10-result.json
+            /tmp/outing-v10.log
+          if-no-files-found: warn
