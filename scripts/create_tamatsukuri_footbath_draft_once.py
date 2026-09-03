@@ -85,3 +85,4 @@ def main():
  if not all(checks.values()):raise RuntimeError('VERIFY_FAILED '+json.dumps(checks,ensure_ascii=False))
  print(json.dumps({'ok':True,'action':'TAMATSUKURI_FOOTBATH_DRAFT_CREATED','post_id':pid,'slug':SLUG,'status':v['status'],'title':TITLE,'featured_media':v['featured_media'],'media':{s:int(ms[s]['id']) for s in stems},'checks':checks,'public_before':before,'public_after':after},ensure_ascii=False,indent=2))
 if __name__=='__main__':main()
+# workflow trigger: 2026-09-04
