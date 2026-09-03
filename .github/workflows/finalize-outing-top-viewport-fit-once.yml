@@ -1,0 +1,52 @@
+name: Finalize outing top viewport fit once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/finalize_outing_hero_viewport_fit.py'
+      - '.github/workflows/finalize-outing-top-viewport-fit-once.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  finalize:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python -m pip install --disable-pip-version-check selenium
+      - run: python -m py_compile scripts/finalize_outing_hero_viewport_fit.py
+      - name: Finalize and verify published outing top
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/finalize_outing_hero_viewport_fit.py | tee /tmp/outing-final.json
+      - name: Record success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Outing top final: SUCCESS'
+            echo
+            echo '公開中のおでかけトップを、実測viewport全幅ヒーロー＋5地域アコーディオン完全参照で検証しました。'
+            echo
+            echo '```json'
+            cat /tmp/outing-final.json
+            echo '```'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: outing-top-final-audit
+          path: /tmp/outing-final.json
+          if-no-files-found: warn
