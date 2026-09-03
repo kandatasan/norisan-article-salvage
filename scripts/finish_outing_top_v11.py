@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import base64, html, json, os, re, time, urllib.parse, urllib.request
-from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 
@@ -89,42 +88,37 @@ def inject_fullbleed(raw):
          'margin-left:calc(50% - 50vw)!important;margin-right:calc(50% - 50vw)!important;}\n'
          '@supports(width:100dvw){.tq-outing-clean.tq-hero{margin-left:calc(50% - 50dvw)!important;margin-right:calc(50% - 50dvw)!important;}}\n')
     if MARK in raw:
-        raw=re.sub(r'/\* tq-outing-v11-fullbleed \*/.*?(?=</style>)',css,raw,count=1,flags=re.S)
-        return raw
+        return re.sub(r'/\* tq-outing-v11-fullbleed \*/.*?(?=</style>)',css,raw,count=1,flags=re.S)
     pos=raw.find('</style>')
     if pos<0: raise RuntimeError('STYLE_END_NOT_FOUND')
     return raw[:pos]+css+raw[pos:]
 
 
 def patch_group(raw,key,tag_id,posts,cat_ids,tag_slug):
-    # Make client refresh point at the exact current taxonomy IDs.
     raw=re.sub(r"\['"+re.escape(key)+r"',\s*\d+\]",f"['{key}',{tag_id}]",raw,count=1)
     raw=re.sub(r'categories=\d+,\d+&tags=',f'categories={cat_ids[0]},{cat_ids[1]}&tags=',raw)
-    # Refresh the server-rendered fallback and visible count.
     count_pat=r'(<span class="tq-count" data-count="'+re.escape(key)+r'">)\d+記事(</span>)'
     raw,n=re.subn(count_pat,rf'\g<1>{len(posts)}記事\g<2>',raw,count=1)
     if n!=1: raise RuntimeError('COUNT_NOT_FOUND_'+key)
     list_pat=r'(<ul class="wp-block-list tq-auto-list tq-auto-'+re.escape(key)+r'">).*?(</ul>)'
     raw,n=re.subn(list_pat,lambda m:m.group(1)+li_html(posts)+m.group(2),raw,count=1,flags=re.S)
     if n!=1: raise RuntimeError('LIST_NOT_FOUND_'+key)
-    # Give every accordion a real archive escape hatch. Far already had one; normalize it too.
     archive=f'{SITE}/tag/{tag_slug}/'
     text=f'「{GROUPS[key][1]}」の記事を全部見る →'
     details_pat=r'(<details class="wp-block-details tq-accordion tq-accordion-'+re.escape(key)+r'">.*?)(</details><!-- /wp:details -->)'
     m=re.search(details_pat,raw,re.S)
     if not m: raise RuntimeError('DETAILS_NOT_FOUND_'+key)
     block=m.group(1)
-    # remove any previous archive link paragraph inside this accordion
     block=re.sub(r'\n?<!-- tq-outing-far-tag-link:v1 -->\n?','\n',block)
     block=re.sub(r'<!-- wp:paragraph \{"className":"tq-(?:far-)?tag-link"\} --><p class="tq-(?:far-)?tag-link"><a href="[^"]+">.*?</a></p><!-- /wp:paragraph -->\n?','',block,flags=re.S)
     archive_block=(f'\n<!-- wp:paragraph {{"className":"tq-tag-link"}} -->'
                    f'<p class="tq-tag-link"><a href="{archive}">{text}</a></p><!-- /wp:paragraph -->\n')
-    new=m.group(1).replace(block,block+archive_block)+m.group(2)
+    new=block+archive_block+m.group(2)
     raw=raw[:m.start()]+new+raw[m.end():]
     return raw,archive
 
 
-def browser_metrics(expected):
+def browser_metrics():
     o=Options(); o.add_argument('--headless=new'); o.add_argument('--no-sandbox'); o.add_argument('--disable-dev-shm-usage'); o.add_argument('--window-size=1440,1100')
     d=webdriver.Chrome(options=o)
     try:
@@ -168,7 +162,7 @@ def main():
     if MARK not in after_raw: raise RuntimeError('FULLBLEED_MARK_MISSING')
     after_counts=counts()
     if after_counts!=before: raise RuntimeError(f'PUBLIC_COUNTS_CHANGED {before}->{after_counts}')
-    metrics=browser_metrics(resolved)
+    metrics=browser_metrics()
     if not metrics['hero'] or abs(metrics['hero']['left'])>2 or abs(metrics['hero']['right']-metrics['vw'])>2: raise RuntimeError('HERO_NOT_FULLBLEED '+json.dumps(metrics['hero']))
     if metrics['sw']>metrics['vw']+2: raise RuntimeError('HORIZONTAL_OVERFLOW')
     if metrics['auto']!='ready': raise RuntimeError('AUTO_INDEX_NOT_READY '+str(metrics['auto']))
@@ -177,7 +171,7 @@ def main():
         expected=normalize_links([p['link'] for p in v['posts']]); got=normalize_links(metrics['groups'][key]['links'])
         if got!=expected: raise RuntimeError('LIST_MISMATCH_'+key+' '+json.dumps({'expected':expected,'got':got},ensure_ascii=False))
         if metrics['groups'][key]['count']!=f'{len(expected)}記事': raise RuntimeError('COUNT_MISMATCH_'+key)
-        if normalize_links([metrics['groups'][key]['archive']])[0]!=normalize_links([archives[key]])[0]: raise RuntimeError('ARCHIVE_MISMATCH_'+key)
+        if not metrics['groups'][key]['archive'] or normalize_links([metrics['groups'][key]['archive']])[0]!=normalize_links([archives[key]])[0]: raise RuntimeError('ARCHIVE_MISMATCH_'+key)
         audit[key]={'tag_id':v['term']['id'],'tag_slug':v['term']['slug'],'count':len(expected),'slugs':[p['slug'] for p in v['posts']],'archive':archives[key]}
     print(json.dumps({'ok':True,'action':'OUTING_V11_FULL_HERO_PERFECT_ACCORDIONS','page_id':page['id'],'categories':cat_ids,'groups':audit,'hero':metrics['hero'],'viewport':metrics['vw'],'public_before':before,'public_after':after_counts},ensure_ascii=False,indent=2))
 
