@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 import base64,json,os,re,urllib.parse,urllib.request
-SITE='https://tsurikue.com';BASE=SITE+'/wp-json/wp/v2';SLUG='ask-the-meat';MARK='<!-- ask-the-meat-trim:v1 -->'
-AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode();H={'Authorization':AUTH,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-ask-meat-trim/1.1'}
+SITE='https://tsurikue.com';BASE=SITE+'/wp-json/wp/v2';SLUG='ask-the-meat';MARK='<!-- ask-the-meat-trim:v2 -->'
+AUTH='Basic '+base64.b64encode(f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode()).decode();H={'Authorization':AUTH,'Accept':'application/json','Content-Type':'application/json; charset=utf-8','User-Agent':'tsurikue-ask-meat-trim/1.2'}
 def req(path,method='GET',payload=None):
  d=None if payload is None else json.dumps(payload,ensure_ascii=False).encode();r=urllib.request.Request(BASE+path,data=d,headers=H,method=method)
  with urllib.request.urlopen(r,timeout=60) as x:return json.loads(x.read().decode()),dict(x.headers)
 def total(k):
  _,h=req(f'/{k}?status=publish&per_page=1&_fields=id');return int(h.get('X-WP-Total','0'))
 def post():
- r,_=req('/posts?'+urllib.parse.urlencode({'slug':SLUG,'context':'edit','status':'publish','per_page':10,'_fields':'id,status,content,featured_media,link'}));
+ r,_=req('/posts?'+urllib.parse.urlencode({'slug':SLUG,'context':'edit','status':'publish','per_page':10,'_fields':'id,status,content,featured_media,link'}))
  if len(r)!=1:raise RuntimeError('POST_NOT_UNIQUE')
  return r[0]
 def para(s):return '<!-- wp:paragraph -->\n<p>'+s+'</p>\n<!-- /wp:paragraph -->'
@@ -20,9 +20,8 @@ def main():
   print(json.dumps({'ok':True,'action':'ALREADY_TRIMMED','url':p['link']},ensure_ascii=False));return
  imgs=re.findall(r'<!-- wp:image .*?<!-- /wp:image -->',old,flags=re.S)
  if not imgs:raise RuntimeError('NO_USER_SELECTED_IMAGES')
- table=re.search(r'<!-- wp:table -->.*?<!-- /wp:table -->',old,flags=re.S)
- note=re.search(r'<!-- wp:paragraph \{[^\n]*"fontSize":"small"[^\n]*\} -->.*?<!-- /wp:paragraph -->',old,flags=re.S)
- if not table or not note:raise RuntimeError('STORE_INFO_BLOCKS_MISSING')
+ table='''<!-- wp:table -->\n<figure class="wp-block-table"><table><tbody><tr><th>店名</th><td>アスク ザ ミート（ask the meat）</td></tr><tr><th>住所</th><td>広島県広島市安佐南区緑井2-8-15</td></tr><tr><th>アクセス</th><td>JR可部線 緑井駅から徒歩約5分</td></tr><tr><th>営業時間</th><td>17:00〜24:00（L.O.23:30）</td></tr><tr><th>定休日</th><td>火曜日</td></tr><tr><th>駐車場</th><td>普通車2台＋軽1台</td></tr><tr><th>今回食べたコース</th><td>熟成肉料理のみコース 4,980円〜（税込）</td></tr><tr><th>予約</th><td>予約可</td></tr></tbody></table></figure>\n<!-- /wp:table -->'''
+ note='''<!-- wp:paragraph {"fontSize":"small"} -->\n<p class="has-small-font-size">※店舗情報・コース料金は2026年9月に確認した掲載情報です。営業日・価格・コース内容は変わることがあるため、予約時にお店へ確認してください。</p>\n<!-- /wp:paragraph -->'''
  chunks=[MARK,
  para('広島市安佐南区緑井の「アスク ザ ミート（ask the meat）」へ、親戚6人で行ってきました。<br>今回食べたのは、<strong>熟成肉料理のみコース 4,980円〜</strong>です。'),
  para('先に感想を言うと、<strong>めちゃくちゃ旨い。</strong><br>これまで食べてきた焼肉の中でも、最強クラスかもしれません。'),imgs[0],
@@ -37,7 +36,7 @@ def main():
  para('今回利用したコースは<strong>4,980円（税込）〜</strong>。<br>仕入れによって内容が毎回変わるため、予約時に内容や料金を確認するのがおすすめです。'),
  heading('行くなら事前予約がおすすめ'),
  para('かなり人気のあるお店なので、行く日が決まっているなら<strong>事前予約がおすすめ</strong>です。<br>駐車場は店舗前。現在の掲載情報では普通車2台＋軽1台となっています。'),
- heading('アスクザミートの店舗情報'),table.group(0),note.group(0),
+ heading('アスクザミートの店舗情報'),table,note,
  para('<a href="https://tabelog.com/hiroshima/A3401/A340107/34019810/" target="_blank" rel="nofollow noopener">アスク ザ ミートの掲載情報を確認する</a>'),
  heading('過去最強クラスかもしれない'),
  para('部位名まで詳しく説明できる記事ではありません。<br>それでも、<strong>「また食べたい」と思えるくらい旨かった</strong>ことは間違いありません。'),
