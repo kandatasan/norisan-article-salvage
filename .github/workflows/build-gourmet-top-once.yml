@@ -1,0 +1,52 @@
+name: Build gourmet top once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_gourmet_top_once.py'
+      - '.github/workflows/build-gourmet-top-once.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+  issues: write
+jobs:
+  build-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - run: python -m pip install --disable-pip-version-check selenium
+      - run: python -m py_compile scripts/build_gourmet_top_once.py
+      - name: Curate tags, publish gourmet top and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -o pipefail
+          python scripts/build_gourmet_top_once.py | tee /tmp/gourmet-top.json
+      - name: Record success
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Gourmet top: PUBLISHED'
+            echo
+            echo '料理ジャンルを主目的ベースに再整理し、全幅ヒーロー＋料理ジャンル＋地域＋新着のグルメトップを公開しました。'
+            echo
+            echo '```json'
+            cat /tmp/gourmet-top.json
+            echo '```'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: gourmet-top-publish-audit
+          path: /tmp/gourmet-top.json
+          if-no-files-found: warn
