@@ -1,0 +1,25 @@
+name: Repair Cadore media once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/repair_cadore_media_once.py'
+      - '.github/workflows/repair-cadore-media-once.yml'
+  workflow_dispatch:
+jobs:
+  repair:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Repair Cadore draft media
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/repair_cadore_media_once.py | tee /tmp/cadore-repair.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cadore-repair-audit
+          path: /tmp/cadore-repair.json
+          if-no-files-found: warn
