@@ -219,7 +219,7 @@ def main():
 <p>山口をドライブするなら、かなり入れやすい寄り道スポットです。</p>
 <!-- /wp:paragraph -->
 {parent_html}
-<!-- wp:paragraph {"fontSize":"small"} -->
+<!-- wp:paragraph {{"fontSize":"small"}} -->
 <p class="has-small-font-size">駐車場・アクセス・休業日・料金は、2026年9月に山口県公式観光サイトで確認した情報です。最新情報は公式サイトでご確認ください。</p>
 <!-- /wp:paragraph -->'''
 
