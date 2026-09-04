@@ -155,7 +155,7 @@ def main():
 <!-- wp:paragraph -->
 <p>福富方面へドライブするなら、カドーレや十夢とセットで寄るのもおすすめです。</p>
 <!-- /wp:paragraph -->
-<!-- wp:paragraph {"fontSize":"small"} -->
+<!-- wp:paragraph {{"fontSize":"small"}} -->
 <p class="has-small-font-size">営業時間・施設情報は2026年9月に東広島市公式サイト、道の駅 湖畔の里福富公式サイトで確認しています。最新情報は公式サイトをご確認ください。</p>
 <!-- /wp:paragraph -->'''
 
