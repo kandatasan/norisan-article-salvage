@@ -1,0 +1,25 @@
+name: Polish Cadore copy once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/polish_cadore_copy_once.py'
+      - '.github/workflows/polish-cadore-copy-once.yml'
+  workflow_dispatch:
+jobs:
+  polish:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Polish Cadore copy
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/polish_cadore_copy_once.py | tee /tmp/cadore-copy.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cadore-copy-audit
+          path: /tmp/cadore-copy.json
+          if-no-files-found: warn
