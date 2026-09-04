@@ -1,0 +1,23 @@
+name: Inspect Cadore media once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_cadore_media_once.py'
+      - '.github/workflows/inspect-cadore-media-once.yml'
+  workflow_dispatch:
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect Cadore media
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/inspect_cadore_media_once.py | tee /tmp/cadore-media.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cadore-media-audit
+          path: /tmp/cadore-media.json
