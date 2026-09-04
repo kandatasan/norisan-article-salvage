@@ -29,16 +29,15 @@ def recent_images():
         try:
             r,_=req('/media?'+urllib.parse.urlencode({
                 'context':'edit','media_type':'image','per_page':100,'page':page,
-                'orderby':'date','order':'desc','after':'2026-09-04T00:00:00',
+                'orderby':'date','order':'desc','after':'2026-09-04T00:38:00',
                 '_fields':'id,date,source_url'
             }))
             rows+=r
         except Exception:
             break
-    c=[m for m in rows if 'gptempdownload' in m.get('source_url','').lower()]
-    c=sorted(c,key=lambda x:int(x['id']))[-6:]
+    c=sorted(rows,key=lambda x:int(x['id']))[-6:]
     if len(c)!=6:
-        raise RuntimeError('BENTEN_MEDIA_BATCH_NOT_FOUND '+json.dumps([(m['id'],m['source_url']) for m in c],ensure_ascii=False))
+        raise RuntimeError('BENTEN_MEDIA_BATCH_NOT_FOUND '+json.dumps([(m['id'],m['source_url']) for m in rows[-20:]],ensure_ascii=False))
     return c
 
 def img(m,alt):
