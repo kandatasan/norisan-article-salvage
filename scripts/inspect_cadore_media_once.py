@@ -30,5 +30,10 @@ def main():
             refs.append({'id':m['id'],'slug':m['slug'],'date':m['date'],'url':m['source_url'],'title':m['title']['raw'],'caption':m['caption']['raw'],'alt':m.get('alt_text','')})
         except Exception as e:
             refs.append({'id':i,'error':str(e)})
-    print(json.dumps({'posts':posts,'media_search':media,'referenced_media':refs},ensure_ascii=False,indent=2))
+    detail=get('/posts/1911?context=edit&_fields=id,title,content')
+    raw=detail['content']['raw']
+    contexts=[]
+    for mm in re.finditer(r'wp-image-(\\d+)',raw):
+        contexts.append({'image_id':int(mm.group(1)),'context':re.sub(r'\\s+',' ',raw[max(0,mm.start()-500):mm.end()+500])})
+    print(json.dumps({'posts':posts,'media_search':media,'referenced_media':refs,'post1911_contexts':contexts},ensure_ascii=False,indent=2))
 if __name__=='__main__': main()
