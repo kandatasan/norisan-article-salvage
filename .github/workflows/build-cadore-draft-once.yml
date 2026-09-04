@@ -1,0 +1,25 @@
+name: Build Cadore draft once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/build_cadore_draft_once.py'
+      - '.github/workflows/build-cadore-draft-once.yml'
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Cadore draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/build_cadore_draft_once.py | tee /tmp/cadore.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cadore-audit
+          path: /tmp/cadore.json
+          if-no-files-found: warn
