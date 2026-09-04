@@ -1,0 +1,23 @@
+name: Inspect current Cadore draft
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/inspect_cadore_current_once.py'
+      - '.github/workflows/inspect-cadore-current-once.yml'
+  workflow_dispatch:
+jobs:
+  inspect:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect current Cadore draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/inspect_cadore_current_once.py | tee /tmp/cadore-current.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: cadore-current-audit
+          path: /tmp/cadore-current.json
