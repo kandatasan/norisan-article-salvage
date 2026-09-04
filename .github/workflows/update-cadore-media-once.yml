@@ -1,0 +1,25 @@
+name: Update Cadore media once
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_cadore_media_once.py'
+      - '.github/workflows/update-cadore-media-once.yml'
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Update Cadore draft media
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_cadore_media_once.py | tee /tmp/cadore-media-update.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cadore-media-update-audit
+          path: /tmp/cadore-media-update.json
+          if-no-files-found: warn
