@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 from __future__ import annotations
-import base64, html, json, os, re, urllib.parse, urllib.request, hashlib
+import base64, html, json, os, re, urllib.parse, urllib.request, hashlib, time
 from pathlib import Path
 from typing import Any
 
 SITE="https://tsurikue.com"
 BASE=SITE+"/wp-json/wp/v2"
-UA="tsurikue-create-lexus-emotional-draft/1.0"
+UA="tsurikue-create-lexus-emotional-draft/1.1"
 TITLE="レクサスUXの特別仕様車エモーショナルエクスプローラーはお得？実際に選んだ理由"
 SLUG="lexus-ux-emotional-explorer"
 CATEGORY_ID=11
@@ -30,9 +30,19 @@ def req(path:str,auth:str,method:str="GET",payload:dict[str,Any]|None=None):
     headers={"Authorization":auth,"Accept":"application/json","User-Agent":UA}
     if data is not None:
         headers["Content-Type"]="application/json; charset=utf-8"
-    r=urllib.request.Request(BASE+path,data=data,headers=headers,method=method)
-    with urllib.request.urlopen(r,timeout=60) as x:
-        return json.loads(x.read().decode()),dict(x.headers)
+    attempts=3 if method=="GET" else 1
+    last_exc=None
+    for attempt in range(attempts):
+        try:
+            r=urllib.request.Request(BASE+path,data=data,headers=headers,method=method)
+            with urllib.request.urlopen(r,timeout=60) as x:
+                return json.loads(x.read().decode()),dict(x.headers)
+        except Exception as exc:
+            last_exc=exc
+            if attempt+1<attempts:
+                time.sleep(2*(attempt+1))
+    assert last_exc is not None
+    raise last_exc
 
 def count_published(endpoint:str,auth:str)->int:
     q=urllib.parse.urlencode({"context":"edit","status":"publish","per_page":"1","_fields":"id"})
