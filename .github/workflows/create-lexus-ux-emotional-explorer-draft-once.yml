@@ -1,0 +1,59 @@
+name: Create Lexus UX Emotional Explorer draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'editorial/lexus-ux-emotional-explorer/article.html'
+      - 'scripts/create_lexus_ux_emotional_explorer_draft_once.py'
+      - '.github/workflows/create-lexus-ux-emotional-explorer-draft-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/create_lexus_ux_emotional_explorer_draft_once.py
+      - name: Create guarded WordPress draft
+        id: create
+        continue-on-error: true
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_lexus_ux_emotional_explorer_draft_once.py
+      - name: Record result on audit issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Lexus UX Emotional Explorer draft'
+            echo
+            if [[ -f reports/lexus-ux-emotional-explorer-draft/summary.md ]]; then
+              cat reports/lexus-ux-emotional-explorer-draft/summary.md
+            else
+              echo 'No summary file was produced.'
+            fi
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload result artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexus-ux-emotional-explorer-draft
+          path: reports/lexus-ux-emotional-explorer-draft/
+          if-no-files-found: warn
+      - name: Fail if draft creation blocked
+        if: steps.create.outcome != 'success'
+        run: exit 1
