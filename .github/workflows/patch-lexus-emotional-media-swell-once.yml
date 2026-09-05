@@ -1,0 +1,58 @@
+name: Patch Lexus Emotional media + SWELL once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/patch_lexus_emotional_media_swell_once.py'
+      - '.github/workflows/patch-lexus-emotional-media-swell-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/patch_lexus_emotional_media_swell_once.py
+      - name: Apply guarded draft patch
+        id: patch
+        continue-on-error: true
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/patch_lexus_emotional_media_swell_once.py
+      - name: Record result on audit issue
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Lexus Emotional Explorer media + SWELL patch'
+            echo
+            if [[ -f reports/lexus-emotional-media-swell-patch/summary.md ]]; then
+              cat reports/lexus-emotional-media-swell-patch/summary.md
+            else
+              echo 'No summary file was produced.'
+            fi
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexus-emotional-media-swell-patch
+          path: reports/lexus-emotional-media-swell-patch/
+          if-no-files-found: warn
+      - name: Fail if blocked
+        if: steps.patch.outcome != 'success'
+        run: exit 1
