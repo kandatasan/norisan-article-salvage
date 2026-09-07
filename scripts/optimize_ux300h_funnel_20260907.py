@@ -4,13 +4,12 @@ import base64, hashlib, json, os, re, urllib.request
 SITE='https://tsurikue.com'; POST_ID=2329; SLUG='ux300h'
 TITLE='レクサスUX300hを試乗｜UX250hオーナーが比較して感じた3つの違い'
 FEATURED=2330; EXPECTED_SHA='45cb5b90dbe97e91d8da11a0eb3f2503930e96cd1ddb62f9d8ad5e098ca27cd5'
-UA='tsurikue-optimize-ux300h-20260907/1.0'
+UA='tsurikue-optimize-ux300h-20260907/1.1'
 GULLIVER='[blog_parts id="2843"]'; CTN_BANNER='[blog_parts id="2846"]'; CTN_BUTTON='[blog_parts id="2184"]'
 MARKER='<!-- tsurikue-ctn-ux300h-funnel:20260907 -->'
 OLD_TEXT='乗り換えなら、今の車がいくらで売れるかも確認しておくと予算を組みやすくなります。'
-NEW_BLOCK='''<!-- tsurikue-ctn-ux300h-funnel:20260907 -->\n<!-- wp:paragraph -->\n<p>UX300hと中古UX250hの価格差を比べるのと同じくらい、乗り換えなら<strong>今の車がいくらで売れるか</strong>も予算に効きます。<br>実際に私がCTNを使ったときは、連絡が来たのは2社だけ。高額査定の上位3社だけとやり取りする仕組みなので、電話が少なくて快適でした。</p>\n<!-- /wp:paragraph -->'''
+NEW_TEXT='UX300hと中古UX250hの価格差を比べるのと同じくらい、乗り換えなら<strong>今の車がいくらで売れるか</strong>も予算に効きます。<br>実際に私がCTNを使ったときは、連絡が来たのは2社だけ。高額査定の上位3社だけとやり取りする仕組みなので、電話が少なくて快適でした。'
 TOKEN=re.compile(r'<!--\s+/?wp:[\s\S]*?-->'); OPEN=re.compile(r'<!--\s+wp:([\w\-/]+)(?:\s+\{.*?\})?\s*(/)?-->'); CLOSE=re.compile(r'<!--\s+/wp:([\w\-/]+)\s+-->')
-PARA=re.compile(r'<!--\s+wp:paragraph(?:\s+\{.*?\})?\s*-->[\s\S]*?'+re.escape(OLD_TEXT)+r'[\s\S]*?<!--\s+/wp:paragraph\s+-->')
 def auth():
     raw=f"{os.environ['TSURIKUE_WP_USER']}:{os.environ['TSURIKUE_WP_APP_PASSWORD']}".encode(); return 'Basic '+base64.b64encode(raw).decode()
 def req(url,method='GET',payload=None):
@@ -41,8 +40,8 @@ def main():
     pub0=public_count(); row=get(); identity(row); c=raw(row,'content')
     assert hashlib.sha256(c.encode()).hexdigest()==EXPECTED_SHA and problems(c)==0 and MARKER not in c
     assert c.count(GULLIVER)==1 and c.count(CTN_BANNER)==1 and c.count(CTN_BUTTON)==1 and c.count('CTN')==0
-    matches=list(PARA.finditer(c)); assert len(matches)==1
-    fixed=c[:matches[0].start()]+NEW_BLOCK+c[matches[0].end():]
+    assert c.count(OLD_TEXT)==1
+    fixed=c.replace(OLD_TEXT,MARKER+NEW_TEXT,1)
     assert fixed.count(GULLIVER)==1 and fixed.count(CTN_BANNER)==1 and fixed.count(CTN_BUTTON)==1 and problems(fixed)==0
     assert fixed.count(MARKER)==1 and '連絡が来たのは2社だけ' in fixed and '電話が少なくて快適でした' in fixed
     req(f'{SITE}/wp-json/wp/v2/posts/{POST_ID}',method='POST',payload={'content':fixed})
@@ -55,5 +54,5 @@ def main():
     print('- status: **publish → publish** / featured_media: **2330 → 2330**')
     print('- Gulliver: **1 → 1** / CTN banner: **1 → 1** / CTN button: **1 → 1**')
     print('- Gutenberg problems after: **0**')
-    print('- article body: **unchanged except the existing CTN bridge paragraph**')
+    print('- article body: **unchanged except the text inside the existing CTN bridge paragraph**')
 if __name__=='__main__': main()
