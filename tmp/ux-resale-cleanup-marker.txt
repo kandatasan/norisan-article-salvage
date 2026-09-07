@@ -1,0 +1,1 @@
+Remove explicit CTN/non-CTN disclaimer from ux-resale; keep generic 一括査定サービス wording.
