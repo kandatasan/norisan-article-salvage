@@ -1,0 +1,39 @@
+name: Fix final Lexus UX funnels once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/fix_final_lexus_ux_funnel_issues_20260908.py
+      - scripts/verify_final_lexus_ux_funnels_20260908.py
+      - .github/workflows/fix-final-lexus-ux-funnels-20260908.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply fixes and verify cluster
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/fix_final_lexus_ux_funnel_issues_20260908.py scripts/verify_final_lexus_ux_funnels_20260908.py
+          python scripts/fix_final_lexus_ux_funnel_issues_20260908.py > /tmp/fix.md
+          python scripts/verify_final_lexus_ux_funnels_20260908.py > /tmp/verify.md
+          {
+            cat /tmp/fix.md
+            echo
+            cat /tmp/verify.md
+          } > /tmp/comment.md
+          cat /tmp/comment.md
+          gh issue comment 429 --repo "${{ github.repository }}" --body-file /tmp/comment.md
