@@ -17,7 +17,7 @@ NEW='''<!-- tsurikue-ctn-buyer-funnel:20260907 -->
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p>査定額は時期や車の状態で変わります。<br>それでも、<strong>UXを買う前に今の車の価値を知っておくと、乗り換えに使える予算はかなり見えやすくなります。</strong></p>
+<p>査定額は時期や車の状態で変わります。<br>それでも、<strong>UXを買う前に今の車の価値を知っておくと、乗り換えに使える予算が見えやすくなります。</strong></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
