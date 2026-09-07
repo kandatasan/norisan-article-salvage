@@ -7,7 +7,6 @@ SITE = "https://tsurikue.com"
 UA = "tsurikue-ux-ctn-phone-note-20260907/1.0"
 CTN_BANNER = '[blog_parts id="2846"]'
 CTN_BUTTON = '[blog_parts id="2184"]'
-NOTE_MARK = "電話が少なくて快適でした"
 
 TARGETS = [
     {
@@ -16,6 +15,7 @@ TARGETS = [
         "title": "レクサスUXはひどい？616万円で買って後悔した欠点と満足している理由",
         "featured_media": 2208,
         "anchor": "最大15社で査定し、連絡が来るのは高額査定の上位3社だけ。",
+        "mark": "電話が少なくて快適でした",
         "note": '<!-- wp:paragraph -->\n<p>実際に私がCTNを使ったときも、連絡が来るのは高額査定の上位3社だけ。<br><strong>電話が少なくて快適でした。</strong></p>\n<!-- /wp:paragraph -->',
     },
     {
@@ -24,6 +24,7 @@ TARGETS = [
         "title": "レクサスUXのリセールは？616万円で購入し427万円で売却した記録",
         "featured_media": 2223,
         "anchor": "CTNは最大15社で査定し、高額査定の上位3社とやり取りする仕組みです。",
+        "mark": "私はかなり快適でした",
         "note": '<!-- wp:paragraph -->\n<p>実際に使ってみて良かったのは、電話が少なかったこと。<br>連絡が来るのは高額査定の上位3社だけだったので、<strong>私はかなり快適でした。</strong></p>\n<!-- /wp:paragraph -->',
     },
 ]
@@ -109,7 +110,7 @@ def main():
     for t in TARGETS:
         row=get_post(t["id"]); verify_identity(row,t)
         c=raw(row,"content")
-        assert NOTE_MARK not in c, f"note already present in {t['slug']}"
+        assert t["mark"] not in c, f"note already present in {t['slug']}"
         assert not block_problems(c), f"broken Gutenberg before update: {t['slug']}"
         fixed=insert_after_paragraph(c,t["anchor"],t["note"])
         assert fixed.count(CTN_BANNER) == c.count(CTN_BANNER)
@@ -123,7 +124,7 @@ def main():
         req(f"{SITE}/wp-json/wp/v2/posts/{t['id']}", method="POST", payload={"content":fixed})
         after=get_post(t["id"]); verify_identity(after,t)
         ac=raw(after,"content")
-        assert NOTE_MARK in ac
+        assert t["mark"] in ac
         assert t["anchor"] in ac
         assert ac.count(CTN_BANNER) == before.count(CTN_BANNER)
         assert ac.count(CTN_BUTTON) == before.count(CTN_BUTTON)
