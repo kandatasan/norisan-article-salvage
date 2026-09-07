@@ -1,0 +1,36 @@
+name: Remove UX resale CTN disclaimer once clean
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/remove_ux_resale_ctn_disclaimer_20260907_clean.py
+      - .github/workflows/remove-ux-resale-ctn-disclaimer-20260907-clean.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m py_compile scripts/remove_ux_resale_ctn_disclaimer_20260907_clean.py
+      - name: Apply guarded wording cleanup
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/remove_ux_resale_ctn_disclaimer_20260907_clean.py | tee /tmp/summary.md
+      - name: Record result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          { echo '### UX resale wording cleanup'; echo; cat /tmp/summary.md 2>/dev/null || echo '- result: **BLOCKED_BEFORE_APPLY**'; } > /tmp/comment.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/comment.md
