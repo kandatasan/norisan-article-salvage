@@ -1,0 +1,40 @@
+name: Audit UX CTN funnels once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/audit_ux_ctn_funnels_20260907.py
+      - .github/workflows/audit-ux-ctn-funnels-20260907.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m py_compile scripts/audit_ux_ctn_funnels_20260907.py
+      - name: Run GET-only audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_ux_ctn_funnels_20260907.py | tee /tmp/audit.md
+      - name: Record audit
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Current UX CTN funnel audit'
+            echo
+            cat /tmp/audit.md 2>/dev/null || echo '- audit failed before output'
+          } > /tmp/comment.md
+          gh issue comment 382 --repo "${{ github.repository }}" --body-file /tmp/comment.md
