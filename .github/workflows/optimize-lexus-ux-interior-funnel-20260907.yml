@@ -1,0 +1,41 @@
+name: Optimize lexus-ux-interior funnel once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/optimize_lexus_ux_interior_funnel_20260907.py
+      - scripts/verify_lexus_ux_interior_funnel_20260907.py
+      - .github/workflows/optimize-lexus-ux-interior-funnel-20260907.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/optimize_lexus_ux_interior_funnel_20260907.py scripts/verify_lexus_ux_interior_funnel_20260907.py
+          python scripts/optimize_lexus_ux_interior_funnel_20260907.py > /tmp/apply.md
+          python scripts/verify_lexus_ux_interior_funnel_20260907.py > /tmp/verify.md
+          {
+            echo '### lexus-ux-interior funnel optimization'
+            echo
+            cat /tmp/apply.md
+            echo
+            cat /tmp/verify.md
+          } > /tmp/comment.md
+          cat /tmp/comment.md
+          gh issue comment 419 --repo "${{ github.repository }}" --body-file /tmp/comment.md
