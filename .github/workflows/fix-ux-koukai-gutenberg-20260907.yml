@@ -1,0 +1,47 @@
+name: Fix UX koukai Gutenberg structure once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/fix_ux_koukai_gutenberg_20260907.py'
+      - '.github/workflows/fix-ux-koukai-gutenberg-20260907.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  repair:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Repair Gutenberg block comments only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/fix_ux_koukai_gutenberg_20260907.py | tee /tmp/summary.md
+      - name: Post audit to issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f /tmp/summary.md ]; then
+            {
+              echo '### UX koukai Gutenberg repair'
+              echo
+              cat /tmp/summary.md
+            } > /tmp/comment.md
+            gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/comment.md
+          fi
+      - name: Upload audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fix-ux-koukai-gutenberg-20260907
+          path: reports/fix-ux-koukai-gutenberg-20260907/
+          if-no-files-found: ignore
