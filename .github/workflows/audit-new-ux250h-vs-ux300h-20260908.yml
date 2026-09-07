@@ -1,0 +1,32 @@
+name: Audit new UX250h vs UX300h draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/audit_new_ux250h_vs_ux300h_20260908.py
+      - .github/workflows/audit-new-ux250h-vs-ux300h-20260908.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit live posts and media
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/audit_new_ux250h_vs_ux300h_20260908.py
+          python scripts/audit_new_ux250h_vs_ux300h_20260908.py > /tmp/audit.md
+          cat /tmp/audit.md
+          gh issue comment 432 --repo "${{ github.repository }}" --body-file /tmp/audit.md
