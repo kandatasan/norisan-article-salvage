@@ -26,7 +26,7 @@ def main():
     row=get();c=raw(row,'content')
     assert row['id']==2956 and row['slug']=='lexus-ux-price' and row['status']=='publish' and row['featured_media']==2223
     assert MARKER in c
-    assert '前の車の売り方だけで25万円差が出ました' in c
+    assert '乗り換えでは「いくらで買うか」だけでなく、「今の車をいくらで売れるか」まで見る。' in c
     assert '私のときは2社から連絡が来て、電話が少なくて快適でした' in c
     assert '「今の車、いくらになる？」を先に見ておく。' in c
     assert c.count(GULLIVER)==1 and c.count(CTN_BANNER)==0 and c.count(CTN_BUTTON)==1 and problems(c)==0
