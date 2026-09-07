@@ -1,0 +1,40 @@
+name: Optimize UX CTN funnels once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/optimize_ux_ctn_funnels_20260907.py
+      - .github/workflows/optimize-ux-ctn-funnels-20260907.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m py_compile scripts/optimize_ux_ctn_funnels_20260907.py
+      - name: Apply guarded funnel optimization
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/optimize_ux_ctn_funnels_20260907.py | tee /tmp/summary.md
+      - name: Record result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### UX CTN funnel optimization'
+            echo
+            cat /tmp/summary.md 2>/dev/null || echo '- result: **BLOCKED_BEFORE_APPLY**'
+          } > /tmp/comment.md
+          gh issue comment 382 --repo "${{ github.repository }}" --body-file /tmp/comment.md
