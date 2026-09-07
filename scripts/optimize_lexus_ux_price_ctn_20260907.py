@@ -17,11 +17,10 @@ TOKEN=re.compile(r'<!--\s+/?wp:[\s\S]*?-->')
 OPEN=re.compile(r'<!--\s+wp:([\w\-/]+)(?:\s+\{.*?\})?\s*(/)?-->')
 CLOSE=re.compile(r'<!--\s+/wp:([\w\-/]+)\s+-->')
 
-INSERT='''<!-- tsurikue-ctn-price-funnel:20260907 -->
-<!-- wp:paragraph -->
-<p>車両価格やオプションで数万円を調整するのも、もちろん方法のひとつです。<br>でも私の場合は、<strong>前の車の売り方だけで25万円差が出ました。</strong><br>乗り換えでは「いくらで買うか」だけでなく、「今の車をいくらで売れるか」も見ておきたいところです。</p>
-<!-- /wp:paragraph -->
+OLD_PARAGRAPH='''<p>必ず買取の方が高くなるわけではありません。<br>ただ、下取りだけで決める前に相場を知っておくと、次の車に使える予算が見えやすくなります。</p>'''
+NEW_PARAGRAPH='''<p>必ず買取の方が高くなるわけではありません。<br>ただ、この差を見て、<strong>乗り換えでは「いくらで買うか」だけでなく、「今の車をいくらで売れるか」まで見る。</strong><br>その方が、次の車に使える総予算を考えやすいと感じました。</p>'''
 
+INSERT='''<!-- tsurikue-ctn-price-funnel:20260907 -->
 <!-- wp:paragraph -->
 <p>実際にUXを売るときに使ったCTNは、最大15社で査定し、やり取りするのは高額査定の上位3社だけ。<br><strong>私のときは2社から連絡が来て、電話が少なくて快適でした。</strong></p>
 <!-- /wp:paragraph -->
@@ -73,14 +72,17 @@ def main():
     assert hashlib.sha256(c.encode()).hexdigest()==EXPECTED_SHA
     assert problems(c)==0 and MARKER not in c
     assert c.count(GULLIVER)==1 and c.count(CTN_BANNER)==0 and c.count(CTN_BUTTON)==1 and c.count('CTN')==0
-    anchor='必ず買取の方が高くなるわけではありません。'
-    assert anchor in c and '前の車がディーラー下取り50万円、買取サービスでは75万円でした' in c
-    pos=c.index(CTN_BUTTON)
-    start=c.rfind('<!-- wp:shortcode -->',0,pos)
+    assert c.count(OLD_PARAGRAPH)==1
+    assert '前の車がディーラー下取り50万円、買取サービスでは75万円でした' in c
+
+    fixed=c.replace(OLD_PARAGRAPH,NEW_PARAGRAPH,1)
+    pos=fixed.index(CTN_BUTTON)
+    start=fixed.rfind('<!-- wp:shortcode -->',0,pos)
     assert start>=0
-    fixed=c[:start]+INSERT+'\n\n'+c[start:]
+    fixed=fixed[:start]+INSERT+'\n\n'+fixed[start:]
+
     assert fixed.count(GULLIVER)==1 and fixed.count(CTN_BANNER)==0 and fixed.count(CTN_BUTTON)==1
-    assert fixed.count(MARKER)==1 and problems(fixed)==0
+    assert fixed.count(MARKER)==1 and fixed.count(NEW_PARAGRAPH)==1 and problems(fixed)==0
     req(f'{SITE}/wp-json/wp/v2/posts/{POST_ID}',method='POST',payload={'content':fixed})
     after=get(); identity(after); ac=raw(after,'content')
     assert ac==fixed and problems(ac)==0
@@ -93,6 +95,7 @@ def main():
     print('- featured_media: **2223 → 2223**')
     print('- Gulliver banner: **1 → 1** / CTN banner: **0 → 0** / CTN button: **1 → 1**')
     print('- Gutenberg problems after: **0**')
-    print('- added: **buy-price + sell-price framing / 25万円 firsthand bridge / CTN top-3 + 2-call comfort note / microcopy**')
+    print('- changed: **existing caution paragraph tightened into buy-price + sell-price framing**')
+    print('- added: **CTN top-3 + 2-call comfort note / microcopy**')
 
 if __name__=='__main__': main()
