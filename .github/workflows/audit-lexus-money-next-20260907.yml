@@ -1,0 +1,32 @@
+name: Audit next Lexus money funnels once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/audit_lexus_money_next_20260907.py
+      - .github/workflows/audit-lexus-money-next-20260907.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit and comment
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/audit_lexus_money_next_20260907.py
+          python scripts/audit_lexus_money_next_20260907.py > /tmp/summary.md
+          cat /tmp/summary.md
+          gh issue comment 394 --repo "${{ github.repository }}" --body-file /tmp/summary.md
