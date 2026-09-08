@@ -1,0 +1,40 @@
+name: Create Lexus LBX regret draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - packages/lexus-lbx-regret/content.html
+      - scripts/create_lexus_lbx_regret_draft_20260908.py
+      - scripts/verify_lexus_lbx_regret_draft_20260908.py
+      - .github/workflows/create-lexus-lbx-regret-draft-20260908.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create draft and verify with separate GET
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/create_lexus_lbx_regret_draft_20260908.py scripts/verify_lexus_lbx_regret_draft_20260908.py
+          python scripts/create_lexus_lbx_regret_draft_20260908.py > /tmp/create.md
+          python scripts/verify_lexus_lbx_regret_draft_20260908.py > /tmp/verify.md
+          {
+            cat /tmp/create.md
+            echo
+            cat /tmp/verify.md
+          } > /tmp/comment.md
+          cat /tmp/comment.md
+          gh issue comment 441 --repo "${{ github.repository }}" --body-file /tmp/comment.md
