@@ -6,6 +6,7 @@ SITE = 'https://tsurikue.com'
 POST_ID = 3633
 SLUG = 'karato-market'
 UA = 'tsurikue-karato-final-three-fixes-20260909/1.0'
+SUMMARY_HEADING = '''<!-- wp:heading -->\n<h2 class="wp-block-heading">まとめ｜唐戸市場で迷ったら、アナゴとマグロの脳天を食べてほしい</h2>\n<!-- /wp:heading -->'''
 
 TOKEN = re.compile(r'<!--\s+/?wp:[\s\S]*?-->')
 OPEN = re.compile(r'<!--\s+wp:([\w\-/]+)(?:\s+\{.*?\})?\s*(/)?-->')
@@ -92,20 +93,19 @@ def apply_three_fixes(content: str) -> str:
 
     # 3) Move the entire basic-info section from after the summary to immediately before the summary.
     marker = '<!-- tsurikue:facility-info:karato-market:v1 -->'
-    summary_heading = '''<!-- wp:heading -->\n<h2 class="wp-block-heading">まとめ｜唐戸市場で迷ったら、アナゴとマグロの脳天を食べてほしい</h2>\n<!-- /wp:heading -->'''
     if content.count(marker) != 1:
         raise RuntimeError(f'facility marker: expected 1, got {content.count(marker)}')
-    if content.count(summary_heading) != 1:
-        raise RuntimeError(f'summary heading: expected 1, got {content.count(summary_heading)}')
+    if content.count(SUMMARY_HEADING) != 1:
+        raise RuntimeError(f'summary heading: expected 1, got {content.count(SUMMARY_HEADING)}')
 
     facility_pos = content.index(marker)
-    summary_pos = content.index(summary_heading)
+    summary_pos = content.index(SUMMARY_HEADING)
     if facility_pos < summary_pos:
         raise RuntimeError('facility info is already before summary; refusing to make any write')
 
     facility = content[facility_pos:].strip()
     before_facility = content[:facility_pos].rstrip()
-    summary_pos2 = before_facility.index(summary_heading)
+    summary_pos2 = before_facility.index(SUMMARY_HEADING)
     pre_summary = before_facility[:summary_pos2].rstrip()
     summary = before_facility[summary_pos2:].strip()
     content = pre_summary + '\n\n' + facility + '\n\n' + summary + '\n'
@@ -142,7 +142,7 @@ def main():
         raise RuntimeError('intro detail still present before first H2')
     if '寿司でクエまで食べたと思ったら、売り場には活魚、刺身、海鮮丼。' in new:
         raise RuntimeError('repeat paragraph still present')
-    if new.index('<!-- tsurikue:facility-info:karato-market:v1 -->') > new.index(summary_heading):
+    if new.index('<!-- tsurikue:facility-info:karato-market:v1 -->') > new.index(SUMMARY_HEADING):
         raise RuntimeError('facility section did not move before summary')
 
     updated, _ = req(f'{SITE}/wp-json/wp/v2/posts/{POST_ID}', method='POST', payload={'content': new})
