@@ -48,3 +48,5 @@ jobs:
           print('```')
           PY
           gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/karato-current.md
+
+# rerun marker: 2026-09-09T18:52+09:00
