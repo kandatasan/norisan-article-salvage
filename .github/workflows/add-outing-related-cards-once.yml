@@ -24,18 +24,30 @@ jobs:
           python-version: '3.12'
       - name: Syntax and config check
         run: |
+          set -euo pipefail
           python -m py_compile scripts/add_outing_related_cards_once.py
           python -m json.tool outing-related-cards/links.json > /dev/null
+      - name: Warm up WordPress API with retries
+        run: |
+          set -euo pipefail
+          curl --fail --silent --show-error \
+            --retry 4 --retry-delay 3 --retry-all-errors \
+            --connect-timeout 20 --max-time 90 \
+            'https://tsurikue.com/wp-json/wp/v2/posts?per_page=1&_fields=id' > /dev/null
       - name: Append related cards to published outing articles and verify
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/add_outing_related_cards_once.py | tee /tmp/outing-related-cards.log
+        run: |
+          set -euo pipefail
+          python scripts/add_outing_related_cards_once.py > /tmp/outing-related-cards.log
+          cat /tmp/outing-related-cards.log
       - name: Record success in audit issue
         if: success()
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          set -euo pipefail
           {
             echo '### おでかけ関連記事カード一括設置: SUCCESS'
             echo
