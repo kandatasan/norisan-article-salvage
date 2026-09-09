@@ -1,0 +1,50 @@
+name: Read current Karato draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/read-karato-current-20260909.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  read-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch current WordPress draft safely
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python - <<'PY' > /tmp/karato-current.md
+          import base64, hashlib, json, os, urllib.request
+          site='https://tsurikue.com'
+          user=os.environ['TSURIKUE_WP_USER']; pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          auth='Basic '+base64.b64encode(f'{user}:{pw}'.encode()).decode()
+          url=site+'/wp-json/wp/v2/posts/3633?context=edit&_fields=id,slug,status,title,content,modified'
+          req=urllib.request.Request(url,headers={'Authorization':auth,'Accept':'application/json','User-Agent':'tsurikue-read-karato-current/1.0'})
+          with urllib.request.urlopen(req,timeout=60) as r:
+              row=json.loads(r.read().decode())
+          content=(row.get('content') or {}).get('raw') or ''
+          title=(row.get('title') or {}).get('raw') or ''
+          print('# CURRENT KARATO DRAFT')
+          print(f"- id: {row.get('id')}")
+          print(f"- slug: {row.get('slug')}")
+          print(f"- status: {row.get('status')}")
+          print(f"- modified: {row.get('modified')}")
+          print(f"- sha256: {hashlib.sha256(content.encode()).hexdigest()}")
+          print(f"- title: {title}")
+          print('\n```html')
+          print(content)
+          print('```')
+          PY
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/karato-current.md
