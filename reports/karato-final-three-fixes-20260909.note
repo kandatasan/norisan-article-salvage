@@ -1,0 +1,1 @@
+One-shot WordPress update. Abort before write if any agreed source block no longer matches current content. Preserve publish status and public counts.
