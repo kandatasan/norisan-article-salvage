@@ -34,16 +34,16 @@ def fixed_fix(content):
     if count!=2:
         raise RuntimeError(f'expected two whale image openers before repair, got {count}')
 
-    # Remove only the first whale image opener: it was left behind in the intro by the prior move.
+    # Prior whale move left the original opener near the intro and its old closer behind.
+    # Remove only the first opener, then identify the single now-unmatched image closer.
     content=content.replace(OPENER,'',1)
 
-    # After that repair the old draft has exactly one unmatched paragraph closer.
-    # Find it from the Gutenberg token stream rather than relying on whitespace/location.
     bad,stack=unmatched_closers(content)
-    if len(bad)!=1 or bad[0][2]!='paragraph' or stack:
+    if len(bad)!=1 or bad[0][2]!='image' or stack:
         raise RuntimeError(f'unexpected Gutenberg state after opener repair: bad={[(x[2],x[3]) for x in bad]} stack={stack}')
     start,end,_,_,_=bad[0]
     content=content[:start]+content[end:]
+
     bad2,stack2=unmatched_closers(content)
     if bad2 or stack2 or m.gb_problems(content)!=0:
         raise RuntimeError(f'Gutenberg repair did not reach balance: bad={[(x[2],x[3]) for x in bad2]} stack={stack2}')
