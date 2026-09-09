@@ -27,6 +27,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           python -m py_compile scripts/fix_karato_market_flow_20260909.py scripts/retry_fix_karato_market_flow_20260909.py
-          python scripts/retry_fix_karato_market_flow_20260909.py > /tmp/result.md
+          PYTHONPATH=. python scripts/retry_fix_karato_market_flow_20260909.py > /tmp/result.md
           cat /tmp/result.md
           gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/result.md
