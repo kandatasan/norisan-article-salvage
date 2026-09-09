@@ -17,7 +17,6 @@ EXPECTED_MEDIA={
   992:'/wp-content/uploads/2026/05/img_2074.jpg',
   979:'/wp-content/uploads/2026/05/img_2075.jpg',
   980:'/wp-content/uploads/2026/05/img_2076.jpg',
-  982:'/wp-content/uploads/2026/05/img_2077.jpg',
   981:'/wp-content/uploads/2026/05/img_2079.jpg',
   1092:'/wp-content/uploads/2026/05/img_2320.jpg',
   1086:'/wp-content/uploads/2026/05/img_2321.jpg',
@@ -27,7 +26,7 @@ EXPECTED_MEDIA={
   969:'/wp-content/uploads/2026/05/img_2066.jpg',
   983:'/wp-content/uploads/2026/05/img_2078.jpg',
 }
-BODY_MEDIA=set(EXPECTED_MEDIA)-{FEATURED,982}
+BODY_MEDIA=set(EXPECTED_MEDIA)-{FEATURED}
 TOKEN=re.compile(r'<!--\s+/?wp:[\s\S]*?-->')
 OPEN=re.compile(r'<!--\s+wp:([\w\-/]+)(?:\s+\{.*?\})?\s*(/)?-->')
 CLOSE=re.compile(r'<!--\s+/wp:([\w\-/]+)\s+-->')
