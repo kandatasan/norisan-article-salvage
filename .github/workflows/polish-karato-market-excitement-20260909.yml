@@ -1,0 +1,32 @@
+name: Polish Karato Market excitement once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/polish_karato_market_excitement_20260909.py
+      - .github/workflows/polish-karato-market-excitement-20260909.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  polish-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Polish 唐戸市場 draft and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/polish_karato_market_excitement_20260909.py
+          python scripts/polish_karato_market_excitement_20260909.py > /tmp/result.md
+          cat /tmp/result.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/result.md
