@@ -1,0 +1,51 @@
+name: Add outing related cards once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'outing-related-cards/links.json'
+      - 'scripts/add_outing_related_cards_once.py'
+      - '.github/workflows/add-outing-related-cards-once.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  append-and-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax and config check
+        run: |
+          python -m py_compile scripts/add_outing_related_cards_once.py
+          python -m json.tool outing-related-cards/links.json > /dev/null
+      - name: Append related cards to published outing articles and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/add_outing_related_cards_once.py | tee /tmp/outing-related-cards.log
+      - name: Record success in audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### おでかけ関連記事カード一括設置: SUCCESS'
+            echo
+            cat /tmp/outing-related-cards.log
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload audit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: outing-related-cards-audit
+          path: /tmp/outing-related-cards.log
+          if-no-files-found: warn
