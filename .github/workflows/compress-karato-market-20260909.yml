@@ -1,0 +1,33 @@
+name: Compress Karato Market copy once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/compress_karato_market_20260909.py
+      - scripts/run_compress_karato_market_20260909.py
+      - .github/workflows/compress-karato-market-20260909.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  compress-copy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compress 唐戸市場 copy and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/compress_karato_market_20260909.py scripts/run_compress_karato_market_20260909.py
+          PYTHONPATH=. python scripts/run_compress_karato_market_20260909.py > /tmp/result.md
+          cat /tmp/result.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/result.md
