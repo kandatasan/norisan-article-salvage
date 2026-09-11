@@ -226,9 +226,11 @@ def find_media(auth: str, stem: str) -> dict[str, Any]:
             if canonical_stem(row.get("source_url") or "") == stem.casefold():
                 found[int(row["id"])] = row
 
-    if len(found) != 1:
-        raise RuntimeError(f"media lookup for {stem} expected 1, found {len(found)}: {list(found)}")
-    row = next(iter(found.values()))
+    if not found:
+        raise RuntimeError(f"media lookup for {stem} found 0 matches")
+    # 同名画像が既に残っている場合は、今回ユーザーがアップした新しい方を採用する。
+    # WordPressのattachment IDは後から追加したものほど大きくなるため、最大IDを選ぶ。
+    row = found[max(found)]
     if not str(row.get("mime_type") or "").startswith("image/"):
         raise RuntimeError(f"{stem} is not an image")
     return row
