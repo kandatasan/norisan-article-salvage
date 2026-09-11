@@ -1,6 +1,12 @@
 name: Apply affiliate layout 2026-09-11
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/apply_affiliate_layout_20260911.py
+      - packages/affiliate-layout-20260911/**
+      - .github/workflows/apply-affiliate-layout-20260911.yml
   push:
     branches: [main]
     paths:
@@ -13,7 +19,7 @@ permissions:
   issues: write
 
 jobs:
-  apply:
+  verify-or-apply:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -23,7 +29,14 @@ jobs:
           python-version: '3.12'
       - name: Compile safety script
         run: python -m py_compile scripts/apply_affiliate_layout_20260911.py
-      - name: Preflight and apply reviewed affiliate layout
+      - name: Preflight only on pull request
+        if: github.event_name == 'pull_request'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_affiliate_layout_20260911.py --mode preflight | tee /tmp/summary.md
+      - name: Apply reviewed affiliate layout on main
+        if: github.event_name == 'push'
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -32,11 +45,11 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: affiliate-layout-20260911-audit
+          name: affiliate-layout-20260911-audit-${{ github.run_id }}
           path: reports/affiliate-layout-20260911/
           if-no-files-found: warn
-      - name: Record audit in issue 22
-        if: always()
+      - name: Record apply audit in issue 22
+        if: always() && github.event_name == 'push'
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
