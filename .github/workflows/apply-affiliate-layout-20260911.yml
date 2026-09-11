@@ -1,0 +1,48 @@
+name: Apply affiliate layout 2026-09-11
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/apply_affiliate_layout_20260911.py
+      - packages/affiliate-layout-20260911/**
+      - .github/workflows/apply-affiliate-layout-20260911.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile safety script
+        run: python -m py_compile scripts/apply_affiliate_layout_20260911.py
+      - name: Preflight and apply reviewed affiliate layout
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_affiliate_layout_20260911.py --mode apply | tee /tmp/summary.md
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: affiliate-layout-20260911-audit
+          path: reports/affiliate-layout-20260911/
+          if-no-files-found: warn
+      - name: Record audit in issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Affiliate layout apply — 2026-09-11'
+            echo
+            cat /tmp/summary.md 2>/dev/null || echo '- result: **FAILED before summary**'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/comment.md || true
