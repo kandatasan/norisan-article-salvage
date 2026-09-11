@@ -1,0 +1,49 @@
+name: Finish Okunoshima rabbit-island draft
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/finish_okunoshima_rabbit_island_draft_20260911.py'
+      - '.github/workflows/finish-okunoshima-rabbit-island-draft-20260911.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  finish-draft:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/finish_okunoshima_rabbit_island_draft_20260911.py
+      - name: Finish guarded WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/finish_okunoshima_rabbit_island_draft_20260911.py
+      - name: Record result on salvage audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### Okunoshima rabbit-island finish: SUCCESS'
+            echo
+            cat reports/okunoshima-rabbit-island-finish/summary.md
+          } > /tmp/okunoshima-rabbit-island-finish-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/okunoshima-rabbit-island-finish-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: okunoshima-rabbit-island-finish
+          path: reports/okunoshima-rabbit-island-finish/
+          if-no-files-found: warn
