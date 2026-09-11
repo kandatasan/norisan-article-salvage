@@ -1,0 +1,51 @@
+name: Add Okunoshima related cards once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/add_okunoshima_related_cards_20260911.py'
+      - '.github/workflows/add-okunoshima-related-cards-20260911.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  append-and-verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: python -m py_compile scripts/add_okunoshima_related_cards_20260911.py
+      - name: Append related cards
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python scripts/add_okunoshima_related_cards_20260911.py > /tmp/okunoshima-related-cards.log
+          cat /tmp/okunoshima-related-cards.log
+      - name: Record result
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### 大久野島 関連記事カード: SUCCESS'
+            echo
+            cat /tmp/okunoshima-related-cards.log
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
+      - name: Upload audit log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: okunoshima-related-cards-audit
+          path: /tmp/okunoshima-related-cards.log
+          if-no-files-found: warn
