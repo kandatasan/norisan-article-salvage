@@ -31,6 +31,13 @@ BODY_MEDIA = {3756, 3765}
 SOURCE_MARKER = "<!-- tsurikue-original:v1 slug=landcruiser-fj-price source=user-provided-20260913 -->"
 EDITORIAL_MARKER = "<!-- tsurikue-editorial:v1 slug=landcruiser-fj-price -->"
 EXPECTED_PRE_POLISH_SHA256 = "96e70c5ea76bc55269f2780a01d074f12f04d788fa0590f4c319d03224dcebd7"
+PUBLISHED_REPLACEMENTS = [
+    ("何にいくらかかったのか、購入時の価格明細をそのまま見ながら紹介します。", "何にいくらかかったのか、実際の見積もりを見ながら紹介します。"),
+    ("実際の購入メモでは支払総額550万516円", "実際の見積もりでは支払総額550万516円"),
+    ("alt=\\\"ランドクルーザーFJ VXの購入時の価格明細メモ\\\"", "alt=\\\"ランドクルーザーFJ VXの実際の見積もり\\\""),
+    ("販売店でもらった購入時の価格明細メモ", "販売店でもらったランドクルーザーFJの見積もり"),
+]
+OLD_MEMO_BLOCK = """<!-- wp:paragraph -->\n<p>書面上は「見積ではなくメモ」という扱いなので、この記事でも<strong>購入時の価格明細メモ</strong>として載せます。</p>\n<!-- /wp:paragraph -->\n"""
 EXPECTED_H2 = [
     "ランドクルーザーFJの新車価格は450万100円",
     "実際の見積もりでは支払総額550万516円",
@@ -239,6 +246,8 @@ def main():
     existing = find_existing()
     action = "CREATE"
     expected_status = "draft"
+    expected_after_content = content
+    expected_after_excerpt = EXCERPT
 
     if existing:
         if len(existing) != 1:
@@ -253,42 +262,83 @@ def main():
             raise RuntimeError(
                 f"existing identity differs: id={row.get('id')} slug={row.get('slug')}"
             )
-        if current_status == "draft" and not structural_match(row, categories, ("draft",)):
-            raise RuntimeError(
-                f"existing draft structure differs: id={row.get('id')} status={row.get('status')}"
-            )
 
-        current_sha = content_sha(raw(row, "content"))
+        current_content = raw(row, "content")
         current_excerpt = normalized_excerpt(raw(row, "excerpt"))
 
-        if same_content(row, content, categories) and current_excerpt == EXCERPT:
-            created = row
-            action = "ALREADY_UP_TO_DATE"
+        if current_status == "publish":
+            # The user already published this article. Patch only the requested wording,
+            # preserving every unrelated live edit exactly as-is.
+            patched = current_content
+            changed = 0
+            for old, new in PUBLISHED_REPLACEMENTS:
+                count = patched.count(old)
+                if count > 1:
+                    raise RuntimeError(f"published wording appears more than once: {old}")
+                if count == 1:
+                    patched = patched.replace(old, new, 1)
+                    changed += 1
+
+            memo_count = patched.count(OLD_MEMO_BLOCK)
+            if memo_count > 1:
+                raise RuntimeError("memo disclaimer block appears more than once")
+            if memo_count == 1:
+                patched = patched.replace(OLD_MEMO_BLOCK, "", 1)
+                changed += 1
+
+            patched_excerpt = current_excerpt
+            if "購入時の価格明細メモ" in patched_excerpt:
+                patched_excerpt = NEW_EXCERPT
+                changed += 1
+            elif current_excerpt == OLD_EXCERPT:
+                patched_excerpt = NEW_EXCERPT
+                changed += 1
+
+            if changed == 0:
+                if "実際の見積もりでは支払総額550万516円" in current_content and "購入時の価格明細メモ" not in current_content:
+                    created = row
+                    action = "ALREADY_UP_TO_DATE"
+                    expected_after_content = current_content
+                    expected_after_excerpt = current_excerpt
+                else:
+                    raise RuntimeError("no targeted published wording was found")
+            else:
+                expected_after_content = patched
+                expected_after_excerpt = patched_excerpt
+                created, _ = req(
+                    f"{SITE}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}",
+                    method="POST",
+                    payload={"content": patched, "excerpt": patched_excerpt},
+                    timeout=90,
+                )
+                if int(created.get("id") or 0) != EXPECTED_POST_ID:
+                    raise RuntimeError("published wording update id mismatch")
+                if created.get("status") != "publish":
+                    raise RuntimeError("published wording update changed status")
+                action = "UPDATE_PUBLISHED_WORDING"
         else:
-            if current_sha != EXPECTED_PRE_POLISH_SHA256:
+            if not structural_match(row, categories, ("draft",)):
                 raise RuntimeError(
-                    f"existing content changed unexpectedly: {current_sha}"
+                    f"existing draft structure differs: id={row.get('id')} status={row.get('status')}"
                 )
-            if current_excerpt not in {OLD_EXCERPT, EXCERPT}:
-                raise RuntimeError(f"existing excerpt changed unexpectedly: {current_excerpt}")
-
-            payload = {"content": content, "excerpt": EXCERPT}
-            if current_status == "draft":
-                payload["status"] = "draft"
-
-            created, _ = req(
-                f"{SITE}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}",
-                method="POST",
-                payload=payload,
-                timeout=90,
-            )
-            if int(created.get("id") or 0) != EXPECTED_POST_ID:
-                raise RuntimeError("update response id mismatch")
-            if created.get("status") != expected_status:
-                raise RuntimeError(
-                    f"update changed status unexpectedly: {created.get('status')} != {expected_status}"
+            current_sha = content_sha(current_content)
+            if current_content.strip() == content.strip() and current_excerpt == EXCERPT:
+                created = row
+                action = "ALREADY_UP_TO_DATE"
+            else:
+                if current_sha != EXPECTED_PRE_POLISH_SHA256:
+                    raise RuntimeError(f"existing draft content changed unexpectedly: {current_sha}")
+                if current_excerpt not in {OLD_EXCERPT, EXCERPT}:
+                    raise RuntimeError(f"existing draft excerpt changed unexpectedly: {current_excerpt}")
+                created, _ = req(
+                    f"{SITE}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}",
+                    method="POST",
+                    payload={"content": content, "excerpt": EXCERPT, "status": "draft"},
+                    timeout=90,
                 )
-            action = "UPDATE_DRAFT" if current_status == "draft" else "UPDATE_PUBLISHED_WORDING"
+                if int(created.get("id") or 0) != EXPECTED_POST_ID or created.get("status") != "draft":
+                    raise RuntimeError("draft update response validation failed")
+                action = "UPDATE_DRAFT"
     else:
         payload = {
             "title": TITLE,
@@ -322,12 +372,12 @@ def main():
         raise RuntimeError("post identity mismatch after write")
     if after.get("status") != expected_status:
         raise RuntimeError(f"post status changed unexpectedly: {after.get('status')} != {expected_status}")
+    if raw(after, "content").strip() != expected_after_content.strip():
+        raise RuntimeError("content verification failed")
+    if normalized_excerpt(raw(after, "excerpt")) != expected_after_excerpt:
+        raise RuntimeError("excerpt verification failed")
     if expected_status == "draft" and not structural_match(after, categories, ("draft",)):
         raise RuntimeError("draft structure mismatch after write")
-    if raw(after, "content").strip() != content.strip():
-        raise RuntimeError("content mismatch after write")
-    if normalized_excerpt(raw(after, "excerpt")) != EXCERPT:
-        raise RuntimeError("excerpt mismatch after write")
 
     report = {
         "result": "SUCCESS",
@@ -335,21 +385,17 @@ def main():
         "post_id": post_id,
         "slug": SLUG,
         "status": after.get("status"),
-        "title": TITLE,
-        "featured_media": FEATURED,
-        "categories": categories,
+        "title": html.unescape(raw(after, "title")),
+        "featured_media": int(after.get("featured_media") or 0),
+        "categories": after.get("categories") or [],
         "media_checked": len(EXPECTED_MEDIA),
-        "body_images": len(BODY_MEDIA),
-        "gutenberg_problems": 0,
         "published_before": before,
         "published_after": after_counts,
         "content_sha256": content_sha(raw(after, "content")),
         "wordpress_write_count": 0 if action == "ALREADY_UP_TO_DATE" else 1,
         "publish_count": 0,
         "media_upload_count": 0,
-        "tone_check": "frank_v1_no_emoji",
-        "repetition_guard": "PASS",
-        "excuse_like_guard": "PASS",
+        "targeted_wording_only": action == "UPDATE_PUBLISHED_WORDING",
         "publish_state_preserved": expected_status == after.get("status"),
     }
 
