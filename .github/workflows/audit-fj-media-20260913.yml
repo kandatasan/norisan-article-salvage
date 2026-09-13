@@ -1,0 +1,119 @@
+name: Audit Land Cruiser FJ uploaded media 20260913
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/audit-fj-media-20260913.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit-fj-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Inspect recent FJ media read-only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY' > /tmp/fj-media-audit.md
+          import base64, json, os, re, urllib.parse, urllib.request
+
+          wanted = [
+              'IMG_8318','IMG_8317','IMG_8316','IMG_8315','IMG_8314',
+              'IMG_8313','IMG_8312','IMG_8311','IMG_8310','IMG_8309',
+              'IMG_8130','IMG_8129','IMG_8123','IMG_8125','IMG_8122'
+          ]
+
+          user=os.environ['TSURIKUE_WP_USER']
+          pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          token=base64.b64encode(f'{user}:{pw}'.encode()).decode()
+          headers={
+              'Authorization':'Basic '+token,
+              'Accept':'application/json',
+              'User-Agent':'tsurikue-fj-media-audit/1.0'
+          }
+
+          rows=[]
+          for page in (1,2,3):
+              q=urllib.parse.urlencode({
+                  'context':'edit',
+                  'per_page':100,
+                  'page':page,
+                  'orderby':'date',
+                  'order':'desc',
+                  '_fields':'id,date,slug,status,source_url,media_details,alt_text,caption,title'
+              })
+              req=urllib.request.Request('https://tsurikue.com/wp-json/wp/v2/media?'+q,headers=headers)
+              try:
+                  with urllib.request.urlopen(req,timeout=45) as r:
+                      batch=json.loads(r.read().decode())
+              except Exception:
+                  break
+              if not batch:
+                  break
+              rows.extend(batch)
+
+          def raw(v):
+              if isinstance(v,dict):
+                  return v.get('raw') or v.get('rendered') or ''
+              return v or ''
+
+          matches=[]
+          for row in rows:
+              url=row.get('source_url') or ''
+              name=urllib.parse.unquote(url.rsplit('/',1)[-1])
+              title=raw(row.get('title'))
+              hay=(name+' '+title).casefold()
+              hit=[x for x in wanted if x.casefold() in hay]
+              if hit:
+                  md=row.get('media_details') or {}
+                  matches.append({
+                      'wanted': ','.join(hit),
+                      'id':row.get('id'),
+                      'date':row.get('date'),
+                      'filename':name,
+                      'source_url':url,
+                      'width':md.get('width'),
+                      'height':md.get('height'),
+                      'alt':row.get('alt_text') or '',
+                      'caption':re.sub('<[^>]+>','',raw(row.get('caption'))).strip()
+                  })
+
+          print('### Land Cruiser FJ media audit 2026-09-13 (read-only)')
+          print('')
+          print(f'- recent_media_scanned: **{len(rows)}**')
+          print(f'- matched_media: **{len(matches)}**')
+          print('')
+          for m in matches:
+              print(f"#### {m['wanted']}")
+              print(f"- media_id: **{m['id']}**")
+              print(f"- filename: `{m['filename']}`")
+              print(f"- date: {m['date']}")
+              print(f"- dimensions: {m['width']} x {m['height']}")
+              print(f"- source_url: {m['source_url']}")
+              print(f"- alt: {m['alt']}")
+              print(f"- caption: {m['caption']}")
+              print('')
+          missing=[w for w in wanted if not any(w in (m['wanted'] or '') for m in matches)]
+          print('### Missing stems')
+          print('')
+          if missing:
+              for x in missing:
+                  print(f'- {x}')
+          else:
+              print('- none')
+          PY
+      - name: Record on audit issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/fj-media-audit.md
