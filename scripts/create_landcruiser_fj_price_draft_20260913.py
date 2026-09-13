@@ -288,10 +288,10 @@ def main():
 
             patched_excerpt = current_excerpt
             if "購入時の価格明細メモ" in patched_excerpt:
-                patched_excerpt = NEW_EXCERPT
+                patched_excerpt = EXCERPT
                 changed += 1
             elif current_excerpt == OLD_EXCERPT:
-                patched_excerpt = NEW_EXCERPT
+                patched_excerpt = EXCERPT
                 changed += 1
 
             if changed == 0:
