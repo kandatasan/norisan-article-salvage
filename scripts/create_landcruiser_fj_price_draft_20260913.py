@@ -214,9 +214,9 @@ def normalized_excerpt(value):
     return re.sub(r"<[^>]+>", "", html.unescape(value or "")).strip()
 
 
-def structural_match(row, category_ids):
+def structural_match(row, category_ids, allowed_statuses=("draft",)):
     return (
-        row.get("status") == "draft"
+        row.get("status") in allowed_statuses
         and int(row.get("id") or 0) == EXPECTED_POST_ID
         and row.get("slug") == SLUG
         and html.unescape(raw(row, "title")) == TITLE
@@ -225,8 +225,8 @@ def structural_match(row, category_ids):
     )
 
 
-def same_draft(row, content, category_ids):
-    return structural_match(row, category_ids) and raw(row, "content").strip() == content.strip()
+def same_content(row, content, category_ids):
+    return structural_match(row, category_ids, ("draft","publish")) and raw(row, "content").strip() == content.strip()
 
 
 def main():
@@ -238,37 +238,53 @@ def main():
     before = public_counts()
     existing = find_existing()
     action = "CREATE"
+    expected_status = "draft"
 
     if existing:
         if len(existing) != 1:
             raise RuntimeError(f"multiple slug collisions: {len(existing)}")
         row = existing[0]
+        current_status = row.get("status")
+        if current_status not in {"draft","publish"}:
+            raise RuntimeError(f"unsupported existing status: {current_status}")
+        expected_status = current_status
 
-        if same_draft(row, content, categories):
+        if not structural_match(row, categories, ("draft","publish")):
+            raise RuntimeError(
+                f"existing structure differs: id={row.get('id')} status={row.get('status')}"
+            )
+
+        current_sha = content_sha(raw(row, "content"))
+        current_excerpt = normalized_excerpt(raw(row, "excerpt"))
+
+        if same_content(row, content, categories) and current_excerpt == EXCERPT:
             created = row
             action = "ALREADY_UP_TO_DATE"
         else:
-            if not structural_match(row, categories):
+            if current_sha != EXPECTED_PRE_POLISH_SHA256:
                 raise RuntimeError(
-                    f"existing draft structure differs: id={row.get('id')} status={row.get('status')}"
+                    f"existing content changed unexpectedly: {current_sha}"
                 )
-            old_sha = content_sha(raw(row, "content"))
-            if old_sha != EXPECTED_PRE_POLISH_SHA256:
-                raise RuntimeError(
-                    f"existing draft content changed unexpectedly: {old_sha}"
-                )
-            old_excerpt = normalized_excerpt(raw(row, "excerpt"))
-            if old_excerpt not in {OLD_EXCERPT, EXCERPT}:
-                raise RuntimeError(f"existing draft excerpt changed unexpectedly: {old_excerpt}")
+            if current_excerpt not in {OLD_EXCERPT, EXCERPT}:
+                raise RuntimeError(f"existing excerpt changed unexpectedly: {current_excerpt}")
+
+            payload = {"content": content, "excerpt": EXCERPT}
+            if current_status == "draft":
+                payload["status"] = "draft"
+
             created, _ = req(
                 f"{SITE}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}",
                 method="POST",
-                payload={"content": content, "excerpt": EXCERPT, "status": "draft"},
+                payload=payload,
                 timeout=90,
             )
-            if created.get("status") != "draft" or int(created.get("id") or 0) != EXPECTED_POST_ID:
-                raise RuntimeError("update response validation failed")
-            action = "UPDATE_DRAFT"
+            if int(created.get("id") or 0) != EXPECTED_POST_ID:
+                raise RuntimeError("update response id mismatch")
+            if created.get("status") != expected_status:
+                raise RuntimeError(
+                    f"update changed status unexpectedly: {created.get('status')} != {expected_status}"
+                )
+            action = "UPDATE_DRAFT" if current_status == "draft" else "UPDATE_PUBLISHED_WORDING"
     else:
         payload = {
             "title": TITLE,
@@ -298,7 +314,7 @@ def main():
 
     if before != after_counts:
         raise RuntimeError(f"published counts changed: {before} -> {after_counts}")
-    if not structural_match(after, categories):
+    if not structural_match(after, categories, (expected_status,)):
         raise RuntimeError("post structure mismatch after write")
     if raw(after, "content").strip() != content.strip():
         raise RuntimeError("content mismatch after write")
@@ -310,7 +326,7 @@ def main():
         "action": action,
         "post_id": post_id,
         "slug": SLUG,
-        "status": "draft",
+        "status": after.get("status"),
         "title": TITLE,
         "featured_media": FEATURED,
         "categories": categories,
@@ -326,9 +342,10 @@ def main():
         "tone_check": "frank_v1_no_emoji",
         "repetition_guard": "PASS",
         "excuse_like_guard": "PASS",
+        "publish_state_preserved": expected_status == after.get("status"),
     }
 
-    print("# Land Cruiser FJ price draft final polish")
+    print("# Land Cruiser FJ price wording update")
     for key, value in report.items():
         print(f"- {key}: **{value}**")
 
