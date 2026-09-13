@@ -18,7 +18,8 @@ TITLE = "ランドクルーザーFJの乗り出し価格はいくら？実際の
 SLUG = "landcruiser-fj-price"
 EXPECTED_POST_ID = 3767
 CONTENT_PATH = Path("packages/landcruiser-fj-price/content.html")
-EXCERPT = "ランドクルーザーFJ VXは車両価格450万100円。実際に購入したFJはオプション・用品・諸費用を含めて現金販売時の支払総額550万516円でした。購入時の価格明細メモをもとに、約100万円増えた内訳や支払いプランを紹介します。"
+OLD_EXCERPT = "ランドクルーザーFJ VXは車両価格450万100円。実際に購入したFJはオプション・用品・諸費用を含めて現金販売時の支払総額550万516円でした。購入時の価格明細メモをもとに、約100万円増えた内訳や支払いプランを紹介します。"
+EXCERPT = "ランドクルーザーFJ VXは車両価格450万100円。実際の見積もりでは、オプション・用品・諸費用を含めて現金販売時の支払総額550万516円でした。約100万円増えた内訳や支払いプランを紹介します。"
 FEATURED = 3757
 CATEGORY_SLUGS = ["car"]
 EXPECTED_MEDIA = {
@@ -29,10 +30,10 @@ EXPECTED_MEDIA = {
 BODY_MEDIA = {3756, 3765}
 SOURCE_MARKER = "<!-- tsurikue-original:v1 slug=landcruiser-fj-price source=user-provided-20260913 -->"
 EDITORIAL_MARKER = "<!-- tsurikue-editorial:v1 slug=landcruiser-fj-price -->"
-EXPECTED_PRE_POLISH_SHA256 = "662e44a4fe41f9a1e942654011b2b44090f309f11e1362cbf336d5c3bfa7703e"
+EXPECTED_PRE_POLISH_SHA256 = "96e70c5ea76bc55269f2780a01d074f12f04d788fa0590f4c319d03224dcebd7"
 EXPECTED_H2 = [
     "ランドクルーザーFJの新車価格は450万100円",
-    "実際の購入メモでは支払総額550万516円",
+    "実際の見積もりでは支払総額550万516円",
     "何を付けたら付属品74万円になった？",
     "支払いプランは頭金200万円・60回払い",
     "550万円のFJ、乗ってみたらどう？",
@@ -187,8 +188,7 @@ def validate_content(content):
         "現金販売時の支払総額は<strong><span class=\"swl-marker mark_orange\">550万516円",
         "差額は100万416円",
         "はい、ほぼ100万円増えました。",
-        "書面上は「見積ではなくメモ」という扱い",
-        "購入時の価格明細メモ",
+        "実際の見積もりを見ながら紹介します。",
         "付属品74万171円",
         "頭金200万円・60回払い",
         "最終回は256万5,050円",
@@ -222,7 +222,6 @@ def structural_match(row, category_ids):
         and html.unescape(raw(row, "title")) == TITLE
         and int(row.get("featured_media") or 0) == FEATURED
         and sorted(row.get("categories") or []) == sorted(category_ids)
-        and normalized_excerpt(raw(row, "excerpt")) == EXCERPT
     )
 
 
@@ -258,10 +257,13 @@ def main():
                 raise RuntimeError(
                     f"existing draft content changed unexpectedly: {old_sha}"
                 )
+            old_excerpt = normalized_excerpt(raw(row, "excerpt"))
+            if old_excerpt not in {OLD_EXCERPT, EXCERPT}:
+                raise RuntimeError(f"existing draft excerpt changed unexpectedly: {old_excerpt}")
             created, _ = req(
                 f"{SITE}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}",
                 method="POST",
-                payload={"content": content, "status": "draft"},
+                payload={"content": content, "excerpt": EXCERPT, "status": "draft"},
                 timeout=90,
             )
             if created.get("status") != "draft" or int(created.get("id") or 0) != EXPECTED_POST_ID:
@@ -300,6 +302,8 @@ def main():
         raise RuntimeError("post structure mismatch after write")
     if raw(after, "content").strip() != content.strip():
         raise RuntimeError("content mismatch after write")
+    if normalized_excerpt(raw(after, "excerpt")) != EXCERPT:
+        raise RuntimeError("excerpt mismatch after write")
 
     report = {
         "result": "SUCCESS",
