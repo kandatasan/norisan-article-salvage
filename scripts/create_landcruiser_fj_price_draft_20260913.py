@@ -249,9 +249,13 @@ def main():
             raise RuntimeError(f"unsupported existing status: {current_status}")
         expected_status = current_status
 
-        if not structural_match(row, categories, ("draft","publish")):
+        if int(row.get("id") or 0) != EXPECTED_POST_ID or row.get("slug") != SLUG:
             raise RuntimeError(
-                f"existing structure differs: id={row.get('id')} status={row.get('status')}"
+                f"existing identity differs: id={row.get('id')} slug={row.get('slug')}"
+            )
+        if current_status == "draft" and not structural_match(row, categories, ("draft",)):
+            raise RuntimeError(
+                f"existing draft structure differs: id={row.get('id')} status={row.get('status')}"
             )
 
         current_sha = content_sha(raw(row, "content"))
@@ -314,8 +318,12 @@ def main():
 
     if before != after_counts:
         raise RuntimeError(f"published counts changed: {before} -> {after_counts}")
-    if not structural_match(after, categories, (expected_status,)):
-        raise RuntimeError("post structure mismatch after write")
+    if int(after.get("id") or 0) != EXPECTED_POST_ID or after.get("slug") != SLUG:
+        raise RuntimeError("post identity mismatch after write")
+    if after.get("status") != expected_status:
+        raise RuntimeError(f"post status changed unexpectedly: {after.get('status')} != {expected_status}")
+    if expected_status == "draft" and not structural_match(after, categories, ("draft",)):
+        raise RuntimeError("draft structure mismatch after write")
     if raw(after, "content").strip() != content.strip():
         raise RuntimeError("content mismatch after write")
     if normalized_excerpt(raw(after, "excerpt")) != EXCERPT:
