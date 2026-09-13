@@ -13,9 +13,10 @@ import urllib.request
 from pathlib import Path
 
 SITE = "https://tsurikue.com"
-UA = "tsurikue-create-landcruiser-fj-price-20260913/1.0"
+UA = "tsurikue-create-landcruiser-fj-price-20260913/1.1"
 TITLE = "ランドクルーザーFJの乗り出し価格はいくら？実際の支払総額は550万516円"
 SLUG = "landcruiser-fj-price"
+EXPECTED_POST_ID = 3767
 CONTENT_PATH = Path("packages/landcruiser-fj-price/content.html")
 EXCERPT = "ランドクルーザーFJ VXは車両価格450万100円。実際に購入したFJはオプション・用品・諸費用を含めて現金販売時の支払総額550万516円でした。購入時の価格明細メモをもとに、約100万円増えた内訳や支払いプランを紹介します。"
 FEATURED = 3757
@@ -28,13 +29,14 @@ EXPECTED_MEDIA = {
 BODY_MEDIA = {3756, 3765}
 SOURCE_MARKER = "<!-- tsurikue-original:v1 slug=landcruiser-fj-price source=user-provided-20260913 -->"
 EDITORIAL_MARKER = "<!-- tsurikue-editorial:v1 slug=landcruiser-fj-price -->"
+EXPECTED_PRE_POLISH_SHA256 = "662e44a4fe41f9a1e942654011b2b44090f309f11e1362cbf336d5c3bfa7703e"
 EXPECTED_H2 = [
     "ランドクルーザーFJの新車価格は450万100円",
     "実際の購入メモでは支払総額550万516円",
-    "約100万円増えた大きな理由はオプションと付属品",
-    "支払いプランのメモは頭金200万円・60回払い",
-    "550万円のFJに乗ってみてどうだった？",
-    "FJを買うならカタログ価格だけで予算を決めない",
+    "何を付けたら付属品74万円になった？",
+    "支払いプランは頭金200万円・60回払い",
+    "550万円のFJ、乗ってみたらどう？",
+    "FJは450万円ではなく「自分仕様の総額」で見る",
 ]
 REQUIRED_SHORTCODE = '[blog_parts id="2184"]'
 
@@ -69,8 +71,8 @@ def req(url, method="GET", payload=None, timeout=60):
         try:
             r = urllib.request.Request(url, data=data, headers=headers, method=method)
             with urllib.request.urlopen(r, timeout=timeout) as resp:
-                raw = resp.read().decode()
-                return (json.loads(raw) if raw else None), dict(resp.headers)
+                raw_body = resp.read().decode()
+                return (json.loads(raw_body) if raw_body else None), dict(resp.headers)
         except Exception as exc:
             last = exc
             if n < 2:
@@ -83,6 +85,10 @@ def raw(row, key):
     if isinstance(value, dict):
         return value.get("raw") or value.get("rendered") or ""
     return str(value)
+
+
+def content_sha(text):
+    return hashlib.sha256(text.encode()).hexdigest()
 
 
 def gutenberg_problems(text):
@@ -157,7 +163,7 @@ def validate_content(content):
     if content.count(EDITORIAL_MARKER) != 1:
         raise RuntimeError("editorial marker count mismatch")
 
-    for banned in ["普通に", "🤣", "😏", "🔥"]:
+    for banned in ["普通に", "もちろん", "🤣", "😏", "🔥", "😂", "😊"]:
         if banned in content:
             raise RuntimeError("banned wording/emoji present: " + banned)
     if content.count("かなり") > 1 or content.count("めちゃくちゃ") > 1:
@@ -178,14 +184,16 @@ def validate_content(content):
         raise RuntimeError("CTN shortcode count mismatch")
 
     required_phrases = [
-        "現金販売時の支払総額が550万516円",
-        "100万416円",
-        "この書面はメモであり見積ではありません",
+        "現金販売時の支払総額は<strong><span class=\"swl-marker mark_orange\">550万516円",
+        "差額は100万416円",
+        "はい、ほぼ100万円増えました。",
+        "書面上は「見積ではなくメモ」という扱い",
         "購入時の価格明細メモ",
-        "付属品だけで<strong>74万171円</strong>",
+        "付属品74万171円",
         "頭金200万円・60回払い",
-        "最終回支払額",
+        "最終回は256万5,050円",
         "実質年率",
+        "価格の話ばかりだと重たいので、乗った感想も少し。",
         "https://toyota.jp/landcruiserfj/",
         "https://toyota.jp/request/webcatalog/landcruiserfj/",
     ]
@@ -193,20 +201,33 @@ def validate_content(content):
         if phrase not in content:
             raise RuntimeError("missing required phrase: " + phrase)
 
+    # Repetition guard: the core numbers should be visible, not hammered home in every section.
+    if content.count("450万100円") > 5:
+        raise RuntimeError("450万100円 repeated too many times")
+    if content.count("550万516円") > 5:
+        raise RuntimeError("550万516円 repeated too many times")
+    if content.count("100万416円") > 3:
+        raise RuntimeError("100万416円 repeated too many times")
+
 
 def normalized_excerpt(value):
     return re.sub(r"<[^>]+>", "", html.unescape(value or "")).strip()
 
 
-def same_draft(row, content, category_ids):
+def structural_match(row, category_ids):
     return (
         row.get("status") == "draft"
+        and int(row.get("id") or 0) == EXPECTED_POST_ID
+        and row.get("slug") == SLUG
         and html.unescape(raw(row, "title")) == TITLE
-        and raw(row, "content").strip() == content.strip()
         and int(row.get("featured_media") or 0) == FEATURED
         and sorted(row.get("categories") or []) == sorted(category_ids)
         and normalized_excerpt(raw(row, "excerpt")) == EXCERPT
     )
+
+
+def same_draft(row, content, category_ids):
+    return structural_match(row, category_ids) and raw(row, "content").strip() == content.strip()
 
 
 def main():
@@ -223,12 +244,29 @@ def main():
         if len(existing) != 1:
             raise RuntimeError(f"multiple slug collisions: {len(existing)}")
         row = existing[0]
-        if not same_draft(row, content, categories):
-            raise RuntimeError(
-                f"slug already exists but differs: id={row.get('id')} status={row.get('status')}"
+
+        if same_draft(row, content, categories):
+            created = row
+            action = "ALREADY_UP_TO_DATE"
+        else:
+            if not structural_match(row, categories):
+                raise RuntimeError(
+                    f"existing draft structure differs: id={row.get('id')} status={row.get('status')}"
+                )
+            old_sha = content_sha(raw(row, "content"))
+            if old_sha != EXPECTED_PRE_POLISH_SHA256:
+                raise RuntimeError(
+                    f"existing draft content changed unexpectedly: {old_sha}"
+                )
+            created, _ = req(
+                f"{SITE}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}",
+                method="POST",
+                payload={"content": content, "status": "draft"},
+                timeout=90,
             )
-        created = row
-        action = "ALREADY_UP_TO_DATE"
+            if created.get("status") != "draft" or int(created.get("id") or 0) != EXPECTED_POST_ID:
+                raise RuntimeError("update response validation failed")
+            action = "UPDATE_DRAFT"
     else:
         payload = {
             "title": TITLE,
@@ -258,18 +296,10 @@ def main():
 
     if before != after_counts:
         raise RuntimeError(f"published counts changed: {before} -> {after_counts}")
-    if after.get("id") != post_id or after.get("slug") != SLUG or after.get("status") != "draft":
-        raise RuntimeError("post state mismatch")
-    if html.unescape(raw(after, "title")) != TITLE:
-        raise RuntimeError("title mismatch")
+    if not structural_match(after, categories):
+        raise RuntimeError("post structure mismatch after write")
     if raw(after, "content").strip() != content.strip():
-        raise RuntimeError("content mismatch")
-    if int(after.get("featured_media") or 0) != FEATURED:
-        raise RuntimeError("featured media mismatch")
-    if sorted(after.get("categories") or []) != sorted(categories):
-        raise RuntimeError("category mismatch")
-    if normalized_excerpt(raw(after, "excerpt")) != EXCERPT:
-        raise RuntimeError("excerpt mismatch")
+        raise RuntimeError("content mismatch after write")
 
     report = {
         "result": "SUCCESS",
@@ -285,13 +315,16 @@ def main():
         "gutenberg_problems": 0,
         "published_before": before,
         "published_after": after_counts,
-        "content_sha256": hashlib.sha256(raw(after, "content").encode()).hexdigest(),
-        "wordpress_write_count": 1 if action == "CREATE" else 0,
+        "content_sha256": content_sha(raw(after, "content")),
+        "wordpress_write_count": 0 if action == "ALREADY_UP_TO_DATE" else 1,
         "publish_count": 0,
         "media_upload_count": 0,
+        "tone_check": "frank_v1_no_emoji",
+        "repetition_guard": "PASS",
+        "excuse_like_guard": "PASS",
     }
 
-    print("# Land Cruiser FJ price draft creation")
+    print("# Land Cruiser FJ price draft final polish")
     for key, value in report.items():
         print(f"- {key}: **{value}**")
 
