@@ -117,11 +117,20 @@ def resolve_term(endpoint,slug):
     return int(rows[0]["id"])
 
 def validate_media():
+    q=urllib.parse.urlencode({
+        "context":"edit",
+        "include":",".join(str(x) for x in sorted(EXPECTED_MEDIA)),
+        "per_page":100,
+        "_fields":"id,status,source_url",
+    })
+    rows,_=req(f"{SITE}/wp-json/wp/v2/media?{q}",timeout=60)
+    by_id={int(row.get("id") or 0):row for row in rows}
+    if set(by_id)!=set(EXPECTED_MEDIA):
+        raise RuntimeError(f"media id set mismatch got={sorted(by_id)} expected={sorted(EXPECTED_MEDIA)}")
     for mid,expected_path in EXPECTED_MEDIA.items():
-        q=urllib.parse.urlencode({"context":"edit","_fields":"id,status,source_url"})
-        row,_=req(f"{SITE}/wp-json/wp/v2/media/{mid}?{q}",timeout=45)
+        row=by_id[mid]
         actual=urllib.parse.unquote(urllib.parse.urlparse(row.get("source_url") or "").path)
-        if int(row.get("id") or 0)!=mid or actual.casefold()!=expected_path.casefold():
+        if actual.casefold()!=expected_path.casefold():
             raise RuntimeError(f"media mismatch id={mid}: {actual} != {expected_path}")
 
 def find_existing():
