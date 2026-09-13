@@ -6,10 +6,14 @@ from pathlib import Path
 
 SITE="https://tsurikue.com"
 UA="tsurikue-create-landcruiser-fj-drawbacks-20260913/1.0"
-TITLE="ランドクルーザーFJの残念なところ4選｜実際に買って気づいた不満点"
+OLD_TITLE="ランドクルーザーFJの残念なところ4選｜実際に買って気づいた不満点"
+TITLE="ランドクルーザーFJは後悔する？実際に買って気づいた残念なところ4選"
 SLUG="landcruiser-fj-drawbacks"
+EXPECTED_POST_ID=3778
 CONTENT_PATH=Path("packages/landcruiser-fj-drawbacks/content.html")
-EXCERPT="ランドクルーザーFJを実際に買って気づいた残念なところを紹介。ドア解錠のボタン、ドアミラー、センターコンソールのType-C・HDMI、タイヤハウスの仕上げなど、実車写真つきでまとめます。"
+OLD_EXCERPT="ランドクルーザーFJを実際に買って気づいた残念なところを紹介。ドア解錠のボタン、ドアミラー、センターコンソールのType-C・HDMI、タイヤハウスの仕上げなど、実車写真つきでまとめます。"
+EXCERPT="ランドクルーザーFJは買って後悔する？実際に購入して使って分かった残念なところ4つを、実車写真つきで紹介。ドア解錠、ドアミラー、センターコンソール、タイヤハウスなど購入前に確認したいポイントをまとめます。"
+EXPECTED_OLD_CONTENT_SHA256="fb58815a8a85640699aa0097b83c6d350029b030cb920320ae70d8fb974f6af4"
 FEATURED=3759
 CATEGORY_SLUGS=["car"]
 EXPECTED_MEDIA={
@@ -26,7 +30,8 @@ EXPECTED_H2=[
     "残念なところ3｜Type-CとHDMIはあるのにケーブルを出す穴がない",
     "残念なところ4｜タイヤハウスの内側にボディカラーが見える",
     "ハンドルの重さは残念というより、むしろFJには合っている",
-    "まとめ｜大きな不満より「細かいところが惜しい」",
+    "FJで後悔しないために購入前に見ておきたいところ",
+    "まとめ｜後悔はしていない。でも細かいところは惜しい",
 ]
 REQUIRED_SHORTCODE='[blog_parts id="2184"]'
 
@@ -143,6 +148,8 @@ def validate_content(content):
     if content.count(REQUIRED_SHORTCODE)!=1:
         raise RuntimeError("CTN shortcode count mismatch")
     for phrase in [
+        "僕はFJを買って後悔していません",
+        "FJで後悔しないために購入前に見ておきたいところ",
         "ドアハンドルのボタンを押して解錠",
         "ランドクルーザー250",
         "ケーブルを外へ出すための穴がありません",
@@ -175,9 +182,33 @@ def main():
     if existing:
         if len(existing)!=1:
             raise RuntimeError(f"multiple slug collisions: {len(existing)}")
-        if not same_draft(existing[0],content,categories):
-            raise RuntimeError(f"slug already exists but differs: id={existing[0].get('id')} status={existing[0].get('status')}")
-        created=existing[0]; action="ALREADY_UP_TO_DATE"
+        row=existing[0]
+        if same_draft(row,content,categories):
+            created=row
+            action="ALREADY_UP_TO_DATE"
+        else:
+            if int(row.get("id") or 0)!=EXPECTED_POST_ID or row.get("status")!="draft" or row.get("slug")!=SLUG:
+                raise RuntimeError(f"existing draft identity differs: id={row.get('id')} status={row.get('status')} slug={row.get('slug')}")
+            if int(row.get("featured_media") or 0)!=FEATURED or sorted(row.get("categories") or [])!=sorted(categories):
+                raise RuntimeError("existing draft media/category structure differs")
+            old_title=html.unescape(raw(row,"title"))
+            old_excerpt=normalized_excerpt(raw(row,"excerpt"))
+            old_sha=hashlib.sha256(raw(row,"content").encode()).hexdigest()
+            if old_title!=OLD_TITLE:
+                raise RuntimeError(f"existing draft title changed unexpectedly: {old_title}")
+            if old_excerpt!=OLD_EXCERPT:
+                raise RuntimeError(f"existing draft excerpt changed unexpectedly: {old_excerpt}")
+            if old_sha!=EXPECTED_OLD_CONTENT_SHA256:
+                raise RuntimeError(f"existing draft content changed unexpectedly: {old_sha}")
+            created,_=req(
+                f"{SITE}/wp-json/wp/v2/posts/{EXPECTED_POST_ID}",
+                method="POST",
+                payload={"title":TITLE,"content":content,"excerpt":EXCERPT,"status":"draft"},
+                timeout=90,
+            )
+            if int(created.get("id") or 0)!=EXPECTED_POST_ID or created.get("status")!="draft":
+                raise RuntimeError("update response validation failed")
+            action="UPDATE_DRAFT"
     else:
         created,_=req(
             f"{SITE}/wp-json/wp/v2/posts",
