@@ -1,0 +1,39 @@
+name: Create Land Cruiser FJ drawbacks draft 20260913
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/landcruiser-fj-drawbacks/content.html'
+      - 'scripts/create_landcruiser_fj_drawbacks_draft_20260913.py'
+      - '.github/workflows/create-landcruiser-fj-drawbacks-draft-20260913.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create guarded WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/create_landcruiser_fj_drawbacks_draft_20260913.py
+          python scripts/create_landcruiser_fj_drawbacks_draft_20260913.py > /tmp/fj-drawbacks-create.md
+          cat /tmp/fj-drawbacks-create.md
+      - name: Record result
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/fj-drawbacks-create.md
