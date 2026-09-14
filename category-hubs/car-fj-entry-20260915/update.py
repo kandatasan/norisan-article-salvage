@@ -98,10 +98,14 @@ def main():
 
     if (page.get("slug"),page.get("status"))!=(PAGE_SLUG,"publish"):
         raise SystemExit("PAGE_IDENTITY_GUARD_FAILED")
-    if HUB_MARKER not in before_raw:
-        raise SystemExit("CAR_HUB_MARKER_GUARD_FAILED")
-    if before_raw.count(ANCHOR)!=1:
-        raise SystemExit(f"ANCHOR_COUNT_FAILED_{before_raw.count(ANCHOR)}")
+    structural_checks={
+        "anchor_once":before_raw.count(ANCHOR)==1,
+        "hero_copy":"クルマで、<br>どこまで行こう。" in before_raw,
+        "start_here":"START HERE" in before_raw,
+        "ux_review":"https://tsurikue.com/lexus-ux-review/" in before_raw,
+    }
+    if not all(structural_checks.values()):
+        raise SystemExit("CAR_HUB_STRUCTURE_GUARD_FAILED "+json.dumps(structural_checks,ensure_ascii=False))
 
     fj,_=request(
         f"/categories/{FJ_CATEGORY_ID}?context=edit&_fields=id,name,slug,parent,count,link"
