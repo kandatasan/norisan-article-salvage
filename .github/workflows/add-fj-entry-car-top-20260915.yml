@@ -1,0 +1,38 @@
+name: Add FJ entry to car top 20260915
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'category-hubs/car-fj-entry-20260915/update.py'
+      - '.github/workflows/add-fj-entry-car-top-20260915.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Add simple FJ category entry
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile category-hubs/car-fj-entry-20260915/update.py
+          python category-hubs/car-fj-entry-20260915/update.py > /tmp/car-fj-entry.md
+          cat /tmp/car-fj-entry.md
+      - name: Record result
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/car-fj-entry.md
