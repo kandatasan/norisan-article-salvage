@@ -6,6 +6,8 @@ import hashlib
 import html
 import json
 import os
+import time
+import urllib.error
 import urllib.parse
 import urllib.request
 
@@ -48,16 +50,24 @@ def request(path, method="GET", payload=None, timeout=60):
     headers={
         "Authorization":auth_header(),
         "Accept":"application/json",
-        "User-Agent":"tsurikue-add-fj-entry-car-top-20260915/1.0",
+        "User-Agent":"tsurikue-add-fj-entry-car-top-20260915/1.1",
     }
     data=None
     if payload is not None:
         data=json.dumps(payload,ensure_ascii=False).encode()
         headers["Content-Type"]="application/json; charset=utf-8"
-    req=urllib.request.Request(BASE+path,data=data,headers=headers,method=method)
-    with urllib.request.urlopen(req,timeout=timeout) as resp:
-        raw=resp.read().decode()
-        return (json.loads(raw) if raw else None),dict(resp.headers)
+    last=None
+    for attempt in range(4):
+        try:
+            req=urllib.request.Request(BASE+path,data=data,headers=headers,method=method)
+            with urllib.request.urlopen(req,timeout=timeout) as resp:
+                raw=resp.read().decode()
+                return (json.loads(raw) if raw else None),dict(resp.headers)
+        except (urllib.error.URLError, TimeoutError) as exc:
+            last=exc
+            if attempt<3:
+                time.sleep(5*(attempt+1))
+    raise last
 
 def raw_field(item,key):
     v=item.get(key) or {}
