@@ -117,7 +117,7 @@ def main():
     if not fj_link.startswith(SITE+"/"):
         raise SystemExit("FJ_CATEGORY_LINK_FAILED")
 
-    entry=ENTRY_TEMPLATE.format(fj_link=html.escape(fj_link,quote=True)).rstrip()+"\n"
+    entry=ENTRY_TEMPLATE.replace("{fj_link}",html.escape(fj_link,quote=True)).rstrip()+"\n"
 
     if MARKER in before_raw:
         if before_raw.count(MARKER)!=1 or fj_link not in before_raw:
