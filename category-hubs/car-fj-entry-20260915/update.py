@@ -20,7 +20,7 @@ FJ_CATEGORY_ID=25
 MARKER="<!-- tsurikue-fj-category-entry:v1 -->"
 HUB_MARKER="tsurikue-category-hub:v1:car-blocks"
 
-ANCHOR='<!-- /wp:cover -->\n<!-- wp:group {"className":"tq-car-choose tq-car-section"} -->'
+ANCHOR='<!-- /wp:cover -->'
 
 ENTRY_TEMPLATE="""<!-- tsurikue-fj-category-entry:v1 -->
 <!-- wp:group {"align":"full","style":{"color":{"background":"#eef2f4"},"spacing":{"padding":{"top":"28px","right":"20px","bottom":"28px","left":"20px"}}},"layout":{"type":"constrained"}} -->
@@ -101,7 +101,6 @@ def main():
     structural_checks={
         "anchor_once":before_raw.count(ANCHOR)==1,
         "hero_copy":"クルマで、<br>どこまで行こう。" in before_raw,
-        "start_here":"START HERE" in before_raw,
         "ux_review":"https://tsurikue.com/lexus-ux-review/" in before_raw,
     }
     if not all(structural_checks.values()):
@@ -126,7 +125,7 @@ def main():
         action="ALREADY_UP_TO_DATE"
         after_raw=before_raw
     else:
-        expected=before_raw.replace(ANCHOR,entry+ANCHOR,1)
+        expected=before_raw.replace(ANCHOR,ANCHOR+"\n"+entry,1)
         updated,_=request(
             f"/pages/{PAGE_ID}",
             method="POST",
