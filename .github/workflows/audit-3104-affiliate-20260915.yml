@@ -9,6 +9,7 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write
 
 jobs:
   audit:
@@ -33,3 +34,11 @@ jobs:
           name: audit-3104-affiliate-20260915-${{ github.run_id }}
           path: reports/3104-affiliate-audit-20260915/
           if-no-files-found: warn
+      - name: Comment audit summary
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f reports/3104-affiliate-audit-20260915/summary.md ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body-file reports/3104-affiliate-audit-20260915/summary.md
+          fi
