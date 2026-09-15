@@ -98,7 +98,6 @@ def find_target_part():
     q = urllib.parse.urlencode({
         "context": "edit",
         "slug": TARGET_PART_SLUG,
-        "status": "any",
         "per_page": 10,
         "_fields": "id,slug,status,title,content,type,author,modified",
     })
