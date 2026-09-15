@@ -162,20 +162,21 @@ def main():
         f"- blog part title: **{part_title}**",
         f"- blog part status: **{part.get('status')}**",
         f"- blog part REST base: **{rest_base}**",
+        f"- blog part content_sha256: **{sha256(part_content)}**",
         f"- A8 URL count in blog part: **{len(a8_urls)}**",
         f"- A8 URLs: **{a8_urls}**",
         f"- existing id1 values: **{sorted(set(id1_values))}**",
         "",
         "## FJ posts",
         "",
-        "|ID|slug|status|author|blog parts|",
-        "|---:|---|---|---:|---|",
+        "|ID|slug|status|author|blog parts|content sha256|modified|",
+        "|---:|---|---|---:|---|---|---|",
     ]
     for row in fj:
         if row.get("error"):
-            lines.append(f"|—|{row['slug']}|ERROR|—|{row['error']}|")
+            lines.append(f"|—|{row['slug']}|ERROR|—|{row['error']}|—|—|")
         else:
-            lines.append(f"|{row['id']}|{row['slug']}|{row['status']}|{row['author']}|{row['blog_part_ids']}|")
+            lines.append(f"|{row['id']}|{row['slug']}|{row['status']}|{row['author']}|{row['blog_part_ids']}|{row['content_sha256']}|{row['modified']}|")
     (REPORT / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
     print("\n".join(lines))
 
