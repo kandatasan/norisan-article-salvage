@@ -208,6 +208,10 @@ def raw_field(row: dict, key: str) -> str:
     value = row.get(key) or {}
     return (value.get("raw") or value.get("rendered") or "") if isinstance(value, dict) else str(value)
 
+def raw_only_field(row: dict, key: str) -> str:
+    value = row.get(key) or {}
+    return value.get("raw", "") if isinstance(value, dict) else str(value)
+
 def public_count(endpoint: str) -> int:
     q = urllib.parse.urlencode({"status": "publish", "per_page": 1, "_fields": "id"})
     _, headers = request("GET", f"/wp-json/wp/v2/{endpoint}?{q}")
@@ -236,7 +240,7 @@ def identity_snapshot(row: dict) -> dict:
         "author": int(row.get("author") or 0),
         "featured_media": int(row.get("featured_media") or 0),
         "categories": list(row.get("categories") or []),
-        "excerpt": raw_field(row, "excerpt"),
+        "excerpt_raw": raw_only_field(row, "excerpt"),
     }
 
 def replace_once(content: str, old: str, new: str, label: str) -> str:
