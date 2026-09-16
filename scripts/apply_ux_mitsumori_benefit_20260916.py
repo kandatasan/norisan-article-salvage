@@ -18,6 +18,11 @@ REPLACEMENTS=[
 ("intro",
 """<!-- wp:paragraph -->
 <p>私が購入したのは、2023年に納車されたレクサスUX250h Fスポーツ特別仕様車「Emotional Explorer」です。<br>2023年6月に初度登録され、オプションや諸費用を含む支払総額は6,156,510円でした。</p>
+
+<!-- tsurikue-internal-links:lexus-20260830:ux-mitsumori -->
+<!-- wp:paragraph -->
+<p>現行UX300hの車両価格や乗り出し価格との違いは、<a href="https://tsurikue.com/lexus-ux-price/">レクサスUXの価格記事</a>で比較しています。</p>
+<!-- /wp:paragraph -->
 <!-- /wp:paragraph -->""",
 """<!-- wp:paragraph -->
 <p><strong>616万円の見積もりを見て、最初に削りたくなるのはオプションです。</strong></p>
@@ -41,6 +46,11 @@ REPLACEMENTS=[
 
 <!-- wp:paragraph -->
 <p>私が購入したのは、2023年に納車されたレクサスUX250h Fスポーツ特別仕様車「Emotional Explorer」です。<br>2023年6月に初度登録され、オプションや諸費用を含む支払総額は6,156,510円でした。</p>
+<!-- /wp:paragraph -->
+
+<!-- tsurikue-internal-links:lexus-20260830:ux-mitsumori -->
+<!-- wp:paragraph -->
+<p>現行UX300hの車両価格や乗り出し価格との違いは、<a href="https://tsurikue.com/lexus-ux-price/">レクサスUXの価格記事</a>で比較しています。</p>
 <!-- /wp:paragraph -->"""),
 
 ("decision-method",
@@ -265,9 +275,6 @@ def build_target(current):
     for label,old,new in REPLACEMENTS:
         count=revised.count(old)
         if count!=1:
-            print("CURRENT_CONTENT_BASE64_BEGIN")
-            print(base64.b64encode(current.encode("utf-8")).decode("ascii"))
-            print("CURRENT_CONTENT_BASE64_END")
             raise RuntimeError(f"{label}: expected exactly 1 match, got {count}")
         revised=revised.replace(old,new,1)
     for marker in [
