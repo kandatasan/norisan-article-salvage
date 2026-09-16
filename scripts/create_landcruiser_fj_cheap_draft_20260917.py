@@ -35,8 +35,10 @@ CTN_PART_SLUG = "ctn-button-3104"
 CTN_TRACK = "id1=3104"
 INSWEB_TITLE = "インズウェブ 3104"
 INSWEB_SLUG = "insweb-3104"
-INSWEB_CLICK_BASE = "https://px.a8.net/svt/ejp?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
-INSWEB_PIXEL = "https://www15.a8.net/0.gif?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
+OLD_INSWEB_CLICK_BASE = "https://px.a8.net/svt/ejp?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
+OLD_INSWEB_PIXEL = "https://www15.a8.net/0.gif?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
+INSWEB_CLICK_BASE = "https://px.a8.net/svt/ejp?a8mat=3Z0TXU+5GH2EQ+2PS+15RK36"
+INSWEB_PIXEL = "https://www10.a8.net/0.gif?a8mat=3Z0TXU+5GH2EQ+2PS+15RK36"
 INSWEB_TRACK_VALUE = "3104"
 OLD_INSWEB_PART_CONTENT = f'''<!-- wp:html -->
 <a href="{OLD_INSWEB_CLICK_BASE}&id1={INSWEB_TRACK_VALUE}" rel="nofollow">一番安い自動車保険がわかる！</a>
