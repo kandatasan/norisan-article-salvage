@@ -23,6 +23,7 @@ POSTS = [
         "status": "publish",
         "title": "レクサスUX300hを試乗｜UX250hオーナーが比較して感じた3つの違い",
         "expected_sha256": "01c0132f3e0270733d33f5f56a2112d19bc59103fd4f47ab70a6730ba1742527",
+        "target_sha256": "8db36f25aa9174f40f007b07525d04105f2172f4f650ed2896545fdb93ab8842",
         "mode": "prepend",
         "insertion": """<!-- wp:paragraph -->
 <p>UX300hと中古のUX250hで迷っているなら、違いを知ってから選べば<strong>「新しい方だから」という理由だけで予算を上げる失敗も、あとから「300hにすればよかった」と後悔するのも避けやすくなります。</strong></p>
@@ -45,6 +46,7 @@ POSTS = [
         "status": "publish",
         "title": "レクサスUXはひどい？616万円で買って後悔した欠点と満足している理由",
         "expected_sha256": "5145559e3f7baca6e22582ca45f1c16f5f62b4ca82023d90d138ee0f0abb95fc",
+        "target_sha256": "e5bfcd8ed7bbf00c47a2c3a85fa0da5e21c3e9f99fed07560af3a772dc72fdfb",
         "mode": "prepend",
         "insertion": """<!-- wp:paragraph -->
 <p>レクサスUXを買って、街中も旅行も気軽に走れて、駐車場でも扱いやすい。<br>そんな毎日を想像しているなら、UXはかなり魅力的なクルマです。</p>
@@ -63,6 +65,7 @@ POSTS = [
         "status": "publish",
         "title": "レクサスLBXのおすすめオプションは？ディーラー見積もりから必要・不要を本音で整理",
         "expected_sha256": "9a57cf13db0a26a5dc3aacdce15427acce94589b4ed55064de549cd1e6167ef0",
+        "target_sha256": "db44e0438fc06a7d1146d96e5b5456aafad268496d2b15c1acf7c3a276fae7f5",
         "mode": "prepend",
         "insertion": """<!-- wp:paragraph -->
 <p>LBXに毎日使う装備はしっかり付ける。<br>でも、使わないオプションに何十万円も払わず、その分を旅行や次の車の予算に残す。オプション選びは、そのくらい現実的に考えていいと思います。</p>
@@ -81,6 +84,7 @@ POSTS = [
         "status": "publish",
         "title": "ランドクルーザーFJの乗り出し価格はいくら？実際の見積り総額は550万516円",
         "expected_sha256": "58529ceb2f377d570f19660bdabca0ba12080c3a4f005d72ce3b77549ba1da6a",
+        "target_sha256": "8cd3d9973a6d42ed2cec7fe3d96a21c99519e9f703e073a3a15061ba2377a566",
         "mode": "after_anchor",
         "anchor": """<p><!-- tsurikue-original:v1 slug=landcruiser-fj-price source=user-provided-20260913 --><br />
 <!-- tsurikue-editorial:v1 slug=landcruiser-fj-price --></p>
@@ -184,8 +188,16 @@ def identity_snapshot(row: dict) -> dict:
     }
 
 
-def build_target(spec: dict, current: str) -> str:
+def build_target(spec: dict, current: str):
     current_sha = sha256(current)
+
+    # Idempotent recovery: a previous guarded run may have saved the exact reviewed
+    # target before a later verification step stopped the batch.
+    if current_sha == spec["target_sha256"]:
+        if spec["insertion"].strip() not in current:
+            raise RuntimeError(f"{spec['slug']}: target hash matched but insertion marker is missing")
+        return current, False
+
     if current_sha != spec["expected_sha256"]:
         raise RuntimeError(
             f"{spec['slug']}: content changed since source audit: {current_sha}"
@@ -194,7 +206,7 @@ def build_target(spec: dict, current: str) -> str:
         if needle not in current:
             raise RuntimeError(f"{spec['slug']}: current content missing marker: {needle}")
     if spec["insertion"].strip() in current:
-        raise RuntimeError(f"{spec['slug']}: insertion already present")
+        raise RuntimeError(f"{spec['slug']}: insertion already present with unexpected hash")
     if spec["mode"] == "prepend":
         target = spec["insertion"] + current
     elif spec["mode"] == "after_anchor":
@@ -209,7 +221,9 @@ def build_target(spec: dict, current: str) -> str:
     for needle in spec["required"]:
         if needle not in target:
             raise RuntimeError(f"{spec['slug']}: target lost required marker: {needle}")
-    return target
+    if sha256(target) != spec["target_sha256"]:
+        raise RuntimeError(f"{spec['slug']}: reviewed target hash drift")
+    return target, True
 
 
 def validate_identity(spec: dict, row: dict) -> dict:
@@ -265,12 +279,13 @@ def main():
         row = get_post(spec["id"])
         ident = validate_identity(spec, row)
         current = raw_field(row, "content")
-        target = build_target(spec, current)
+        target, needs_write = build_target(spec, current)
         states.append({
             "spec": spec,
             "identity": ident,
             "original": current,
             "target": target,
+            "needs_write": needs_write,
         })
 
     if args.mode == "preflight":
@@ -299,6 +314,10 @@ def main():
     try:
         for state in states:
             spec = state["spec"]
+            if not state["needs_write"]:
+                continue
+            # Register before the write so rollback includes the currently attempted post.
+            changed.append(state)
             request("POST", f"/wp-json/wp/v2/posts/{spec['id']}", {"content": state["target"]})
             saved = get_post(spec["id"])
             saved_identity = validate_identity(spec, saved)
@@ -309,7 +328,6 @@ def main():
             saved_content = raw_field(saved, "content")
             if saved_content != state["target"]:
                 raise RuntimeError(f"{spec['slug']}: saved content mismatch")
-            changed.append(state)
 
         public_after = public_counts()
         if public_after != public_before:
