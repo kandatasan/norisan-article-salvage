@@ -40,6 +40,7 @@ OLD_INSWEB_PIXEL = "https://www15.a8.net/0.gif?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
 INSWEB_CLICK_BASE = "https://px.a8.net/svt/ejp?a8mat=3Z0TXU+5GH2EQ+2PS+15RK36"
 INSWEB_PIXEL = "https://www10.a8.net/0.gif?a8mat=3Z0TXU+5GH2EQ+2PS+15RK36"
 INSWEB_TRACK_VALUE = "3104"
+PREVIOUS_DRAFT_CONTENT_SHA256 = "10af0377ae5b130c231e02261991d3308f7cd853e33a954b5d906c36a8ab22fb"
 OLD_INSWEB_PART_CONTENT = f'''<!-- wp:html -->
 <a href="{OLD_INSWEB_CLICK_BASE}&id1={INSWEB_TRACK_VALUE}" rel="nofollow">一番安い自動車保険がわかる！</a>
 <img border="0" width="1" height="1" src="{OLD_INSWEB_PIXEL}" alt="">
@@ -311,14 +312,31 @@ def main() -> None:
             raise RuntimeError(f"existing {SLUG} is not a draft; refusing update")
         if html.unescape(raw(row, "title")) != TITLE:
             raise RuntimeError("existing draft title mismatch")
-        if raw(row, "content").strip() != final_content.strip():
-            raise RuntimeError("existing draft content differs; refusing overwrite")
+        existing_content = raw(row, "content")
         if int(row.get("author") or 0) != author or int(row.get("featured_media") or 0) != FEATURED:
             raise RuntimeError("existing draft identity metadata mismatch")
         if sorted(row.get("categories") or []) != sorted(categories):
             raise RuntimeError("existing draft categories mismatch")
-        post = row
-        article_action = "REUSE_EXACT_DRAFT"
+        if existing_content.strip() == final_content.strip():
+            post = row
+            article_action = "REUSE_EXACT_DRAFT"
+        else:
+            if sha256(existing_content) != PREVIOUS_DRAFT_CONTENT_SHA256:
+                raise RuntimeError(
+                    f"existing draft content changed unexpectedly: {sha256(existing_content)}"
+                )
+            request("POST", f"/wp-json/wp/v2/posts/{int(row['id'])}", {"content": final_content})
+            post, _ = request(
+                "GET",
+                f"/wp-json/wp/v2/posts/{int(row['id'])}?context=edit&_fields=id,slug,status,title,content,author,featured_media,categories,excerpt",
+            )
+            if raw(post, "content").strip() != final_content.strip():
+                raise RuntimeError("tone update content mismatch")
+            if int(post.get("author") or 0) != author or int(post.get("featured_media") or 0) != FEATURED:
+                raise RuntimeError("tone update metadata mismatch")
+            if sorted(post.get("categories") or []) != sorted(categories):
+                raise RuntimeError("tone update categories mismatch")
+            article_action = "UPDATE_DRAFT_SATOSHI_TONE"
     else:
         post, _ = request("POST", "/wp-json/wp/v2/posts", {
             "title": TITLE,
