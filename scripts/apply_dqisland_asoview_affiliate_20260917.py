@@ -29,7 +29,7 @@ TICKET_ANCHOR = """<!-- wp:paragraph -->
 <p>当日券や空き状況は日によって変わる可能性があるので、行く日が決まったら<a href="https://www.nijigennomori.com/dragonquestisland/" target="_blank" rel="noopener noreferrer">公式ページ</a>を確認しておくのが安心です。</p>
 <!-- /wp:paragraph -->"""
 
-TICKET_REPLACEMENT = TICKET_ANCHOR + """
+TICKET_REPLACEMENT = TICKET_ANCHOR + f"""
 
 <!-- wp:paragraph -->
 <p>チケットをWebで買うなら、<strong>アソビューにもドラゴンクエスト アイランドの専用ページ</strong>があります。</p>
@@ -40,7 +40,7 @@ TICKET_REPLACEMENT = TICKET_ANCHOR + """
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><a href="""" + AFFILIATE_URL + """" rel="nofollow sponsored noreferrer noopener" target="_blank">アソビューでドラゴンクエスト アイランドのチケットを見る</a></p>
+<p><a href="{AFFILIATE_URL}" rel="nofollow sponsored noreferrer noopener" target="_blank">アソビューでドラゴンクエスト アイランドのチケットを見る</a></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -51,12 +51,12 @@ END_ANCHOR = """<!-- wp:paragraph -->
 <p>……どうやら冒険は、まだ完全には終わっていないようです。</p>
 <!-- /wp:paragraph -->"""
 
-END_INSERTION = """<!-- wp:paragraph -->
+END_INSERTION = f"""<!-- wp:paragraph -->
 <p>これから行くなら、行く日が決まった時点でチケットを見ておくと安心です。<br>アソビューならポイントも貯まります。</p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
-<p><a href="""" + AFFILIATE_URL + """" rel="nofollow sponsored noreferrer noopener" target="_blank">アソビューでドラクエアイランドのチケットを確認する</a></p>
+<p><a href="{AFFILIATE_URL}" rel="nofollow sponsored noreferrer noopener" target="_blank">アソビューでドラクエアイランドのチケットを確認する</a></p>
 <!-- /wp:paragraph -->"""
 
 
