@@ -7,7 +7,7 @@ SITE="https://tsurikue.com"; POST_ID=2956; SLUG="lexus-ux-price"; STATUS="publis
 TITLE="レクサスUXの価格はいくら？乗り出し価格とグレード別の違い"
 FEATURED_MEDIA=2223
 EXPECTED_CURRENT_SHA256="698d0808acb3eea334ea950a9385d6a8fd853e19a8b4140be6b41e218bc52c08"
-EXPECTED_TARGET_SHA256=""
+EXPECTED_TARGET_SHA256="134197f702be82a955906b57fb998aa8c73dcafc4da4a28a5e2fb811d1b6a19f"
 UA="tsurikue-lexus-ux-price-revenue-20260916/1.0"
 # PR preflight trigger
 REPORT=Path("reports/lexus-ux-price-revenue-20260916")
