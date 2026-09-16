@@ -265,6 +265,9 @@ def build_target(current):
     for label,old,new in REPLACEMENTS:
         count=revised.count(old)
         if count!=1:
+            print("CURRENT_CONTENT_BASE64_BEGIN")
+            print(base64.b64encode(current.encode("utf-8")).decode("ascii"))
+            print("CURRENT_CONTENT_BASE64_END")
             raise RuntimeError(f"{label}: expected exactly 1 match, got {count}")
         revised=revised.replace(old,new,1)
     for marker in [
