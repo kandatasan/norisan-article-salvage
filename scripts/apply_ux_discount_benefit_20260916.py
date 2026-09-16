@@ -21,7 +21,7 @@ SLUG = "lexus-ux-discount"
 STATUS = "publish"
 TITLE = "レクサスUXは値引きできる？値引き0円だった実体験と安く買う方法"
 EXPECTED_CURRENT_SHA256 = "792946eeb62927d2056e91b19544ed9476a27cf08ccd2bc15b5587c72c798b75"
-EXPECTED_TARGET_SHA256 = ""
+EXPECTED_TARGET_SHA256 = "0cdb6bf564d4c9def3b98c1979e7b1bd0c01e0b57c2f304efffb621052034e23"
 
 REPLACEMENTS = [
 ("intro", """<!-- wp:paragraph -->
@@ -306,10 +306,8 @@ def build_target(current: str) -> str:
             raise RuntimeError(f"{label}: expected exactly 1 match, got {count}")
         revised = revised.replace(old, new, 1)
     got = sha256(revised)
-    if EXPECTED_TARGET_SHA256 and got != EXPECTED_TARGET_SHA256:
+    if got != EXPECTED_TARGET_SHA256:
         raise RuntimeError(f"target hash mismatch: {got}")
-    if not EXPECTED_TARGET_SHA256:
-        print(f"DISCOVERED_TARGET_SHA256={got}")
     for marker in [
         "値引き0円でも、欲しかった装備まで全部あきらめる必要はありませんでした。",
         "あと2万5,000円でこの2つの装備に届く金額",
