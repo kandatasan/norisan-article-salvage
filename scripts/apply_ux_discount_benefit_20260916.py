@@ -20,8 +20,8 @@ POST_ID = 2962
 SLUG = "lexus-ux-discount"
 STATUS = "publish"
 TITLE = "レクサスUXは値引きできる？値引き0円だった実体験と安く買う方法"
-EXPECTED_CURRENT_SHA256 = "ec0542df3e0ba1efa12fda7f01d2fef19ec2e44d5cd1655cd0ca4904ac01e5b7"
-EXPECTED_TARGET_SHA256 = "11395a388fb83cc7897a92ecc9958898a59cf1e90b570d0500e7b59d48e0855f"
+EXPECTED_CURRENT_SHA256 = "792946eeb62927d2056e91b19544ed9476a27cf08ccd2bc15b5587c72c798b75"
+EXPECTED_TARGET_SHA256 = ""
 
 REPLACEMENTS = [
 ("intro", """<!-- wp:paragraph -->
@@ -137,7 +137,7 @@ REPLACEMENTS = [
 <!-- /wp:paragraph -->"""),
 
 ("ctn", """<!-- wp:paragraph -->
-<p>その後、UX自体を手放したときにはCTN車一括査定を利用しました。<br>CTNは最大15社で査定し、やり取りするのは高額査定の上位3社だけ。<br><strong>私のときに連絡が来たのはカーセブンとネクステージの2社で、電話が少なくて快適でした。</strong><br>最終的にはカーセブンへ427万円で売却しています。</p>
+<p>その後、UX自体を手放したときにはCTN車一括査定を利用しました。<br>CTNは最大15社で査定し、やり取りするのは高額査定の上位3社だけ。<br><strong>私のときに連絡が来たのはカーセブンとネクステージの2社で、電話が少なくて快適でした。</strong><br>最終的にはカーセブンへ427万円で売却しています。<br>査定額を見ておくなら、<a href="https://px.a8.net/svt/ejp?a8mat=3Z8YF4+7VEGL6+5I4S+5YRHE" rel="nofollow">【CTN一括車査定】</a><img border="0" width="1" height="1" src="https://www19.a8.net/0.gif?a8mat=3Z8YF4+7VEGL6+5I4S+5YRHE" alt=""></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:paragraph -->
@@ -185,11 +185,7 @@ REPLACEMENTS = [
 <p><strong>欲しい装備を削る前に、今の車の価値を確認する。</strong></p>
 <!-- /wp:paragraph -->"""),
 
-("ending", """<!-- wp:shortcode -->
-[blog_parts id="2843"]
-<!-- /wp:shortcode -->
-
-<!-- wp:paragraph -->
+("ending", """<!-- wp:paragraph -->
 <p>私のUXは値引き0円でした。<br>友人の購入例でも値引きはありませんでした。</p>
 <!-- /wp:paragraph -->
 
@@ -204,11 +200,7 @@ REPLACEMENTS = [
 <!-- wp:paragraph -->
 <p></p>
 <!-- /wp:paragraph -->""",
-"""<!-- wp:shortcode -->
-[blog_parts id="2843"]
-<!-- /wp:shortcode -->
-
-<!-- wp:heading -->
+"""<!-- wp:heading -->
 <h2 class="wp-block-heading">まとめ｜値引き0円でも、買い替え全体なら動かせる</h2>
 <!-- /wp:heading -->
 
@@ -310,15 +302,18 @@ def build_target(current: str) -> str:
             raise RuntimeError(f"{label}: expected exactly 1 match, got {count}")
         revised = revised.replace(old, new, 1)
     got = sha256(revised)
-    if got != EXPECTED_TARGET_SHA256:
+    if EXPECTED_TARGET_SHA256 and got != EXPECTED_TARGET_SHA256:
         raise RuntimeError(f"target hash mismatch: {got}")
+    if not EXPECTED_TARGET_SHA256:
+        print(f"DISCOVERED_TARGET_SHA256={got}")
     for marker in [
         "値引き0円でも、欲しかった装備まで全部あきらめる必要はありませんでした。",
         "あと2万5,000円でこの2つの装備に届く金額",
         "値引き0円でも「売却額」は動かせる",
         "欲しい装備を削る前に、今の車の価値を確認する。",
-        '[blog_parts id="2184"]',
+        'https://px.a8.net/svt/ejp?a8mat=3Z8YF4+7VEGL6+5I4S+5YRHE',
         '[blog_parts id="2843"]',
+        '[blog_parts id="2846"]',
     ]:
         if marker not in revised:
             raise RuntimeError(f"missing target marker: {marker}")
@@ -331,10 +326,7 @@ def validate_current(row: dict) -> str:
     current = raw_field(row, "content")
     got = sha256(current)
     if got != EXPECTED_CURRENT_SHA256:
-        print("CURRENT_CONTENT_BASE64_BEGIN")
-        print(base64.b64encode(current.encode("utf-8")).decode("ascii"))
-        print("CURRENT_CONTENT_BASE64_END")
-        raise RuntimeError(f"content changed since source snapshot: {got}")
+        raise RuntimeError(f"content changed since live snapshot: {got}")
     return current
 
 def write_report(data: dict):
