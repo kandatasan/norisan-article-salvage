@@ -1,0 +1,69 @@
+name: Apply car-sell-high revenue rewrite 20260916
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'review/published/car-sell-high/content.html'
+      - 'review/published/car-sell-high/review.json'
+      - 'scripts/apply_car_sell_high_revenue_20260916.py'
+      - '.github/workflows/apply-car-sell-high-revenue-20260916.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'review/published/car-sell-high/content.html'
+      - 'review/published/car-sell-high/review.json'
+      - 'scripts/apply_car_sell_high_revenue_20260916.py'
+      - '.github/workflows/apply-car-sell-high-revenue-20260916.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  verify-or-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile guarded updater
+        run: python -m py_compile scripts/apply_car_sell_high_revenue_20260916.py
+      - name: Preflight on pull request
+        if: github.event_name == 'pull_request'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_car_sell_high_revenue_20260916.py --mode preflight
+      - name: Apply reviewed rewrite on main
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_car_sell_high_revenue_20260916.py --mode apply
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: car-sell-high-revenue-20260916-${{ github.run_id }}
+          path: reports/car-sell-high-revenue-20260916/
+          if-no-files-found: warn
+      - name: Comment PR preflight
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f reports/car-sell-high-revenue-20260916/summary.md ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body-file reports/car-sell-high-revenue-20260916/summary.md
+          fi
+      - name: Record apply audit in issue 22
+        if: always() && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f reports/car-sell-high-revenue-20260916/summary.md ]; then
+            gh issue comment 22 --repo "${{ github.repository }}" --body-file reports/car-sell-high-revenue-20260916/summary.md
+          fi
