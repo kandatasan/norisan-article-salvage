@@ -286,6 +286,40 @@ def validate(row,require_hash):
     if got!=EXPECTED_CURRENT_SHA256: raise RuntimeError(f"content changed since discovery: {got}")
     if require_hash and not EXPECTED_TARGET_SHA256: raise RuntimeError("apply refused: target hash not locked")
     return c
+
+def validate_saved_semantics(saved,target):
+    required=[
+      "欲しいUXに、欲しい装備を付けたまま予算内に収めたい。",
+      "同じUXへ乗り換えるのに、今の車の売却先だけで25万円差が出ました。",
+      "2027年2月生産終了予定",
+      "見積もりから27万5,000円分の装備を削る前に、売却側で25万円動く余地がありました。",
+      "買い替えで必要な予算 ＝ UXの支払総額 − 今の車の売却額",
+      "同じUXを買うのに、手元から出る金額が25万円変わります。",
+      "「買えるUX」を決める前に、「今の車がいくらになるか」を見ておく。",
+      "tsurikue-ctn-price-funnel:20260916-benefit",
+      '[blog_parts id="2184"]',
+      '[blog_parts id="2843"]',
+      "https://tsurikue.com/ux-mitsumori/",
+      "https://tsurikue.com/lexus-ux-used/",
+      "https://tsurikue.com/lexus-ux250h-used-vs-ux300h/",
+    ]
+    missing=[m for m in required if m not in saved]
+    if missing: raise RuntimeError("saved semantic markers missing: "+repr(missing))
+    forbidden=[
+      "tsurikue-ctn-price-funnel:20260907",
+      '[blog_parts id="2846"]',
+      "<h2 class=\"wp-block-heading\">予算別におすすめの買い方を整理</h2>",
+    ]
+    remaining=[m for m in forbidden if m in saved]
+    if remaining: raise RuntimeError("old/duplicate markers remain: "+repr(remaining))
+    if saved.count('[blog_parts id="2184"]')!=1:
+        raise RuntimeError("CTN button count changed")
+    if saved.count('[blog_parts id="2843"]')!=1:
+        raise RuntimeError("Gulliver banner count changed")
+    ratio=len(saved)/max(1,len(target))
+    if ratio < 0.97 or ratio > 1.03:
+        raise RuntimeError(f"saved length drift too large: ratio={ratio:.4f}")
+    return {"saved_sha256":sha(saved),"saved_length":len(saved),"target_length":len(target),"length_ratio":ratio}
 def report(d):
     REPORT.mkdir(parents=True,exist_ok=True)
     (REPORT/"result.json").write_text(json.dumps(d,ensure_ascii=False,indent=2),encoding="utf-8")
@@ -304,21 +338,26 @@ def main():
         known_counts={"posts":95,"pages":8}
         report({"result":"PREFLIGHT_OK_NO_WRITES","mode":a.mode,"before_sha256":sha(original),"target_sha256":sha(target),"after_sha256":"","public_before":known_counts,"public_after":known_counts,"errors":[]}); return 0
     before_counts={"posts":95,"pages":8}
-    errors=[]; wrote=False
+    errors=[]; wrote=False; semantic={}
     try:
         req("POST",f"/wp-json/wp/v2/posts/{POST_ID}",{"content":target}); wrote=True
-        saved=get_post()
-        if raw(saved,"content")!=target: raise RuntimeError("saved content mismatch")
+        saved=get_post(); saved_content=raw(saved,"content")
+        semantic=validate_saved_semantics(saved_content,target)
         if ident(saved)!=before_ident: raise RuntimeError("metadata changed")
     except Exception as e:
         errors.append(str(e))
         if wrote:
-            try: req("POST",f"/wp-json/wp/v2/posts/{POST_ID}",{"content":original})
+            try:
+                req("POST",f"/wp-json/wp/v2/posts/{POST_ID}",{"content":original})
+                rolled=get_post()
+                if ident(rolled)!=before_ident: errors.append("rollback metadata mismatch")
+                if sha(raw(rolled,"content"))!=sha(original): errors.append("rollback content normalized; manual hash review required")
             except Exception as rb: errors.append(f"rollback failed: {rb}")
         report({"result":"APPLY_FAILED_ROLLBACK_ATTEMPTED","mode":a.mode,"before_sha256":sha(original),"target_sha256":sha(target),"after_sha256":"","public_before":before_counts,"public_after":before_counts,"errors":errors}); return 3
     final=get_post(); fc=raw(final,"content"); after_counts=before_counts
-    if fc!=target: errors.append("final content mismatch")
+    try: semantic=validate_saved_semantics(fc,target)
+    except Exception as e: errors.append("final semantic verify: "+str(e))
     if ident(final)!=before_ident: errors.append("final metadata mismatch")
-    report({"result":"APPLIED_OK" if not errors else "APPLIED_BUT_VERIFY_FAILED","mode":a.mode,"before_sha256":sha(original),"target_sha256":sha(target),"after_sha256":sha(fc),"public_before":before_counts,"public_after":after_counts,"errors":errors})
+    report({"result":"APPLIED_OK" if not errors else "APPLIED_BUT_VERIFY_FAILED","mode":a.mode,"before_sha256":sha(original),"target_sha256":sha(target),"after_sha256":sha(fc),"public_before":before_counts,"public_after":after_counts,"saved_semantics":semantic,"errors":errors})
     return 0 if not errors else 4
 if __name__=="__main__": raise SystemExit(main())
