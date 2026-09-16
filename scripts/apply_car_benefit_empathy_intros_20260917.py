@@ -166,7 +166,7 @@ def public_counts() -> dict:
 def get_post(post_id: int) -> dict:
     q = urllib.parse.urlencode({
         "context": "edit",
-        "_fields": "id,slug,status,title,content,author,featured_media,categories,excerpt",
+        "_fields": "id,slug,status,title,content,author,featured_media,categories",
     })
     row, _ = request("GET", f"/wp-json/wp/v2/posts/{post_id}?{q}")
     return row
@@ -181,7 +181,6 @@ def identity_snapshot(row: dict) -> dict:
         "author": int(row.get("author") or 0),
         "featured_media": int(row.get("featured_media") or 0),
         "categories": list(row.get("categories") or []),
-        "excerpt": raw_field(row, "excerpt"),
     }
 
 
