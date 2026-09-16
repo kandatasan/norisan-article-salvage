@@ -183,6 +183,10 @@ REPLACEMENTS = [
 <!-- tsurikue-ctn-discount-microcopy:20260916-benefit -->
 <!-- wp:paragraph -->
 <p><strong>欲しい装備を削る前に、今の車の価値を確認する。</strong></p>
+<!-- /wp:paragraph -->
+
+<!-- wp:paragraph -->
+<p>査定額を見ておくなら、<a href="https://px.a8.net/svt/ejp?a8mat=3Z8YF4+7VEGL6+5I4S+5YRHE" rel="nofollow">【CTN一括車査定】</a><img border="0" width="1" height="1" src="https://www19.a8.net/0.gif?a8mat=3Z8YF4+7VEGL6+5I4S+5YRHE" alt=""></p>
 <!-- /wp:paragraph -->"""),
 
 ("ending", """<!-- wp:paragraph -->
