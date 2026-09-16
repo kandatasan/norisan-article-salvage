@@ -40,7 +40,7 @@ OLD_INSWEB_PIXEL = "https://www15.a8.net/0.gif?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
 INSWEB_CLICK_BASE = "https://px.a8.net/svt/ejp?a8mat=3Z0TXU+5GH2EQ+2PS+15RK36"
 INSWEB_PIXEL = "https://www10.a8.net/0.gif?a8mat=3Z0TXU+5GH2EQ+2PS+15RK36"
 INSWEB_TRACK_VALUE = "3104"
-PREVIOUS_DRAFT_CONTENT_SHA256 = "10af0377ae5b130c231e02261991d3308f7cd853e33a954b5d906c36a8ab22fb"
+PREVIOUS_DRAFT_CONTENT_SHA256 = "f0bb7e825ee3de9fb946fb36102c7fc6e0918b372707fb796e4f1b64fd60fbe9"
 OLD_INSWEB_PART_CONTENT = f'''<!-- wp:html -->
 <a href="{OLD_INSWEB_CLICK_BASE}&id1={INSWEB_TRACK_VALUE}" rel="nofollow">一番安い自動車保険がわかる！</a>
 <img border="0" width="1" height="1" src="{OLD_INSWEB_PIXEL}" alt="">
@@ -66,7 +66,7 @@ EXPECTED_H2 = [
     "方法4｜中古車は「新車より安い」と決めつけない",
     "ローンは月額より総支払額まで見る",
     "どこを削る？ではなく「何を残したい？」から決める",
-    "まとめ｜納得できるFJを買うために、先に使えるお金を増やす",
+    "まとめ｜僕ならこの順番で見る",
 ]
 
 
@@ -336,7 +336,7 @@ def main() -> None:
                 raise RuntimeError("tone update metadata mismatch")
             if sorted(post.get("categories") or []) != sorted(categories):
                 raise RuntimeError("tone update categories mismatch")
-            article_action = "UPDATE_DRAFT_SATOSHI_TONE"
+            article_action = "UPDATE_POST_SATOSHI_TONE"
     else:
         post, _ = request("POST", "/wp-json/wp/v2/posts", {
             "title": TITLE,
