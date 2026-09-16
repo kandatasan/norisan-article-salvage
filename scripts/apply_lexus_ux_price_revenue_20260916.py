@@ -8,7 +8,7 @@ TITLE="レクサスUXの価格はいくら？乗り出し価格とグレード�
 FEATURED_MEDIA=2223
 EXPECTED_CURRENT_SHA256="698d0808acb3eea334ea950a9385d6a8fd853e19a8b4140be6b41e218bc52c08"
 EXPECTED_TARGET_SHA256=""
-UA="tsurikue-lexus-ux-price-revenue-20260916/1.0"
+UA="tsurikue-lexus-ux-price-revenue-20260916/1.0"\n# PR preflight trigger
 REPORT=Path("reports/lexus-ux-price-revenue-20260916")
 
 REPLACEMENTS=[
