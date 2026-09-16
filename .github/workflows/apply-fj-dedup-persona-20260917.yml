@@ -1,0 +1,48 @@
+name: Apply FJ dedup persona 20260917
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_fj_dedup_persona_20260917.py'
+      - '.github/workflows/apply-fj-dedup-persona-20260917.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Apply lightweight FJ content update
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/apply_fj_dedup_persona_20260917.py
+          python scripts/apply_fj_dedup_persona_20260917.py
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fj-dedup-persona-${{ github.run_id }}
+          path: reports/fj-dedup-persona-20260917/
+          if-no-files-found: warn
+
+      - name: Record result on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/fj-dedup-persona-20260917/summary.md
