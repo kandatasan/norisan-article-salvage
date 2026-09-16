@@ -244,7 +244,7 @@ def validate_template(template: str) -> None:
         raise RuntimeError(f"body media mismatch: {used}")
     required = [
         "550万516円", "欲しいFJを削って安くするより", "車を楽に高く売る方法",
-        "SBIの保険比較インズウェブ", "納車前の車や、乗り換え予定の車でも見積もりできます",
+        "SBIの保険比較インズウェブ", "納車前の車や乗り換え予定の車でも見積もりできます",
         "月刊自家用車", "車両本体値引き目標は<strong>5万円</strong>",
         "平均価格が約598万円", "最終回の支払額は256万5,050円", "実質年率は4.9％",
         "https://toyota.jp/landcruiserfj/", "https://www.insweb.co.jp/car/insweb", "https://www.insweb.co.jp/car/faq",
