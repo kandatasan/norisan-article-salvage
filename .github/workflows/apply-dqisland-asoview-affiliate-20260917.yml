@@ -1,0 +1,72 @@
+name: Apply DQ Island Asoview affiliate 20260917
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/apply_dqisland_asoview_affiliate_20260917.py'
+      - '.github/workflows/apply-dqisland-asoview-affiliate-20260917.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_dqisland_asoview_affiliate_20260917.py'
+      - '.github/workflows/apply-dqisland-asoview-affiliate-20260917.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  verify-or-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile guarded updater
+        run: python -m py_compile scripts/apply_dqisland_asoview_affiliate_20260917.py
+
+      - name: Preflight on pull request
+        if: github.event_name == 'pull_request'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_dqisland_asoview_affiliate_20260917.py --mode preflight
+
+      - name: Apply reviewed affiliate links on main
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_dqisland_asoview_affiliate_20260917.py --mode apply
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dqisland-asoview-affiliate-${{ github.run_id }}
+          path: reports/dqisland-asoview-affiliate-20260917/
+          if-no-files-found: warn
+
+      - name: Comment PR preflight
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f reports/dqisland-asoview-affiliate-20260917/summary.md ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body-file reports/dqisland-asoview-affiliate-20260917/summary.md
+          fi
+
+      - name: Record apply audit in issue 22
+        if: always() && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f reports/dqisland-asoview-affiliate-20260917/summary.md ]; then
+            gh issue comment 22 --repo "${{ github.repository }}" --body-file reports/dqisland-asoview-affiliate-20260917/summary.md
+          fi
