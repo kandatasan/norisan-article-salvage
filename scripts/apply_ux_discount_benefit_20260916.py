@@ -331,6 +331,9 @@ def validate_current(row: dict) -> str:
     current = raw_field(row, "content")
     got = sha256(current)
     if got != EXPECTED_CURRENT_SHA256:
+        print("CURRENT_CONTENT_BASE64_BEGIN")
+        print(base64.b64encode(current.encode("utf-8")).decode("ascii"))
+        print("CURRENT_CONTENT_BASE64_END")
         raise RuntimeError(f"content changed since source snapshot: {got}")
     return current
 
