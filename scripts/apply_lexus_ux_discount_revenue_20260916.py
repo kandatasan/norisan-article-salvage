@@ -7,7 +7,7 @@ SITE="https://tsurikue.com"; POST_ID=2962; SLUG="lexus-ux-discount"; STATUS="pub
 TITLE="レクサスUXは値引きできる？値引き0円だった実体験と安く買う方法"
 FEATURED_MEDIA=2231
 EXPECTED_CURRENT_SHA256="0cdb6bf564d4c9def3b98c1979e7b1bd0c01e0b57c2f304efffb621052034e23"
-EXPECTED_TARGET_SHA256=""
+EXPECTED_TARGET_SHA256="7376fc206147b0d032f3e90cccb4037e9dd2e8a28b1fa3d072ca02612b202985"
 UA="tsurikue-lexus-ux-discount-revenue-20260916/1.0"
 REPORT=Path("reports/lexus-ux-discount-revenue-20260916")
 BASELINE=Path("baselines/lexus-ux-discount-20260916.html")
