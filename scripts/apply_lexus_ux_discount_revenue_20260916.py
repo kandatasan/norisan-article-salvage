@@ -9,7 +9,8 @@ FEATURED_MEDIA=2231
 EXPECTED_CURRENT_SHA256="0cdb6bf564d4c9def3b98c1979e7b1bd0c01e0b57c2f304efffb621052034e23"
 EXPECTED_TARGET_SHA256=""
 UA="tsurikue-lexus-ux-discount-revenue-20260916/1.0"
-REPORT=Path("reports/lexus-ux-discount-revenue-20260916")\nBASELINE=Path("baselines/lexus-ux-discount-20260916.html")
+REPORT=Path("reports/lexus-ux-discount-revenue-20260916")
+BASELINE=Path("baselines/lexus-ux-discount-20260916.html")
 
 REPLACEMENTS=[
 ("intro-teaser",
