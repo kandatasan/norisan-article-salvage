@@ -38,6 +38,10 @@ INSWEB_SLUG = "insweb-3104"
 INSWEB_CLICK_BASE = "https://px.a8.net/svt/ejp?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
 INSWEB_PIXEL = "https://www15.a8.net/0.gif?a8mat=3Z0TXU+5GH69M+2PS+15RK36"
 INSWEB_TRACK_VALUE = "3104"
+OLD_INSWEB_PART_CONTENT = f'''<!-- wp:html -->
+<a href="{OLD_INSWEB_CLICK_BASE}&id1={INSWEB_TRACK_VALUE}" rel="nofollow">一番安い自動車保険がわかる！</a>
+<img border="0" width="1" height="1" src="{OLD_INSWEB_PIXEL}" alt="">
+<!-- /wp:html -->'''
 INSWEB_PART_CONTENT = f'''<!-- wp:html -->
 <a href="{INSWEB_CLICK_BASE}&id1={INSWEB_TRACK_VALUE}" rel="nofollow">一番安い自動車保険がわかる！</a>
 <img border="0" width="1" height="1" src="{INSWEB_PIXEL}" alt="">
@@ -170,9 +174,19 @@ def ensure_insweb_part() -> tuple[int, str]:
         row = rows[0]
         if row.get("status") != "publish" or html.unescape(raw(row, "title")) != INSWEB_TITLE:
             raise RuntimeError("existing InsWeb part identity mismatch")
-        if raw(row, "content").strip() != INSWEB_PART_CONTENT.strip():
+        current = raw(row, "content").strip()
+        part_id = int(row["id"])
+        if current == INSWEB_PART_CONTENT.strip():
+            return part_id, "REUSE"
+        if current != OLD_INSWEB_PART_CONTENT.strip():
             raise RuntimeError("existing InsWeb part content mismatch")
-        return int(row["id"]), "REUSE"
+        request("POST", f"/wp-json/wp/v2/blog_parts/{part_id}", {"content": INSWEB_PART_CONTENT})
+        check, _ = request("GET", f"/wp-json/wp/v2/blog_parts/{part_id}?context=edit")
+        if check.get("slug") != INSWEB_SLUG or check.get("status") != "publish":
+            raise RuntimeError("InsWeb part identity changed after correction")
+        if raw(check, "content").strip() != INSWEB_PART_CONTENT.strip():
+            raise RuntimeError("InsWeb part correction failed")
+        return part_id, "CORRECT_CODE"
     row, _ = request("POST", "/wp-json/wp/v2/blog_parts", {
         "title": INSWEB_TITLE,
         "slug": INSWEB_SLUG,
