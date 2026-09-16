@@ -9,7 +9,7 @@ FEATURED_MEDIA=2231
 EXPECTED_CURRENT_SHA256="0cdb6bf564d4c9def3b98c1979e7b1bd0c01e0b57c2f304efffb621052034e23"
 EXPECTED_TARGET_SHA256=""
 UA="tsurikue-lexus-ux-discount-revenue-20260916/1.0"
-REPORT=Path("reports/lexus-ux-discount-revenue-20260916")
+REPORT=Path("reports/lexus-ux-discount-revenue-20260916")\nBASELINE=Path("baselines/lexus-ux-discount-20260916.html")
 
 REPLACEMENTS=[
 ("intro-teaser",
@@ -337,13 +337,19 @@ def report(d):
     print("\n".join(lines))
 def main():
     ap=argparse.ArgumentParser(); ap.add_argument("--mode",choices=["preflight","apply"],default="preflight"); a=ap.parse_args()
+    if a.mode=="preflight":
+        original=BASELINE.read_text(encoding="utf-8")
+        if sha(original)!=EXPECTED_CURRENT_SHA256:
+            raise RuntimeError(f"baseline hash mismatch: {sha(original)}")
+        target=build(original); target_hash=sha(target)
+        if EXPECTED_TARGET_SHA256 and target_hash!=EXPECTED_TARGET_SHA256:
+            raise RuntimeError(f"target hash mismatch: {target_hash}")
+        report({"result":"PREFLIGHT_OK_NO_WRITES","mode":a.mode,"before_sha256":sha(original),"target_sha256":target_hash,"after_sha256":"","errors":[]})
+        return 0
     row=get_post(); original=validate_current(row); before_ident=ident(row); target=build(original)
     target_hash=sha(target)
     if EXPECTED_TARGET_SHA256 and target_hash!=EXPECTED_TARGET_SHA256:
         raise RuntimeError(f"target hash mismatch: {target_hash}")
-    if a.mode=="preflight":
-        report({"result":"PREFLIGHT_OK_NO_WRITES","mode":a.mode,"before_sha256":sha(original),"target_sha256":target_hash,"after_sha256":"","errors":[]})
-        return 0
     if not EXPECTED_TARGET_SHA256:
         raise RuntimeError("apply refused: target hash not locked")
     errors=[]; wrote=False; saved_info={}
