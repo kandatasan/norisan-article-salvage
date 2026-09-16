@@ -308,8 +308,8 @@ def main() -> None:
         if len(rows) != 1:
             raise RuntimeError(f"post slug collision: {len(rows)}")
         row = rows[0]
-        if row.get("status") != "draft":
-            raise RuntimeError(f"existing {SLUG} is not a draft; refusing update")
+        if row.get("status") not in {"draft", "publish"}:
+            raise RuntimeError(f"existing {SLUG} has unsupported status: {row.get('status')}")
         if html.unescape(raw(row, "title")) != TITLE:
             raise RuntimeError("existing draft title mismatch")
         existing_content = raw(row, "content")
@@ -356,8 +356,9 @@ def main() -> None:
     public_after = public_counts()
     if public_after != public_before:
         raise RuntimeError(f"public counts changed: {public_before} -> {public_after}")
-    if check.get("status") != "draft" or check.get("slug") != SLUG:
-        raise RuntimeError("final draft identity mismatch")
+    expected_status = post.get("status")
+    if check.get("status") != expected_status or check.get("slug") != SLUG:
+        raise RuntimeError("final post identity/status mismatch")
     if html.unescape(raw(check, "title")) != TITLE or raw(check, "content").strip() != final_content.strip():
         raise RuntimeError("final draft content/title mismatch")
     if int(check.get("author") or 0) != author or int(check.get("featured_media") or 0) != FEATURED:
