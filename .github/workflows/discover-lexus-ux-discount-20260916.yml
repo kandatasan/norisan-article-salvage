@@ -1,0 +1,22 @@
+name: Discover live lexus ux discount 20260916
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/discover_lexus_ux_discount_20260916.py'
+      - '.github/workflows/discover-lexus-ux-discount-20260916.yml'
+permissions:
+  contents: read
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch live post read-only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/discover_lexus_ux_discount_20260916.py
