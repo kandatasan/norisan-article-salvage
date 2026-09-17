@@ -109,25 +109,6 @@ def main() -> None:
             "keys": sorted(row.keys()),
         }, ensure_ascii=False))
 
-    print("=== HTML HEAD CLUES ===", flush=True)
-    for path in ["/category/fishing/", "/category/car/", "/2026/06/"]:
-        try:
-            html = fetch_html(path)
-        except Exception as exc:
-            print(path, "ERROR", repr(exc))
-            continue
-        head = html.split("</head>", 1)[0]
-        robots = re.findall(r'<meta[^>]+name=["\']robots["\'][^>]*>', head, re.I)
-        gens = re.findall(r'<meta[^>]+name=["\']generator["\'][^>]*>', head, re.I)
-        plugins = sorted(set(re.findall(r'/wp-content/plugins/([^/"\']+)', head, re.I)))
-        print(json.dumps({
-            "path": path,
-            "robots": robots,
-            "generator": gens,
-            "plugins": plugins,
-            "head_excerpt": head[:2000],
-        }, ensure_ascii=False))
-
     print("=== TARGET POSTS ===", flush=True)
     for pid in TARGET_POST_IDS:
         row = request("GET", f"/wp-json/wp/v2/posts/{pid}?context=edit&_fields=id,slug,status,title,content,author,featured_media,categories")
