@@ -1,0 +1,30 @@
+name: Publish Land Cruiser FJ guide 20260917
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/publish_landcruiser_fj_guide_20260917.py'
+      - '.github/workflows/publish-landcruiser-fj-guide-20260917.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Publish guarded FJ guide
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/publish_landcruiser_fj_guide_20260917.py
+          python scripts/publish_landcruiser_fj_guide_20260917.py
