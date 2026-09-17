@@ -70,6 +70,14 @@ def main() -> None:
     cats = request("GET", "/wp-json/wp/v2/categories?context=edit&per_page=100")
     tags = request("GET", "/wp-json/wp/v2/tags?context=edit&per_page=100")
     try:
+        settings = request("GET", "/wp-json/wp/v2/settings")
+    except Exception as exc:
+        settings = {"_error": repr(exc)}
+    try:
+        cat_options = request("OPTIONS", "/wp-json/wp/v2/categories/1")
+    except Exception as exc:
+        cat_options = {"_error": repr(exc)}
+    try:
         users = request("GET", "/wp-json/wp/v2/users?context=edit&per_page=100")
     except Exception as exc:
         users = []
@@ -80,6 +88,13 @@ def main() -> None:
     print("=== INTERESTING ROUTES ===", flush=True)
     print(json.dumps(interesting_routes, ensure_ascii=False, indent=2))
 
+    print("=== SETTINGS KEYS ===", flush=True)
+    print(json.dumps(sorted(settings.keys()) if isinstance(settings, dict) else settings, ensure_ascii=False))
+    print("=== CATEGORY OPTIONS META SCHEMA ===", flush=True)
+    schema = {}
+    if isinstance(cat_options, dict):
+        schema = (((cat_options.get("schema") or {}).get("properties") or {}).get("meta") or {})
+    print(json.dumps(schema, ensure_ascii=False, indent=2))
     print("=== CATEGORY KEYS / META ===", flush=True)
     for row in cats:
         print(json.dumps({
