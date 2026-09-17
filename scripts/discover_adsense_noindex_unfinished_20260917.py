@@ -69,14 +69,18 @@ def main() -> None:
 
     cats = request("GET", "/wp-json/wp/v2/categories?context=edit&per_page=100")
     tags = request("GET", "/wp-json/wp/v2/tags?context=edit&per_page=100")
-    users = request("GET", "/wp-json/wp/v2/users?context=edit&per_page=100")
+    try:
+        users = request("GET", "/wp-json/wp/v2/users?context=edit&per_page=100")
+    except Exception as exc:
+        users = []
+        print("USERS_ENDPOINT_SKIPPED", repr(exc), flush=True)
 
-    print("=== NAMESPACES ===")
+    print("=== NAMESPACES ===", flush=True)
     print(json.dumps(namespaces, ensure_ascii=False, indent=2))
-    print("=== INTERESTING ROUTES ===")
+    print("=== INTERESTING ROUTES ===", flush=True)
     print(json.dumps(interesting_routes, ensure_ascii=False, indent=2))
 
-    print("=== CATEGORY KEYS / META ===")
+    print("=== CATEGORY KEYS / META ===", flush=True)
     for row in cats:
         print(json.dumps({
             "id": row.get("id"),
@@ -86,7 +90,7 @@ def main() -> None:
             "keys": sorted(row.keys()),
             "meta": row.get("meta"),
         }, ensure_ascii=False))
-    print("=== TAG KEYS / META ===")
+    print("=== TAG KEYS / META ===", flush=True)
     for row in tags[:20]:
         print(json.dumps({
             "id": row.get("id"),
@@ -96,7 +100,7 @@ def main() -> None:
             "keys": sorted(row.keys()),
             "meta": row.get("meta"),
         }, ensure_ascii=False))
-    print("=== USERS ===")
+    print("=== USERS ===", flush=True)
     for row in users:
         print(json.dumps({
             "id": row.get("id"),
@@ -105,7 +109,7 @@ def main() -> None:
             "keys": sorted(row.keys()),
         }, ensure_ascii=False))
 
-    print("=== HTML HEAD CLUES ===")
+    print("=== HTML HEAD CLUES ===", flush=True)
     for path in ["/category/fishing/", "/category/car/", "/2026/06/"]:
         try:
             html = fetch_html(path)
@@ -124,7 +128,7 @@ def main() -> None:
             "head_excerpt": head[:2000],
         }, ensure_ascii=False))
 
-    print("=== TARGET POSTS ===")
+    print("=== TARGET POSTS ===", flush=True)
     for pid in TARGET_POST_IDS:
         row = request("GET", f"/wp-json/wp/v2/posts/{pid}?context=edit&_fields=id,slug,status,title,content,author,featured_media,categories")
         content = raw(row, "content")
