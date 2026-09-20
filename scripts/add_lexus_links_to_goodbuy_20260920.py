@@ -354,8 +354,8 @@ def main() -> None:
             )
 
         target = add_to_h2_end(current, cfg["h2"], cfg["text"])
-        if target.count(GOODBUY_URL) != current.count(GOODBUY_URL) + 2:
-            raise RuntimeError(f"{post_id}: goodbuy URL count must increase by 2")
+        if target.count(GOODBUY_URL) != current.count(GOODBUY_URL) + 3:
+            raise RuntimeError(f"{post_id}: goodbuy URL count must increase by 3")
         if target.count(MARKER) != 1:
             raise RuntimeError(f"{post_id}: marker count invalid")
         if cfg["text"] not in target:
@@ -380,8 +380,8 @@ def main() -> None:
             final_content = raw(check, "content")
             if final_content.strip() != target.strip():
                 raise RuntimeError(f"{post_id}: final content mismatch")
-            if final_content.count(GOODBUY_URL) != 2:
-                raise RuntimeError(f"{post_id}: final goodbuy URL count is not 2")
+            if final_content.count(GOODBUY_URL) != 3:
+                raise RuntimeError(f"{post_id}: final goodbuy URL count is not 3")
             if final_content.count(MARKER) != 1:
                 raise RuntimeError(f"{post_id}: final marker count invalid")
 
