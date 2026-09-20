@@ -83,7 +83,7 @@ def validate_content(c):
     if any(x in c for x in ["普通に", "🔥", "🤣", "😁", "😏", "😂", "😊"]):
         raise RuntimeError("banned wording/emoji")
     required = [
-        "25万6,300円", "4,856,300円", "4,200,000円", "4,600,000円",
+        "25万6,300円", "485万6,300円", "4,200,000円", "4,600,000円",
         "344.8万円〜777.7万円", "2026年9月20日", "差は25万円",
         "カーセブンへ427万円", '[blog_parts id="2846"]', '[blog_parts id="2843"]',
         "https://tsurikue.com/car-sell-high/", "https://tsurikue.com/lexus-lbx-options/",
