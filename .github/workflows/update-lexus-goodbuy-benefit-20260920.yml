@@ -1,0 +1,32 @@
+name: Update Lexus goodbuy benefits 20260920
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/lexus-goodbuy/content.html'
+      - 'scripts/update_lexus_goodbuy_benefit_20260920.py'
+      - '.github/workflows/update-lexus-goodbuy-benefit-20260920.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Update WordPress draft content only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/update_lexus_goodbuy_benefit_20260920.py
+          python scripts/update_lexus_goodbuy_benefit_20260920.py
