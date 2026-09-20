@@ -1,0 +1,31 @@
+name: Add FJ links to cheap article 20260920
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/add_fj_links_to_cheap_20260920.py'
+      - '.github/workflows/add-fj-links-to-cheap-20260920.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Add guarded internal links
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/add_fj_links_to_cheap_20260920.py
+          python scripts/add_fj_links_to_cheap_20260920.py
