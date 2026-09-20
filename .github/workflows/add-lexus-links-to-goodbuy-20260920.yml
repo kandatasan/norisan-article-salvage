@@ -1,0 +1,31 @@
+name: Add Lexus links to goodbuy 20260920
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/add_lexus_links_to_goodbuy_20260920.py'
+      - '.github/workflows/add-lexus-links-to-goodbuy-20260920.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Add guarded Lexus internal links
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/add_lexus_links_to_goodbuy_20260920.py
+          python scripts/add_lexus_links_to_goodbuy_20260920.py
