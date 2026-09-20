@@ -1,0 +1,43 @@
+name: Create Lexus goodbuy draft 20260920
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/lexus-goodbuy/content.html'
+      - 'scripts/create_lexus_goodbuy_draft_20260920.py'
+      - '.github/workflows/create-lexus-goodbuy-draft-20260920.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create guarded WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/create_lexus_goodbuy_draft_20260920.py
+          python scripts/create_lexus_goodbuy_draft_20260920.py
+      - name: Upload audit report
+        uses: actions/upload-artifact@v4
+        with:
+          name: lexus-goodbuy-draft-${{ github.run_id }}
+          path: reports/lexus-goodbuy-create-20260920/
+          if-no-files-found: warn
+      - name: Record result on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/lexus-goodbuy-create-20260920/summary.md
