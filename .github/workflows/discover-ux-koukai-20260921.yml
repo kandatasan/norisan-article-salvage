@@ -1,0 +1,26 @@
+name: Discover live UX koukai 20260921
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/discover_ux_koukai_20260921.py'
+      - '.github/workflows/discover-ux-koukai-20260921.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Fetch live post read-only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/discover_ux_koukai_20260921.py
