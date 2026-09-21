@@ -1,0 +1,45 @@
+name: Create Sugai tsubugai fresh article draft 20260921
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'packages/sugai-tsubugai/content.html'
+      - 'scripts/create_sugai_tsubugai_draft_20260921.py'
+      - '.github/workflows/create-sugai-tsubugai-draft-20260921.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Create guarded WordPress draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/create_sugai_tsubugai_draft_20260921.py
+          python scripts/create_sugai_tsubugai_draft_20260921.py
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sugai-tsubugai-draft-${{ github.run_id }}
+          path: reports/sugai-tsubugai-create-20260921/
+          if-no-files-found: warn
+      - name: Record result on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/sugai-tsubugai-create-20260921/summary.md
