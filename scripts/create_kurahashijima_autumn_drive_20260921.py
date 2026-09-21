@@ -17,6 +17,7 @@ REPORT=Path("reports/kurahashijima-autumn-drive-create-20260921")
 
 EXPECTED_MEDIA={
     3868:("/wp-content/uploads/2026/09/img_8448.jpg",1920,1440),
+    3867:("/wp-content/uploads/2026/09/img_8450.jpg",1920,1440),
     3869:("/wp-content/uploads/2026/09/img_8452.jpg",1920,1440),
     3873:("/wp-content/uploads/2026/09/img_8453.jpg",1920,1440),
     3876:("/wp-content/uploads/2026/09/img_8456.jpg",1440,1920),
@@ -97,6 +98,8 @@ def validate_content(c):
         "https://www.city.kure.lg.jp/site/bunkazai/siyuminbun-1.html",
         "https://kure-trip.jp/spots/53",
         "https://icou-kurahashi.com/",
+        "https://mitsukojimafuto.co.jp/",
+        "三ツ子島埠頭は、国内最大の輸入塩の中継基地",
     ]
     for x in required:
         if x not in c:
@@ -178,7 +181,7 @@ def write_report(d):
         f"- published pages before/after: **{d['before']['pages']} / {d['after']['pages']}**",
         f"- content sha256: **{d['sha']}**",
         "- reserved for later Kazu article: **img_8454 / img_8455**",
-        "- unused in this article: **img_8450 / img_8458**",
+        "- unused in this article: **img_8458**",
     ]
     (REPORT/"summary.md").write_text("\n".join(lines)+"\n",encoding="utf-8")
     print("\n".join(lines))
