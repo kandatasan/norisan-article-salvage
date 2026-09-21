@@ -1,0 +1,42 @@
+name: Audit Sugai uploaded media 20260921
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/audit_sugai_media_20260921.py'
+      - '.github/workflows/audit-sugai-media-20260921.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Read-only WordPress media audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/audit_sugai_media_20260921.py
+          python scripts/audit_sugai_media_20260921.py
+      - name: Record result on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/sugai-media-audit-20260921/summary.md
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sugai-media-audit-${{ github.run_id }}
+          path: reports/sugai-media-audit-20260921/
+          if-no-files-found: warn
