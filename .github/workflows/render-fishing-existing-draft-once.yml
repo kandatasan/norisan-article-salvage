@@ -1,0 +1,85 @@
+name: Render fishing existing draft once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/render-fishing-existing-draft-once.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Restore renderer with draft query
+        run: |
+          python - <<'PY'
+          import base64,gzip,pathlib
+          root=pathlib.Path('category-hubs/fishing')
+          packed=(root/'verify_render.py.gz.b64').read_text(encoding='utf-8')
+          text=gzip.decompress(base64.b64decode(packed)).decode('utf-8')
+          old='/pages?context=edit&per_page=100&_fields=id,slug,status,title,content,link'
+          new='/pages?context=edit&status=draft&per_page=100&_fields=id,slug,status,title,content,link'
+          if old not in text:
+              raise RuntimeError('DRAFT_QUERY_ANCHOR_MISSING')
+          (root/'verify_render.py').write_text(text.replace(old,new,1),encoding='utf-8')
+          PY
+          python -m py_compile category-hubs/fishing/verify_render.py
+
+      - name: Install Selenium
+        run: python -m pip install --disable-pip-version-check selenium
+
+      - name: Render draft only
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python category-hubs/fishing/verify_render.py | tee fishing-hub-render-console.json
+          test -s fishing-hub-render-check.json
+          python - <<'PY'
+          import json
+          d=json.load(open('fishing-hub-render-check.json',encoding='utf-8'))
+          assert d['page_id']==3316
+          assert d['status']=='draft'
+          assert all(d['checks'].values())
+          PY
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: fishing-category-hub-render-only
+          path: |
+            fishing-hub-render-check.json
+            fishing-hub-render-console.json
+            fishing-hub-rendered-local.html
+            fishing-hub-draft-desktop-1440.png
+            fishing-hub-draft-mobile-390.png
+          if-no-files-found: warn
+
+      - name: Audit Issue 22
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Fishing category hub — render-only check'
+            if [ -s fishing-hub-render-check.json ]; then
+              echo '```json'
+              cat fishing-hub-render-check.json
+              echo '```'
+            else
+              echo 'Render check missing.'
+            fi
+          } > /tmp/fishing-render-audit.md
+          gh issue comment 22 --body-file /tmp/fishing-render-audit.md
