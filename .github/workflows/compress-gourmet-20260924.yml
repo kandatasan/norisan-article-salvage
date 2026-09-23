@@ -1,0 +1,72 @@
+name: Compress two gourmet reviews 20260924
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/compress_gourmet_20260924.py'
+      - '.github/workflows/compress-gourmet-20260924.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/compress_gourmet_20260924.py'
+      - '.github/workflows/compress-gourmet-20260924.yml'
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+jobs:
+  verify-or-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile guarded updater
+        run: python -m py_compile scripts/compress_gourmet_20260924.py
+
+      - name: Preflight on pull request
+        if: github.event_name == 'pull_request'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/compress_gourmet_20260924.py --mode preflight
+
+      - name: Apply reviewed cleanup on main
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/compress_gourmet_20260924.py --mode apply
+
+      - name: Upload audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gourmet-compression-${{ github.run_id }}
+          path: reports/compress-gourmet-20260924/
+          if-no-files-found: warn
+
+      - name: Comment PR preflight
+        if: always() && github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f reports/compress-gourmet-20260924/summary.md ]; then
+            gh pr comment "${{ github.event.pull_request.number }}" --repo "${{ github.repository }}" --body-file reports/compress-gourmet-20260924/summary.md
+          fi
+
+      - name: Record apply audit in issue 22
+        if: always() && github.event_name == 'push'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ -f reports/compress-gourmet-20260924/summary.md ]; then
+            gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file reports/compress-gourmet-20260924/summary.md
+          fi
