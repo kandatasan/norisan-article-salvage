@@ -1,0 +1,42 @@
+name: Restore Matsubagani firsthand details 20260923
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/restore_matubagani_v3_20260923.py
+      - .github/workflows/restore-matubagani-v3-20260923.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m py_compile scripts/restore_matubagani_v3_20260923.py
+      - name: Apply guarded restoration
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python scripts/restore_matubagani_v3_20260923.py | tee /tmp/summary.md
+      - name: Record audit result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Matsubagani firsthand restoration v3'
+            echo
+            cat /tmp/summary.md 2>/dev/null || echo '- result: **BLOCKED_OR_FAILED_BEFORE_SUMMARY**'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/comment.md
