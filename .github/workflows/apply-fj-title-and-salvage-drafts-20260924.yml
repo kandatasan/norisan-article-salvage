@@ -1,0 +1,47 @@
+name: Apply FJ title and salvage drafts 20260924
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/apply_fj_title_and_salvage_drafts_20260924.py
+      - salvage-batch/20260924/**
+      - .github/workflows/apply-fj-title-and-salvage-drafts-20260924.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Compile
+        run: python -m py_compile scripts/apply_fj_title_and_salvage_drafts_20260924.py
+
+      - name: Apply guarded batch
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python scripts/apply_fj_title_and_salvage_drafts_20260924.py | tee /tmp/summary.md
+
+      - name: Record audit result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### FJ title micro-rewrite + two draft salvages 2026-09-24'
+            echo
+            cat /tmp/summary.md 2>/dev/null || echo '- result: **BLOCKED_OR_FAILED_BEFORE_SUMMARY**'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/comment.md
