@@ -96,9 +96,8 @@ def verify_identity(row, target):
     if int(row.get("featured_media") or 0) != target["featured_media"]: raise RuntimeError("featured_media mismatch")
 
 def edit_ask(content):
-    heading = '<h2 class="wp-block-heading">アスクザミートを実食レビュー｜肉の名前は分からん。でも、とにかく旨い</h2>'
-    if content.count(heading) != 1:
-        raise RuntimeError("ask heading guard failed")
+    if content.count("肉の名前は分からん") != 1:
+        raise RuntimeError("ask name-unknown keeper missing or duplicated before edit")
 
     content = replace_once(
         content,
