@@ -23,9 +23,9 @@ for slug,pid in TARGETS.items():
     print("title:",(row.get("title") or {}).get("raw"))
     print("status:",row.get("status"),"featured:",row.get("featured_media"))
     if slug=="ask-the-meat":
-        keys=("名前","部位","旨かった記憶","また食べたい","wp:heading")
+        keys=("分か","覚え","説明","名称","名前","部位","肉","旨","記憶","<h2")
     else:
-        keys=("東広島","可部まで","通い","わざわざ","ここで食べたい","和牛カルビ","白ごはん","ご飯","wp:heading")
+        keys=("東広島","可部","通","遠","距離","ここまで","行く","和牛","カルビ","ごはん","ご飯","白","<h2")
     for line in content.splitlines():
         if any(k in line for k in keys):
             print(line)
