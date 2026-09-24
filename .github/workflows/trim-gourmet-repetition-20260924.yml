@@ -1,0 +1,42 @@
+name: Trim gourmet repetition 20260924
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/trim_gourmet_repetition_20260924.py
+      - .github/workflows/trim-gourmet-repetition-20260924.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m py_compile scripts/trim_gourmet_repetition_20260924.py
+      - name: Apply guarded repetition trim
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          set -o pipefail
+          python scripts/trim_gourmet_repetition_20260924.py | tee /tmp/summary.md
+      - name: Record audit result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Gourmet repetition trim 2026-09-24'
+            echo
+            cat /tmp/summary.md 2>/dev/null || echo '- result: **BLOCKED_OR_FAILED_BEFORE_SUMMARY**'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/comment.md
