@@ -196,7 +196,7 @@ def main():
                 raise RuntimeError(f"modified date did not advance: {item['key']}")
 
             if item["key"] == "ask":
-                if actual.count("肉の名前は分からん") != 1 or "部位" in actual:
+                if actual.count("肉の名前") != 1 or "部位" in actual:
                     raise RuntimeError("ask duplicate idea verification failed")
             else:
                 if actual.count("東広島") != 1 or actual.count("通いたくなる") != 1:
