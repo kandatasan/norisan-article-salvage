@@ -96,75 +96,31 @@ def verify_identity(row, target):
     if int(row.get("featured_media") or 0) != target["featured_media"]: raise RuntimeError("featured_media mismatch")
 
 def edit_ask(content):
-    if content.count("肉の名前は分からん") != 1:
-        raise RuntimeError("ask name-unknown keeper missing or duplicated before edit")
+    old_heading = '<!-- wp:heading -->\n<h2 class="wp-block-heading">アスクザミートを実食｜柔らかいだけじゃなく、肉の味が濃い</h2>\n<!-- /wp:heading -->'
+    if content.count(old_heading) != 1:
+        raise RuntimeError("ask live heading guard failed")
+    if "肉の名前" in content or "部位" in content:
+        raise RuntimeError("ask already contains name/part wording; refusing duplicate insertion")
 
-    content = replace_once(
-        content,
-        '<figcaption class="wp-element-caption">部位の名前は分かりません。でも、見た瞬間に「これは旨いやつ」と分かる肉でした。</figcaption>',
-        '<figcaption class="wp-element-caption">霜降りの見た目から、食べる前から期待が上がる肉でした。</figcaption>',
-        "ask first caption",
-    )
-    content = replace_once(
-        content,
-        '<p>肉の部位はほとんど覚えていません。<br>でも、写真を見返すと「これ旨かったなあ」と味の記憶はしっかり残っています。</p>',
-        '<p>写真を見返すと「これ旨かったなあ」と、味の記憶はしっかり残っています。</p>',
-        "ask first body repeat",
-    )
-    content = replace_once(
-        content,
-        '<figcaption class="wp-element-caption">部位を説明できなくても、旨かった記憶はしっかり残っています。</figcaption>',
-        '<figcaption class="wp-element-caption">赤身の旨さもしっかり印象に残っています。</figcaption>',
-        "ask second caption",
-    )
-    content = replace_once(
-        content,
-        '<p>部位名まで詳しく説明できる記事ではありません。<br>それでも、<strong>「また食べたい」と思えるくらい旨かった</strong>ことは間違いありません。</p>',
-        '<p><strong>「また食べたい」と思えるくらい旨かった</strong>ことは間違いありません。</p>',
-        "ask closing repeat",
-    )
+    new_heading = old_heading + '\n\n<!-- wp:paragraph -->\n<p>正直、肉の名前はよく分かりません。<br>でも、味の記憶はしっかり残っています。</p>\n<!-- /wp:paragraph -->'
+    content = content.replace(old_heading, new_heading, 1)
 
-    if content.count("肉の名前は分からん") != 1:
-        raise RuntimeError("ask name-unknown idea should remain exactly once")
+    if content.count("肉の名前") != 1:
+        raise RuntimeError("ask name-unknown idea should appear exactly once")
     if "部位" in content:
-        raise RuntimeError("ask still contains duplicate 部位 wording")
+        raise RuntimeError("ask duplicate 部位 wording remains")
     return content
 
 def edit_yakiniku(content):
-    content = replace_once(
-        content,
-        '<p>昔ながらの焼肉屋さんなのですが、旨い。<br>私はこの店のためだけに東広島から可部まで通っています。</p>',
-        '<p>昔ながらの焼肉屋さんなのですが、旨い。</p>',
-        "yakiniku intro distance repeat",
-    )
-    content = replace_once(
-        content,
-        '<h2 class="wp-block-heading">可部焼肉センターを実食レビュー｜わざわざ食べに行きたくなる店</h2>',
-        '<h2 class="wp-block-heading">可部焼肉センターを実食レビュー｜赤い牛の看板が目印</h2>',
-        "yakiniku distance heading",
-    )
-    content = remove_once(
-        content,
-        '<!-- wp:paragraph -->\n<p>私も東広島から可部まで距離はあります。<br>それでも焼肉センターを食べたくなると、ここまで行きます。</p>\n<!-- /wp:paragraph -->\n\n',
-        "yakiniku distance paragraph 1",
-    )
-    content = remove_once(
-        content,
-        '<!-- wp:paragraph -->\n<p><strong>近いから行くんじゃなく、ここで食べたいから行く。</strong><br>私の中では、そんな店です。</p>\n<!-- /wp:paragraph -->\n\n',
-        "yakiniku distance paragraph 2",
-    )
-    content = replace_once(
-        content,
-        '<p>焼肉センターは何を食べても美味しいのですが、私のイチオシは<strong>和牛カルビ</strong>。</p>',
-        '<p>焼肉センターは何を食べても美味しいのですが、私が一番楽しみにしているのがこの一皿です。</p>',
-        "yakiniku kalbi repeat 1",
-    )
-    content = replace_once(
-        content,
-        '<p>1人前でもしっかり量があって、白ごはんと一緒に食べると止まりません。</p>',
-        '<p>1人前でもしっかり量があります。</p>',
-        "yakiniku rice repeat 1",
-    )
+    if content.count("東広島") != 1 or content.count("通いたくなる") != 1:
+        raise RuntimeError("yakiniku personal distance idea is not already exactly once; refusing")
+    if "わざわざ食べに行きたくなる" in content or "ここで食べたいから行く" in content or "通っています" in content:
+        raise RuntimeError("yakiniku distance duplicate wording unexpectedly present")
+
+    old_pair = '<!-- wp:paragraph -->\n<p>焼肉センターは何を食べても美味しいのですが、私のイチオシは<strong>和牛カルビ</strong>。</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>1人前でもしっかり量があって、白ごはんと一緒に食べると止まりません。</p>\n<!-- /wp:paragraph -->'
+    new_pair = '<!-- wp:paragraph -->\n<p>1人前でもしっかり量があります。</p>\n<!-- /wp:paragraph -->'
+    content = replace_once(content, old_pair, new_pair, "yakiniku kalbi/rice repeated intro")
+
     content = replace_once(
         content,
         '<p>焼いて、タレにつけて、ごはん。</p>',
@@ -176,31 +132,9 @@ def edit_yakiniku(content):
         '<!-- wp:paragraph -->\n<p><strong>ほんと、いくらでもご飯が食えるやつ。</strong></p>\n<!-- /wp:paragraph -->\n\n',
         "yakiniku duplicate rice punchline",
     )
-    content = replace_once(
-        content,
-        '<p>とはいえ、私が焼肉センターへ行く理由はやっぱり肉。<br>和牛カルビを焼いて、ごはんを食べる。これが好きです。</p>',
-        '<p>とはいえ、私が焼肉センターへ行く理由はやっぱり肉です。</p>',
-        "yakiniku kalbi-rice repeat 2",
-    )
-    content = replace_once(
-        content,
-        '<p>私は東広島から、焼肉センターのためだけに可部まで通っています。</p>',
-        '<p>国道54号線を走ると、今でもあの赤い牛の看板が目に入ります。</p>',
-        "yakiniku closing distance repeat",
-    )
-    content = replace_once(
-        content,
-        '<p>年季の入った外観。<br>旨い肉。<br>そして和牛カルビで白ごはん。</p>',
-        '<p>年季の入った外観。<br>旨い肉。<br>昔ながらの焼肉屋さんらしい雰囲気。</p>',
-        "yakiniku closing kalbi-rice repeat",
-    )
 
-    if content.count("東広島") != 1:
-        raise RuntimeError(f"yakiniku 東広島 should appear once in body, got {content.count('東広島')}")
-    if content.count("通いたくなる") != 1:
-        raise RuntimeError("yakiniku distance idea keeper missing or duplicated")
-    if "わざわざ食べに行きたくなる" in content or "ここで食べたいから行く" in content or "通っています" in content:
-        raise RuntimeError("yakiniku distance duplicate wording remains")
+    if content.count("東広島") != 1 or content.count("通いたくなる") != 1:
+        raise RuntimeError("yakiniku distance idea changed unexpectedly")
     if content.count("和牛カルビ") != 1:
         raise RuntimeError(f"yakiniku 和牛カルビ should appear once in body, got {content.count('和牛カルビ')}")
     if content.count("白ごはん") != 1:
