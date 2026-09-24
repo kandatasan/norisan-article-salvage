@@ -1,0 +1,24 @@
+name: Inspect live gourmet repetition 20260924
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/inspect_gourmet_repetition_live_20260924.py
+      - .github/workflows/inspect-gourmet-repetition-live-20260924.yml
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m py_compile scripts/inspect_gourmet_repetition_live_20260924.py
+      - name: Inspect current WordPress copy
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/inspect_gourmet_repetition_live_20260924.py
