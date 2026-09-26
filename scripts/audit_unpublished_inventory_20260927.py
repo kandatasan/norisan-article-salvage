@@ -202,7 +202,8 @@ def main():
 
     # Newest first within each bucket.
     order = {"公開候補": 0, "未完成・要修正": 1, "実験・保留候補": 2}
-    items.sort(key=lambda x: x["modified"] or "", reverse=True)\n    items.sort(key=lambda x: order.get(x["bucket"], 9))
+    items.sort(key=lambda x: x["modified"] or "", reverse=True)
+    items.sort(key=lambda x: order.get(x["bucket"], 9))
 
     report = {
         "mode": "GET_ONLY",
