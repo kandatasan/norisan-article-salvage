@@ -1,0 +1,37 @@
+name: Audit unpublished vs published overlap
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/audit_unpublished_vs_published_20260927.py
+      - .github/workflows/audit-unpublished-vs-published-20260927.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run GET-only overlap audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_unpublished_vs_published_20260927.py > /tmp/audit.md
+      - name: Record result
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### Unpublished vs published duplicate audit 2026-09-27'
+            echo
+            cat /tmp/audit.md
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/comment.md
