@@ -8,6 +8,7 @@ import os
 import re
 import urllib.parse
 import urllib.request
+import urllib.error
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -120,7 +121,7 @@ def analyze(row, post_type: str):
             incomplete_hits.append(pat)
 
     experiment_hits = []
-    haystack = f"{slug}\n{title}\n{content[:1000]}"
+    haystack = f"{slug}\n{title}"
     for pat in EXPERIMENT_PATTERNS:
         if re.search(pat, haystack, flags=re.I):
             experiment_hits.append(pat)
@@ -201,7 +202,7 @@ def main():
 
     # Newest first within each bucket.
     order = {"公開候補": 0, "未完成・要修正": 1, "実験・保留候補": 2}
-    items.sort(key=lambda x: (order.get(x["bucket"], 9), x["modified"] or ""), reverse=False)
+    items.sort(key=lambda x: x["modified"] or "", reverse=True)\n    items.sort(key=lambda x: order.get(x["bucket"], 9))
 
     report = {
         "mode": "GET_ONLY",
