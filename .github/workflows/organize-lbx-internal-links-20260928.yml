@@ -1,0 +1,40 @@
+name: Organize LBX internal links once
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - packages/lbx-internal-links-20260928/plan.md
+      - scripts/update_lbx_internal_links_20260928.py
+      - scripts/verify_lbx_internal_links_20260928.py
+      - .github/workflows/organize-lbx-internal-links-20260928.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Update existing published posts and verify
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -m py_compile scripts/update_lbx_internal_links_20260928.py scripts/verify_lbx_internal_links_20260928.py
+          python scripts/update_lbx_internal_links_20260928.py > /tmp/update.md
+          python scripts/verify_lbx_internal_links_20260928.py > /tmp/verify.md
+          {
+            cat /tmp/update.md
+            echo
+            cat /tmp/verify.md
+          } > /tmp/comment.md
+          cat /tmp/comment.md
+          gh issue comment 561 --repo "${{ github.repository }}" --body-file /tmp/comment.md
