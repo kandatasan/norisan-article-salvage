@@ -96,7 +96,7 @@ def transform(slug,text):
     if slug=='lexus-lbx-interior':
         if 'https://tsurikue.com/lexus-lbx-price/' in text: return text
         anchor='''<!-- wp:paragraph -->
-<p>価格だけならElegantやActiveもありますが、私が選ぶなら<strong>Relax</strong>です。</p>
+<p>Elegantは420万円からなので、「LBXのデザインは好き。でも460万円までは出したくない」という人には見やすい選択肢です。</p>
 <!-- /wp:paragraph -->'''
         addition=anchor+'''
 
@@ -142,7 +142,6 @@ def main():
         }
     for s in EDIT_SLUGS:
         c2=transform(s,original[s]['content'])
-        if c2==original[s]['content']: raise RuntimeError(f'{s}: transformation made no change')
         if gutenberg_problems(c2)!=0: raise RuntimeError(f'{s}: transformed Gutenberg imbalance')
         if SHORTCODE_RE.findall(c2)!=original[s]['affiliate']: raise RuntimeError(f'{s}: affiliate blocks would change')
         updated[s]=c2
@@ -161,7 +160,9 @@ def main():
             if f'https://tsurikue.com/{t}/' not in c:
                 raise RuntimeError(f'{s}: missing planned target {t}')
 
-    for s in EDIT_SLUGS:
+    write_slugs=[s for s in EDIT_SLUGS if updated[s]!=original[s]['content']
+    ]
+    for s in write_slugs:
         pid=original[s]['id']
         req(f'{SITE}/wp-json/wp/v2/posts/{pid}',method='POST',payload={'content':updated[s]},timeout=90)
 
@@ -184,7 +185,7 @@ def main():
 
     print('# Lexus LBX internal-link update')
     print('- result: **SUCCESS**')
-    print(f'- updated_posts: **{len(EDIT_SLUGS)}**')
+    print(f'- updated_posts: **{len(write_slugs)}**')
     print('- unchanged_hub: **lexus-lbx-price**')
     print(f'- published_posts_before: **{before_pub}**')
     print(f'- published_posts_after: **{after_pub}**')
