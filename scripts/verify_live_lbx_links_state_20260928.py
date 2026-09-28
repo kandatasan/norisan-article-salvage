@@ -49,3 +49,5 @@ def main():
     print(f'- published_posts: **{h.get("X-WP-Total","?")}**')
 
 if __name__=='__main__': main()
+
+# rerun after updater fix
