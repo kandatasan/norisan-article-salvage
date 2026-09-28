@@ -1,0 +1,28 @@
+name: Diagnose LBX link updater once
+on:
+  push:
+    branches: [main]
+    paths:
+      - scripts/diagnose_lbx_link_update_failure_20260928.py
+      - .github/workflows/diagnose-lbx-link-update-failure-20260928.yml
+permissions:
+  contents: read
+  issues: write
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Diagnose live content
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/diagnose_lbx_link_update_failure_20260928.py > /tmp/diag.md
+          cat /tmp/diag.md
+          gh issue comment 561 --repo "${{ github.repository }}" --body-file /tmp/diag.md
