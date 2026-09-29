@@ -56,7 +56,7 @@ def main():
       ('229台','market listing count'),
       ('373.9万円〜798万円','market range'),
       ('42台／444.8万円〜','CPO snapshot'),
-      ('Relaxは<strong>379万円〜528.9万円</strong>','Relax used range'),
+      ('Relaxが<strong>379万円〜528.9万円</strong>','Relax used range'),
       ('差は81万円','Relax gap caveated'),
       ('485万6,300円','personal new build comparator'),
       ('2年・走行距離無制限','CPO warranty wording'),
@@ -66,9 +66,13 @@ def main():
       ('/lexus-lbx-regret/','regret link'),
       ('/lexus-lbx-cheap/','cheap link'),
       ('/lexus-ux-vs-lbx/','UX comparison link'),
+      ('欲しくない仕様が80万円安いより、欲しい仕様が少し高い方がいい。','human voice line'),
+      ('中古を買うことが目的じゃなく、欲しいLBXを納得できる金額で買うのが目的','humanized thesis'),
       ('/lexus-ux-used/','used UX link')]:
         check(phrase in c,name,checks)
     check('MOTA' not in c and 'イカプラ' not in c and '普通に' not in c,'forbidden expressions absent',checks)
+    check('全員に中古をすすめたいわけではありません' not in c,'defensive phrase removed',checks)
+    check('ここでも条件確認は必要です' not in c,'AI safety phrasing removed',checks)
     for mid in BODY_MEDIA: check(f'wp-image-{mid}' in c,f'media {mid} present',checks)
     q2=urllib.parse.urlencode({'status':'publish','per_page':1,'_fields':'id'})
     _,h=req(f'{SITE}/wp-json/wp/v2/posts?{q2}')
