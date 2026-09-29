@@ -85,10 +85,12 @@ def main():
       '229台',
       '373.9万円〜798万円',
       '42台／444.8万円〜',
-      'Relaxは<strong>379万円〜528.9万円</strong>',
+      'Relaxが<strong>379万円〜528.9万円</strong>',
       '差は81万円',
       '485万6,300円',
       '2年・走行距離無制限',
+      '欲しくない仕様が80万円安いより、欲しい仕様が少し高い方がいい。',
+      '中古を買うことが目的じゃなく、欲しいLBXを納得できる金額で買うのが目的',
       '/lexus-lbx-price/',
       '/lexus-lbx-interior/',
       '/lexus-lbx-options/',
@@ -105,9 +107,17 @@ def main():
     if existing:
         assert len(existing)==1
         row=existing[0]
-        same=(row.get('status')=='draft' and html.unescape(raw(row,'title'))==TITLE and raw(row,'content').strip()==content.strip() and int(row.get('featured_media') or 0)==FEATURED and sorted(row.get('categories') or [])==sorted(CATEGORIES) and sorted(row.get('tags') or [])==sorted(TAGS))
-        if not same: raise RuntimeError(f'slug already exists but differs: id={row.get("id")} status={row.get("status")}')
-        created=row; action='ALREADY_UP_TO_DATE'
+        if row.get('status')!='draft':
+            raise RuntimeError(f'existing slug is not draft: id={row.get("id")} status={row.get("status")}')
+        if html.unescape(raw(row,'title'))!=TITLE:
+            raise RuntimeError(f'existing draft title changed: id={row.get("id")}')
+        if int(row.get('featured_media') or 0)!=FEATURED or sorted(row.get('categories') or [])!=sorted(CATEGORIES) or sorted(row.get('tags') or [])!=sorted(TAGS):
+            raise RuntimeError(f'existing draft metadata changed: id={row.get("id")}')
+        if raw(row,'content').strip()==content.strip():
+            created=row; action='ALREADY_UP_TO_DATE'
+        else:
+            created,_=req(f'{SITE}/wp-json/wp/v2/posts/{row["id"]}',method='POST',payload={'content':content},timeout=90)
+            action='UPDATE_DRAFT'
     else:
         payload={
           'title':TITLE,'slug':SLUG,'content':content,'status':'draft','featured_media':FEATURED,
@@ -135,7 +145,7 @@ def main():
       'gulliver_blog_part':1,'ctn':0,'gutenberg_problems':0,
       'published_posts_before':before,'published_posts_after':after_pub,
       'content_sha256':hashlib.sha256(raw(after,'content').encode()).hexdigest(),
-      'wordpress_write_count':1 if action=='CREATE' else 0,'publish_count':0
+      'wordpress_write_count':1 if action in ('CREATE','UPDATE_DRAFT') else 0,'publish_count':0
     }
     for k,v in report.items(): print(f'- {k}: **{v}**' if not isinstance(v,list) else f'- {k}: {v}')
 
