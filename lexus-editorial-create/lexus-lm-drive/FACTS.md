@@ -1,1 +1,0 @@
-Official 2026 sources checked before drafting.
