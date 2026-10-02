@@ -1,3 +1,0 @@
-- finalize content
-- add guarded create config
-- verify draft-only workflow
