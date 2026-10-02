@@ -1,1 +1,0 @@
-Current official Lexus LM lineup: LM500h EXECUTIVE 4-seat and LM500h version L 6-seat. Pricing and equipment will be cited in article sources.
