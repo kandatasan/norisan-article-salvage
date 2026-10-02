@@ -1,1 +1,0 @@
-Focus: firsthand test drive + spouse rear-seat experience; current specs secondary.
