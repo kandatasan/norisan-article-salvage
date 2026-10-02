@@ -1,1 +1,0 @@
-Draft only. No publish, no delete, no mutation of existing published posts.
