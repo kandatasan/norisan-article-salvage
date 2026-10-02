@@ -1,0 +1,1 @@
+Draft-only salvage. Preserve firsthand test-drive experience. Update only current specs from official Lexus sources.
