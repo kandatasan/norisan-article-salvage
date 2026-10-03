@@ -1,9 +1,12 @@
 {
+  "post_id": 3964,
   "title": "タントを6年以上乗った感想｜軽とは思えない広さと、気になった2つの欠点",
   "slug": "tanto-6year-review",
   "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
   "editorial_marker": "<!-- tsurikue-editorial:tanto-6year-review:v1 -->",
   "content_file": "content.html",
   "featured_media": 0,
-  "expected_media": {}
+  "expected_media": {},
+  "expected_current_content_sha256": "fea3cac24ffec9744cbead7de27053ab71562335c1e6163b6597e2fe4c22d250",
+  "expected_current_featured_media": 0
 }
