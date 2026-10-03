@@ -36,13 +36,15 @@ jobs:
           python -m unittest tests/test_apply_editorial_draft_once.py -v
 
       - name: Resolve create packages
+        env:
+          INPUT_CREATE_PATH: ${{ inputs.create_path }}
         shell: bash
         run: |
           set -euo pipefail
           : > /tmp/creates.txt
 
           if [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            create='${{ inputs.create_path }}'
+            create="$INPUT_CREATE_PATH"
             test -f "$create"
             if [[ "$(basename "$create")" != "create.json" ]]; then
               echo "workflow_dispatch requires an editorial create.json path" >&2
