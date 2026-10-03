@@ -1,0 +1,9 @@
+{
+  "title": "記事タイトル",
+  "slug": "example-slug",
+  "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
+  "editorial_marker": "<!-- tsurikue-editorial:example-slug:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 0,
+  "expected_media": {}
+}
