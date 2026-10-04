@@ -26,6 +26,12 @@ class T(unittest.TestCase):
     td.cleanup()
   def test_allow_known_editorial_revision_by_exact_hash(self):
     td,p,cfg=self.package(); c,full=m.load_package(p); current=full+'old-revision\n'; cfg["expected_current_content_sha256"]=hashlib.sha256(current.encode()).hexdigest(); row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":current},"featured_media":7}; self.assertEqual(m.validate_target(row,cfg,full),'UPDATE'); td.cleanup()
+  def test_allow_known_title_revision_by_exact_old_title(self):
+    td,p,cfg=self.package(); c,full=m.load_package(p); current=full+'old-revision\n'; cfg["title"]='New X'; cfg["expected_current_title"]='X'; cfg["expected_current_content_sha256"]=hashlib.sha256(current.encode()).hexdigest(); row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":current},"featured_media":7}; self.assertEqual(m.validate_target(row,cfg,full),'UPDATE'); td.cleanup()
+  def test_reject_title_revision_when_old_title_differs(self):
+    td,p,cfg=self.package(); c,full=m.load_package(p); current=full+'old-revision\n'; cfg["title"]='New X'; cfg["expected_current_title"]='X'; cfg["expected_current_content_sha256"]=hashlib.sha256(current.encode()).hexdigest(); row={"id":1,"slug":"x","status":"draft","title":{"raw":"Human title"},"content":{"raw":current},"featured_media":7}
+    with self.assertRaises(RuntimeError): m.validate_target(row,cfg,full)
+    td.cleanup()
   def test_reject_revision_when_hash_differs(self):
     td,p,cfg=self.package(); c,full=m.load_package(p); cfg["expected_current_content_sha256"]='0'*64; row={"id":1,"slug":"x","status":"draft","title":{"raw":"X"},"content":{"raw":full+'human-edit'},"featured_media":7}
     with self.assertRaises(RuntimeError): m.validate_target(row,cfg,full)
