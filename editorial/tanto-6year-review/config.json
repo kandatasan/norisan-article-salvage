@@ -5,9 +5,17 @@
   "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
   "editorial_marker": "<!-- tsurikue-editorial:tanto-6year-review:v1 -->",
   "content_file": "content.html",
-  "featured_media": 0,
-  "expected_media": {},
-  "expected_current_title": "タントを6年以上乗った感想｜軽とは思えない広さと、気になった2つの欠点",
-  "expected_current_content_sha256": "fea3cac24ffec9744cbead7de27053ab71562335c1e6163b6597e2fe4c22d250",
+  "featured_media": 3954,
+  "expected_media": {
+    "3954": "/wp-content/uploads/2026/10/img_8618.jpg",
+    "3955": "/wp-content/uploads/2026/10/img_8615.jpg",
+    "3956": "/wp-content/uploads/2026/10/img_8609.jpg",
+    "3957": "/wp-content/uploads/2026/10/img_8613.jpg",
+    "3958": "/wp-content/uploads/2026/10/img_8602.jpg",
+    "3961": "/wp-content/uploads/2026/10/img_8603.jpg",
+    "3962": "/wp-content/uploads/2026/10/img_8604.jpg"
+  },
+  "expected_current_title": "タントの良いところ・欠点を本音レビュー｜6年以上乗ってわかったこと",
+  "expected_current_content_sha256": "4c9d92a08dde9ae3081e33aa7eb460781786f79a321cb94d926d3b028adc7a3a",
   "expected_current_featured_media": 0
 }
