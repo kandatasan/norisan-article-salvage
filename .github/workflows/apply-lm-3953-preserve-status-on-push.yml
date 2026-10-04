@@ -1,0 +1,47 @@
+name: Apply LM 3953 exact-state update
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_lm_3953_preserve_status_once.py'
+      - '.github/workflows/apply-lm-3953-preserve-status-on-push.yml'
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  update-lm-3953:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/apply_lm_3953_preserve_status_once.py
+      - name: Apply exact-state update without changing status
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_lm_3953_preserve_status_once.py
+      - name: Record result on audit issue
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          {
+            echo '### LM 3953 preserve-status update: SUCCESS'
+            echo
+            cat reports/lmdrive-preserve-status-update/summary.md
+          } > /tmp/lm-update-comment.md
+          gh issue comment 22 --repo "$GITHUB_REPOSITORY" --body-file /tmp/lm-update-comment.md
+      - name: Upload result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lmdrive-preserve-status-update
+          path: reports/lmdrive-preserve-status-update/
+          if-no-files-found: warn
