@@ -1,0 +1,19 @@
+{
+  "post_id": 3953,
+  "title": "レクサスLMを試乗レビュー｜4人乗りEXECUTIVEは「ぶっ飛んだ高級車」だった",
+  "slug": "lmdrive",
+  "content_file": "content.html",
+  "salvage_marker": "<!-- lexus-salvage:v1 slug=lmdrive source=lexus-diary.com/lmdrive/ -->",
+  "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lmdrive -->",
+  "featured_media": 1605,
+  "expected_media": {
+    "1605": "/wp-content/uploads/2026/05/img_3345.jpg",
+    "1562": "/wp-content/uploads/2026/05/img_3310.jpg",
+    "1589": "/wp-content/uploads/2026/05/img_3627.jpg",
+    "1600": "/wp-content/uploads/2026/05/img_3628.jpg",
+    "1587": "/wp-content/uploads/2026/05/img_3629.jpg"
+  },
+  "expected_current_content_sha256": "2bd884a7bcd1ff2ac1ec755f4e1a36261c3a4856f31315f7d92a6e61a18d3011",
+  "expected_current_featured_media": 1623,
+  "expected_current_title": "レクサスLMを試乗レビュー｜4人乗りEXECUTIVEは「ぶっ飛んだ高級車」だった"
+}
