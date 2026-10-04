@@ -1,0 +1,40 @@
+name: Audit recent WordPress media
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'audit/recent-media-request.txt'
+      - 'scripts/audit_recent_wp_media.py'
+      - '.github/workflows/audit-recent-wp-media.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit-recent-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install Pillow
+        run: python -m pip install --disable-pip-version-check pillow
+
+      - name: Build recent-media report and contact sheet
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_recent_wp_media.py
+
+      - name: Upload recent media audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: recent-wp-media
+          path: reports/recent-wp-media/
+          if-no-files-found: error
