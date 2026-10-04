@@ -2,10 +2,10 @@
 from __future__ import annotations
 import base64, io, json, os, urllib.parse, urllib.request
 from pathlib import Path
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw
 
 SITE_URL = "https://tsurikue.com"
-USER_AGENT = "tsurikue-recent-media-audit/1.0"
+USER_AGENT = "tsurikue-recent-media-audit/1.1"
 
 
 def auth_header(user: str, password: str) -> str:
@@ -13,13 +13,13 @@ def auth_header(user: str, password: str) -> str:
     return f"Basic {token}"
 
 
-def get_bytes(url: str, authorization: str | None = None) -> tuple[bytes, dict]:
+def get_bytes(url: str, authorization: str | None = None, timeout: int = 15) -> tuple[bytes, dict]:
     headers = {"User-Agent": USER_AGENT}
     if authorization:
         headers["Authorization"] = authorization
         headers["Accept"] = "application/json"
     req = urllib.request.Request(url, headers=headers, method="GET")
-    with urllib.request.urlopen(req, timeout=60) as r:
+    with urllib.request.urlopen(req, timeout=timeout) as r:
         return r.read(), dict(r.headers)
 
 
@@ -32,13 +32,13 @@ def main() -> int:
 
     params = urllib.parse.urlencode({
         "context": "edit",
-        "per_page": "60",
+        "per_page": "24",
         "orderby": "date",
         "order": "desc",
         "media_type": "image",
         "_fields": "id,date,slug,title,source_url,media_details,alt_text,caption",
     })
-    raw, _ = get_bytes(f"{SITE_URL}/wp-json/wp/v2/media?{params}", auth)
+    raw, _ = get_bytes(f"{SITE_URL}/wp-json/wp/v2/media?{params}", auth, timeout=20)
     rows = json.loads(raw.decode())
     if not isinstance(rows, list):
         raise RuntimeError("unexpected media response")
@@ -62,17 +62,16 @@ def main() -> int:
         filename = urllib.parse.unquote(urllib.parse.urlparse(url).path.rsplit("/", 1)[-1])
         report_lines.append(f"- id={mid} | {date} | {w}x{h} | {filename} | {title}")
         try:
-            img_bytes, _ = get_bytes(url)
+            img_bytes, _ = get_bytes(url, timeout=10)
             img = Image.open(io.BytesIO(img_bytes)).convert("RGB")
             img.thumbnail((cell_w - 20, cell_h - 70))
         except Exception as e:
             img = Image.new("RGB", (cell_w - 20, cell_h - 70), "white")
             d = ImageDraw.Draw(img)
-            d.text((8, 8), f"download failed\n{e}", fill="black")
+            d.text((8, 8), f"download failed\n{type(e).__name__}", fill="black")
         card = Image.new("RGB", (cell_w, cell_h), "white")
         x = (cell_w - img.width) // 2
-        y = 8
-        card.paste(img, (x, y))
+        card.paste(img, (x, 8))
         d = ImageDraw.Draw(card)
         label = f"ID {mid} | {w}x{h}\n{filename[:45]}\n{date[:19]}"
         d.multiline_text((8, cell_h - 58), label, fill="black", spacing=2)
