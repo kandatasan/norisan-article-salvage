@@ -28,7 +28,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Run generic safety tests
-        run: python -m unittest tests/test_apply_editorial_draft_once.py -v
+        run: python -m unittest tests/test_apply_editorial_draft_once.py tests/test_apply_editorial_draft_create.py -v
       - name: Resolve configs
         shell: bash
         run: |
