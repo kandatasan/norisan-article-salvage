@@ -1,0 +1,18 @@
+{
+  "operation": "create",
+  "slug": "tanto-interior",
+  "title": "タントの内装は広い？6年乗ったLA650Sオーナーが使いやすさを写真で紹介",
+  "status": "draft",
+  "categories": [47],
+  "featured_media": 0,
+  "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
+  "editorial_marker": "<!-- tsurikue-editorial:tanto-interior:v1 -->",
+  "content_file": "content.html",
+  "expected_media": {
+    "3955": "/wp-content/uploads/2026/10/img_8615.jpg",
+    "3956": "/wp-content/uploads/2026/10/img_8609.jpg",
+    "3958": "/wp-content/uploads/2026/10/img_8602.jpg",
+    "3961": "/wp-content/uploads/2026/10/img_8603.jpg",
+    "3962": "/wp-content/uploads/2026/10/img_8604.jpg"
+  }
+}
