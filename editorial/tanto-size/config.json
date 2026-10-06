@@ -1,12 +1,13 @@
 {
-  "operation": "create",
-  "status": "draft",
-  "title": "タントのサイズは？軽なのに普通車より広く感じる室内を6年オーナーが解説",
+  "title": "タントのサイズは？外は軽、中は下手な普通車より広い【6年乗った本音】",
   "slug": "tanto-size",
+  "post_id": 3995,
   "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
   "editorial_marker": "<!-- tsurikue-editorial:tanto-size:v1 -->",
   "content_file": "content.html",
   "featured_media": 0,
   "expected_media": {},
-  "categories": [10, 47]
+  "expected_current_content_sha256": "dc2cde20e7dd5eefabc4c953901fa7d6311e7bccb8e56f740062c1366235b8c4",
+  "expected_current_featured_media": 0,
+  "expected_current_title": "タントのサイズは？軽なのに普通車より広く感じる室内を6年オーナーが解説"
 }
