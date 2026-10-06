@@ -1,12 +1,13 @@
 {
-  "operation": "create",
-  "status": "draft",
   "title": "タントの歴代モデル・年式・型式一覧｜L350S〜LA650Sを4代まとめ",
   "slug": "tanto-model-history",
+  "post_id": 4004,
   "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
   "editorial_marker": "<!-- tsurikue-editorial:tanto-model-history:v1 -->",
   "content_file": "content.html",
   "featured_media": 0,
   "expected_media": {},
-  "categories": [10, 47]
+  "expected_current_content_sha256": "271c134c3899c8254148cf90f7c547b21e425fe92d49d86ce913d095b5521189",
+  "expected_current_featured_media": 0,
+  "expected_current_title": "タントの歴代モデル・年式・型式一覧｜L350S〜LA650Sを4代まとめ"
 }
