@@ -1,0 +1,28 @@
+name: Discover AdSense noindex unfinished 20260917
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/discover_adsense_noindex_unfinished_20260917.py'
+      - '.github/workflows/discover-adsense-noindex-unfinished-20260917.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile
+        run: python -m py_compile scripts/discover_adsense_noindex_unfinished_20260917.py
+      - name: Discover live WP noindex hooks and current post baselines
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/discover_adsense_noindex_unfinished_20260917.py
