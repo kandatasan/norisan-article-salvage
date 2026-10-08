@@ -1,12 +1,13 @@
 {
-  "operation": "create",
-  "status": "draft",
   "title": "タントの鍵の電池交換方法｜CR2032を写真つきで交換【LA650S】",
   "slug": "tanto-key-battery",
+  "post_id": 4026,
   "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
   "editorial_marker": "<!-- tsurikue-editorial:tanto-key-battery:v1 -->",
   "content_file": "content.html",
   "featured_media": 0,
   "expected_media": {},
-  "categories": [10, 47]
+  "expected_current_content_sha256": "d64f75e663d05bf931ad066e62489c654f16bf9957ce85c8ea4f1db34ed0b1a3",
+  "expected_current_featured_media": 0,
+  "expected_current_title": "タントの鍵の電池交換方法｜CR2032を写真つきで交換【LA650S】"
 }
