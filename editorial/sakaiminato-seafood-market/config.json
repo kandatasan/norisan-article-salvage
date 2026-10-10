@@ -1,5 +1,5 @@
 {
-  "operation": "create",
+  "operation": "update",
   "status": "draft",
   "slug": "sakaiminato-seafood-market",
   "title": "境港水産物直売センターは安い？カニ12ハイ2,000円と甘エビ1,000円を買ってみた",
@@ -18,5 +18,9 @@
     "4042": "/wp-content/uploads/2026/10/img_8741.jpg",
     "4043": "/wp-content/uploads/2026/10/img_8739.jpg",
     "4044": "/wp-content/uploads/2026/10/img_8718.jpg"
-  }
+  },
+  "post_id": 4045,
+  "expected_current_content_sha256": "2a20e1515bc48511fb7137f31add74b2eb61eda768ad20e3cf4de16183920fa6",
+  "expected_current_featured_media": 4043,
+  "expected_current_title": "境港水産物直売センターは安い？カニ12ハイ2,000円と甘エビ1,000円を買ってみた"
 }
