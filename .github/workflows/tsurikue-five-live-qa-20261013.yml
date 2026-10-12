@@ -1,0 +1,45 @@
+name: Verify live Tsurikue five subtraction
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/tsurikue-five-live-qa-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check five live WordPress articles after subtractive edit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os, base64, urllib.request, urllib.parse, json, re, hashlib
+          base="https://tsurikue.com"
+          user=os.environ["TSURIKUE_WP_USER"];password=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((user+":"+password).encode()).decode()
+          cases={
+          2222:("ux-resale",["150万円あったら、次の車をどこまで","RX350は668万円","CTNなら、やり取りする買取店は最大3社"],["カーセブンへ427万円","生活のために手放すしか","[blog_parts id=\"2184\"]"],["2230","2231","2234"]),
+          2240:("ux-mitsumori",["一方、UXへ乗り換える前のシエンタは","欲しいメーカーオプションを削る前に、今の車で何万円"],["まだ一社目と話してるんだけど","もう最初の会社でいいや","[blog_parts id=\"2184\"]"],["2210","2243","2244","2245","2246","2247","2248","2249","2250"]),
+          2329:("ux300h",["UX300hと中古UX250hの価格差を比べるのと同じくらい","[blog_parts id=\"2184\"]"],["左手、どこへ置くん","UX300h、超良くなってるじゃん","[blog_parts id=\"2843\"]"],["2332","2333","2335","2336","2337","2340","2342"]),
+          2517:("ux-koukai",["しかもガリバーには、Webに出る前の","今の車が高く売れれば、中古UXはさらに狙いやすい","[blog_parts id=\"2184\"]"],["荷室でテトリスが始まります","文句はある。でも私はUXが好きだった","[blog_parts id=\"2843\"]"],["2190","2197","2201","2207","2208","2209","2210","2211","2214"]),
+          3608:("lexus-lbx-regret",["乗り換えるなら、今の車の値段も先に見ておく","[blog_parts id=\"2184\"]","[blog_parts id=\"2843\"]"],["スクーター感覚","スネまで前席に当たり","ガリバーで中古のレクサスを探してみる"],["1504","1506","1509","1513","2223"])
+          }
+          for pid,(slug,absent,present,images) in cases.items():
+           q=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,content,featured_media"})
+           req=urllib.request.Request(f"{base}/wp-json/wp/v2/posts/{pid}?{q}",headers={"Authorization":auth,"Accept":"application/json"})
+           with urllib.request.urlopen(req,timeout=60) as response:row=json.load(response)
+           if (row["id"],row["slug"],row["status"])!=(pid,slug,"publish"):raise RuntimeError(f"{slug}: wrong id/status/slug")
+           body=row["content"]["raw"]
+           for txt in absent:
+            if txt in body:raise RuntimeError(f"{slug}: failed subtraction {txt}")
+           for txt in present:
+            if txt not in body:raise RuntimeError(f"{slug}: lost original voice or intended CTA {txt}")
+           found=set(re.findall(r'wp-image-(\d+)',body))
+           if found!=set(images):raise RuntimeError(f"{slug}: original photos differ {found ^ set(images)}")
+           print("WORDPRESS_VERIFIED",pid,slug,"chars",len(body),"images",len(found),"raw_sha256",hashlib.sha256(body.encode()).hexdigest(),flush=True)
+          print("FINAL_WORDPRESS_FIVE_OK",flush=True)
+          PY
