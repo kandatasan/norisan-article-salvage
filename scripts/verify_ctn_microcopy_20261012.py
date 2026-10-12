@@ -22,7 +22,7 @@ for record in AFTER+NOOPS:
         text_present=(len(record)==3 or (record[3] in raw and record[3] in row['content'].get('rendered','')))
         okay=identity and digest==expected and text_present
         out.append({'post_id':pid,'slug':slug,'check':'changed' if len(record)==4 else 'unchanged','matched':okay,'expected_sha':expected,'actual_sha':digest,'microcopy_present':text_present,'public_status':row['status']})
-        print(('PASS ' if okay else 'FAIL ')+str(pid)+' '+slug,flush=True)
+        print(('PASS ' if okay else 'FAIL ')+str(pid)+' '+slug + ('' if okay else ' actual='+digest+' expected='+expected+' microcopy='+str(text_present)),flush=True)
     except Exception as exc:
         out.append({'post_id':pid,'slug':slug,'matched':False,'error':str(exc)})
         print('ERROR '+str(pid)+' '+str(exc),flush=True)
