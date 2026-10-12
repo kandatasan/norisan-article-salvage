@@ -1,0 +1,34 @@
+name: UX Koukai six prose edits
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ux_koukai_polish_6_20261013.py'
+      - '.github/workflows/ux-koukai-polish-6-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ux_koukai_polish_6_20261013.py'
+      - '.github/workflows/ux-koukai-polish-6-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  editorial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Verify current WordPress SHA and proposed editorial changes
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_koukai_polish_6_20261013.py check
+      - name: Update one published post after preflight and re-read raw and rendered
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_koukai_polish_6_20261013.py apply
