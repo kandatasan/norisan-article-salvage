@@ -98,13 +98,15 @@ def execute(mode):
             latest=fetch(key[0],token)
             if hash_content(raw(latest))!=key[2] or latest['status']!='publish':
                 raise RuntimeError(f'{key[1]}: concurrent edit, stop')
+            done.append((key,row,new))  # attempted write is rollback eligible
             request(f'/wp-json/wp/v2/posts/{key[0]}',token,{'content':new})
             verified=fetch(key[0],token)
             if any(verified[k]!=row[k] for k in ('id','slug','status','title','featured_media','categories','author')):
                 raise RuntimeError(f'{key[1]}: protected field changed')
             if raw(verified)!=new:
                 raise RuntimeError(f'{key[1]}: live content verification failed')
-            done.append((key,row,new))
+            if key[3] not in verified['content'].get('rendered',''):
+                raise RuntimeError(f'{key[1]}: microcopy absent in rendered HTML')
             print('LIVE_VERIFIED',key[0],key[1],flush=True)
         if current_total(token)!=before_total: raise RuntimeError('published count changed')
         save(out,'result.json',{'status':'SUCCESS','verified':len(done),'preserved':len(UNCHANGED),'public_post_count':before_total})
