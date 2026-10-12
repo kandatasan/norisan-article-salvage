@@ -23,7 +23,7 @@ jobs:
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/ctn_h2_declutter_20261012.py audit
+        run: python scripts/ctn_h2_declutter_20261012.py check
       - name: Validate pinned WordPress content and proposed changes
         if: github.event_name == 'push'
         env:
