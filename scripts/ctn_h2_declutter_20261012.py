@@ -126,13 +126,21 @@ def main(mode):
         if (row['id'],row['slug'],row['status'])!=(pid,slug,'publish'):
             raise RuntimeError(f'{slug}: WordPress ID/slug/status differs, abort')
         old=row['content']['raw']
-        new=transform(old,pid,slug)
+        try:
+            new=transform(old,pid,slug)
+        except Exception as e:
+            if mode!='audit':raise
+            print('DRAFT_BLOCKED',pid,slug,str(e),flush=True)
+            for para in WP_P.finditer(old):
+                if ('CTN' in para.group(0) or '査定' in para.group(0)) and pid in (2222,2240,2948,2956,3606,3608,3863):
+                    print('NEAR',pid,re.sub(r'<[^>]*>','',para.group(0))[:330],flush=True)
+            new=old
         actual=digest(old)
         before,after=ad_sections(old),ad_sections(new)
         print(f'AUDIT {pid} {slug} SHA={actual} edit={int(new!=old)} H2_ads={len(before)}->{len(after)} parts={len(re.findall(chr(91)+"blog_parts",old))}->{len(re.findall(chr(91)+"blog_parts",new))}',flush=True)
         snapshot.append((pid,slug,row,old,new))
     if mode=='audit':
-        print('READ_ONLY_23_AUDIT_OK',flush=True);return
+        print('READ_ONLY_23_AUDIT_FINISHED (draft blockers shown above)',flush=True);return
     if len(EXPECTED)!=23:raise RuntimeError('BLOCKED: 23 live content hashes not pinned')
     for pid,slug,row,old,new in snapshot:
         if EXPECTED.get(pid)!=digest(old):
