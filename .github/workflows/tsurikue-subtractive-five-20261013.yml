@@ -1,0 +1,34 @@
+name: Tsurikue five-article subtractive rewrite
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/tsurikue_subtractive_five_20261013.py'
+      - '.github/workflows/tsurikue-subtractive-five-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/tsurikue_subtractive_five_20261013.py'
+      - '.github/workflows/tsurikue-subtractive-five-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  subtractive:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Verify live WordPress identities and exact safe editorial deductions
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/tsurikue_subtractive_five_20261013.py check
+      - name: Apply guarded content-only edits, re-read and verify published WordPress
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/tsurikue_subtractive_five_20261013.py apply
