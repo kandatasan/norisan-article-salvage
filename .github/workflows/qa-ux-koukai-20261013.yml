@@ -1,0 +1,44 @@
+name: QA live UX photo and editor repair
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-ux-koukai-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Read-only verify WordPress raw and rendered body
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os, base64, hashlib, json, urllib.request, urllib.parse, re
+          site="https://tsurikue.com"
+          p=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,content,title,featured_media"})
+          user=os.environ["TSURIKUE_WP_USER"]
+          password=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((user+":"+password).encode()).decode()
+          request=urllib.request.Request(f"{site}/wp-json/wp/v2/posts/2517?{p}",headers={"Authorization":auth,"Accept":"application/json"})
+          with urllib.request.urlopen(request,timeout=60) as response:post=json.load(response)
+          assert (post["id"],post["slug"],post["status"])==(2517,"ux-koukai","publish"),"post identity mismatch"
+          raw=post["content"]["raw"]
+          digest=hashlib.sha256(raw.encode()).hexdigest()
+          assert digest=="39c8b8a5ca0b20440ff4c7dbadd0ffc770ce3c190b1daa8032fa4239deb095b3",f"modified by another edit: {digest}"
+          assert "tsurikue-internal-links:lexus-20260830:ux-koukai" not in raw
+          assert "ここは、かばえません。</p>" in raw
+          assert "狭い山道を抜けた先で出会えたのが、この景色です。" in raw
+          assert "こういう場所へ行くとき、UXの取り回しの良さは本当にありがたい。" in raw
+          assert 'alt="高知県・仁淀川の水晶淵の風景" class="wp-image-2190"' in raw
+          assert 'alt="雪の残る道を走るレクサスUX"' not in raw
+          assert len(re.findall(r'wp-image-\d+',raw))==9
+          assert 'https://tsurikue.com/lexus-ux-rear-seat/' in raw
+          rendered=post["content"].get("rendered","")
+          assert "狭い山道を抜けた先で出会えた" in rendered
+          assert "tsurikue-internal-links:lexus-20260830:ux-koukai" not in rendered
+          print("LIVE_WORDPRESS_UX_TWO_SPOTS_OK",post["id"],post["slug"],post["status"],"images",9,"SHA",digest,flush=True)
+          PY
