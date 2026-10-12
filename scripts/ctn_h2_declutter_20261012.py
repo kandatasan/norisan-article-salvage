@@ -133,11 +133,11 @@ def main(mode):
             print('DRAFT_BLOCKED',pid,slug,str(e),flush=True)
             for para in WP_P.finditer(old):
                 if ('CTN' in para.group(0) or '査定' in para.group(0)) and pid in (2222,2240,2948,2956,3606,3608,3863):
-                    print('NEAR',pid,re.sub(r'<[^>]*>','',para.group(0))[:330],flush=True)
+                    print('NEAR',pid,' '.join(re.sub(r'<[^>]*>','',para.group(0)).split())[:330],flush=True)
             new=old
         actual=digest(old)
         before,after=ad_sections(old),ad_sections(new)
-        print(f'AUDIT {pid} {slug} SHA={actual} edit={int(new!=old)} H2_ads={len(before)}->{len(after)} parts={len(re.findall(chr(91)+"blog_parts",old))}->{len(re.findall(chr(91)+"blog_parts",new))}',flush=True)
+        print(f'AUDIT {pid} {slug} SHA={actual} edit={int(new!=old)} H2_ads={len(before)}->{len(after)} parts={old.count("[blog_parts")}->{new.count("[blog_parts")}',flush=True)
         snapshot.append((pid,slug,row,old,new))
     if mode=='audit':
         print('READ_ONLY_23_AUDIT_FINISHED (draft blockers shown above)',flush=True);return
