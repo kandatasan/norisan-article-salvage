@@ -17,7 +17,7 @@ POSTS={
 3774:"landcruiser-fj-review",3777:"landcruiser-fj-rear-seat",3778:"landcruiser-fj-drawbacks",
 4004:"tanto-model-history"}
 # Pinned to WP REST current content raw, collected by read-only audit before release.
-EXPECTED={}
+EXPECTED={"2222":"f157449077971c7d7407519a3d54fba6e2ce402603a7c9d2986b6bcfb38b8c40","2240":"ed3934088602b4d9552335e1189681a366101ca3526ef7b920522080d2351f67","2329":"408f2ebef91444cf3df5be81397c7941ee3544a1713c0f2143b32bad432c16c2","2517":"60dfdee41d23b9350d785f2b899397289bf5924cbb9ce0dea1ab7a42386934fe","2948":"339883b44f2bbb27884284c80a47714ff1c5955009286e2b4ada544c005da6a4","2956":"341d4e02b6d88b852ffbd9e9b14bbe4568b0cbc65d5718176511c973ec78a0b2","2962":"10b60de9ab12e3cc70fcc51925e44c2629e5a3bd8d43d542242a98da6528c7e1","3570":"2bdb1f6749ccf5197df9cb0f9735a74b3a4afdb355a616e88fca543ee2494cda","3601":"b64f109c73c123ccb79b4bc83a06e13a46a9334c3e2dcc7162f8af2cbc9b9abf","3604":"3b1c3312c72b33bce48ba96432f18957b9c56b3ed29e098b2859be27957dd06e","3606":"3c28bbaa1941c1f04571d865df3c78b5c8d2ed936eb347eca8e57ede15501866","3608":"2819140868dec82a01b5d69d956a88ea06dacf18a6b6d1016022f99187a9753a","3611":"cefccaeedaeb842c477fae8f6965aaaa3d359d701204ef00d77bbf5a61197031","3614":"73ffc46ebb16c32ea767c2a47e205a0d3687e7a4aff1534bbdb2c347851777a8","3767":"b115d696d051a8c3e06ba2a4f1ece093c33a2bab6326d79a3643e7bbf2681220","3774":"ed2fac0d6c00e14e8b1eadc13f4bb6261f74e84bb9ced2f3fa6774ed3fbd6b27","3777":"94ecf1d71a5e46d1744a58070b42dcf448d25a7c4dcf25726f33f47e5bb2dc05","3778":"498d0992f9e815751972ab670f1902d6b1801f0efcce270756a59b35c9cd7613","3816":"c3dcc2158edfe030299b0001f4c3d578c9e8b98d8b030cac2d83901962257c70","3835":"802817dac7379326a63f47d5cfbe6d74468fb1c4718637c564db26fa17181794","3863":"f487736ddadb765e839782ce835d0f9640efe15f15ad5034f08f7b7c46707244","3936":"cccc15f226acf06ed0cc8eb73a033175aebd9aa2eb81c56bf9c195205e1f0c17","4004":"55cc74c22f38e046b2018c6db2acfaba3a8abf204a6ce162f8f9d5d564d70307"}
 REMOVE_FOOTER_BANNER={2222,2240,2329,3570,3601,3604,3606,3608,3611,3614}
 PARAGRAPH_DELETE={
 2222:[
@@ -27,7 +27,7 @@ PARAGRAPH_DELETE={
 2240:[
 "前の車を少しでも高く売れれば、そのぶん次の車を安く買えたのと同じ",
 "シエンタでは、ディーラー下取りと一括査定で25万円の差が出ました。",
-"CTNは、買取価格の上位3社のみを紹介する仕組みです。"],
+"],
 2948:[
 "私がUXへ乗り換えたとき、前の車はディーラー下取りが50万円、買取サービスでは75万円",
 "もちろん、いつでも買取の方が高くなるわけではありません。"],
@@ -74,8 +74,8 @@ def transform(original,pid,slug):
         s=drop_para(s,phrase,slug)
     if pid==2222:
         s=replace_once(s,
-            "現在のCTNは最大15社で査定し、やり取りするのは高額査定の上位3社だけ。利用料・手数料も無料です。<br>「今の車がいくらになる？」を見ておくなら、",
-            "CTNなら、やり取りする買取店は最大3社。電話の負担を抑えて比べられます。<br>次の車の予算が気になるなら、",slug)
+            "CTNは車に合う買取店を絞り、やり取りするのは最大3社だけ。利用料・手数料も無料です。",
+            "CTNなら、やり取りする買取店は最大3社。電話対応の負担を抑えて比べられます。",slug)
     if pid==3863:
         s=replace_once(s,"装備を削る前に、今の車の買取額も比較。","売るかどうかは、査定額を見てから。",slug)
     if pid==3601:
@@ -121,6 +121,7 @@ def main(mode):
     auth='Basic '+base64.b64encode((user+':'+password).encode()).decode()
     before_total=publish_count(auth)
     snapshot=[]
+    blockers=[]
     for pid,slug in POSTS.items():
         row=get(pid,auth)
         if (row['id'],row['slug'],row['status'])!=(pid,slug,'publish'):
@@ -130,6 +131,7 @@ def main(mode):
             new=transform(old,pid,slug)
         except Exception as e:
             if mode!='audit':raise
+            blockers.append((pid,slug,str(e)))
             print('DRAFT_BLOCKED',pid,slug,str(e),flush=True)
             for para in WP_P.finditer(old):
                 if ('CTN' in para.group(0) or '査定' in para.group(0)) and pid in (2222,2240,2948,2956,3606,3608,3863):
@@ -140,7 +142,8 @@ def main(mode):
         print(f'AUDIT {pid} {slug} SHA={actual} edit={int(new!=old)} H2_ads={len(before)}->{len(after)} parts={old.count("[blog_parts")}->{new.count("[blog_parts")}',flush=True)
         snapshot.append((pid,slug,row,old,new))
     if mode=='audit':
-        print('READ_ONLY_23_AUDIT_FINISHED (draft blockers shown above)',flush=True);return
+        if blockers: raise RuntimeError(f'cannot approve: {len(blockers)} proposed edits blocked')
+        print('READ_ONLY_23_AUDIT_OK',flush=True);return
     if len(EXPECTED)!=23:raise RuntimeError('BLOCKED: 23 live content hashes not pinned')
     for pid,slug,row,old,new in snapshot:
         if EXPECTED.get(pid)!=digest(old):
