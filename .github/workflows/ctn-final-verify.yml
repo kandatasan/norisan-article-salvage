@@ -1,0 +1,28 @@
+name: Read-only CTN final verification
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/verify_ctn_microcopy_20261012.py'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read live WordPress and verify all 23 posts
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/verify_ctn_microcopy_20261012.py
+      - name: Upload verification report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-final-verification-23posts
+          path: reports/ctn-final-verify/
