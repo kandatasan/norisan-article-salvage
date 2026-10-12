@@ -1,0 +1,39 @@
+name: Remove out-of-place FJ review CTN, preserve 23 posts
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/remove_fj_3_out_of_place_ctn_20261012.py
+  push:
+    branches: [main]
+    paths:
+      - scripts/remove_fj_3_out_of_place_ctn_20261012.py
+permissions:
+  contents: read
+jobs:
+  safe-cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: GET-only preflight of all 23 posts
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/remove_fj_3_out_of_place_ctn_20261012.py check
+      - name: Apply 3 FJ-only shortcode deletions and verify all 23 posts
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/remove_fj_3_out_of_place_ctn_20261012.py apply
+      - name: Upload QA proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-fj-3-final
+          path: reports/ctn-fj-final-20261012/
+          if-no-files-found: warn
