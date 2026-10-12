@@ -34,6 +34,12 @@ def execute(mode):
     if not user or not password:raise RuntimeError('Missing WordPress secrets')
     auth='Basic '+base64.b64encode((user+':'+password).encode()).decode()
     total=count(auth)
+    if mode=='inspect':
+        for key in CHANGES:
+            row=get(key[0],auth)
+            content=row['content']['raw']
+            print('CURRENT_SHA',key[0],key[1],sha(content),'OLD_MICRO_COUNT',content.count(TEMPLATE%key[3]),'STATUS',row['status'],'LEN',len(content),flush=True)
+        return
     prepared=[]
     for key in CHANGES:
         r=get(key[0],auth)
@@ -87,5 +93,5 @@ def execute(mode):
     print('FINAL_SUCCESS 19 optimized 4 preserved 0 state changes',flush=True)
 if __name__=='__main__':
     mode=sys.argv[1] if len(sys.argv)>1 else 'check'
-    if mode not in ('check','apply'):raise SystemExit('Expected check or apply')
+    if mode not in ('check','apply','inspect'):raise SystemExit('Expected check, apply, or inspect')
     execute(mode)
