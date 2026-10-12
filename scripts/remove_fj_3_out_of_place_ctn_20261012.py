@@ -13,7 +13,7 @@ TARGETS={
 3777:("landcruiser-fj-rear-seat","94ecf1d71a5e46d1744a58070b42dcf448d25a7c4dcf25726f33f47e5bb2dc05"),
 3778:("landcruiser-fj-drawbacks","498d0992f9e815751972ab670f1902d6b1801f0efcce270756a59b35c9cd7613")}
 LINK_BLOCK=re.compile(r'<!-- wp:shortcode -->\s*\[blog_parts id="3788"\]\s*<!-- /wp:shortcode -->',re.S)
-REVIEW_P=re.compile(r'<!-- wp:paragraph(?:\s+\{[^\n]*\})? -->\s*<p[^>]*>.*?乗り換えでFJを考えているなら、今の車の査定額も先に見ておくと予算を組みやすいです。.*?</p>\s*<!-- /wp:paragraph -->',re.S)
+REVIEW_P=re.compile(r'<!-- wp:paragraph(?:\s+\{[^\n]*\})? -->\s*<p[^>]*>(?:(?!</p>).)*乗り換えでFJを考えているなら、今の車の査定額も先に見ておくと予算を組みやすいです。(?:(?!</p>).)*</p>\s*<!-- /wp:paragraph -->',re.S)
 OUT=Path("reports/ctn-fj-final-20261012")
 def sha(x):return hashlib.sha256(x.encode()).hexdigest()
 def req(path,auth,payload=None):
