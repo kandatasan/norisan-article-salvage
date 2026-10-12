@@ -1,0 +1,50 @@
+name: QA published UX prose reduction six issues
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-ux-koukai-six-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Verify final published UX raw rendered images affiliate and link placement
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,json,re,base64,urllib.parse,urllib.request,hashlib
+          u=os.environ['TSURIKUE_WP_USER'];pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          auth='Basic '+base64.b64encode((u+':'+pw).encode()).decode()
+          q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,featured_media,author,categories,content'})
+          url='https://tsurikue.com/wp-json/wp/v2/posts/2517?'+q
+          req=urllib.request.Request(url,headers={'Authorization':auth,'Accept':'application/json'})
+          with urllib.request.urlopen(req,timeout=60) as f:row=json.load(f)
+          assert (row['id'],row['slug'],row['status'])==(2517,'ux-koukai','publish'),'post identity/status changed'
+          s=row['content']['raw'];sha=hashlib.sha256(s.encode()).hexdigest()
+          assert sha=='06af50abe676a11ea24c5321ae0ed62ff822cb6ce2498e26afab98dfc02e0557',f'post has different body {sha}'
+          assert len(re.findall(r'wp-image-\d+',s))==9,'lost owner photos'
+          assert len(re.findall(r'<a\b[^>]*href="',s))==12,'lost internal links'
+          assert s.count('[blog_parts id="2843"]')==1,'Gulliver CTA changed'
+          assert s.count('いや、タイミング悪すぎるって')==1,'UX300h joke duplicate'
+          for bad in ['洗車のたびに目が行きました。','でも、細かい。','これが、実際に所有して感じた一番近い表現です。',
+          '1〜2人なら後席をほとんど使わない。','200〜300万円台なら、UXの弱点がかなり許せる']:
+           assert bad not in s,'old repetitive prose remains: '+bad
+          for good in ['走りにも安全性にも関係ない、細かい話です。','荷室でテトリスが始まります。',
+          '文句はある。でも私はUXが好きだった','半額近いじゃん。','仁淀川・水晶淵',
+          '狭い山道を抜けた先で出会えたのが、この景色です。','レクサスだからこそ、ここもきれいに仕上げてほしかったです。']:
+           assert good in s,'lost owner voice: '+good
+          for url,anchor,heading in [
+           ('https://tsurikue.com/lexus-ux-rear-seat/','後席ドアの内装も、前席と比べると少しあっさりしています。','荷室はSUVとしては大きくない'),
+           ('https://tsurikue.com/lexus-ux-cargo/','ただ、キャンプ用品、大きなクーラーボックス','内装はしょぼいというより'),
+           ('https://tsurikue.com/lexus-ux-interior/','試乗するときは、運転席だけで判断しない方がいいです。','フェンダーアーチモールのライン')]:
+           assert s.count('href="'+url+'"')==1,'lost or duplicate link '+url
+           assert s.index(anchor)<s.index('href="'+url+'"')<s.index(heading),'link did not move below experience '+url
+          assert '洗車するたびに目が行く' in row['content']['rendered'],'rendered prose mismatch'
+          print('LIVE_6_ISSUE_AUDIT_OK',row['id'],row['slug'],'publish','length',len(s),
+                'images',9,'links',12,'CTA',1,'sha256',sha,flush=True)
+          PY
