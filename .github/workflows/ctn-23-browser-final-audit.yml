@@ -1,0 +1,35 @@
+name: CTN 23-page browser and text final QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/ctn_23_browser_final_audit.py
+      - .github/workflows/ctn-23-browser-final-audit.yml
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install Playwright and HTML parser
+        run: |
+          python -m pip install playwright beautifulsoup4
+          python -m playwright install --with-deps chromium
+      - name: Audit live WordPress content and screenshots without clicking ads
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_23_browser_final_audit.py
+      - name: Upload screenshot proof and QA report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-23-browser-final-qa
+          path: reports/ctn-visual-final-20261012/
+          if-no-files-found: warn
+          retention-days: 30
