@@ -1,0 +1,30 @@
+name: FJ 3 pages browser after CTA cleanup
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/ctn_fj_postcleanup_render_20261012.py
+permissions:
+  contents: read
+jobs:
+  visual-verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Install Playwright Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Confirm FJ pages no longer show CTN and internal links remain
+        run: python scripts/ctn_fj_postcleanup_render_20261012.py
+      - name: Keep mobile and desktop proof
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-fj-final-postcleanup-proof
+          path: reports/ctn-fj-postcleanup-render-20261012/
+          if-no-files-found: warn
