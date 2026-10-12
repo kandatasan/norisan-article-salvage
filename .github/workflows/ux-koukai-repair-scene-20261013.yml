@@ -1,0 +1,34 @@
+name: Repair UX koukai editor block and Niyodo caption
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ux_koukai_repair_scene_20261013.py'
+      - '.github/workflows/ux-koukai-repair-scene-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ux_koukai_repair_scene_20261013.py'
+      - '.github/workflows/ux-koukai-repair-scene-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  edit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read-only WordPress SHA and editorial-diff inspection
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_koukai_repair_scene_20261013.py check
+      - name: Safely update existing published post and verify WordPress
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_koukai_repair_scene_20261013.py apply
