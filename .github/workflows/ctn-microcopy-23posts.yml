@@ -1,5 +1,9 @@
 name: Guarded CTN microcopy 23-post pass
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_microcopy_safe_20261012.py'
   push:
     branches: [main]
     paths:
@@ -22,6 +26,7 @@ jobs:
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: python scripts/ctn_microcopy_safe_20261012.py check
       - name: Apply guarded changes and independently verify each live post
+        if: github.event_name == 'push'
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
