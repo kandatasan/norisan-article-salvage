@@ -1,0 +1,36 @@
+name: CTN factual clarification 7 posts
+on:
+  pull_request:
+    branches: [main]
+    paths: ['scripts/ctn_facts_safe_20261012.py']
+  push:
+    branches: [main]
+    paths: ['scripts/ctn_facts_safe_20261012.py']
+permissions:
+  contents: read
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compare live posts with seven exact originals
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_facts_safe_20261012.py check
+      - name: Update factual wording without changing issued ad links
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_facts_safe_20261012.py apply
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-facts-7-posts
+          path: reports/ctn-facts/
