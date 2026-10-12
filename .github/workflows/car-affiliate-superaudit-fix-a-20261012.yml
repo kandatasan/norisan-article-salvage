@@ -1,0 +1,32 @@
+name: Car affiliate superaudit editorial fix A
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/car_superaudit_fix_a_20261012.py
+  push:
+    branches: [main]
+    paths:
+      - scripts/car_superaudit_fix_a_20261012.py
+permissions:
+  contents: read
+jobs:
+  safe-fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Strict read-only WP preflight of 14 car posts
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/car_superaudit_fix_a_20261012.py check
+      - name: Apply and reverify 14 published articles only after merge
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/car_superaudit_fix_a_20261012.py apply
