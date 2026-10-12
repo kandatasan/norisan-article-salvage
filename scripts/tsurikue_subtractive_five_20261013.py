@@ -127,7 +127,7 @@ def transform(old,pid,slug):
                 3608:["スクーター感覚","スネまで前席に当たり"]}
     for phrase in signatures[pid]:
         if phrase in old and phrase not in s: raise RuntimeError(f"{slug}: owner signature lost {phrase}")
-    for pat in (r'wp-image-\d+',r'<figure\b[^>]*>',r'<img\b[^>]*(?:wp-image-\d+|uploads/)[^>]*>'):
+    for pat in (r'wp-image-\d+',r'<figure\b[^>]*class="[^"]*(?:wp-block-image|wp-block-gallery|wp-block-video)[^"]*"[^>]*>',r'<img\b[^>]*(?:wp-image-\d+|uploads/)[^>]*>'):
         if re.findall(pat,s,re.I)!=re.findall(pat,old,re.I):
             raise RuntimeError(f"{slug}: owner's visual evidence changed")
     # An affiliate link may only be REMOVED as part of a preapproved deletion, never rewritten.
@@ -174,8 +174,8 @@ def execute(mode):
             latest=get(pid,auth)
             if sha(latest["content"]["raw"])!=digest:
                 raise RuntimeError(f"{slug}: concurrent human WP edit, stop without overwriting")
+            done.append((pid,slug,old,new))  # includes uncertain write for conditional rollback
             req(f"/wp-json/wp/v2/posts/{pid}",auth,{"content":new})
-            done.append((pid,slug,old,new))
             saved=get(pid,auth)
             for k in ("id","slug","status","title","featured_media","categories","author"):
                 if saved[k]!=row[k]:raise RuntimeError(f"{slug}: protected {k} changed")
