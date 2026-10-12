@@ -23,7 +23,7 @@ jobs:
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
-        run: python scripts/ctn_microcopy_polish_20261012.py check
+        run: python scripts/ctn_microcopy_polish_20261012.py ${{ github.event_name == 'pull_request' && 'inspect' || 'check' }}
       - name: Apply and independently audit all 23 CTN posts
         if: github.event_name == 'push'
         env:
