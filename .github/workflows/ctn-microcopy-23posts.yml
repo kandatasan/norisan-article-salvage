@@ -1,0 +1,35 @@
+name: Guarded CTN microcopy 23-post pass
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_microcopy_safe_20261012.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Preflight all 23 published CTN posts, no writes
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_microcopy_safe_20261012.py check
+      - name: Apply guarded changes and independently verify each live post
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_microcopy_safe_20261012.py apply
+      - name: Publish audit artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-microcopy-23posts-qa
+          path: reports/ctn-microcopy-20261012/
+          if-no-files-found: warn
