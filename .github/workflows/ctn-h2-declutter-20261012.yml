@@ -1,0 +1,38 @@
+name: CTN H2 density and prose cleanup
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_h2_declutter_20261012.py'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_h2_declutter_20261012.py'
+permissions:
+  contents: read
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read-only full CTN H2 audit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_h2_declutter_20261012.py audit
+      - name: Validate pinned WordPress content and proposed changes
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_h2_declutter_20261012.py check
+      - name: Apply only guarded changes and verify all 23 live articles
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_h2_declutter_20261012.py apply
