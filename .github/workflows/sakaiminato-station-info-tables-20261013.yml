@@ -1,0 +1,36 @@
+name: Sakaiminato draft station info tables
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/revisions/sakaiminato-station-20261013-info-tables.json'
+      - 'scripts/update_sakaiminato_station_info_tables_20261013.py'
+      - '.github/workflows/sakaiminato-station-info-tables-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'content/revisions/sakaiminato-station-20261013-info-tables.json'
+      - 'scripts/update_sakaiminato_station_info_tables_20261013.py'
+      - '.github/workflows/sakaiminato-station-info-tables-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  station-info:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Compare informational table revision against live WP draft without writing
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_sakaiminato_station_info_tables_20261013.py check
+      - name: Apply verified content-only update to existing draft
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_sakaiminato_station_info_tables_20261013.py apply
