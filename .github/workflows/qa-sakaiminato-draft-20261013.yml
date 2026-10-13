@@ -1,0 +1,50 @@
+name: Verify Sakaiminato article is WordPress draft only
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-sakaiminato-draft-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Confirm draft post identity prose category and unpublished photo slots
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,base64,urllib.request,urllib.parse,json
+          site="https://tsurikue.com"
+          u=os.environ["TSURIKUE_WP_USER"];p=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((u+":"+p).encode()).decode()
+          def get(path):
+           r=urllib.request.Request(site+path,headers={"Authorization":auth,"Accept":"application/json"})
+           with urllib.request.urlopen(r,timeout=60) as f:return json.load(f)
+          q=urllib.parse.urlencode({"context":"edit","status":"any","slug":"sakaiminato-station-sightseeing",
+                                   "per_page":20,"_fields":"id,title,slug,status,categories,content,featured_media"})
+          posts=get("/wp-json/wp/v2/posts?"+q)
+          assert len(posts)==1, "Need exactly one draft, found "+str(len(posts))
+          a=posts[0]
+          assert a["slug"]=="sakaiminato-station-sightseeing"
+          assert a["status"]=="draft"
+          assert a["categories"]==[7]
+          assert a["title"]["raw"]=="境港駅周辺を観光！水木しげるロードと鬼太郎妖怪倉庫を歩く"
+          raw=a["content"]["raw"]
+          for t in ("鬼太郎妖怪倉庫","一反もめん","猫娘","境港水産物直売センター",
+                    "IMG_8760.jpeg","IMG_8758.jpeg","IMG_8727(1).jpeg"):
+           assert t in raw,"Missing original source/detail: "+t
+          assert raw.count("<!-- TSURIKUE_IMAGE:")==8
+          assert "<h1" not in raw.lower()
+          assert a["featured_media"]==0
+          print("WORDPRESS_SAKAIMINATO_DRAFT_VERIFIED",json.dumps({
+           "id":a["id"],"status":a["status"],"slug":a["slug"],
+           "title":a["title"]["raw"],"category":7,
+           "image_slots_pending":raw.count("<!-- TSURIKUE_IMAGE:"),
+           "editor_url":site+"/wp-admin/post.php?post="+str(a["id"])+"&action=edit",
+           "body_chars":len(raw)
+          },ensure_ascii=False),flush=True)
+          PY
