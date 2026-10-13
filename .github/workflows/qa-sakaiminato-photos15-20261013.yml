@@ -12,49 +12,75 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
-      - name: Read-only verify 15 actual image blocks, order, captions and draft status
+      - name: Verify fifteen live media images, photo captions, same prose and draft state
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: |
           python - <<'PY'
-          import os, json, re, base64, hashlib, urllib.request, urllib.parse
+          import os,json,re,html,hashlib,base64,urllib.parse,urllib.request
           from pathlib import Path
-          doc=json.loads(Path("content/revisions/sakaiminato-station-20261013-info-tables.json").read_text(encoding="utf-8"))
-          user=os.environ["TSURIKUE_WP_USER"];pw=os.environ["TSURIKUE_WP_APP_PASSWORD"]
-          auth="Basic "+base64.b64encode((user+":"+pw).encode()).decode()
+          
+          source=json.loads(Path("content/revisions/sakaiminato-station-20261013-info-tables.json").read_text(encoding="utf-8"))
+          before="\n\n".join(source["blocks"])
+          token="Basic "+base64.b64encode((os.environ["TSURIKUE_WP_USER"]+":"+os.environ["TSURIKUE_WP_APP_PASSWORD"]).encode()).decode()
+          def get(path):
+           req=urllib.request.Request("https://tsurikue.com"+path,headers={"Authorization":token,"Accept":"application/json"})
+           with urllib.request.urlopen(req,timeout=90) as r:return json.load(r)
           q=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,title,categories,featured_media,content"})
-          req=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/posts/4138?"+q,headers={"Authorization":auth,"Accept":"application/json"})
-          with urllib.request.urlopen(req,timeout=90) as resp:post=json.load(resp)
+          post=get("/wp-json/wp/v2/posts/4138?"+q)
           raw=post["content"]["raw"];render=post["content"]["rendered"]
-          images=[4113,4107,4108,4127,4121,4129,4110,4125,4126,4117,4123,4118,4119,4115,4116]
-          print("CURRENT_WP_BODY_STATE",json.dumps({"id":post["id"],"slug":post["slug"],"status":post["status"],"hash":hashlib.sha256(raw.encode("utf-8")).hexdigest(),"photos":raw.count("<!-- wp:image "),"placeholders":raw.count("<!-- TSURIKUE_IMAGE:"),"rendered_photos":render.count("wp-image-"),"tables":raw.count("<!-- wp:table")},ensure_ascii=False),flush=True)
           assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft")
           assert post["categories"]==[7] and post["featured_media"]==0
-          assert post["title"]["raw"]==doc["title"]
-          import sys,difflib
-          sys.path.insert(0,"scripts")
-          from insert_sakaiminato_media15_20261013 import get_media,transform
-          _,exp,_=transform(doc,get_media(auth))
-          print("EXPECTED_SHA",hashlib.sha256(exp.encode()).hexdigest(),"ACTUAL_SHA",hashlib.sha256(raw.encode()).hexdigest(),flush=True)
-          if exp!=raw:
-           diffs=list(difflib.unified_diff(exp.splitlines(),raw.splitlines(),fromfile="generated",tofile="WordPress"))
-           for d in diffs[:65]:print("BODY_DIFF",d[:480],flush=True)
-          else:print("BODY_BYTE_EXACT_MATCH",flush=True)
-          assert "TSURIKUE_IMAGE" not in raw,"invisible placeholders remain"
-          assert re.findall(r'wp-image-(\d+)',raw)==list(map(str,images)),"photo order or count wrong"
-          assert re.findall(r'wp-image-(\d+)',render)==list(map(str,images)),"rendered photo order/count wrong"
+          assert post["title"]["raw"]==source["title"]
+          oldslots=re.findall(r'<!-- TSURIKUE_IMAGE:([^|<>]+)\|([^|<>]+)\|([^<>]+) -->',before)
+          assert len(oldslots)==15
+          
+          blocks=re.findall(r'<!-- wp:image \{.*?\} -->\s*<figure\b.*?</figure>\s*<!-- /wp:image -->',raw,re.S)
+          assert len(blocks)==15, "Not exactly fifteen WP image blocks"
+          ids=[]
+          for i,block in enumerate(blocks):
+           nums=re.findall(r'wp-image-(\d+)',block)
+           assert len(nums)==1, ("Missing or duplicate img class",i)
+           imgid=int(nums[0]);ids.append(imgid)
+           filename,alt,caption=oldslots[i]
+           assert f'"id":{imgid}' in block, ("Gutenberg JSON attachment ID mismatch",i)
+           srcmatch=re.search(r'<img\b[^>]*\bsrc="([^"]+)"',block)
+           assert srcmatch and srcmatch.group(1).startswith("https://tsurikue.com/wp-content/uploads/2026/10/"),("Wrong image source",i)
+           amatch=re.search(r'<img\b[^>]*\balt="([^"]+)"',block)
+           cmatch=re.search(r'<figcaption\b[^>]*>(.*?)</figcaption>',block,re.S)
+           assert amatch and html.unescape(amatch.group(1))==alt, ("Alt does not match owner's photo manifest",i)
+           assert cmatch and html.unescape(cmatch.group(1))==caption,("Caption does not match owner's photo manifest",i)
+          assert len(set(ids))==15
+          assert re.findall(r'wp-image-(\d+)',render)==list(map(str,ids)), "WP rendered image order/count wrong"
           assert raw.count("<!-- wp:image ")==15 and raw.count("<!-- /wp:image -->")==15
           assert raw.count("<!-- wp:table ")==2 and render.count("<table")==2
-          for term in ["一反もめん","鬼太郎妖怪倉庫","開運ノ札","主印","猫娘","みなとーる","0859-47-0121","境港水産物直売センター"]:
-           assert term in raw, "first-hand info or station info dropped "+term
+          assert "TSURIKUE_IMAGE" not in raw
+          
+          # Apart from replacing the 15 photo placeholders with images, the original body is byte-identical.
+          raw_without_photos=re.sub(r'<!-- wp:image \{.*?\} -->\n<figure\b.*?</figure>\n<!-- /wp:image -->',"",raw,flags=re.S)
+          before_without_slots=re.sub(r'<!-- TSURIKUE_IMAGE:[^<>]+ -->',"",before)
+          assert raw_without_photos==before_without_slots,"Some other prose, links, prices or data changed"
+          for t in ["一反もめん","鬼太郎妖怪倉庫","開運ノ札","主印","猫娘","みなとーる","0859-47-0121","境港水産物直売センター"]:
+           assert t in raw
           assert "摩尼車" in raw and "摩尼車" not in " ".join(re.findall(r'alt="([^"]+)"',raw))
-          assert all('alt="' in m.group(0) and 'figcaption' in m.group(0) for m in re.finditer(r'<!-- wp:image .*?<!-- /wp:image -->',raw,re.S))
-          print("WORDPRESS_15_PHOTOS_FINAL_VERIFIED",json.dumps({
-              "id":4138,"status":"draft","slug":post["slug"],"photos":len(images),
-              "wp_media_ids":images,"Gutenberg_image_blocks":15,"rendered_images":15,
-              "station_tables":2,"editor_url":"https://tsurikue.com/wp-admin/post.php?post=4138&action=edit",
-              "sha256":hashlib.sha256(raw.encode("utf-8")).hexdigest()
+          # Confirm the new attachment IDs/URLs exist in WordPress media, whether originals or optimized derivatives.
+          ids_query=urllib.parse.urlencode({"context":"edit","per_page":50,"include":",".join(map(str,ids)),
+                                           "_fields":"id,source_url,mime_type"})
+          items=get("/wp-json/wp/v2/media?"+ids_query)
+          found={v["id"]:v for v in items}
+          assert set(found)==set(ids),"One or more WP media IDs missing"
+          for i,image_id in enumerate(ids):
+           item=found[image_id]
+           assert item["mime_type"]=="image/jpeg"
+           assert item["source_url"].startswith("https://tsurikue.com/wp-content/uploads/2026/10/")
+          print("FINAL_WP_15_IMAGES_AND_TABLES_OK",json.dumps({
+           "id":4138,"status":"draft","title":post["title"]["raw"],
+           "image_ids_in_reading_order":ids,"Gutenberg_images":15,
+           "rendered_images":15,"alt_captions_verified":15,"info_tables":2,
+           "prose_and_internal_links_byte_unchanged":True,
+           "content_sha256":hashlib.sha256(raw.encode("utf-8")).hexdigest(),
+           "editor_url":"https://tsurikue.com/wp-admin/post.php?post=4138&action=edit"
           },ensure_ascii=False),flush=True)
           
           PY
