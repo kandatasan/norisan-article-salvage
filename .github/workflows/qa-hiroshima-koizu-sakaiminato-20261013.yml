@@ -1,0 +1,59 @@
+name: QA new Hiroshima-Sakaiminato day-trip draft
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-hiroshima-koizu-sakaiminato-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Read-only verify new unpublished WP article and matched owner photos
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,json,re,base64,urllib.request,urllib.parse,hashlib
+          user=os.environ["TSURIKUE_WP_USER"]
+          pw=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((user+":"+pw).encode()).decode()
+          def get(path):
+           req=urllib.request.Request("https://tsurikue.com"+path,headers={"Authorization":auth,"Accept":"application/json"})
+           with urllib.request.urlopen(req,timeout=75) as f:return json.load(f)
+          slug="hiroshima-koizu-sakaiminato-day-trip"
+          q=urllib.parse.urlencode({"context":"edit","status":"any","slug":slug,"per_page":25,
+            "_fields":"id,slug,status,title,content,categories,featured_media,excerpt"})
+          posts=get("/wp-json/wp/v2/posts?"+q)
+          print("DAYTRIP_SLUG_MATCHES",len(posts),flush=True)
+          assert len(posts)==1,"Must have exactly one WP draft for the approved new article"
+          p=posts[0];raw=p["content"]["raw"];render=p["content"]["rendered"]
+          assert p["slug"]==slug and p["status"]=="draft"
+          assert p["title"]["raw"]=="広島発・島根〜境港の日帰りモデルコース！アオリイカ釣り・激安カニ・鬼太郎観光"
+          assert p["categories"]==[7] and p["featured_media"]==0
+          assert raw.count("<!-- wp:image ")==6, "Expected exactly 6 verified uploaded owner photos"
+          assert raw.count("<!-- TSURIKUE_IMAGE:")==1, "Exactly one unuploaded photo slot expected"
+          assert "IMG_8711(1).jpeg" in raw, "Owner missing photo slot lost"
+          ids=re.findall(r'wp-image-(\d+)',raw)
+          assert len(ids)==6 and len(set(ids))==6
+          assert render.count("wp-image-")==6, "Photo preview broken"
+          assert raw.count("<!-- wp:table ")==1 and render.count("<table")==1
+          for fact in ["朝6時","10時","アオリイカ2杯","12枚で2,000円",
+                       "甘エビを1,000円分","すし若","PLANT-5","50円","境港駅"]:
+           assert fact in raw, "Missing firsthand route fact "+fact
+          assert "https://tsurikue.com/sakaiminato-seafood-market/" in raw
+          assert "https://tsurikue.com/sakaiminato-station-sightseeing/" in raw
+          assert "[blog_parts" not in raw and "<h1" not in raw
+          print("FINAL_HIROSHIMA_DAYTRIP_DRAFT_VERIFIED",json.dumps({
+           "post_id":p["id"],"title":p["title"]["raw"],"slug":p["slug"],"status":p["status"],
+           "category":7,"featured_media":p["featured_media"],
+           "rendered_photos":6,"pending_owner_photo":"IMG_8711(1).jpeg",
+           "image_media_ids":ids,"itinerary_tables":1,"body_chars":len(raw),
+           "sha256":hashlib.sha256(raw.encode()).hexdigest(),
+           "editor_url":"https://tsurikue.com/wp-admin/post.php?post="+str(p["id"])+"&action=edit"
+          },ensure_ascii=False),flush=True)
+          
+          PY
