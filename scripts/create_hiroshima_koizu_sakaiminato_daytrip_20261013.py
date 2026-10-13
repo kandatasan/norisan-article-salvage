@@ -149,7 +149,7 @@ def main(mode):
     # 100 media attachments, instead of quietly dropping a genuine uploaded photo.
     for filename in doc["images_expected"]:
         if match_media(filename,media) is None:
-            digits=re.fullmatch(r"IMG_(\\d{4})(?:\\(\\d+\\))?\\.jpe?g",filename,re.I)
+            digits=re.fullmatch(r"IMG_(\d{4})(?:\(\d+\))?\.jpe?g",filename,re.I)
             if digits:
                 q=urllib.parse.urlencode({"context":"edit","search":digits.group(1),
                     "per_page":50,"_fields":"id,source_url,mime_type,media_details"})
