@@ -1,0 +1,67 @@
+{
+  "bundle_sha256": "a599e602282d1882a27ba11d62828e7319a8f062a9a4e166cc2b5a764461540c",
+  "bundle_bytes": 3330063,
+  "media_policy": "User-provided original photos, web-optimized to longest side 1400px, JPEG quality 80; no EXIF/GPS. Git blobs unreferenced by repo tree. Update only WP draft post 4138.",
+  "parts": [
+    {
+      "index": 1,
+      "blob_sha": "ebdf813a73e928f7da66da3e1eb1882d3454e426",
+      "sha256": "1f68f5f342432e2c17d230a1e58decd8e5d0eed380b25bf2e8adb5f356027f19",
+      "length": 358400
+    },
+    {
+      "index": 2,
+      "blob_sha": "08b2419f77188a737eb150b3dcce3c8f0ad9a32b",
+      "sha256": "16cdd6695fe6fa712cf2a32eebd037b084bddb074265fc999975d30fc5832a6b",
+      "length": 358400
+    },
+    {
+      "index": 3,
+      "blob_sha": "0570cde4acaa42359cdb6f05fecc7dd93f9e501e",
+      "sha256": "bfb5d7447febd42aae49ae13a238138842dea187096e7daece38ac1b291d383d",
+      "length": 358400
+    },
+    {
+      "index": 4,
+      "blob_sha": "f5a52cb13820f81108f6e0ffe237ce345d7e8314",
+      "sha256": "968bed01fb1dcb58cb70dcdcb980734035fdb5d464242ef0eae7b22f35f28338",
+      "length": 358400
+    },
+    {
+      "index": 5,
+      "blob_sha": "78a7523a90e9f469c949a8d3dc97bf0df6e7cb04",
+      "sha256": "a137c45e19b069e805b620ce1ad44a5a407eecb86ce892819ae6f8abcd6a9fab",
+      "length": 358400
+    },
+    {
+      "index": 6,
+      "blob_sha": "c3596d2e006c8a85d99ef724b9123f73fb7b70d7",
+      "sha256": "2eac1d5f970415885ed1058763d994f93e7d0e9c5d30e94a3b9765607db62917",
+      "length": 358400
+    },
+    {
+      "index": 7,
+      "blob_sha": "d53704635f043a74ad3df83b3d918d9fc6a6c06e",
+      "sha256": "86e69cf8688d2b82354a3409eccd79beac0637554119ca2d77dec53870a29249",
+      "length": 358400
+    },
+    {
+      "index": 8,
+      "blob_sha": "0e163b7de9db54fca97470389bb8e354e499b142",
+      "sha256": "8216b9218fb5145554b79dd97039e6f136ae75fe843a2d38d82ac3e5fd9fec05",
+      "length": 358400
+    },
+    {
+      "index": 9,
+      "blob_sha": "1031dc34f4d80b574121e0b09c4e267cce9a7eba",
+      "sha256": "f4099b42dc81d2e830ded01709af1232d67d4edda3736ce0dcfbc36a67678990",
+      "length": 358400
+    },
+    {
+      "index": 10,
+      "blob_sha": "c831d2483d418160d43e308820f7459d6ef77ac0",
+      "sha256": "d69b7ae8d1e5d02e4e084b434147ae87e160da3776e549508dec744ae47ea226",
+      "length": 104463
+    }
+  ]
+}
