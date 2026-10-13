@@ -1,0 +1,34 @@
+name: Insert 15 Sakaiminato photos into draft 4138
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/insert_sakaiminato_media15_20261013.py'
+      - '.github/workflows/sakaiminato-insert-15-photos-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/insert_sakaiminato_media15_20261013.py'
+      - '.github/workflows/sakaiminato-insert-15-photos-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  photos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read-only audit of all 15 media attachments and exact draft content
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/insert_sakaiminato_media15_20261013.py check
+      - name: Insert 15 verified photos into existing WordPress draft and check rendering
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/insert_sakaiminato_media15_20261013.py apply
