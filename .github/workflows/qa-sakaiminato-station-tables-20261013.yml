@@ -1,0 +1,48 @@
+name: QA Sakaiminato station information tables live
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-sakaiminato-station-tables-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read-only inspect WordPress draft status content and tables
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os, base64, json, urllib.request, urllib.parse, hashlib, re
+          from pathlib import Path
+          repo=json.loads(Path("content/revisions/sakaiminato-station-20261013-info-tables.json").read_text(encoding="utf-8"))
+          expected="\n\n".join(repo["blocks"])
+          user=os.environ["TSURIKUE_WP_USER"];pw=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((user+":"+pw).encode()).decode()
+          query=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,title,categories,author,featured_media,content"})
+          request=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/posts/4138?"+query,headers={"Authorization":auth,"Accept":"application/json"})
+          with urllib.request.urlopen(request,timeout=60) as response:post=json.load(response)
+          assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft"),"Post must remain the existing draft"
+          assert post["title"]["raw"]==repo["title"],"Title altered"
+          assert post["categories"]==[7],"Category changed"
+          assert post["content"]["raw"]==expected,"Saved body does not match exact approved revision"
+          assert post["featured_media"]==0,"Featured image unexpectedly changed"
+          assert expected.count("<!-- TSURIKUE_IMAGE:")==15,"Pending photos altered"
+          assert expected.count("<!-- wp:table")==2,"Expected two tables"
+          rendered=post["content"]["rendered"]
+          assert rendered.count("<table")==2, "WordPress rendered table count mismatch"
+          for term in ("みなとーる","0859-47-0121","境港浜ノ町店","境港駅前駐車場","御宿 野乃境港","夕凪の湯","一反もめん","摩尼車","主印","猫娘"):
+           assert term in rendered, "Missing important information or first-hand experience "+term
+          assert "<img" not in expected, "Photo upload missing, images must not be invented"
+          print("FINAL_SAKAIMINATO_STATION_TABLES_WP_VERIFIED",json.dumps({
+           "post_id":post["id"],"slug":post["slug"],"status":post["status"],
+           "title":post["title"]["raw"],"body_length":len(expected),
+           "tables":2,"data_rows":13,"pending_photos":15,
+           "sha256":hashlib.sha256(expected.encode()).hexdigest()
+          },ensure_ascii=False),flush=True)
+          PY
