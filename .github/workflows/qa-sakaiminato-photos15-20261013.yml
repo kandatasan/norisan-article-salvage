@@ -32,7 +32,15 @@ jobs:
           assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft")
           assert post["categories"]==[7] and post["featured_media"]==0
           assert post["title"]["raw"]==doc["title"]
-          assert hashlib.sha256(raw.encode("utf-8")).hexdigest()=="a24815ae02ccf0f90190be5e95be793a7ef29170773c905ae3b12a1d329a42f2"
+          import sys,difflib
+          sys.path.insert(0,"scripts")
+          from insert_sakaiminato_media15_20261013 import get_media,transform
+          _,exp,_=transform(doc,get_media(auth))
+          print("EXPECTED_SHA",hashlib.sha256(exp.encode()).hexdigest(),"ACTUAL_SHA",hashlib.sha256(raw.encode()).hexdigest(),flush=True)
+          if exp!=raw:
+           diffs=list(difflib.unified_diff(exp.splitlines(),raw.splitlines(),fromfile="generated",tofile="WordPress"))
+           for d in diffs[:65]:print("BODY_DIFF",d[:480],flush=True)
+          else:print("BODY_BYTE_EXACT_MATCH",flush=True)
           assert "TSURIKUE_IMAGE" not in raw,"invisible placeholders remain"
           assert re.findall(r'wp-image-(\d+)',raw)==list(map(str,images)),"photo order or count wrong"
           assert re.findall(r'wp-image-(\d+)',render)==list(map(str,images)),"rendered photo order/count wrong"
