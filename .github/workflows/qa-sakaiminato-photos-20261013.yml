@@ -1,0 +1,58 @@
+name: Final live QA of Sakaiminato photo placement
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-sakaiminato-photos-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Read-only verify 15 uploaded images, content and draft state
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os, re, json, base64, hashlib, urllib.request, urllib.parse
+          url="https://tsurikue.com"
+          auth="Basic "+base64.b64encode((os.environ["TSURIKUE_WP_USER"]+":"+os.environ["TSURIKUE_WP_APP_PASSWORD"]).encode()).decode()
+          def get(path):
+           req=urllib.request.Request(url+path,headers={"Authorization":auth,"Accept":"application/json"})
+           with urllib.request.urlopen(req,timeout=70) as response:return json.load(response)
+          query=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,title,content,categories,author,featured_media"})
+          post=get("/wp-json/wp/v2/posts/4138?"+query)
+          assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft")
+          assert post["categories"]==[7]
+          assert post["title"]["raw"]=="境港駅周辺を観光！水木しげるロードと鬼太郎妖怪倉庫を歩く"
+          body=post["content"]["raw"];digest=hashlib.sha256(body.encode()).hexdigest()
+          assert digest=="cf15161e42d382529e971f21693567efd9d3a02067d365b143e8c8951102137f","Unexpected concurrent edit"
+          assert "<!-- TSURIKUE_IMAGE:" not in body,"Unreplaced image slots"
+          ids=list(map(int,re.findall(r'wp-image-(\d+)',body)))
+          assert ids==list(range(4143,4158)),f"Image position or ID mismatch: {ids}"
+          assert body.count("<!-- wp:image")==15
+          assert body.count("<!-- /wp:image -->")==15
+          assert body.count("<!-- wp:table")==2
+          assert body.count("<!-- /wp:table -->")==2
+          assert body.count("摩尼車")>=2 and "自分で見つけてね" in body
+          assert body.find("IMG_8731(2)")<0 # source names replaced
+          assert body.index("wp-image-4152")<body.index("wp-image-4153")<body.index("wp-image-4154")<body.index("wp-image-4155")<body.index("wp-image-4156")
+          rendered=post["content"]["rendered"]
+          assert rendered.count("<table")==2
+          assert rendered.count("<img")>=15
+          for word in ["一反もめん","猫娘","開運ノ札","主印","みなとーる","境港水産物直売センター"]:
+           assert word in rendered, "Missing article content "+word
+          for mid in ids:
+           asset=get(f"/wp-json/wp/v2/media/{mid}?context=edit&_fields=id,mime_type,alt_text,source_url")
+           assert asset["id"]==mid and asset["mime_type"]=="image/jpeg" and asset["alt_text"]
+           assert asset["source_url"].startswith("https://tsurikue.com/wp-content/uploads/")
+          print("FINAL_LIVE_PHOTO_AUDIT_PASSED",json.dumps({
+           "post_id":4138,"slug":post["slug"],"status":"draft",
+           "photo_count":15,"wp_media_ids":ids,"gutenberg_tables":2,
+           "featured_media":post["featured_media"],"sha256":digest,
+           "editor_url":url+"/wp-admin/post.php?post=4138&action=edit"
+          },ensure_ascii=False),flush=True)
+          PY
