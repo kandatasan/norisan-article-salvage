@@ -1,0 +1,54 @@
+name: Verify live Sakaiminato Google satellite map
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-sakaiminato-google-map-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Read only check WP draft 4138 map iframe and protected photos
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,base64,hashlib,json,re,urllib.parse,urllib.request
+          user=os.environ["TSURIKUE_WP_USER"]
+          passw=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((user+":"+passw).encode()).decode()
+          q=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,title,categories,featured_media,content"})
+          req=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/posts/4138?"+q,
+           headers={"Authorization":auth,"Accept":"application/json"})
+          with urllib.request.urlopen(req,timeout=75) as resp:post=json.load(resp)
+          raw=post["content"]["raw"]; render=post["content"]["rendered"]
+          print("LIVE_MAP_STATE",json.dumps({
+           "post_id":post["id"],"status":post["status"],"sha256":hashlib.sha256(raw.encode()).hexdigest(),
+           "images":raw.count("<!-- wp:image "),"tables":raw.count("<!-- wp:table "),
+           "iframe_raw":raw.count("<iframe "), "iframe_rendered":render.count("<iframe "), 
+           "map_links":raw.count("Googleマップで拡大して見る")},ensure_ascii=False),flush=True)
+          assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft"),"Published or wrong post"
+          assert post["categories"]==[7] and post["featured_media"]==0
+          assert hashlib.sha256(raw.encode()).hexdigest()=="44658bb79db49f6e15105131a89d3999bea544a2f9e984e1b93ef17e584e2edc","Unverified body"
+          assert raw.count("<!-- wp:image ")==15 and render.count("wp-image-")==15
+          assert raw.count("<!-- wp:table ")==2 and render.count("<table")==2
+          assert raw.count("<!-- wp:html -->")==1
+          assert raw.count("<iframe ")==1 and render.count("<iframe ")==1, "Iframe stripped or not rendered"
+          assert "output=embed" in raw and "t=k" in raw and "z=18" in raw
+          assert "境港駅前公園の一反もめん" in raw
+          assert raw.count("Googleマップで拡大して見る")==1 and "Googleマップで拡大して見る" in render
+          assert "境港市が一反もめんを意識して整備した道" in render
+          assert "偶然そう見えるのか、狙って作ったのかは分かりません" not in raw
+          assert all(word in raw for word in ("開運ノ札","摩尼車","猫娘","境港水産物直売センター","みなとーる"))
+          print("FINAL_GOOGLE_SATELLITE_MAP_DRAFT_QA_OK",json.dumps({
+           "id":4138,"status":"draft","photo_count":15,"info_tables":2,
+           "interactive_google_map":True,"satellite_layer_requested":True,
+           "map_location":"境港駅前公園","zoom":18,
+           "editor_url":"https://tsurikue.com/wp-admin/post.php?post=4138&action=edit"
+          },ensure_ascii=False),flush=True)
+          
+          PY
