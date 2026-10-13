@@ -1,0 +1,47 @@
+name: QA final Sakaiminato stamp quest draft
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-sakaiminato-stampquest-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read-only verify exact WordPress draft content and stamps
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,re,json,base64,hashlib,urllib.request,urllib.parse
+          from pathlib import Path
+          data=json.loads(Path("content/revisions/sakaiminato-station-20261013-stamp-quest.json").read_text())
+          want="\n\n".join(data["blocks"])
+          username=os.environ["TSURIKUE_WP_USER"];pw=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((username+":"+pw).encode()).decode()
+          q=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,title,categories,author,featured_media,content"})
+          req=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/posts/4138?"+q,headers={"Authorization":auth,"Accept":"application/json"})
+          with urllib.request.urlopen(req,timeout=60) as r:post=json.load(r)
+          assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft")
+          assert post["title"]["raw"]==data["title"]
+          assert post["categories"]==[7]
+          assert post["content"]["raw"]==want, "WordPress body mismatch; human edit must be respected"
+          assert post["featured_media"]==0
+          assert len(re.findall(r'<!-- TSURIKUE_IMAGE:',want))==15
+          assert "<img" not in want
+          assert "主印" in post["content"].get("rendered","")
+          assert want.count("摩尼車")>=2
+          assert "自分で見つけてね" in want
+          assert len(re.findall(r'<h1\b',want))==0
+          print("FINAL_SAKAIMINATO_STAMPQUEST_DRAFT_VERIFIED",json.dumps({
+           "id":4138,"slug":post["slug"],"status":post["status"],
+           "title":post["title"]["raw"],"content_sha256":hashlib.sha256(want.encode()).hexdigest(),
+           "photo_slots_pending":15,"indoor_photo_blocks_embedded":0,
+           "body_characters":len(want),"editor_url":"https://tsurikue.com/wp-admin/post.php?post=4138&action=edit"
+          },ensure_ascii=False),flush=True)
+          PY
