@@ -1,0 +1,51 @@
+name: QA published-status-safe Sakaiminato 15 photos
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-sakaiminato-photos15-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read-only verify 15 actual image blocks, order, captions and draft status
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os, json, re, base64, hashlib, urllib.request, urllib.parse
+          from pathlib import Path
+          doc=json.loads(Path("content/revisions/sakaiminato-station-20261013-info-tables.json").read_text(encoding="utf-8"))
+          user=os.environ["TSURIKUE_WP_USER"];pw=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((user+":"+pw).encode()).decode()
+          q=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,title,categories,featured_media,content"})
+          req=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/posts/4138?"+q,headers={"Authorization":auth,"Accept":"application/json"})
+          with urllib.request.urlopen(req,timeout=90) as resp:post=json.load(resp)
+          raw=post["content"]["raw"];render=post["content"]["rendered"]
+          images=[4113,4107,4108,4127,4121,4129,4110,4125,4126,4117,4123,4118,4119,4115,4116]
+          assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft")
+          assert post["categories"]==[7] and post["featured_media"]==0
+          assert post["title"]["raw"]==doc["title"]
+          assert hashlib.sha256(raw.encode("utf-8")).hexdigest()=="a24815ae02ccf0f90190be5e95be793a7ef29170773c905ae3b12a1d329a42f2"
+          assert "TSURIKUE_IMAGE" not in raw,"invisible placeholders remain"
+          assert re.findall(r'wp-image-(\d+)',raw)==list(map(str,images)),"photo order or count wrong"
+          assert re.findall(r'wp-image-(\d+)',render)==list(map(str,images)),"rendered photo order/count wrong"
+          assert raw.count("<!-- wp:image ")==15 and raw.count("<!-- /wp:image -->")==15
+          assert raw.count("<!-- wp:table ")==2 and render.count("<table")==2
+          for term in ["一反もめん","鬼太郎妖怪倉庫","開運ノ札","主印","猫娘","みなとーる","0859-47-0121","境港水産物直売センター"]:
+           assert term in raw, "first-hand info or station info dropped "+term
+          assert "摩尼車" in raw and "摩尼車" not in " ".join(re.findall(r'alt="([^"]+)"',raw))
+          assert all('alt="' in m.group(0) and 'figcaption' in m.group(0) for m in re.finditer(r'<!-- wp:image .*?<!-- /wp:image -->',raw,re.S))
+          print("WORDPRESS_15_PHOTOS_FINAL_VERIFIED",json.dumps({
+              "id":4138,"status":"draft","slug":post["slug"],"photos":len(images),
+              "wp_media_ids":images,"Gutenberg_image_blocks":15,"rendered_images":15,
+              "station_tables":2,"editor_url":"https://tsurikue.com/wp-admin/post.php?post=4138&action=edit",
+              "sha256":hashlib.sha256(raw.encode("utf-8")).hexdigest()
+          },ensure_ascii=False),flush=True)
+          
+          PY
