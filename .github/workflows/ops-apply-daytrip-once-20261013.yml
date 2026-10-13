@@ -1,0 +1,28 @@
+name: One-time post-merge execute approved day-trip draft
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-apply-daytrip-once-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  create:
+    if: github.event.pull_request.head.ref == 'ops/apply-hiroshima-koizu-daytrip-once-20261013'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Re-validate already-merged draft and check no duplicate slug
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_hiroshima_koizu_sakaiminato_daytrip_20261013.py check
+      - name: Create ONE unpublished WP draft using approved main script
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_hiroshima_koizu_sakaiminato_daytrip_20261013.py apply
