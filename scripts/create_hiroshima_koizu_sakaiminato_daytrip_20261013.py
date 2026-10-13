@@ -126,8 +126,11 @@ def main(mode):
     if category["id"]!=CATEGORY or category["slug"]!="sightseeing-leisure":
         raise RuntimeError("Category identity changed")
     station=direct_post(auth,4138)
-    if station["slug"]!="sakaiminato-station-sightseeing":
-        raise RuntimeError("Related station article changed; do not set broken internal link")
+    if (station["slug"],station["status"])!=("sakaiminato-station-sightseeing","publish"):
+        raise RuntimeError("Linked station sightseeing article missing or unpublished")
+    market=direct_post(auth,4045)
+    if (market["slug"],market["status"])!=("sakaiminato-seafood-market","publish"):
+        raise RuntimeError("Linked seafood article missing or unpublished")
     for query in ("小伊津","広島","境港","日帰り"):
         results=search_posts(auth,query)
         print("EXISTING_ARTICLE_SEARCH",json.dumps({
@@ -142,6 +145,19 @@ def main(mode):
                 ("モデルコース" in title or "日帰り" in title)):
                 raise RuntimeError("Possible duplicate route article "+str(item["id"])+": "+title)
     media=recent_media(auth)
+    # One targeted backfill lookup for owner photos that moved beyond the latest
+    # 100 media attachments, instead of quietly dropping a genuine uploaded photo.
+    for filename in doc["images_expected"]:
+        if match_media(filename,media) is None:
+            digits=re.fullmatch(r"IMG_(\\d{4})(?:\\(\\d+\\))?\\.jpe?g",filename,re.I)
+            if digits:
+                q=urllib.parse.urlencode({"context":"edit","search":digits.group(1),
+                    "per_page":50,"_fields":"id,source_url,mime_type,media_details"})
+                extras=get("/wp-json/wp/v2/media?"+q,auth)
+                existing_ids={x["id"] for x in media}
+                for item in extras:
+                    if item["id"] not in existing_ids:
+                        media.append(item);existing_ids.add(item["id"])
     body,embedded,pending=assemble(doc,media)
     print("WP_PRECHECK_OK",json.dumps({
         "related_post_id":4138,"related_status":station["status"],
