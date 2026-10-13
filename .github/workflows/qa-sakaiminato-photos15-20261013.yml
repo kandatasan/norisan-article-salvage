@@ -28,6 +28,7 @@ jobs:
           with urllib.request.urlopen(req,timeout=90) as resp:post=json.load(resp)
           raw=post["content"]["raw"];render=post["content"]["rendered"]
           images=[4113,4107,4108,4127,4121,4129,4110,4125,4126,4117,4123,4118,4119,4115,4116]
+          print("CURRENT_WP_BODY_STATE",json.dumps({"id":post["id"],"slug":post["slug"],"status":post["status"],"hash":hashlib.sha256(raw.encode("utf-8")).hexdigest(),"photos":raw.count("<!-- wp:image "),"placeholders":raw.count("<!-- TSURIKUE_IMAGE:"),"rendered_photos":render.count("wp-image-"),"tables":raw.count("<!-- wp:table")},ensure_ascii=False),flush=True)
           assert (post["id"],post["slug"],post["status"])==(4138,"sakaiminato-station-sightseeing","draft")
           assert post["categories"]==[7] and post["featured_media"]==0
           assert post["title"]["raw"]==doc["title"]
