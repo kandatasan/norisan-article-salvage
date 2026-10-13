@@ -1,0 +1,43 @@
+name: Inventory recent Sakaiminato WordPress photos
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/sakaiminato-photo-media-audit-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Read media library recently uploaded images and draft (no writes)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,urllib.request,urllib.parse,json,base64,re,sys
+          usr=os.environ["TSURIKUE_WP_USER"];pwd=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth="Basic "+base64.b64encode((usr+":"+pwd).encode()).decode()
+          q=urllib.parse.urlencode({"context":"edit","per_page":100,"page":1,"orderby":"date","order":"desc","_fields":"id,date,source_url,media_details,title,mime_type"})
+          req=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/media?"+q,headers={"Authorization":auth,"Accept":"application/json","User-Agent":"tsurikue-media-audit"})
+          with urllib.request.urlopen(req,timeout=90) as r:
+              items=json.load(r);total=r.headers.get("X-WP-Total","?")
+          print("MEDIA_TOTAL",total,"BATCH",len(items),flush=True)
+          for x in items:
+              src=x.get("source_url") or ""
+              basename=urllib.parse.unquote(src.rsplit("/",1)[-1])
+              d=(x.get("media_details") or {}).get("file") or ""
+              original=d.rsplit("/",1)[-1]
+              title=(x.get("title") or {}).get("rendered","")
+              name=basename+" "+original+" "+title
+              if "IMG_" in name.upper() or re.search(r'87(?:2[35789]|3[012458]|5[78]|60|62)',name):
+                  print("PHOTO_CANDIDATE",json.dumps({"id":x["id"],"date":x["date"],"file":basename,"original":original,"title":title,"url":src,"mime":x.get("mime_type")},ensure_ascii=False),flush=True)
+          postq=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,content"})
+          request=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/posts/4138?"+postq,headers={"Authorization":auth,"Accept":"application/json"})
+          with urllib.request.urlopen(request,timeout=90) as r:post=json.load(r)
+          import hashlib
+          print("POST",post["id"],post["slug"],post["status"],"sha",hashlib.sha256(post["content"]["raw"].encode()).hexdigest(),flush=True)
+          
+          PY
