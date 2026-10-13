@@ -1,0 +1,36 @@
+name: Update Sakaiminato draft stamp quest
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/revisions/sakaiminato-station-20261013-stamp-quest.json'
+      - 'scripts/update_sakaiminato_draft_stamp_20261013.py'
+      - '.github/workflows/sakaiminato-stamp-quest-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'content/revisions/sakaiminato-station-20261013-stamp-quest.json'
+      - 'scripts/update_sakaiminato_draft_stamp_20261013.py'
+      - '.github/workflows/sakaiminato-stamp-quest-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read only compare live WP draft 4138 and exact amended section
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_sakaiminato_draft_stamp_20261013.py check
+      - name: Apply content-only update to existing DRAFT and verify
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_sakaiminato_draft_stamp_20261013.py apply
