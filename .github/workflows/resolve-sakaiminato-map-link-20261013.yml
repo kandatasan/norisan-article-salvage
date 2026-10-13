@@ -1,0 +1,51 @@
+name: Read-only Google Maps share link check
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/resolve-sakaiminato-map-link-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Resolve exact shared location and probe no-key satellite embed
+        run: |
+          python - <<'PY'
+          import urllib.request,urllib.parse,urllib.error,re,json
+          short='https://maps.app.goo.gl/XUF1NJtfrGU5KehYA?g_st=ic'
+          def get(url):
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; link-verifier/1.0)'})
+              with urllib.request.urlopen(req,timeout=20) as resp:
+                  html=resp.read(350000).decode('utf-8','replace')
+                  return resp.status, resp.geturl(),html, dict(resp.headers)
+          for url in [short]:
+              try:
+                  status,target,body,header=get(url)
+                  print('MAP_SHORTLINK_RESOLVED',json.dumps({'status':status,'target':target,'head':body[:120]},ensure_ascii=False),flush=True)
+              except Exception as exc:
+                  print('MAP_SHORTLINK_ERROR',type(exc).__name__,str(exc)[:600],flush=True)
+          for url in [
+              'https://maps.google.com/maps?q=35.544,133.230&t=k&z=18&output=embed',
+              'https://www.google.com/maps?q=35.544,133.230&t=k&z=18&output=embed'
+          ]:
+              try:
+                  code,final,body,header=get(url)
+                  print('MAP_EMBED_PROBE',json.dumps({'url':url,'status':code,'final':final,'mime':header.get('Content-Type'),'body_chars':len(body),'mentions_satellite':bool(re.search('satellite|\\bsatellite\\b',body,re.I)),'title':re.findall(r'<title>([^<]{0,100})</title>',body)[:1]},ensure_ascii=False),flush=True)
+              except Exception as exc: print('MAP_EMBED_ERROR',url,type(exc).__name__,str(exc)[:250],flush=True)
+          import urllib.parse,urllib.request,re,json
+          for q in [
+              '鳥取県境港市大正町 駅前公園',
+              '〒684-0004 鳥取県境港市大正町駅前公園'
+          ]:
+              for t in ['k','m']:
+                  url='https://www.google.com/maps?'+urllib.parse.urlencode({'q':q,'t':t,'z':'19','output':'embed'})
+                  req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0'})
+                  with urllib.request.urlopen(req,timeout=20) as r:
+                      print('MAP_QUERY_TEST',json.dumps({'q':q,'t':t,'final':r.geturl(),'status':r.status},ensure_ascii=False),flush=True)
+          st,redirect,body,_=get(short)
+          coordinates=list(dict.fromkeys(re.findall(r'35\.[0-9]{3,},133\.[0-9]{3,}',body)))
+          print('MAP_SHARE_COORDINATES',coordinates[:15],flush=True)
+          PY

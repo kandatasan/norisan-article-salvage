@@ -1,0 +1,34 @@
+name: Insert Google satellite map into Sakaiminato draft
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/insert_sakaiminato_ittanmomen_map_20261013.py'
+      - '.github/workflows/insert-sakaiminato-ittanmomen-map-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/insert_sakaiminato_ittanmomen_map_20261013.py'
+      - '.github/workflows/insert-sakaiminato-ittanmomen-map-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  satellite-map:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read only check Google satellite URL and exact draft body
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/insert_sakaiminato_ittanmomen_map_20261013.py check
+      - name: Apply map in same draft then verify WordPress raw and rendered
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/insert_sakaiminato_ittanmomen_map_20261013.py apply
