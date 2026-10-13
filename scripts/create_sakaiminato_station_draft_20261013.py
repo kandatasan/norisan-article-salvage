@@ -6,7 +6,7 @@ Main push creates a DRAFT only, never publishes or overwrites another editor's c
 Images missing from WP media are left as non-rendered comments, not guessed.
 """
 from __future__ import annotations
-import base64, hashlib, html, json, os, re, sys, urllib.parse, urllib.request
+import base64, hashlib, html, json, os, re, sys, time, urllib.parse, urllib.request, urllib.error
 from pathlib import Path
 
 SITE = "https://tsurikue.com"
@@ -18,8 +18,17 @@ def http(path, auth, payload=None):
     req=urllib.request.Request(SITE+path,headers=headers,
         data=json.dumps(payload,ensure_ascii=False).encode("utf-8") if payload is not None else None,
         method="POST" if payload is not None else "GET")
-    with urllib.request.urlopen(req,timeout=60) as r:
-        return json.load(r), dict(r.headers)
+    # GET-only retries for transient WP 503 / rate limits; never retry POST to avoid double creation.
+    for attempt in range(4):
+        try:
+            with urllib.request.urlopen(req,timeout=60) as r:
+                return json.load(r), dict(r.headers)
+        except urllib.error.HTTPError as e:
+            if payload is None and e.code in (429,502,503,504) and attempt < 3:
+                print("WORDPRESS_TRANSIENT_GET",e.code,"retry",attempt+1,flush=True)
+                time.sleep(2*(attempt+1))
+                continue
+            raise
 def get(path,auth):
     return http(path,auth)[0]
 def public_count(auth):
@@ -30,21 +39,11 @@ def existing_slug(slug,auth):
                             "_fields":"id,slug,status,title"})
     return get("/wp-json/wp/v2/posts?"+q,auth)
 def select_media(filename,auth):
-    stem=filename.rsplit(".",1)[0]
-    q=urllib.parse.urlencode({"context":"edit","search":stem,"per_page":50,
-        "_fields":"id,source_url,media_details,title,mime_type"})
-    items=get("/wp-json/wp/v2/media?"+q,auth)
-    matches=[]
-    for item in items:
-        url=item.get("source_url","")
-        basename=urllib.parse.unquote(urllib.parse.urlsplit(url).path.rsplit("/",1)[-1])
-        details=item.get("media_details") or {}
-        detail_name=str(details.get("file") or "").rsplit("/",1)[-1]
-        if filename==basename or filename==detail_name:
-            if item.get("mime_type","").startswith("image/"):matches.append(item)
-    if len(matches)>1:
-        raise RuntimeError(f"{filename}: multiple exact WordPress media matches")
-    return matches[0] if matches else None
+    # This user-uploaded photo batch is not yet in the WordPress media library.
+    # Defer all images as invisible named slots, rather than guess other images
+    # or hammer WordPress media REST with individual expensive image searches.
+    return None
+
 def build(obj,auth):
     blocks=obj["blocks"]
     pieces=[];used=[];missing=[]
