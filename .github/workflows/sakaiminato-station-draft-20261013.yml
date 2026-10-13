@@ -1,0 +1,36 @@
+name: Create Sakaiminato station blog draft
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/drafts/sakaiminato-station-sightseeing-20261013.json'
+      - 'scripts/create_sakaiminato_station_draft_20261013.py'
+      - '.github/workflows/sakaiminato-station-draft-20261013.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'content/drafts/sakaiminato-station-sightseeing-20261013.json'
+      - 'scripts/create_sakaiminato_station_draft_20261013.py'
+      - '.github/workflows/sakaiminato-station-draft-20261013.yml'
+permissions:
+  contents: read
+jobs:
+  draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read-only draft preflight and exact media inventory
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_sakaiminato_station_draft_20261013.py check
+      - name: Create a new DRAFT only and verify live WordPress
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/create_sakaiminato_station_draft_20261013.py apply
