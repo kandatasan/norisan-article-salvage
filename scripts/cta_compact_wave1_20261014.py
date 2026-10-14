@@ -48,7 +48,7 @@ def safe_copy(lines, kind):
         "top":"text-align:center;margin:1.05em auto .35em;line-height:1.55;font-size:clamp(13px,3.6vw,15px);font-weight:700;color:#253c58;",
         "bottom":"text-align:center;margin:.28em auto 1.15em;line-height:1.5;font-size:clamp(12px,3.2vw,13px);color:#576777;"
     }
-    spans = "".join('<span style="display:inline-block;white-space:nowrap;">'+html.escape(x)+'</span>' for x in lines)
+    spans = "<wbr>".join('<span style="display:inline-block;white-space:nowrap;">'+html.escape(x)+'</span>' for x in lines)
     return ('<!-- wp:html -->\n<div class="tsq-cta-microcopy tsq-cta-'+kind+
             '" style="'+styles[kind]+'">'+spans+'</div>\n<!-- /wp:html -->')
 def transform(s, cfg):
