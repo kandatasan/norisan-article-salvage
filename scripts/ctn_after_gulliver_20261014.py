@@ -47,7 +47,7 @@ def microcopy(lines,kind):
 def append_cta(s,top,bottom):
     if MARKER in s or SHORTCODE in s: raise RuntimeError("CTA already present")
     tail="\n" if s.endswith("\n") else "\n\n"
-    return s + tail + microcopy(top,"top")+"\n\n"+SHORTCODE+"\n\n"+microcopy(bottom)+"\n"
+    return s + tail + microcopy(top,"top")+"\n\n"+SHORTCODE+"\n\n"+microcopy(bottom,"bottom")+"\n"
 def make_request(path,auth,payload=None):
     headers={"Authorization":auth,"Accept":"application/json","User-Agent":"tsurikue-ctn-after-gulliver/1.0"}
     if payload is not None: headers["Content-Type"]="application/json; charset=utf-8"
