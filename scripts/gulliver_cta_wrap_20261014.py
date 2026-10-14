@@ -34,7 +34,7 @@ SPECS={
  ["値引きゼロでも選択肢はある。","中古UXも並べてみよう。","年式・装備・支払総額まで","比較して考えよう。"]]),
 3570:("lexus-ux-emotional-explorer","1bfb16e16e105aecc24335ce4a937a210095a5d1f7663732f03c7923ced0355b",[
  ["ベンチレーションも欲しい。","そんな中古UXを探そう。","欲しい装備が付いているか、","1台ずつ確認しよう。"],
- ["Emotional Explorerが気になるなら、","最後は在庫で条件を比較。","状態・走行距離・保証まで","確認してから選ぼう。"]]),
+ ["特別仕様のUXが気になるなら、","最後は在庫で条件を比較。","状態・走行距離・保証まで","確認してから選ぼう。"]]),
 3601:("lexus-ux250h-used-vs-ux300h","3110bbcc222e8c7b154271fa592db37652b5b91cd2bd7ca4faf04cefbdfc3ee0",[
  ["中古250hは価格が魅力。","条件の合うUXを探そう。","年式・走行距離・装備を","同じ目線で比較しよう。"],
  ["どちらにするか迷ったら、","中古250hの在庫も見てみよう。","新車300hの見積もりと","支払総額を比べよう。"]]),
@@ -185,7 +185,7 @@ def run(mode):
             rendered=after["content"].get("rendered","")
             for a in cfg[2]:
                 if not all(piece in rendered for piece in (a[0],a[2])):raise RuntimeError(cfg[0]+": copy absent from rendered page")
-            if "[blog_parts id=\"2843\"]" in new and "ガリバー" not in rendered and "Gulliver" not in rendered:
+            if '[blog_parts id="2843"]' in rendered:
                 raise RuntimeError(cfg[0]+": Gulliver shortcode not rendered")
             print("LIVE_VERIFIED",pid,cfg[0],n,flush=True)
         if count(auth)!=before_count:raise RuntimeError("published post count changed")
