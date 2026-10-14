@@ -5,6 +5,7 @@ on:
     paths:
       - 'scripts/ctn_main_inventory_20261014.py'
       - 'scripts/ctn_main_optimize_20261014.py'
+      - 'scripts/ctn_main_render_20261014.py'
       - '.github/workflows/ctn-main-20261014.yml'
   push:
     branches: [main]
@@ -38,6 +39,14 @@ jobs:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: python scripts/ctn_main_optimize_20261014.py apply
+      - name: Install Playwright Chromium for final render QA
+        if: github.event_name == 'push'
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify CTN design on mobile and desktop
+        if: github.event_name == 'push'
+        run: python scripts/ctn_main_render_20261014.py
       - name: Save inventory
         if: always()
         uses: actions/upload-artifact@v4
