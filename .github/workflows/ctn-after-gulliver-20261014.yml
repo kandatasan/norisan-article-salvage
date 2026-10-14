@@ -1,0 +1,41 @@
+name: CTN at end of Gulliver posts - guarded 16 post pass
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_after_gulliver_20261014.py'
+      - '.github/workflows/ctn-after-gulliver-20261014.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_after_gulliver_20261014.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  guarded-ctn-last:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Preflight current WordPress bodies and existing CTN shortcode
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_after_gulliver_20261014.py check
+      - name: Apply to published posts only after merge, verify and guard rollback
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_after_gulliver_20261014.py apply
+      - name: Save audit evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-after-gulliver-20261014-audit
+          path: reports/ctn-after-gulliver-20261014/
+          if-no-files-found: warn
