@@ -1,0 +1,41 @@
+name: Gulliver compact CTA wrappers - guarded 15-post pass
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/gulliver_cta_wrap_20261014.py'
+      - '.github/workflows/gulliver-cta-wrap-20261014.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/gulliver_cta_wrap_20261014.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  guarded-gulliver:
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Exact source and markup preflight - no writes
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/gulliver_cta_wrap_20261014.py check
+      - name: Publish guarded edits only after merge and verify actual saved HTML
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/gulliver_cta_wrap_20261014.py apply
+      - name: Upload audit artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: gulliver-cta-wrap-20261014-audit
+          path: reports/gulliver-cta-20261014/
+          if-no-files-found: warn
