@@ -1,0 +1,36 @@
+name: CTN main - live inventory and guarded updates
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_main_inventory_20261014.py'
+      - 'scripts/ctn_main_optimize_20261014.py'
+      - '.github/workflows/ctn-main-20261014.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_main_optimize_20261014.py'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: CTN live inventory and context (GET only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_main_inventory_20261014.py
+      - name: Save inventory
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-main-20261014-inspection
+          path: reports/cta-ctn-main-20261014/
+          if-no-files-found: warn
