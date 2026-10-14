@@ -27,6 +27,17 @@ jobs:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
         run: python scripts/ctn_main_inventory_20261014.py
+      - name: Preflight 14 primary CTA edits - no writes
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_main_optimize_20261014.py check
+      - name: Apply guarded CTA changes only after main push
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_main_optimize_20261014.py apply
       - name: Save inventory
         if: always()
         uses: actions/upload-artifact@v4
