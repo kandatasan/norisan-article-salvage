@@ -30,11 +30,16 @@
   "aggregated_records": 2285,
   "discarded_rows": 13619,
   "discarded_by_reason": {
-    "not_fish_or_blank_category": 13619
+    "mixed_fish_and_invertebrates_held_for_review": 13619
   },
   "publication_status": "staged_not_published",
   "prefecture_mapping": "not_inferred",
   "excluded_columns": "station, river section, distances, exact date/time, weather, abundance, site codes",
   "counting_rule": "one appearance per watershed x survey year x literal fish name",
-  "important_species_note": "source provider excludes sensitive significant-species location records; absence is not absence in nature"
+  "important_species_note": "source provider excludes sensitive significant-species location records; absence is not absence in nature",
+  "legacy_mixed_category_source_rows": 13619,
+  "legacy_name_matched_candidate_combinations": 1231,
+  "legacy_rows_not_matched_or_invalid": 3356,
+  "legacy_publication_status": "review_required_not_in_search",
+  "legacy_criteria": "Exact name match against literal names already recorded with biological category 魚類"
 }
