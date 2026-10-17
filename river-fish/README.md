@@ -78,7 +78,7 @@ python3 -m unittest discover -s river-fish -p 'test_search_v04.py' -v
 - 保存: official_chugoku_watershed_year_fish_v05.csv（水系、調査年度、資料記載名、出典URL、公式ZIPのハッシュ）。
 - 保存: official_chugoku_manifest_v05.json（SHA-256、収録・除外数、年、根拠）。ZIPが変更された場合は確認まで停止する。
 - **旧区分「魚介類」13,619行は混在資料**。魚、エビ、カニ、貝が含まれるため、主データには入れない。
-- うち「魚類」区分にも同じ魚名の文字列があるものだけを official_chugoku_legacy_fish_candidates_v05.csv に **1,231候補**として分離。**未承認・非公開・検索対象外**。魚種確定の根拠ではない。
+- うち「魚類」区分にも同じ魚名の文字列があるものだけを official_chugoku_legacy_fish_candidates_v05.csv に **1,231候補**として分離。**未承認・サイト未掲載・検索対象外**。魚種確定の根拠ではない。
 - 元の地点名、地区、距離、座標、日付・時刻、個体数は検索用CSVに保存していない。
 
 ### 新しい検索
