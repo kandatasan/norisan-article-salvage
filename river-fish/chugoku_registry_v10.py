@@ -53,7 +53,7 @@ def load_sources(root=ROOT):
     root=Path(root)
     waters=read_table(root/WATERSHED_FILE,WATERSHED_HEADERS)
     river=read_table(root/RIVER_FILE,RIVER_HEADERS)
-    if len(waters)!=62 or len(river)!=81:
+    if len(waters)!=72 or len(river)!=81:
         raise ValueError("Official source extraction changed; rerun manual provenance review")
     names=set()
     bypref=Counter()
@@ -71,7 +71,7 @@ def load_sources(root=ROOT):
             or not w["watershed_label_as_written"]
             or w["watershed_label_as_written"][0] in "=+-@"):
             raise ValueError("Watershed source row cannot be promoted to approved geography")
-    if dict(bypref)!={"岡山県":22,"山口県":26,"島根県":7,"鳥取県":7}:
+    if dict(bypref)!={"岡山県":22,"山口県":26,"島根県":17,"鳥取県":7}:
         raise ValueError("Expected official watershed source groups changed")
     ids=set()
     for r in river:
@@ -180,7 +180,7 @@ def build(path,root=ROOT):
             raise ValueError("River source cache foreign key or integrity issue")
         totals={r[0]:r[1] for r in conn.execute(
             "SELECT prefecture,COUNT(*) FROM prefecture_watershed_source_mentions GROUP BY prefecture")}
-        if totals!={"広島県":15,"岡山県":22,"山口県":26,"島根県":7,"鳥取県":7}:
+        if totals!={"広島県":15,"岡山県":22,"山口県":26,"島根県":17,"鳥取県":7}:
             raise ValueError("Unexpected nationwide/watershed source totals")
         return {
             "prefecture_keys":earlier["prefectures"],
