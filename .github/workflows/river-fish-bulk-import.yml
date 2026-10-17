@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/river-fish-bulk-import.yml'
+      - 'river-fish/aggregate_official_workbook.py'
   workflow_dispatch:
 
 permissions:
