@@ -29,3 +29,4 @@ jobs:
           python -m unittest discover -s river-fish -p 'test_*v05.py' -v
           python -m unittest discover -s river-fish -p 'test_nationwide_v06.py' -v
           python -m unittest discover -s river-fish -p 'test_national_registry_v06.py' -v
+          python -m unittest discover -s river-fish -p 'test_nationwide_search_v06.py' -v
