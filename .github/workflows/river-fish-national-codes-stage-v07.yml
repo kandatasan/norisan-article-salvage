@@ -1,0 +1,80 @@
+name: Research nationwide river-name code catalog v0.7
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/import_national_river_codes_v07.py'
+      - 'river-fish/test_national_river_codes_v07.py'
+      - '.github/workflows/river-fish-national-codes-stage-v07.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-official-code-lists:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/national-river-code-catalog-v07-20261018'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test safe river code HTML extraction and location restrictions
+        run: python -m unittest discover -s river-fish -p 'test_national_river_codes_v07.py' -v
+      - name: Fetch MLIT public standalone river and watershed code lists
+        run: python river-fish/import_national_river_codes_v07.py --out river-fish/national-codes-staged
+      - name: QA 10-digit river IDs, 6-digit watersheds, duplicates and source statuses
+        run: |
+          python - <<'PY'
+          import csv,json,pathlib
+          p=pathlib.Path('river-fish/national-codes-staged')
+          m=json.loads((p/'river_code_manifest_v07.json').read_text())
+          with (p/'river_codes_national_v07.csv').open(encoding='utf-8',newline='') as f:
+              r=csv.DictReader(f);river=list(r)
+          with (p/'watershed_codes_national_v07.csv').open(encoding='utf-8',newline='') as f:
+              r=csv.DictReader(f);water=list(r)
+          assert m['river_code_rows']==len(river)>=20000
+          assert m['watershed_code_rows']==len(water)>=3000
+          assert len({x['river_code'] for x in river})==len(river)
+          assert len({x['watershed_code'] for x in water})==len(water)
+          assert all(len(x['river_code'])==10 and x['river_code'].isdigit() for x in river)
+          assert all(x['watershed_code']==x['river_code'][:6] for x in river)
+          assert all(x['identity_status']=='coded_name_only_not_geographically_verified' for x in river)
+          assert all(x['site_status']=='research_only' for x in river)
+          assert m['prefecture_mapping']=='not_inferred'
+          assert m['direct_species']=='not_inferred'
+          assert m['no_W05_geometries'] is True
+          moroki=[x for x in river if x['river_code']=='8707090023']
+          assert len(moroki)==1 and moroki[0]['river_name']=='諸木川'
+          assert moroki[0]['watershed_name']=='太田川'
+          print('NATIONAL_OFFICIAL_RIVER_NAMES',len(river))
+          print('NATIONAL_OFFICIAL_WATERSHED_NAMES',len(water))
+          print('DISTINCT_RIVER_LABELS',m['distinct_literal_river_names'])
+          print('MISSING_WATERSHED_MATCHES',m['river_rows_without_matching_watershed_code'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: national-official-river-code-catalog-v07
+          path: river-fish/national-codes-staged/
+          retention-days: 30
+      - name: Save research-only data to this PR branch, never main
+        env:
+          HEAD_BRANCH: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add river-fish/national-codes-staged/
+          if git diff --staged --quiet; then
+            echo 'Staged data identical.'
+          else
+            git commit -m 'Stage nationwide MLIT 10-digit river and 6-digit watershed code lists for review'
+            git fetch origin "$HEAD_BRANCH"
+            git rebase FETCH_HEAD
+            git push origin "HEAD:refs/heads/$HEAD_BRANCH"
+          fi
