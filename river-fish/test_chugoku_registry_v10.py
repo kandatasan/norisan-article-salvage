@@ -18,10 +18,10 @@ class ChugokuFivePrefectures(unittest.TestCase):
     def test_actual_five_prefecture_counts(self):
         s=self.summary
         self.assertEqual(s["prefecture_keys"],47)
-        self.assertEqual(s["chugoku_prefecture_watershed_mentions"],77)
-        self.assertEqual(s["new_watershed_source_mentions"],62)
+        self.assertEqual(s["chugoku_prefecture_watershed_mentions"],87)
+        self.assertEqual(s["new_watershed_source_mentions"],72)
         self.assertEqual(s["new_yamaguchi_river_municipality_mentions"],81)
-        self.assertEqual(s["by_prefecture"],{"広島県":15,"岡山県":22,"山口県":26,"島根県":7,"鳥取県":7})
+        self.assertEqual(s["by_prefecture"],{"広島県":15,"岡山県":22,"山口県":26,"島根県":17,"鳥取県":7})
 
     def test_existing_hiroshima_retained(self):
         self.assertEqual(self.summary["existing_hiroshima_verified_rivers"],66)
@@ -44,9 +44,10 @@ class ChugokuFivePrefectures(unittest.TestCase):
         self.assertTrue(all("selected_26" in r["scope"] for r in x["watershed_mentions"]))
         self.assertIn("平田川(岩国)",{r["watershed_label"] for r in x["watershed_mentions"]})
 
-    def test_shimane_seven_plans_not_all_second_rivers(self):
+    def test_shimane_17_policy_watersheds_not_all_second_rivers(self):
         x=search(self.db,prefecture="島根県",limit=100)
-        self.assertEqual(x["watershed_source_mentions_total"],7)
+        self.assertEqual(x["watershed_source_mentions_total"],17)
+        self.assertIn("静間川",{r["watershed_label"] for r in x["watershed_mentions"]})
         self.assertIn("美田川",{r["watershed_label"] for r in x["watershed_mentions"]})
 
     def test_yamaguchi_81_municipality_mentions(self):
@@ -87,7 +88,7 @@ class ChugokuFivePrefectures(unittest.TestCase):
 
     def test_source_narrow_scope_unchanged(self):
         a,b=load_sources()
-        self.assertEqual(len(a),62);self.assertEqual(len(b),81)
+        self.assertEqual(len(a),72);self.assertEqual(len(b),81)
         self.assertTrue(all(x["site_status"]=="research_only" for x in a))
         self.assertTrue(all(x["public_website_status"]=="research_only" for x in b))
 
