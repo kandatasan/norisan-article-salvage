@@ -1,0 +1,404 @@
+{
+  "stage_version": "1.4",
+  "checked_on": "2026-10-18",
+  "new_prefecture_count": 32,
+  "prefectures": [
+    "岩手県",
+    "秋田県",
+    "山形県",
+    "福島県",
+    "茨城県",
+    "栃木県",
+    "群馬県",
+    "千葉県",
+    "東京都",
+    "神奈川県",
+    "富山県",
+    "石川県",
+    "福井県",
+    "山梨県",
+    "岐阜県",
+    "愛知県",
+    "三重県",
+    "滋賀県",
+    "京都府",
+    "大阪府",
+    "兵庫県",
+    "和歌山県",
+    "徳島県",
+    "香川県",
+    "高知県",
+    "佐賀県",
+    "長崎県",
+    "熊本県",
+    "大分県",
+    "宮崎県",
+    "鹿児島県",
+    "沖縄県"
+  ],
+  "source_groups": [
+    {
+      "prefecture": "岩手県",
+      "kind": "watershed",
+      "scope": "one_class_planning_basins_prefecture_official",
+      "url": "https://www.pref.iwate.jp/kendozukuri/kasensabou/kasen/seibikeikaku/1009931.html",
+      "page_date": "2024-05-17",
+      "rows": 3
+    },
+    {
+      "prefecture": "秋田県",
+      "kind": "watershed",
+      "scope": "policy_and_plan_water_systems_named_on_pref_page",
+      "url": "https://www.pref.akita.lg.jp/pages/archive/10601",
+      "page_date": null,
+      "rows": 4
+    },
+    {
+      "prefecture": "山形県",
+      "kind": "watershed",
+      "scope": "prefecture_policy_and_plan_system_names",
+      "url": "https://www.pref.yamagata.jp/180006/kurashi/kendo/kasen_dam/kasenseibi/kihonhousin-seibikeikaku.html",
+      "page_date": "2025-10-21",
+      "rows": 6
+    },
+    {
+      "prefecture": "福島県",
+      "kind": "watershed",
+      "scope": "first_class_policy_3_watersheds",
+      "url": "https://www.pref.fukushima.lg.jp/sec/41045a/housinnkeikaku20.html",
+      "page_date": "2026-06-16",
+      "rows": 3
+    },
+    {
+      "prefecture": "福島県",
+      "kind": "watershed",
+      "scope": "second_class_policy_watersheds_explicit_list",
+      "url": "https://www.pref.fukushima.lg.jp/sec/41045a/housinnkeikaku20.html",
+      "page_date": "2026-06-16",
+      "rows": 16
+    },
+    {
+      "prefecture": "茨城県",
+      "kind": "river",
+      "scope": "named_major_rivers_from_prefecture_river_overview",
+      "url": "https://www.pref.ibaraki.jp/doboku/kasen/keikaku/kasen/index.html",
+      "page_date": "2025-03-17",
+      "rows": 15
+    },
+    {
+      "prefecture": "栃木県",
+      "kind": "watershed",
+      "scope": "three_1st_class_plan_water_systems",
+      "url": "https://www.pref.tochigi.lg.jp/h06/town/kasen/kaishu/seibijoukyou.html",
+      "page_date": "2025-09-26",
+      "rows": 3
+    },
+    {
+      "prefecture": "群馬県",
+      "kind": "planning_region",
+      "scope": "named_10_river_planning_regions_not_river_id",
+      "url": "https://www.pref.gunma.jp/site/kasenseibi/index.html",
+      "page_date": null,
+      "rows": 10
+    },
+    {
+      "prefecture": "千葉県",
+      "kind": "river",
+      "scope": "tone_watershed_first_class_named_rivers_official_pdf_link_labels",
+      "url": "https://www.pref.chiba.lg.jp/kakan/shiryou/",
+      "page_date": "2024-04-12",
+      "rows": 35
+    },
+    {
+      "prefecture": "東京都",
+      "kind": "river",
+      "scope": "tokyo_plan_target_rivers_koto_internal",
+      "url": "https://www.kensetsu.metro.tokyo.lg.jp/river/jigyo/kasenseibikeikaku",
+      "page_date": null,
+      "rows": 11
+    },
+    {
+      "prefecture": "東京都",
+      "kind": "river",
+      "scope": "tokyo_plan_target_rivers_nakagawa_ayase",
+      "url": "https://www.kensetsu.metro.tokyo.lg.jp/river/jigyo/kasenseibikeikaku",
+      "page_date": null,
+      "rows": 9
+    },
+    {
+      "prefecture": "東京都",
+      "kind": "river",
+      "scope": "tokyo_plan_target_rivers_kanda",
+      "url": "https://www.kensetsu.metro.tokyo.lg.jp/river/jigyo/kasenseibikeikaku",
+      "page_date": null,
+      "rows": 6
+    },
+    {
+      "prefecture": "東京都",
+      "kind": "river",
+      "scope": "tokyo_plan_target_rivers_other",
+      "url": "https://www.kensetsu.metro.tokyo.lg.jp/river/jigyo/kasenseibikeikaku",
+      "page_date": null,
+      "rows": 41
+    },
+    {
+      "prefecture": "神奈川県",
+      "kind": "watershed",
+      "scope": "first_class_basic_policy_watershed",
+      "url": "https://www.pref.kanagawa.jp/docs/f4i/cnt/f70089/",
+      "page_date": null,
+      "rows": 3
+    },
+    {
+      "prefecture": "神奈川県",
+      "kind": "watershed",
+      "scope": "second_class_basic_policy_watershed",
+      "url": "https://www.pref.kanagawa.jp/docs/f4i/cnt/f70089/",
+      "page_date": null,
+      "rows": 11
+    },
+    {
+      "prefecture": "富山県",
+      "kind": "watershed",
+      "scope": "prefecture_policy_first_class_systems",
+      "url": "https://www.pref.toyama.jp/1503/kendodukuri/shinrinkasen/kasen/kasen/kj00000557/kj00000557-003-01.html",
+      "page_date": null,
+      "rows": 2
+    },
+    {
+      "prefecture": "富山県",
+      "kind": "watershed",
+      "scope": "prefecture_policy_second_class_systems",
+      "url": "https://www.pref.toyama.jp/1503/kendodukuri/shinrinkasen/kasen/kasen/kj00000557/kj00000557-003-01.html",
+      "page_date": null,
+      "rows": 11
+    },
+    {
+      "prefecture": "石川県",
+      "kind": "watershed",
+      "scope": "published_basic_policy_and_plan_water_systems",
+      "url": "https://www.pref.ishikawa.lg.jp/kasen/kasenseibi/",
+      "page_date": "2026-03-24",
+      "rows": 10
+    },
+    {
+      "prefecture": "福井県",
+      "kind": "watershed",
+      "scope": "first_or_second_class_examples_from_policy_page",
+      "url": "https://www.pref.fukui.lg.jp/doc/kasen/kasenseibi.html",
+      "page_date": "2025-04-01",
+      "rows": 4
+    },
+    {
+      "prefecture": "山梨県",
+      "kind": "watershed",
+      "scope": "prefecture_planning_named_water_systems",
+      "url": "https://www.pref.yamanashi.jp/chisui/89542545157.html",
+      "page_date": null,
+      "rows": 2
+    },
+    {
+      "prefecture": "岐阜県",
+      "kind": "river",
+      "scope": "listed_individual_rivers_kiso_and_ibi_planning_table",
+      "url": "https://www.pref.gifu.lg.jp/page/133.html",
+      "page_date": null,
+      "rows": 13
+    },
+    {
+      "prefecture": "愛知県",
+      "kind": "watershed",
+      "scope": "second_class_basin_policy_announcements",
+      "url": "https://www.pref.aichi.jp/soshiki/kasen/20324kihonnhoushinn.html",
+      "page_date": null,
+      "rows": 4
+    },
+    {
+      "prefecture": "愛知県",
+      "kind": "watershed",
+      "scope": "second_class_basin_policy_announcements",
+      "url": "https://www.pref.aichi.jp/soshiki/kasen/0000069451.html",
+      "page_date": null,
+      "rows": 2
+    },
+    {
+      "prefecture": "三重県",
+      "kind": "watershed",
+      "scope": "first_class_water_system_policies",
+      "url": "https://www.pref.mie.lg.jp/KASEN/HP/84410046843.htm",
+      "page_date": "2026-04-30",
+      "rows": 7
+    },
+    {
+      "prefecture": "滋賀県",
+      "kind": "river",
+      "scope": "koka_konan_plan_key_named_first_class_rivers",
+      "url": "https://www.pref.shiga.lg.jp/ha04/1178.html",
+      "page_date": "2024-04-23",
+      "rows": 7
+    },
+    {
+      "prefecture": "京都府",
+      "kind": "watershed",
+      "scope": "first_class_basic_policy",
+      "url": "https://www.pref.kyoto.jp/kasen/1297298822071.html",
+      "page_date": "2026-06-12",
+      "rows": 2
+    },
+    {
+      "prefecture": "京都府",
+      "kind": "watershed",
+      "scope": "eight_second_class_basic_policy_systems",
+      "url": "https://www.pref.kyoto.jp/kasen/1297298822071.html",
+      "page_date": "2026-06-12",
+      "rows": 8
+    },
+    {
+      "prefecture": "大阪府",
+      "kind": "watershed",
+      "scope": "prefecture_second_class_basic_policy_systems",
+      "url": "https://www.pref.osaka.lg.jp/o130100/kasenseibi/keikaku/nikyukihonseibi.html",
+      "page_date": null,
+      "rows": 7
+    },
+    {
+      "prefecture": "大阪府",
+      "kind": "river",
+      "scope": "named_tributaries_in_osaka_ishizu_river_official_description",
+      "url": "https://www.pref.osaka.lg.jp/o130330/otori/jigyouinfo/05_isidugawa.html",
+      "page_date": "2026-02-26",
+      "rows": 6
+    },
+    {
+      "prefecture": "兵庫県",
+      "kind": "watershed",
+      "scope": "prefecture_second_class_basic_policy_list_partial",
+      "url": "https://web.pref.hyogo.lg.jp/ks13/wd15_000000039.html",
+      "page_date": "2025-04-30",
+      "rows": 18
+    },
+    {
+      "prefecture": "和歌山県",
+      "kind": "watershed",
+      "scope": "published_19_second_class_basic_policy_systems",
+      "url": "https://www.pref.wakayama.lg.jp/prefg/080400/hoshin/kihonhosin.html",
+      "page_date": null,
+      "rows": 19
+    },
+    {
+      "prefecture": "徳島県",
+      "kind": "watershed",
+      "scope": "prefecture_second_class_policy_systems",
+      "url": "https://www.pref.tokushima.lg.jp/ippannokata/kendozukuri/kasen/2011050200133",
+      "page_date": null,
+      "rows": 11
+    },
+    {
+      "prefecture": "香川県",
+      "kind": "watershed",
+      "scope": "prefecture_second_class_basic_policy_and_plan_named_systems",
+      "url": "https://www.pref.kagawa.lg.jp/kasensabo/kasen/03_seibi.html",
+      "page_date": "2026-04-01",
+      "rows": 14
+    },
+    {
+      "prefecture": "高知県",
+      "kind": "watershed",
+      "scope": "prefecture_policy_named_systems_from_region_table",
+      "url": "https://www.pref.kochi.lg.jp/doc/kasen-keikaku-housinkeikaku/",
+      "page_date": "2025-07-11",
+      "rows": 24
+    },
+    {
+      "prefecture": "佐賀県",
+      "kind": "watershed",
+      "scope": "prefecture_first_and_second_class_plan_systems_partial",
+      "url": "https://www.pref.saga.lg.jp/kiji00312081/index.html",
+      "page_date": "2026-04-17",
+      "rows": 11
+    },
+    {
+      "prefecture": "長崎県",
+      "kind": "watershed",
+      "scope": "named_approved_policy_and_plan_systems_excerpt",
+      "url": "https://www.pref.nagasaki.jp/doc/page-714090.html",
+      "page_date": "2026-05-11",
+      "rows": 12
+    },
+    {
+      "prefecture": "熊本県",
+      "kind": "watershed",
+      "scope": "first_class_policy_systems",
+      "url": "https://www.pref.kumamoto.jp/soshiki/105/5775.html",
+      "page_date": "2026-03-30",
+      "rows": 8
+    },
+    {
+      "prefecture": "熊本県",
+      "kind": "watershed",
+      "scope": "second_class_basic_policy_systems",
+      "url": "https://www.pref.kumamoto.jp/soshiki/105/5775.html",
+      "page_date": "2026-03-30",
+      "rows": 17
+    },
+    {
+      "prefecture": "大分県",
+      "kind": "watershed",
+      "scope": "first_class_policies",
+      "url": "https://www.pref.oita.jp/soshiki/17200/kihonhousin.html",
+      "page_date": "2023-08-31",
+      "rows": 6
+    },
+    {
+      "prefecture": "大分県",
+      "kind": "watershed",
+      "scope": "second_class_policies",
+      "url": "https://www.pref.oita.jp/soshiki/17200/kihonhousin.html",
+      "page_date": "2023-08-31",
+      "rows": 10
+    },
+    {
+      "prefecture": "宮崎県",
+      "kind": "watershed",
+      "scope": "first_class_plan_systems_from_prefecture_html",
+      "url": "https://www.pref.miyazaki.lg.jp/kasen/kurashi/shakaikiban/502.html",
+      "page_date": "2026-03-27",
+      "rows": 2
+    },
+    {
+      "prefecture": "鹿児島県",
+      "kind": "river",
+      "scope": "published_kagoshima_policy_plan_named_rivers",
+      "url": "https://www.pref.kagoshima.jp/ah07/infra/kasen-sabo/kasenseibi/kasenseibikeikaku.html",
+      "page_date": "2026-04-22",
+      "rows": 9
+    },
+    {
+      "prefecture": "沖縄県",
+      "kind": "watershed",
+      "scope": "published_2026_flood_resilience_basin_projects",
+      "url": "https://www.pref.okinawa.jp/bosaianzen/bosai/1003493/1003571.html",
+      "page_date": "2026-03-13",
+      "rows": 9
+    },
+    {
+      "prefecture": "沖縄県",
+      "kind": "river",
+      "scope": "river_names_in_water_level_public_notice",
+      "url": "https://www.pref.okinawa.jp/bosaianzen/bosai/1003493/1003497.html",
+      "page_date": null,
+      "rows": 8
+    }
+  ],
+  "source_mention_count": 439,
+  "by_kind": {
+    "river": 160,
+    "watershed": 269,
+    "planning_region": 10
+  },
+  "source_limit": "Partial official page listings, not entire prefectural river networks",
+  "geometry": "none",
+  "direct_fish_observations_created": 0,
+  "code_to_prefecture_identity_approvals": 0,
+  "public_site_status": "research_only"
+}
