@@ -4,8 +4,8 @@
     "watersheds": "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
   },
   "source_sha256": {
-    "river_html": "f33f62581aa8f884ffd74f9764309196a112564e051876289bdfa0f6377d21f3",
-    "watershed_html": "ecba206e600e0317560a9362955da5abd4858d71ee25ffe217af66963fb05d84",
+    "river_html": "e1e25e503e029715606599546be9f2d8dd48bb261e0c9fbcc045fefc0b7b478a",
+    "watershed_html": "1d1cee708c98f6b3909575cda1ae2679019083de531eecff26123e5d59440295",
     "river_encoding": "utf-8",
     "watershed_encoding": "utf-8-sig",
     "river_parser": {
