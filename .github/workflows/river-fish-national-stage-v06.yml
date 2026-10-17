@@ -105,5 +105,9 @@ jobs:
             echo 'Already staged; no commit.'
           else
             git commit -m 'Stage nine-region official watershed-year fish survey records for QA'
+            # Other PR edits may have advanced the branch during parallel downloads.
+            # Rebase our data-only commit; never force-push.
+            git fetch origin "$REVIEW_HEAD"
+            git rebase FETCH_HEAD
             git push origin "HEAD:refs/heads/$REVIEW_HEAD"
           fi
