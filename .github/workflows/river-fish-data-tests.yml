@@ -40,6 +40,7 @@ jobs:
           python -m unittest discover -s river-fish -p 'test_tottori_detailed_registry_v11.py' -v
           python -m unittest discover -s river-fish -p 'test_japan_unified_registry_v12.py' -v
           python -m unittest discover -s river-fish -p 'test_multi_prefecture_registry_v13.py' -v
+          python -m unittest discover -s river-fish -p 'test_remaining_32pref_v14.py' -v
 
       - name: Verify real nine-region fish search when staged data is present
         run: |
