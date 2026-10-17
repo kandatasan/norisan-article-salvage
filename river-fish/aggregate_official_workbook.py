@@ -80,20 +80,29 @@ def aggregate(records):
     names=set()
     input_rows=0
     skipped=0
+    reasons={}
+    def reject(reason):
+        nonlocal skipped
+        skipped+=1
+        reasons[reason]=reasons.get(reason,0)+1
     for record in records:
         input_rows+=1
         if input_rows>1_000_000:raise ValueError("Unexpectedly large source")
         if record.get("C")!="魚類":
-            skipped+=1;continue
+            reject("not_fish_or_blank_category");continue
         water=record.get("F","").strip()
         year=record.get("G","").strip()
         name=record.get("J","").strip()
-        if not (water and name and re.fullmatch(r"(?:19|20)\d{2}",year)):
-            skipped+=1;continue
+        if not water:
+            reject("missing_watershed");continue
+        if not name:
+            reject("missing_species_name");continue
+        if not re.fullmatch(r"(?:19|20)\d{2}",year):
+            reject("invalid_or_missing_survey_year");continue
         if len(water)>80 or len(name)>150 or year>"2026":
-            skipped+=1;continue
+            reject("unexpected_length_or_future_year");continue
         if any(x[0] in "=+-@" for x in (water,name)):
-            skipped+=1;continue
+            reject("spreadsheet_formula_like_value");continue
         unique.add((water,year,name))
         waters.add(water);years.add(year);names.add(name)
     if input_rows<100 or not unique:raise ValueError("Source unexpectedly empty")
@@ -103,6 +112,7 @@ def aggregate(records):
         "source_rows":input_rows,"unique_watersheds":len(waters),
         "distinct_name_labels":len(names),"years":sorted(years),
         "aggregated_records":len(ordered),"discarded_rows":skipped,
+        "discarded_by_reason":reasons,
         "publication_status":"staged_not_published","prefecture_mapping":"not_inferred",
         "excluded_columns":"station, river section, distances, exact date/time, weather, abundance, site codes",
         "counting_rule":"one appearance per watershed x survey year x literal fish name",
