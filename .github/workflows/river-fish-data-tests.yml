@@ -1,0 +1,27 @@
+name: River fish data tests
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/**'
+      - '.github/workflows/river-fish-data-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/**'
+      - '.github/workflows/river-fish-data-tests.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  check-fish-search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source-backed search and alien classification
+        run: python -m unittest discover -s river-fish -p 'test_search_v04.py' -v
