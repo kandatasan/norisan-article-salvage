@@ -94,7 +94,7 @@ def build(path,root=ROOT):
              watershed_name TEXT NOT NULL,
              river_code TEXT NOT NULL UNIQUE,
              watershed_code TEXT NOT NULL,
-             2016_administrator TEXT NOT NULL,
+             ledger_administrator_2016 TEXT NOT NULL,
              ledger_as_of TEXT NOT NULL,
              pdf_page TEXT NOT NULL,
              ledger_url TEXT NOT NULL,
