@@ -14,7 +14,7 @@ from pathlib import Path
 import sqlite3
 import unicodedata
 
-from japan_unified_registry_v12 import build as build_national
+from japan_unified_registry_v12 import build as build_national, search as search_national
 
 ROOT=Path(__file__).resolve().parent
 DATA="multi_prefecture_source_mentions_v13.csv"
@@ -150,6 +150,24 @@ def query(path,prefecture="",name="",kind="",limit=40,offset=0):
     finally:
         conn.close()
 
+
+def unified_search(path,prefecture="",name="",limit=30,offset=0):
+    """Combine the v1.2 nationwide code/old local sources with v1.3 new evidence.
+
+    National code results remain UNLOCATED even when a local literal label matches.
+    Two scopes are displayed separately; this is not a spatial join.
+    """
+    national=search_national(path,name=name,prefecture=prefecture,limit=limit,offset=offset)
+    new=query(path,prefecture=prefecture,name=name,limit=limit,offset=offset)
+    if prefecture in PREFS:
+        national["prefecture_local_river_source_status"]="partial_official_new_source_mentions_available"
+    national["new_prefecture_source_mentions_total"]=new["total_source_mentions"]
+    national["new_prefecture_source_mentions"]=new["source_mentions"]
+    national["new_source_scope_notice"]=new["warning"]
+    national["national_code_to_source_identity_approved"]=0
+    national["individual_river_fish_assignments_created"]=0
+    return national
+
 if __name__=="__main__":
     p=argparse.ArgumentParser(description="全国版：新たな10道県の河川・水系公式掲載行を検索")
     p.add_argument("--db",default="river-fish/japan_15pref_source_v13.sqlite")
@@ -160,5 +178,5 @@ if __name__=="__main__":
     p.add_argument("--limit",type=int,default=30)
     p.add_argument("--offset",type=int,default=0)
     a=p.parse_args()
-    answer=build(a.db) if a.build else query(a.db,a.prefecture,a.name,a.kind,a.limit,a.offset)
+    answer=build(a.db) if a.build else (query(a.db,a.prefecture,a.name,a.kind,a.limit,a.offset) if a.kind else unified_search(a.db,a.prefecture,a.name,a.limit,a.offset))
     print(json.dumps(answer,ensure_ascii=False,indent=2))
