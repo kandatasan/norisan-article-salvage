@@ -66,3 +66,40 @@ python3 -m unittest discover -s river-fish -p 'test_search_v04.py' -v
 - 環境省 [2026年9月1日の追加指定](https://www.env.go.jp/press/press_05457.html)
 
 注意: ここにあるのは **公開資料の検索用CSVとプログラム**。サーバーDB接続、WordPress投稿、検索エンジン向け公開HTML生成は未実施。希少種の詳細位置や座標は含まない。
+
+
+## v0.5：中国地方の公式調査原本から集約（2026-10-17）
+
+国交省の「中国地方→河川版→魚類→確認種一覧」をGitHub Actionsから取得。配布名は RT87_B01.zip、内包ファイルは 魚類_中国.xlsx（Excel）。公式ダウンロード：https://www.nilim.go.jp/lab/fbg/ksnkankyo/dl_00_index.html
+
+### 保存・除外の実績
+- 元データ **42,143明細行**。調査年度 **2006〜2023年**。
+- **「魚類」28,524行**を水系・年度・魚名の文字列で重複統合し、**2,285レコード・13水系・216名称表記**として出力（厳密な216生物種ではない）。
+- 保存: official_chugoku_watershed_year_fish_v05.csv（水系、調査年度、資料記載名、出典URL、公式ZIPのハッシュ）。
+- 保存: official_chugoku_manifest_v05.json（SHA-256、収録・除外数、年、根拠）。ZIPが変更された場合は確認まで停止する。
+- **旧区分「魚介類」13,619行は混在資料**。魚、エビ、カニ、貝が含まれるため、主データには入れない。
+- うち「魚類」区分にも同じ魚名の文字列があるものだけを official_chugoku_legacy_fish_candidates_v05.csv に **1,231候補**として分離。**未承認・非公開・検索対象外**。魚種確定の根拠ではない。
+- 元の地点名、地区、距離、座標、日付・時刻、個体数は検索用CSVに保存していない。
+
+### 新しい検索
+- search_v05.py は公式調査（調査年度あり）と従来の説明資料（採集年度なし）を**区別**する。
+- 名前、地方名、水系、調査年で検索し、結果には出典・データ種別を表示。件数表示とページ分割に対応。
+- **都道府県は公式Excelから特定できないので推定しない**。県名フィルター時には県対応の確認済み説明資料だけを返す。
+- 外来種／特定外来生物は別の根拠で判定。データがない＝在来／不在、とはしない。
+
+実行例：
+    python river-fish/search_v05.py --name アユ --watershed 太田川
+    python river-fish/search_v05.py --name ブルーギル --alien regulated
+    python river-fish/search_v05.py --name てんきり --prefecture 広島県
+    python river-fish/search_v05.py --year 2019 --watershed 江の川 --limit 50
+    python -m unittest discover -s river-fish -p 'test_*v05.py' -v
+
+### 公開と品質の制限
+- 原本は国直轄など一部の対象河川のみ。特定重要種の詳しい地点は公表対象外。支流を含め全生物分布を網羅しない。
+- 216件は「魚名の表記数」。属・類・旧分類・河口の海水魚もあり、厳密な魚種数とは区別。
+- 公式資料を加工していることと出典を明記する。国交省の利用条件：https://www.nilim.go.jp/lab/fbg/ksnkankyo/Mokj_chui.htm
+- **まだGitHubのデータ・検証コードのみ**。WordPressやつりくえ！サーバーには未投入・未公開。
+- 魚種と水系の詳細ページはデータを羅列してSEOページを大量生成するのではなく、人が読んで価値のあるページを優先して作成する。
+
+### 次の進行
+旧区分の分類コードと魚種マスターの照合→水系と県の対応の裏取り→検索APIと検索UI→公開ページとSEO検証。
