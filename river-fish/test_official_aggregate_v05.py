@@ -3,7 +3,7 @@ import csv
 import tempfile
 import unittest
 from pathlib import Path
-from aggregate_official_workbook import aggregate,export,OUTPUT,MANIFEST
+from aggregate_official_workbook import aggregate,export,legacy_candidates,OUTPUT,MANIFEST,LEGACY
 
 def fixture(i,water="太田川",year="2020",name="アユ",biota="魚類"):
     return {"C":biota,"F":water,"G":year,"J":name}
@@ -49,6 +49,22 @@ class OfficialImportTests(unittest.TestCase):
         data=[fixture(i,name="ヨシノボリ類") for i in range(101)]
         rows,_=aggregate(data)
         self.assertEqual(rows[0][2],"ヨシノボリ類")
+
+    def test_mixed_legacy_never_enters_confirmed_output(self):
+        trusted=[fixture(i,name="アユ") for i in range(110)]
+        mixed=[fixture(i,name="アユ",biota="魚介類") for i in range(10)]
+        mixed += [fixture(i,name="テナガエビ",biota="魚介類") for i in range(5)]
+        trusted_rows,_=aggregate(trusted+mixed)
+        self.assertEqual(len(trusted_rows),1)
+        older,stats=legacy_candidates(trusted+mixed,{"アユ"})
+        self.assertEqual(len(older),1)
+        self.assertEqual(stats["legacy_rows_not_matched_or_invalid"],5)
+        self.assertEqual(older[0][2],"アユ")
+        with tempfile.TemporaryDirectory() as tmp:
+            export(tmp,trusted_rows,{"scope":"staging"},older)
+            txt=(Path(tmp)/LEGACY).read_text(encoding="utf-8")
+            self.assertIn("unapproved_mixed_legacy_category",txt)
+            self.assertNotIn("テナガエビ",txt)
 
     def test_no_pretend_empty_data(self):
         with self.assertRaises(ValueError):
