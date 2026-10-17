@@ -93,7 +93,7 @@ def build(path,root=ROOT):
           CREATE INDEX idx_other_river_name ON other_prefecture_official_source_mentions(literal_name);
           CREATE INDEX idx_other_watershed ON other_prefecture_official_source_mentions(watershed_in_source);
         """)
-        conn.executemany("INSERT INTO other_prefecture_official_source_mentions VALUES ("+",",".join(["?"]*14)+")",[
+        conn.executemany("INSERT INTO other_prefecture_official_source_mentions VALUES (" + ",".join(["?"]*14) + ")",[
             (r["evidence_id"],r["prefecture"],r["jis_prefecture_code"],
              r["evidence_kind"],r["literal_name"],
              r["watershed_explicit_in_source"] or None,r["source_subarea"],
