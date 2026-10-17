@@ -1,0 +1,20 @@
+{
+  "base_registry_evidence": 66,
+  "municipality_mention_evidence": 98,
+  "total_local_evidence": 164,
+  "candidate_rows_including_no_matches": 1222,
+  "candidate_counts_by_evidence_and_status": {
+    "municipality_listing__multiple_codes_need_review": 50,
+    "municipality_listing__no_code_candidate": 4,
+    "municipality_listing__single_code_still_unverified": 44,
+    "river_register_2021__multiple_codes_need_review": 10,
+    "river_register_2021__no_code_candidate": 1,
+    "river_register_2021__single_code_still_unverified": 55
+  },
+  "approved_identity_links": 0,
+  "approved_prefecture_links": 0,
+  "approved_fish_occurrence_links": 0,
+  "scope": "source name and sometimes source watershed, no confirmed code-to-location mapping",
+  "publication_status": "research_only",
+  "notes": "Even unique name+watershed combinations are NOT approved as geographic identity or fish observation. Two-digit MLIT prefix is not prefecture."
+}
