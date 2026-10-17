@@ -26,3 +26,5 @@ jobs:
         run: python river-fish/inspect_official_zip.py
       - name: Inspect workbook layout and headers (coordinates masked)
         run: python river-fish/inspect_official_workbook.py
+      - name: Audit raw source biological categories without location data
+        run: python river-fish/audit_source_categories_v05.py
