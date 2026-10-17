@@ -50,6 +50,7 @@ def compute_one_region(region,output_root,zip_bytes,source_data):
     base_manifest.update(held_report)
     base_manifest.update({
         "region":region,"official_region":source_data["official_region"],
+        "source_title":"国土交通省 河川水辺の国勢調査 "+source_data["official_region"]+"地方・河川版・魚類",
         "source_url":source_data["source_url"],
         "source_sha256":observed_hash,
         "source_member":source_data["xlsx_member"],
