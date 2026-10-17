@@ -44,6 +44,12 @@ jobs:
           assert all(x["watershed"] and x["recorded_name"] and x["survey_year"].isdigit() for x in data)
           assert m["publication_status"]=="staged_not_published"
           assert len(data)<=50000
+          legacy=pathlib.Path("river-fish/official_chugoku_legacy_fish_candidates_v05.csv")
+          with legacy.open(encoding="utf-8",newline="") as f:
+              candidate=list(csv.DictReader(f))
+          assert len(candidate)==m["legacy_name_matched_candidate_combinations"]
+          assert all(x["review_status"]=="unapproved_mixed_legacy_category" for x in candidate)
+          print("legacy held candidates",len(candidate))
           print("validated aggregated rows",len(data),"source rows",m["source_rows"],"water systems",m["unique_watersheds"],"year range",min(m["years"]),max(m["years"]))
           PY
       - name: Keep a downloadable QA artifact even if Git push is unavailable
@@ -52,6 +58,7 @@ jobs:
           name: china-fish-official-reviewed-preview
           path: |
             river-fish/official_chugoku_watershed_year_fish_v05.csv
+            river-fish/official_chugoku_legacy_fish_candidates_v05.csv
             river-fish/official_chugoku_manifest_v05.json
           retention-days: 30
       - name: Add staged, sanitized output to PR branch (never main)
@@ -61,7 +68,7 @@ jobs:
           set -euo pipefail
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add river-fish/official_chugoku_watershed_year_fish_v05.csv river-fish/official_chugoku_manifest_v05.json
+          git add river-fish/official_chugoku_watershed_year_fish_v05.csv river-fish/official_chugoku_manifest_v05.json river-fish/official_chugoku_legacy_fish_candidates_v05.csv
           if git diff --staged --quiet; then
             echo "No data changes."
           else
