@@ -52,7 +52,8 @@ class UnifiedNationwideResearchV12(unittest.TestCase):
         x=search(self.db,prefecture="鳥取県",name="千代川",limit=30)
         self.assertGreater(x["total_source_mentions"],0)
         self.assertTrue(all(row["evidence_scope"].startswith("tottori_2023_pdf") for row in x["source_mentions"]))
-        self.assertTrue(all(row["specific_river_fish_occurrence"] is None for row in [])) # No joined fish table by design
+        self.assertTrue(all(row["fish_direct_observation"] is None for row in x["source_mentions"]))
+        self.assertTrue(all(row["national_river_code"] is None for row in x["source_mentions"]))
 
     def test_yamaguchi_same_name_two_municipalities_kept(self):
         x=search(self.db,prefecture="山口県",name="三谷川")
