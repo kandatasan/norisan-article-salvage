@@ -22,6 +22,7 @@ HEADERS={"C":"生物項目","F":"水系","G":"調査年度","J":"種名"}
 SOURCE_DESCRIPTION="国土交通省 河川水辺の国勢調査 中国地方・河川版・魚類"
 OUTPUT="official_chugoku_watershed_year_fish_v05.csv"
 MANIFEST="official_chugoku_manifest_v05.json"
+LEGACY="official_chugoku_legacy_fish_candidates_v05.csv"
 
 def get_official_zip():
     with urlopen(Request(SOURCE,headers={"User-Agent":"tsurikue-fish-database/0.5"}),timeout=90) as f:
@@ -88,8 +89,10 @@ def aggregate(records):
     for record in records:
         input_rows+=1
         if input_rows>1_000_000:raise ValueError("Unexpectedly large source")
+        if record.get("C")=="魚介類":
+            reject("mixed_fish_and_invertebrates_held_for_review");continue
         if record.get("C")!="魚類":
-            reject("not_fish_or_blank_category");continue
+            reject("unrecognized_biological_category");continue
         water=record.get("F","").strip()
         year=record.get("G","").strip()
         name=record.get("J","").strip()
@@ -118,7 +121,35 @@ def aggregate(records):
         "counting_rule":"one appearance per watershed x survey year x literal fish name",
         "important_species_note":"source provider excludes sensitive significant-species location records; absence is not absence in nature"}
 
-def export(folder,aggregated,manifest):
+def legacy_candidates(records,known_fish_labels):
+    """Legacy '魚介類' label mixes fish and invertebrates; whitelist exact fish
+    labels from unequivocal '魚類' records but keep separate, unapproved."""
+    candidates=set()
+    older_rows=0
+    excluded=0
+    for record in records:
+        if record.get("C")!="魚介類":continue
+        older_rows+=1
+        water=record.get("F","").strip()
+        name=record.get("J","").strip()
+        year=record.get("G","").strip()
+        if (not water or name not in known_fish_labels or
+            not re.fullmatch(r"(?:19|20)\d{2}",year) or year>"2026" or
+            len(water)>80 or len(name)>150 or
+            any(x[0] in "=+-@" for x in (water,name))):
+            excluded+=1
+            continue
+        candidates.add((water,year,name))
+    return sorted(candidates),{
+        "legacy_mixed_category_source_rows":older_rows,
+        "legacy_name_matched_candidate_combinations":len(candidates),
+        "legacy_rows_not_matched_or_invalid":excluded,
+        "legacy_publication_status":"review_required_not_in_search",
+        "legacy_criteria":"Exact name match against literal names already recorded with biological category 魚類"
+    }
+
+
+def export(folder,aggregated,manifest,legacy=()):
     folder=Path(folder)
     folder.mkdir(parents=True,exist_ok=True)
     with (folder/OUTPUT).open("w",encoding="utf-8",newline="") as f:
@@ -126,6 +157,11 @@ def export(folder,aggregated,manifest):
         w.writerow(["watershed","survey_year","recorded_name","source_url","source_sha256"])
         for water,year,name in aggregated:
             w.writerow([water,year,name,SOURCE,EXPECTED_SHA256])
+    with (folder/LEGACY).open("w",encoding="utf-8",newline="") as f:
+        w=csv.writer(f)
+        w.writerow(["watershed","survey_year","recorded_name","source_url","review_status"])
+        for water,year,name in legacy:
+            w.writerow([water,year,name,SOURCE,"unapproved_mixed_legacy_category"])
     (folder/MANIFEST).write_text(json.dumps(manifest,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
 
 if __name__=="__main__":
@@ -135,5 +171,7 @@ if __name__=="__main__":
     args=p.parse_args()
     raw,sha=get_official_zip()
     rows,manifest=aggregate(excel_rows(raw))
-    export(args.output_dir,rows,manifest)
+    legacy,legacy_stats=legacy_candidates(excel_rows(raw),{x[2] for x in rows})
+    manifest.update(legacy_stats)
+    export(args.output_dir,rows,manifest,legacy)
     print(json.dumps(manifest,ensure_ascii=False,indent=2))
