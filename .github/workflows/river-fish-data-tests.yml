@@ -33,6 +33,7 @@ jobs:
           python -m unittest discover -s river-fish -p 'test_national_river_codes_v07.py' -v
           python -m unittest discover -s river-fish -p 'test_national_river_catalog_v07.py' -v
           python -m unittest discover -s river-fish -p 'test_river_identity_ecology_v08.py' -v
+          python -m unittest discover -s river-fish -p 'test_historical_ledger_v09.py' -v
 
       - name: Verify real nine-region fish search when staged data is present
         run: |
