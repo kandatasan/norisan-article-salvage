@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/river-fish-source-probe.yml'
       - 'river-fish/inspect_official_zip.py'
+      - 'river-fish/inspect_official_workbook.py'
   workflow_dispatch:
 
 permissions:
@@ -23,3 +24,5 @@ jobs:
         run: python river-fish/inspect_official_index.py
       - name: Inspect ZIP contents and public CSV headers (no record-level locations)
         run: python river-fish/inspect_official_zip.py
+      - name: Inspect workbook layout and headers (coordinates masked)
+        run: python river-fish/inspect_official_workbook.py
