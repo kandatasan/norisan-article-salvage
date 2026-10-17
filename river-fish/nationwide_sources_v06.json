@@ -10,8 +10,15 @@
       "download_name": "RT81_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT81_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "5f1f540b19d13286cc4c89ab4a1cf9641d2f9f4db0a610a52d76b9a1f30711af",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT81_B01/魚類_北海道.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "tohoku",
@@ -19,8 +26,15 @@
       "download_name": "RT82_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT82_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "a475a1a66424d4d02ac894b0a7ae9bf64999bd92a4b6111821b673c8a3807b04",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT82_B01/魚類_東北.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "kanto",
@@ -28,8 +42,15 @@
       "download_name": "RT83_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT83_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "c9bd9076b11e3b38d83d0af23d3cc9841855ccbbab209fdc2c658d75f836fadd",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT83_B01/魚類_関東.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "hokuriku",
@@ -37,8 +58,15 @@
       "download_name": "RT84_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT84_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "9538c31c0c59736570f79c8a35d0215fb1fade547876e483b835913f41e315a3",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT84_B01/魚類_北陸.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "chubu",
@@ -46,8 +74,15 @@
       "download_name": "RT85_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "52684fb20e4e48ecccefbe8981f1cb7e4f1b40d6e463e35e8992e9ba170bbd88",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT85_B01/魚類_中部.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "kinki",
@@ -55,8 +90,15 @@
       "download_name": "RT86_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT86_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "7ea7fde1fd1e64a3a3d74746de3d09433f511e05d1f906abd311ca6af2a5a54c",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT86_B01/魚類_近畿.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "chugoku",
@@ -65,7 +107,14 @@
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
       "kind": "river_fish_confirmed_species_list",
       "checksum_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e",
-      "status": "processed_v05"
+      "status": "processed_v05",
+      "xlsx_member": "RT87_B01/魚類_中国.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "shikoku",
@@ -73,8 +122,15 @@
       "download_name": "RT88_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT88_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "36e8bce43a62337d0f0666c6b7da7350209b522a0ac09f6c0a4be2443389c803",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT88_B01/魚類_四国.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     },
     {
       "region_id": "kyushu",
@@ -82,8 +138,15 @@
       "download_name": "RT89_B01.zip",
       "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B01.zip",
       "kind": "river_fish_confirmed_species_list",
-      "checksum_sha256": null,
-      "status": "unverified_structure_not_imported"
+      "checksum_sha256": "0b22c8da70798c60a40b0073a5f73c151cbe4c2ae14b1ea2ef3a5ece4017d478",
+      "status": "source_checked_header_ok_pending_import",
+      "xlsx_member": "RT89_B01/魚類_九州.xlsx",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
     }
   ],
   "uncovered": [
@@ -94,5 +157,12 @@
     }
   ],
   "publication_status": "research_only",
-  "note": "Public data reuse possible with provenance and processing statement; source has withheld locations for important species."
+  "note": "Public data reuse possible with provenance and processing statement; source has withheld locations for important species.",
+  "audit": {
+    "date": "2026-10-18",
+    "method": "9 parallel GitHub Actions jobs, source-index presence + ZIP SHA256 + XLSX first-row schema",
+    "workflow_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/39070317021",
+    "region_archives_verified": 9,
+    "source_payloads_stored": false
+  }
 }
