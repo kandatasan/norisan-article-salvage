@@ -1,0 +1,109 @@
+name: Build nine-region MLIT river fish dataset (review branch only)
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/river-fish-national-stage-v06.yml'
+      - 'river-fish/aggregate_nationwide_region_v06.py'
+      - 'river-fish/aggregate_official_workbook.py'
+      - 'river-fish/nationwide_sources_v06.json'
+
+permissions:
+  contents: write
+
+jobs:
+  stage:
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/river-fish-nationwide-sources-v06-20261018'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 4
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate pure-code source safety
+        run: python -m unittest discover -s river-fish -p 'test_nationwide_v06.py' -v
+      - name: Read pinned official XLSX and save only aggregated, non-location records
+        run: python river-fish/aggregate_nationwide_region_v06.py --region "${{ matrix.region }}" --out river-fish/nationwide-staged
+      - name: Package source-checked staging outputs
+        run: tar -czf "/tmp/${{ matrix.region }}.tar.gz" -C river-fish/nationwide-staged "${{ matrix.region }}"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: nationwide-fish-${{ matrix.region }}
+          path: /tmp/${{ matrix.region }}.tar.gz
+          retention-days: 30
+          if-no-files-found: error
+
+  collect:
+    needs: [stage]
+    if: github.event.pull_request.head.repo.full_name == github.repository && github.head_ref == 'feat/river-fish-nationwide-sources-v06-20261018'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: true
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: nationwide-fish-*
+          path: /tmp/national-fish-archives
+          merge-multiple: true
+      - name: Unpack nine independently audited regions
+        run: |
+          set -euo pipefail
+          mkdir -p river-fish/nationwide-staged
+          test "$(find /tmp/national-fish-archives -name '*.tar.gz' | wc -l)" -eq 9
+          for f in /tmp/national-fish-archives/*.tar.gz; do
+            tar -xzf "$f" -C river-fish/nationwide-staged
+          done
+      - name: Strict non-location schema and completeness checks
+        run: |
+          python - <<'PY'
+          import csv,json,pathlib
+          root=pathlib.Path("river-fish/nationwide-staged")
+          expect={"hokkaido","tohoku","kanto","hokuriku","chubu","kinki","chugoku","shikoku","kyushu"}
+          assert {d.name for d in root.iterdir() if d.is_dir()}==expect
+          region_sum=0
+          for name in sorted(expect):
+              p=root/name
+              m=json.loads((p/"manifest.json").read_text(encoding="utf-8"))
+              with (p/"watershed_year_fish.csv").open(encoding="utf-8",newline="") as f:
+                  rows=list(csv.DictReader(f))
+              with (p/"legacy_mixed_category_candidates.csv").open(encoding="utf-8",newline="") as f:
+                  legacy=list(csv.DictReader(f))
+              assert len(rows)==m["aggregated_records"]
+              assert len(legacy)==m["legacy_name_matched_candidate_combinations"]
+              assert m["region"]==name and m["prefecture_mapping"]=="not_inferred"
+              assert m["status"]=="staged_not_published"
+              assert 100<=len(rows)<=40000
+              assert all(r["region"]==name for r in rows)
+              assert all(r["review_status"]=="review_required_not_searchable" for r in legacy)
+              region_sum+=len(rows)
+              print(name,"accepted",len(rows),"legacy held",len(legacy),"water systems",m["unique_watersheds"])
+          assert 2000<=region_sum<=300000
+          print("NATIONAL_STAGING_RECORDS",region_sum)
+          PY
+      - name: Commit sanitized staged output to dedicated PR branch only
+        env:
+          REVIEW_HEAD: ${{ github.head_ref }}
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add river-fish/nationwide-staged/
+          if git diff --staged --quiet; then
+            echo 'Already staged; no commit.'
+          else
+            git commit -m 'Stage nine-region official watershed-year fish survey records for QA'
+            git push origin "HEAD:refs/heads/$REVIEW_HEAD"
+          fi
