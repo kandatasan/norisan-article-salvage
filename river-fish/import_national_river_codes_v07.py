@@ -67,7 +67,7 @@ def decode(raw):
         except (UnicodeDecodeError,LookupError):continue
     raise ValueError("Unknown HTML encoding; manual review required")
 
-def parse_list(html,kind):
+def parse_list(html,kind,min_count=None):
     if kind not in ("river","watershed"):raise ValueError("Unexpected list kind")
     parser=TableRows();parser.feed(html)
     width=10 if kind=="river" else 6
@@ -82,7 +82,7 @@ def parse_list(html,kind):
             if matched[code]!=name:raise ValueError("Conflicting names under one code: "+code)
             dups+=1
         matched[code]=name
-    minimum=20_000 if kind=="river" else 3_000
+    minimum=(20_000 if kind=="river" else 3_000) if min_count is None else min_count
     if len(matched)<minimum:
         raise ValueError(f"Too few {kind} records: {len(matched)}; source HTML may have changed")
     return matched,{"html_table_rows":len(parser.rows),"same_code_duplicate_rows":dups}
