@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - '.github/workflows/river-fish-source-probe.yml'
+      - 'river-fish/inspect_official_zip.py'
   workflow_dispatch:
 
 permissions:
@@ -20,3 +21,5 @@ jobs:
           python-version: '3.12'
       - name: Inspect publicly available NILIM data index (no imports)
         run: python river-fish/inspect_official_index.py
+      - name: Inspect ZIP contents and public CSV headers (no record-level locations)
+        run: python river-fish/inspect_official_zip.py
