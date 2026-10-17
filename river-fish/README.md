@@ -36,3 +36,33 @@
 国土交通省「日本の川」（各CSV行のURL）と、広島県「レッドデータブックひろしま2021」、広島県内水面漁業協同組合連合会「アカザ」を参照して**つりくえ！側で編集・加工**。
 
 [国交省の利用条件](https://www.nilim.go.jp/lab/fbg/ksnkankyo/Mokj_chui.htm) により、出典・加工の明記が必要。写真や別権利者の著作物は転載していない。行政公開資料であっても、別出典は個別に利用条件を確認すること。
+
+## v0.4 外来種検索フィルター（2026-10-17）
+
+- `alien_origin_v04.csv`: **水系単位**で根拠を確認できた2件（岡山県・高梁川水系／オオクチバス・ブルーギル）。
+- `legal_designations_v04.csv`: **種に対する全国の法令指定**2件。原産区分と法律上の指定は独立して保存。
+- `search_v04.py`: 標準和名、地方名、都道府県、水系、外来種区分の検索。Python標準ライブラリのみ。
+- `test_search_v04.py`: 在来種・国内外来種を推測しないことを含む10件のテスト。専用の読み取り専用CIを追加（WP操作なし）。
+
+### 実行方法
+
+```bash
+python3 river-fish/search_v04.py --name てんきり --prefecture 広島県
+python3 river-fish/search_v04.py --prefecture 岡山県 --alien alien
+python3 river-fish/search_v04.py --prefecture 岡山県 --alien regulated
+python3 -m unittest discover -s river-fish -p 'test_search_v04.py' -v
+```
+
+フィルターは `all`（全部）、`alien`（国外＋国内由来）、`foreign`（国外由来）、`domestic`（国内由来）、`native`（在来）、`regulated`（特定外来生物）、`unknown`（未判定）。
+
+**現時点では2種以外の外来種判定は未収録。** 在来と未判定を混同しないため `native` や `domestic` が0件になることがある。0件は実際の不在や分類の否定ではない。
+
+2026年9月1日施行の追加指定は、「オヤニラミ属のうちオヤニラミ**以外**」。オヤニラミ自体を特定外来生物と誤分類しない。2026年9月11日改訂の外来種リストの魚類全件取り込みは**未完了**。
+
+**根拠**:
+- 国土交通省 [高梁川の自然環境](https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0706_takahashi/0706_takahashi_04.html)
+- 環境省 [特定外来生物等一覧](https://www.env.go.jp/nature/intro/2outline/list.html)
+- 環境省 [2026年版生態系被害防止外来種リスト改訂](https://www.env.go.jp/press/press_05557.html)
+- 環境省 [2026年9月1日の追加指定](https://www.env.go.jp/press/press_05457.html)
+
+注意: ここにあるのは **公開資料の検索用CSVとプログラム**。サーバーDB接続、WordPress投稿、検索エンジン向け公開HTML生成は未実施。希少種の詳細位置や座標は含まない。
