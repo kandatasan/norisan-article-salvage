@@ -29,6 +29,9 @@
   ],
   "aggregated_records": 2285,
   "discarded_rows": 13619,
+  "discarded_by_reason": {
+    "not_fish_or_blank_category": 13619
+  },
   "publication_status": "staged_not_published",
   "prefecture_mapping": "not_inferred",
   "excluded_columns": "station, river section, distances, exact date/time, weather, abundance, site codes",
