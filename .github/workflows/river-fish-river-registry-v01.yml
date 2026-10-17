@@ -6,6 +6,9 @@ on:
       - 'river-fish/river_registry_hiroshima_v01.csv'
       - 'river-fish/river_registry_v01.py'
       - 'river-fish/test_river_registry_v01.py'
+      - 'river-fish/river_name_mentions_hiroshima_v02.csv'
+      - 'river-fish/river_mentions_v02.py'
+      - 'river-fish/test_river_mentions_v02.py'
       - '.github/workflows/river-fish-river-registry-v01.yml'
   push:
     branches: [main]
@@ -13,6 +16,9 @@ on:
       - 'river-fish/river_registry_hiroshima_v01.csv'
       - 'river-fish/river_registry_v01.py'
       - 'river-fish/test_river_registry_v01.py'
+      - 'river-fish/river_name_mentions_hiroshima_v02.csv'
+      - 'river-fish/river_mentions_v02.py'
+      - 'river-fish/test_river_mentions_v02.py'
       - '.github/workflows/river-fish-river-registry-v01.yml'
 
 permissions:
@@ -28,7 +34,21 @@ jobs:
         with:
           python-version: '3.12'
       - name: Unit tests
-        run: python -m unittest discover -s river-fish -p 'test_river_registry_v01.py' -v
+        run: |
+          python -m unittest discover -s river-fish -p 'test_river_registry_v01.py' -v
+          python -m unittest discover -s river-fish -p 'test_river_mentions_v02.py' -v
+      - name: Build v0.2 mention catalog with source-status separation
+        run: |
+          python river-fish/river_mentions_v02.py --build --db /tmp/hiroshima_river_mentions_v02.sqlite
+          python - <<'PY'
+          import sqlite3
+          c=sqlite3.connect('/tmp/hiroshima_river_mentions_v02.sqlite')
+          assert c.execute('select count(*) from rivers').fetchone()[0]==66
+          assert c.execute('select count(*) from river_name_mentions').fetchone()[0]==98
+          assert c.execute('select count(*) from direct_river_fish_evidence').fetchone()[0]==0
+          assert c.execute('pragma integrity_check').fetchone()[0]=='ok'
+          print('River mention catalog QA OK')
+          PY
       - name: Build isolated SQLite and verify counts
         run: |
           python river-fish/river_registry_v01.py --build --db /tmp/hiroshima_river_registry.sqlite
