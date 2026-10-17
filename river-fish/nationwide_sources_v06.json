@@ -1,0 +1,98 @@
+{
+  "version": "0.6-research",
+  "verified_index_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/dl_00_index.html",
+  "terms_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/Mokj_chui.htm",
+  "scope": "MLIT national census survey—primarily nationally administered river sections, not every Japanese river",
+  "region_sources": [
+    {
+      "region_id": "hokkaido",
+      "official_region": "北海道",
+      "download_name": "RT81_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT81_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    },
+    {
+      "region_id": "tohoku",
+      "official_region": "東北",
+      "download_name": "RT82_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT82_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    },
+    {
+      "region_id": "kanto",
+      "official_region": "関東",
+      "download_name": "RT83_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT83_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    },
+    {
+      "region_id": "hokuriku",
+      "official_region": "北陸",
+      "download_name": "RT84_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT84_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    },
+    {
+      "region_id": "chubu",
+      "official_region": "中部",
+      "download_name": "RT85_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    },
+    {
+      "region_id": "kinki",
+      "official_region": "近畿",
+      "download_name": "RT86_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT86_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    },
+    {
+      "region_id": "chugoku",
+      "official_region": "中国",
+      "download_name": "RT87_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e",
+      "status": "processed_v05"
+    },
+    {
+      "region_id": "shikoku",
+      "official_region": "四国",
+      "download_name": "RT88_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT88_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    },
+    {
+      "region_id": "kyushu",
+      "official_region": "九州",
+      "download_name": "RT89_B01.zip",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B01.zip",
+      "kind": "river_fish_confirmed_species_list",
+      "checksum_sha256": null,
+      "status": "unverified_structure_not_imported"
+    }
+  ],
+  "uncovered": [
+    {
+      "region": "沖縄",
+      "status": "no_river_version_on_official_index",
+      "next_step": "separate prefectural/academic/local surveys"
+    }
+  ],
+  "publication_status": "research_only",
+  "note": "Public data reuse possible with provenance and processing statement; source has withheld locations for important species."
+}
