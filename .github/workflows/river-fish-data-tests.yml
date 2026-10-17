@@ -36,6 +36,8 @@ jobs:
           python -m unittest discover -s river-fish -p 'test_historical_ledger_v09.py' -v
           python -m unittest discover -s river-fish -p 'test_municipality_sources_v09.py' -v
           python -m unittest discover -s river-fish -p 'test_chugoku_registry_v10.py' -v
+          python -m unittest discover -s river-fish -p 'test_tottori_river_pdfs_v11.py' -v
+          python -m unittest discover -s river-fish -p 'test_tottori_detailed_registry_v11.py' -v
 
       - name: Verify real nine-region fish search when staged data is present
         run: |

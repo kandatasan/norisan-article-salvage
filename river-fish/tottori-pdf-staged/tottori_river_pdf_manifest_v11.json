@@ -1,0 +1,60 @@
+{
+  "source_listing_page": "https://www.pref.tottori.lg.jp/307111.htm",
+  "source_as_of": "2023-04-01",
+  "districts": {
+    "east": {
+      "records": 141,
+      "category_counts": {
+        "一級河川": 87,
+        "二級河川": 38,
+        "準用河川": 16
+      },
+      "rejected_candidate_tokens": {
+        "not_a_river_name": 9
+      },
+      "source_url": "https://www.pref.tottori.lg.jp/secure/1313532/toubu.pdf",
+      "source_sha256": "d04b8a4e89b9a41a20e415e0682848eef397bcee7bab182eaf3472ba077f47b4",
+      "source_pages": 6
+    },
+    "central": {
+      "records": 114,
+      "category_counts": {
+        "一級河川": 32,
+        "二級河川": 49,
+        "準用河川": 33
+      },
+      "rejected_candidate_tokens": {
+        "not_a_river_name": 8
+      },
+      "source_url": "https://www.pref.tottori.lg.jp/secure/1313532/230401chubu.pdf",
+      "source_sha256": "92ad51661b8ceaca84d932251151ddb3fbeb3ca2c5705b4e4cdacba3ba539af4",
+      "source_pages": 4
+    },
+    "west": {
+      "records": 122,
+      "category_counts": {
+        "一級河川": 64,
+        "二級河川": 27,
+        "準用河川": 31
+      },
+      "rejected_candidate_tokens": {
+        "not_a_river_name": 9
+      },
+      "source_url": "https://www.pref.tottori.lg.jp/secure/1313532/230401seibu.pdf",
+      "source_sha256": "a73c577608046a91aa54315f43246aa1e83190712e16831544e807ed04a3c6d5",
+      "source_pages": 4
+    }
+  },
+  "pdf_text_source_mention_rows": 377,
+  "distinct_printed_name_labels": 335,
+  "by_page_heading": {
+    "一級河川": 183,
+    "二級河川": 114,
+    "準用河川": 80
+  },
+  "all_codes_unlinked": true,
+  "watershed_blank_means_not_on_same_row": true,
+  "no_geolocation_or_species_inferred": true,
+  "publication_status": "research_only_pending_visual_review",
+  "source_republication": "Only extracted factual river names/metadata, no PDF pages or geometry copied."
+}
