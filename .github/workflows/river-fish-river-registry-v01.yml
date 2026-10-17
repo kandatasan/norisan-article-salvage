@@ -1,0 +1,44 @@
+name: River registry QA (Hiroshima seed)
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/river_registry_hiroshima_v01.csv'
+      - 'river-fish/river_registry_v01.py'
+      - 'river-fish/test_river_registry_v01.py'
+      - '.github/workflows/river-fish-river-registry-v01.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/river_registry_hiroshima_v01.csv'
+      - 'river-fish/river_registry_v01.py'
+      - 'river-fish/test_river_registry_v01.py'
+      - '.github/workflows/river-fish-river-registry-v01.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Unit tests
+        run: python -m unittest discover -s river-fish -p 'test_river_registry_v01.py' -v
+      - name: Build isolated SQLite and verify counts
+        run: |
+          python river-fish/river_registry_v01.py --build --db /tmp/hiroshima_river_registry.sqlite
+          python river-fish/river_registry_v01.py --db /tmp/hiroshima_river_registry.sqlite --name 諸木川
+          python - <<'PY'
+          import sqlite3
+          c=sqlite3.connect('/tmp/hiroshima_river_registry.sqlite')
+          assert c.execute('select count(*) from rivers').fetchone()[0]==66
+          assert c.execute('select count(*) from direct_river_fish_evidence').fetchone()[0]==0
+          assert c.execute('select count(*) from watershed_fish_context').fetchone()[0]==2285
+          assert c.execute('pragma integrity_check').fetchone()[0]=='ok'
+          print('River registry QA OK: no WordPress or public website writes')
+          PY
