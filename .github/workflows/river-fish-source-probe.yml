@@ -6,6 +6,7 @@ on:
       - '.github/workflows/river-fish-source-probe.yml'
       - 'river-fish/inspect_official_zip.py'
       - 'river-fish/inspect_official_workbook.py'
+      - 'river-fish/audit_source_categories_v05.py'
   workflow_dispatch:
 
 permissions:
