@@ -9,6 +9,9 @@ on:
       - 'river-fish/river_name_mentions_hiroshima_v02.csv'
       - 'river-fish/river_mentions_v02.py'
       - 'river-fish/test_river_mentions_v02.py'
+      - 'river-fish/national_registry_v06.py'
+      - 'river-fish/test_national_registry_v06.py'
+      - 'river-fish/japan_prefectures_v06.csv'
       - '.github/workflows/river-fish-river-registry-v01.yml'
   push:
     branches: [main]

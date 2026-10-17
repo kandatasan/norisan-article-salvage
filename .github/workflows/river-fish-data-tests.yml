@@ -27,3 +27,29 @@ jobs:
         run: |
           python -m unittest discover -s river-fish -p 'test_search_v04.py' -v
           python -m unittest discover -s river-fish -p 'test_*v05.py' -v
+          python -m unittest discover -s river-fish -p 'test_nationwide_v06.py' -v
+          python -m unittest discover -s river-fish -p 'test_national_registry_v06.py' -v
+          python -m unittest discover -s river-fish -p 'test_nationwide_search_v06.py' -v
+
+      - name: Verify real nine-region fish search when staged data is present
+        run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,'river-fish')
+          from pathlib import Path
+          from search_nationwide_v06 import search
+          stage=Path('river-fish/nationwide-staged')
+          if not stage.exists():
+              print('No national staging data in this revision; no claims about nationwide readiness.')
+          else:
+              result=search(limit=5)
+              assert result['total']==18814, result['total']
+              assert len(result['loaded_regions'])==9
+              assert all(x['prefecture'] is None for x in result['records'])
+              assert all(x['river_name'] is None for x in result['records'])
+              assert all(x['direct_tributary_evidence'] is False for x in result['records'])
+              fish=search(region='kyushu',name='アユ',limit=5)
+              assert fish['total']>0
+              assert all(x['source_region']=='kyushu' for x in fish['records'])
+              print('Nationwide fish search passed:',result['total'],'records over',len(result['loaded_regions']),'source regions')
+          PY

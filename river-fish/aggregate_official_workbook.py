@@ -34,11 +34,11 @@ def get_official_zip():
         raise ValueError("Official ZIP changed. Reinspect source and update pinned hash with review.")
     return raw,digest
 
-def excel_rows(zip_bytes):
+def excel_rows(zip_bytes, member=MEMBER):
     """Read ONLY the public book's specific columns using stdlib streaming XML."""
     with ZipFile(BytesIO(zip_bytes)) as outer:
-        if MEMBER not in outer.namelist():raise ValueError("Unexpected workbook name")
-        inner=outer.read(MEMBER)
+        if member not in outer.namelist():raise ValueError("Unexpected workbook name")
+        inner=outer.read(member)
     with ZipFile(BytesIO(inner)) as z:
         if "xl/sharedStrings.xml" not in z.namelist():raise ValueError("Missing string table")
         if z.getinfo("xl/worksheets/sheet1.xml").file_size>300_000_000:raise ValueError("Unexpected sheet size")
