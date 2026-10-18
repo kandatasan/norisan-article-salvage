@@ -124,6 +124,10 @@
     async function search(){
       if(!catalog){reset("データの準備が必要です。");return;}
       const params=new URLSearchParams(new FormData(form));
+      // PHP collapses repeated bare query names. Use group[] for multiple selections.
+      const groups=params.getAll("group");
+      params.delete("group");
+      groups.forEach(g=>params.append("group[]",g));
       params.set("direction",direction);
       params.set("watershed_match",exact?"exact":"contains");
       params.set("page",String(page));params.set("per_page","20");
