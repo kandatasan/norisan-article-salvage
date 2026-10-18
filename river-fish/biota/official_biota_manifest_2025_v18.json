@@ -1,0 +1,27 @@
+{
+  "edition": "2025_reference_only",
+  "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/mizukokuweb/system/DownLoad/List/R07List/R07zenseibutsu.xlsx",
+  "source_index": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/mizukokuweb/system/seibutsuListfile.htm",
+  "usage_terms": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/Mokj_chui.htm",
+  "official_version_note": "2025-10-10 list; fish list revised 2025-11-27. 2026 plankton revision not yet applied",
+  "source_workbook_sha256": "03076134d87d6d5ee96c0f6c4ca5d052b43df2b29e3fe144418d8f5e0e7cbfb1",
+  "staged_csv_sha256": "6d314ed5c341790b6c21be8f10f6fcdb030d091a25ec194897a640cb02138163",
+  "source_workbook_data_rows_including_structural": 37812,
+  "excluded_structural_rows_without_taxon_code": 164,
+  "reference_rows": 37648,
+  "distinct_japanese_labels_not_species_count": 37632,
+  "distinct_taxon_code_and_literal_name_pairs": 37648,
+  "category_membership_counts_not_distinct_species": {
+    "plankton": 365,
+    "benthic_animals": 5642,
+    "terrestrial_insects": 27213,
+    "fish": 1063,
+    "birds": 699,
+    "amphibians_reptiles_mammals": 372,
+    "plants": 5842
+  },
+  "sensitive_locations_in_data": false,
+  "contains_species_occurrence_or_river_presence": false,
+  "publication_status": "research_only_not_wordpress",
+  "note": "Official list rows may include genus/complex/higher-rank entries; some organisms occur in multiple survey groups. Empty species observation is not absence."
+}

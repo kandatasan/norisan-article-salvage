@@ -1,0 +1,50 @@
+name: National biological name catalogue QA v1.8
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/**'
+      - '.github/workflows/river-biota-v18-tests.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/biota/**'
+      - '.github/workflows/river-biota-v18-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verified-official-biota:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check official 2025 biological name reference and surveyed fish without geographic joining
+        run: |
+          python -m unittest discover -s river-fish/biota -p 'test_biota_catalog_v18.py' -v
+      - name: Validate standalone national biology CLI
+        run: |
+          python river-fish/biota/build_biota_catalog_v18.py --build --db "$RUNNER_TEMP/tsurikue-biota.sqlite" > "$RUNNER_TEMP/biota-stats.json"
+          python river-fish/biota/build_biota_catalog_v18.py --db "$RUNNER_TEMP/tsurikue-biota.sqlite" --name アユ --group fish --limit 5 > "$RUNNER_TEMP/biota-ayu.json"
+          python river-fish/biota/build_biota_catalog_v18.py --db "$RUNNER_TEMP/tsurikue-biota.sqlite" --group benthic_animals --limit 5 > "$RUNNER_TEMP/biota-benthic.json"
+          python - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ['RUNNER_TEMP'])
+          m=json.loads((root/'biota-stats.json').read_text())
+          assert m['official_taxon_reference_rows']==37648
+          assert m['national_watershed_year_fish_evidence']==18814
+          assert m['wordpress_modified'] is False
+          a=json.loads((root/'biota-ayu.json').read_text())
+          assert a['total_reference_names']>0
+          assert a['total_fish_survey_records']>0
+          assert a['reference_names'][0]['confirmed_river_presence'] is None
+          b=json.loads((root/'biota-benthic.json').read_text())
+          assert b['total_reference_names']>0
+          assert b['total_fish_survey_records']==0
+          print('BIOLOGY_NAME_CATALOG_QA_OK')
+          PY
