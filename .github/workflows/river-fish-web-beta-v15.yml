@@ -1,0 +1,69 @@
+name: Build offline nationwide river search beta v1.5
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/**'
+      - '.github/workflows/river-fish-web-beta-v15.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/**'
+      - '.github/workflows/river-fish-web-beta-v15.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  beta-qa-and-package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Python QA of official data and safe offline package
+        run: python -m unittest discover -s river-fish -p 'test_river_beta_v15.py' -v
+      - name: Assemble research-only nationwide beta with all three real datasets
+        run: |
+          python river-fish/build_river_beta_v15.py \
+            --out "$RUNNER_TEMP/tsurikue-river-beta" \
+            --zip "$RUNNER_TEMP/tsurikue-river-search-beta.zip"
+      - name: Check script syntax and actual browser search logic
+        run: |
+          node --check river-fish/web-beta/search-core.js
+          node --check river-fish/web-beta/app.js
+          node --check "$RUNNER_TEMP/tsurikue-river-beta/data.js"
+          node river-fish/test_river_beta_search_v15.cjs "$RUNNER_TEMP/tsurikue-river-beta"
+      - name: Confirm generated offline assets and distinct source scopes
+        run: |
+          python - <<'PY'
+          import json,os,pathlib,zipfile
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          output=root/"tsurikue-river-beta"
+          m=json.loads((output/"manifest.json").read_text(encoding="utf-8"))
+          assert m["counts"]=={"rivers":35449,"sourceMentions":1449,"fishCensus":18814,"prefectures":47}
+          assert m["status"]=="offline_preview_only_not_WordPress_published"
+          assert m["requires_network"] is False
+          html=(output/"index.html").read_text(encoding="utf-8")
+          for name in ("data.js","app.js","search-core.js","style.css"):
+              assert (output/name).is_file()
+              assert name in html
+          z=root/"tsurikue-river-search-beta.zip"
+          with zipfile.ZipFile(z) as f:
+              assert f.testzip() is None
+              assert len(f.namelist())==6
+          print("OFFLINE_RIVER_BETA_READY",z.stat().st_size,"bytes")
+          PY
+      - name: Attach portable ZIP with index.html (no hosting or WordPress publication)
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsurikue-national-river-search-beta-v15
+          path: \${{ runner.temp }}/tsurikue-river-search-beta.zip
+          retention-days: 30
+          if-no-files-found: error
