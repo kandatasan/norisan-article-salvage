@@ -85,7 +85,7 @@ class BenthicNineRegionsV19(unittest.TestCase):
     def test_new_benthic_source_does_not_delete_old_fish(self):
         x=search(self.db,survey_name="アユ",region="chugoku",limit=20)
         self.assertGreater(x["total_fish_survey_records"],0)
-        self.assertEqual(x["total_benthic_survey_records"],x["total_benthic_survey_records"])
+        self.assertEqual(x["total_benthic_survey_records"],0)
         self.assertTrue(all(r["region"]=="chugoku" for r in x["fish_survey_records"]))
 
     def test_query_safe_literals(self):
