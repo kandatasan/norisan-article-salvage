@@ -23,6 +23,9 @@ on:
       - 'river-fish/biota/import_national_plants_v27.py'
       - 'river-fish/biota/build_four_group_dataset_v27.py'
       - 'river-fish/biota/test_plant_import_v27.py'
+      - 'river-fish/wp-plugin/tsurikue-biota-search/**'
+      - 'river-fish/build_wp_biota_plugin_v28.py'
+      - 'river-fish/test_wp_biota_runtime_v28.php'
       - '.github/workflows/river-benthic-v19.yml'
   push:
     branches: [main]
@@ -47,6 +50,9 @@ on:
       - 'river-fish/biota/import_national_plants_v27.py'
       - 'river-fish/biota/build_four_group_dataset_v27.py'
       - 'river-fish/biota/test_plant_import_v27.py'
+      - 'river-fish/wp-plugin/tsurikue-biota-search/**'
+      - 'river-fish/build_wp_biota_plugin_v28.py'
+      - 'river-fish/test_wp_biota_runtime_v28.php'
       - '.github/workflows/river-benthic-v19.yml'
   workflow_dispatch:
 
@@ -380,6 +386,33 @@ jobs:
             ${{ runner.temp }}/ota-plants-v27.json
           retention-days: 14
           if-no-files-found: error
+      - name: Package separately verified 408,036-row biota WordPress ZIP (never deploy)
+        run: |
+          python river-fish/build_wp_biota_plugin_v28.py \
+            --db "$RUNNER_TEMP/biota-snapshot-v27.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v27.json" \
+            --out "$RUNNER_TEMP/biota-wp-package-v28" \
+            --zip "$RUNNER_TEMP/tsurikue-biota-search.zip" > "$RUNNER_TEMP/biota-wp-zip-status.json"
+          python - <<'PY'
+          import hashlib,json,os,pathlib,zipfile
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"tsurikue-biota-search.zip"
+          with zipfile.ZipFile(p) as z:
+              assert z.testzip() is None
+              m=json.loads(z.read("tsurikue-biota-search/data/manifest.json"))
+              assert m["total"]==408036
+              assert m["counts"]=={"fish":18814,"benthic_animals":74949,"birds":44093,"plants":270180}
+              assert m["publication_status"]=="not_imported_until_manual_admin_action"
+              c=z.read("tsurikue-biota-search/data/survey_evidence.csv")
+              assert hashlib.sha256(c).hexdigest()==m["sha256_csv"]
+          print("WORDPRESS_BIOTA_INSTALLABLE_ZIP_TEST_PASS",p.stat().st_size)
+          PY
+      - name: Upload manually installable, non-deployed biota WordPress plugin ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsurikue-biota-wordpress-preview-v28
+          path: ${{ runner.temp }}/tsurikue-biota-search.zip
+          retention-days: 30
+          if-no-files-found: error
       - name: Upload independently audited regional context and research SQLite, not WordPress
         uses: actions/upload-artifact@v4
         with:
@@ -390,3 +423,52 @@ jobs:
             ${{ runner.temp }}/benthic-results.json
           retention-days: 14
           if-no-files-found: error
+
+  isolated-wordpress-biota-acceptance:
+    needs: consolidated-biological-search
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: biota_test_password_only
+          MYSQL_DATABASE: biota_wordpress_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -pbiota_test_password_only"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, mysqli, curl, zip
+          coverage: none
+      - uses: actions/download-artifact@v4
+        with:
+          name: tsurikue-biota-wordpress-preview-v28
+          path: ${{ runner.temp }}
+      - name: Install fresh disposable WP and 4-group biota ZIP, no user website
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "$RUNNER_TEMP/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+          mkdir -p "$RUNNER_TEMP/test-wordpress"
+          php "$RUNNER_TEMP/wp-cli.phar" core download --path="$RUNNER_TEMP/test-wordpress" --quiet
+          php "$RUNNER_TEMP/wp-cli.phar" config create --path="$RUNNER_TEMP/test-wordpress" \
+            --dbname=biota_wordpress_test --dbuser=root --dbpass=biota_test_password_only \
+            --dbhost=127.0.0.1 --skip-check --quiet
+          php "$RUNNER_TEMP/wp-cli.phar" core install --path="$RUNNER_TEMP/test-wordpress" \
+            --url=https://biota-wp-isolated.example.test --title="Biota isolated QA" \
+            --admin_user=admin --admin_password=test_admin_only \
+            --admin_email=qa@example.test --skip-email --quiet
+          php "$RUNNER_TEMP/wp-cli.phar" plugin install "$RUNNER_TEMP/tsurikue-biota-search.zip" \
+            --path="$RUNNER_TEMP/test-wordpress" --activate --quiet
+      - name: Actually import 408k official survey names, test REST and old generation protection
+        run: |
+          php "$RUNNER_TEMP/wp-cli.phar" eval-file \
+            "$GITHUB_WORKSPACE/river-fish/test_wp_biota_runtime_v28.php" \
+            --path="$RUNNER_TEMP/test-wordpress"
