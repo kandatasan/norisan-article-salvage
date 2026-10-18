@@ -1,0 +1,100 @@
+{
+  "version": "v2.5 source pins from verified national river-edition bird audit v2.4",
+  "verified_index_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/dl_00_index.html",
+  "terms_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/Mokj_chui.htm",
+  "checked_at": "2026-10-18",
+  "original_category": "鳥類",
+  "checked_schema": {
+    "C": "生物項目",
+    "F": "水系",
+    "G": "調査年度",
+    "J": "種名"
+  },
+  "geography": "region_watershed_year_only_no_prefecture_or_individual_river",
+  "publication_status": "research_only",
+  "wordpress_modified": false,
+  "total_expected_unique_records": 44093,
+  "regions": [
+    {
+      "region": "hokkaido",
+      "official_region": "北海道",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT81_B04.zip",
+      "checksum_sha256": "9164332af42f47dd0160115389380151592c9442cd387611a881dda97d527b7d",
+      "xlsx_member": "RT81_B04/鳥類_北海道.xlsx",
+      "audited_source_rows": 104297,
+      "expected_aggregated_records": 5403
+    },
+    {
+      "region": "tohoku",
+      "official_region": "東北",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT82_B04.zip",
+      "checksum_sha256": "da51118d270d46ee150f09876ac43f6894054efd70d613f2253ca8880a181a71",
+      "xlsx_member": "RT82_B04/鳥類_東北.xlsx",
+      "audited_source_rows": 153348,
+      "expected_aggregated_records": 5112
+    },
+    {
+      "region": "kanto",
+      "official_region": "関東",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT83_B04.zip",
+      "checksum_sha256": "71cb7394e2f9865523b6f529f023028617a490449bc47525398c005989bed48d",
+      "xlsx_member": "RT83_B04/鳥類_関東.xlsx",
+      "audited_source_rows": 290594,
+      "expected_aggregated_records": 4417
+    },
+    {
+      "region": "hokuriku",
+      "official_region": "北陸",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT84_B04.zip",
+      "checksum_sha256": "ad4baf30269857a9626f0094b7642f4841e7536f2fabbb770b5e35fd89d9a5f1",
+      "xlsx_member": "RT84_B04/鳥類_北陸.xlsx",
+      "audited_source_rows": 126815,
+      "expected_aggregated_records": 4391
+    },
+    {
+      "region": "chubu",
+      "official_region": "中部",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+      "checksum_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf",
+      "xlsx_member": "RT85_B04/鳥類_中部.xlsx",
+      "audited_source_rows": 205259,
+      "expected_aggregated_records": 5266
+    },
+    {
+      "region": "kinki",
+      "official_region": "近畿",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT86_B04.zip",
+      "checksum_sha256": "cfcad79ac6eaf684ceb80632917c21f257444da9fce4081bec11cd898d549dce",
+      "xlsx_member": "RT86_B04/鳥類_近畿.xlsx",
+      "audited_source_rows": 155048,
+      "expected_aggregated_records": 4402
+    },
+    {
+      "region": "chugoku",
+      "official_region": "中国",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B04.zip",
+      "checksum_sha256": "cb71aef5e00ce718c21cc6ee811fd3566f090a749ff3c036764d3a289ebab779",
+      "xlsx_member": "RT87_B04/鳥類_中国.xlsx",
+      "audited_source_rows": 95937,
+      "expected_aggregated_records": 4817
+    },
+    {
+      "region": "shikoku",
+      "official_region": "四国",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT88_B04.zip",
+      "checksum_sha256": "581cf2682fab32bd7a7e4cc7c96e8e5d3eb2f0efce6646561103cebf31f164f9",
+      "xlsx_member": "RT88_B04/鳥類_四国.xlsx",
+      "audited_source_rows": 80555,
+      "expected_aggregated_records": 2864
+    },
+    {
+      "region": "kyushu",
+      "official_region": "九州",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B04.zip",
+      "checksum_sha256": "bf27c5b1352e2e334f3e44e63f446e36afc7f8b2be1588ca5a0a593a5ea93d1c",
+      "xlsx_member": "RT89_B04/鳥類_九州.xlsx",
+      "audited_source_rows": 174277,
+      "expected_aggregated_records": 7421
+    }
+  ]
+}
