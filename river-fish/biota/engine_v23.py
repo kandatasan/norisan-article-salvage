@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
-"""Generic search *engine* v2.3 for a signed, versioned biodiversity snapshot.
+"""Generic search *engine* v2.3 for a checksummed, versioned biodiversity snapshot.
 
 All available groups come from verified dataset metadata, not hardcoded UI/API
 source adapters. Read-only local preview; never equate grouped labels with
 independent species, individual rivers, current habitats or locations.
 """
 import argparse
+from contextlib import closing
 import hashlib
 import json
 from pathlib import Path
@@ -50,7 +51,7 @@ class VerifiedSnapshot:
             sum(data["group_counts"].values())!=data["total_survey_rows"] or
             any(not re.fullmatch(r"[a-z][a-z0-9_]{1,39}",x["id"]) for x in groups)):
             raise ValueError("データ分類の件数に不整合があります")
-        with self.connect() as c:
+        with closing(self.connect()) as c:
             tables={r[0] for r in c.execute("SELECT name FROM sqlite_master WHERE type='table'")}
             if not {"dataset_contract","available_groups","survey_evidence"}.issubset(tables):
                 raise ValueError("非対応のデータ形式です")
@@ -127,7 +128,7 @@ class VerifiedSnapshot:
         if year:
             where.append("survey_year=?");params.append(year)
         filtered="SELECT group_id,region,watershed_name,survey_year,recorded_name,source_url FROM survey_evidence WHERE "+" AND ".join(where)
-        with self.connect() as c:
+        with closing(self.connect()) as c:
             c.row_factory=sqlite3.Row
             if direction=="region_explore":
                 aggregated=("SELECT region,watershed_name,COUNT(*) AS historical_records,"
