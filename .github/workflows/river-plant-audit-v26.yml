@@ -5,7 +5,7 @@ on:
     paths:
       - 'river-fish/biota/audit_plant_sources_v26.py'
       - 'river-fish/biota/test_plant_source_audit_v26.py'
-      - 'river-fish/biota/PLANT_SOURCE_AUDIT_V24.md'
+      - 'river-fish/biota/PLANT_SOURCE_AUDIT_V26.md'
       - '.github/workflows/river-plant-audit-v26.yml'
   workflow_dispatch:
 
