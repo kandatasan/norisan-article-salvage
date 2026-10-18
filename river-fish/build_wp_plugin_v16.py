@@ -36,6 +36,8 @@ SAFE_SOURCE_FILES=[
     "assets/river-search.css",
     "assets/river-admin.js",
     "readme.txt",
+    "data/.htaccess",
+    "data/index.php",
 ]
 EXPECTED_COLUMN_LENGTHS={"codes":5,"local":9,"fish":5}
 
