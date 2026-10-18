@@ -1,0 +1,54 @@
+name: National river plant survey source audit v2.6
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/audit_plant_sources_v26.py'
+      - 'river-fish/biota/test_plant_source_audit_v26.py'
+      - 'river-fish/biota/PLANT_SOURCE_AUDIT_V26.md'
+      - '.github/workflows/river-plant-audit-v26.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-schema-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check original plant category, exact header and region controls
+        run: |
+          python -m py_compile river-fish/biota/audit_plant_sources_v26.py
+          python -m unittest discover -s river-fish/biota -p 'test_plant_source_audit_v26.py' -v
+
+  audit-nine-official-river-edition-plant-archives:
+    needs: synthetic-schema-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 9
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit direct MLIT link / ZIP SHA / Excel columns / literal plant source category
+        run: |
+          python river-fish/biota/audit_plant_sources_v26.py \
+            --region "${{ matrix.region }}" \
+            --out "$RUNNER_TEMP/plant-audit/${{ matrix.region }}.json"
+      - name: Upload source audit metadata only (not precise locations or observation files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: plant-source-audit-${{ matrix.region }}
+          path: ${{ runner.temp }}/plant-audit/${{ matrix.region }}.json
+          retention-days: 14
+          if-no-files-found: error
