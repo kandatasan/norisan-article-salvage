@@ -1,0 +1,100 @@
+{
+  "version": "v2.7 SHA-pinned official plants from v2.6 national archive audit",
+  "verified_index_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/dl_00_index.html",
+  "terms_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/Mokj_chui.htm",
+  "checked_at": "2026-10-18",
+  "original_category": "植物",
+  "checked_schema": {
+    "C": "生物項目",
+    "F": "水系",
+    "G": "調査年度",
+    "J": "種名"
+  },
+  "geography": "region_watershed_year_only_no_precise_coordinates",
+  "publication_status": "research_only",
+  "wordpress_modified": false,
+  "total_expected_unique_records": 270180,
+  "regions": [
+    {
+      "region": "hokkaido",
+      "official_region": "北海道",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT81_B03.zip",
+      "checksum_sha256": "1b4d3295a298a3b17a3180e1cb62c8e6cf9efe1cbb03726044816d7a9d82d1ec",
+      "xlsx_member": "RT81_B03/植物_北海道.xlsx",
+      "audited_source_rows": 146123,
+      "expected_aggregated_records": 18818
+    },
+    {
+      "region": "tohoku",
+      "official_region": "東北",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT82_B03.zip",
+      "checksum_sha256": "50810c209bcd71e0b5d10e47d4fbb7aac603e35bcbc5e4c04bdbaff22d5d20b8",
+      "xlsx_member": "RT82_B03/植物_東北.xlsx",
+      "audited_source_rows": 256700,
+      "expected_aggregated_records": 30447
+    },
+    {
+      "region": "kanto",
+      "official_region": "関東",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT83_B03.zip",
+      "checksum_sha256": "e0f0844b9ab5ddf6a0c930de4957f54e81aedf02481a2d3066ce6c74f0a40a13",
+      "xlsx_member": "RT83_B03/植物_関東.xlsx",
+      "audited_source_rows": 395248,
+      "expected_aggregated_records": 28687
+    },
+    {
+      "region": "hokuriku",
+      "official_region": "北陸",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT84_B03.zip",
+      "checksum_sha256": "98a142bb3f208aa9a977f001c7659cd8e4f5844a63fefb8c25b61f8ecb278833",
+      "xlsx_member": "RT84_B03/植物_北陸.xlsx",
+      "audited_source_rows": 208763,
+      "expected_aggregated_records": 26496
+    },
+    {
+      "region": "chubu",
+      "official_region": "中部",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B03.zip",
+      "checksum_sha256": "a0c67265f1fbcc1e2b17dced05e9350a5615d5927c3b4a37b07670371b97bc28",
+      "xlsx_member": "RT85_B03/植物_中部.xlsx",
+      "audited_source_rows": 264735,
+      "expected_aggregated_records": 37563
+    },
+    {
+      "region": "kinki",
+      "official_region": "近畿",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT86_B03.zip",
+      "checksum_sha256": "ee4df0ecba9e0449b277bbd947706105dc498045d3f74864443c45c0ab02bd14",
+      "xlsx_member": "RT86_B03/植物_近畿.xlsx",
+      "audited_source_rows": 177947,
+      "expected_aggregated_records": 29055
+    },
+    {
+      "region": "chugoku",
+      "official_region": "中国",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B03.zip",
+      "checksum_sha256": "338ce1d150730678d445ee96b291751a71cb0b482b388eae703546f29405db10",
+      "xlsx_member": "RT87_B03/植物_中国.xlsx",
+      "audited_source_rows": 294293,
+      "expected_aggregated_records": 39287
+    },
+    {
+      "region": "shikoku",
+      "official_region": "四国",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT88_B03.zip",
+      "checksum_sha256": "f87f2672cbb0058504963fb235e6a7181e7c2355bf9997705d2cff4ab252ca96",
+      "xlsx_member": "RT88_B03/植物_四国.xlsx",
+      "audited_source_rows": 67793,
+      "expected_aggregated_records": 17990
+    },
+    {
+      "region": "kyushu",
+      "official_region": "九州",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B03.zip",
+      "checksum_sha256": "56fa713e29eebd562e30df48104b21d4fa646ac87e9f82e199bd75f39fc5a0e1",
+      "xlsx_member": "RT89_B03/植物_九州.xlsx",
+      "audited_source_rows": 283219,
+      "expected_aggregated_records": 41837
+    }
+  ]
+}

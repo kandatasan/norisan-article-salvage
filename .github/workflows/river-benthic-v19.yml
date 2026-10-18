@@ -19,6 +19,10 @@ on:
       - 'river-fish/biota/import_national_birds_v25.py'
       - 'river-fish/biota/build_bird_dataset_v25.py'
       - 'river-fish/biota/test_bird_import_v25.py'
+      - 'river-fish/biota/plant_sources_v27.json'
+      - 'river-fish/biota/import_national_plants_v27.py'
+      - 'river-fish/biota/build_four_group_dataset_v27.py'
+      - 'river-fish/biota/test_plant_import_v27.py'
       - '.github/workflows/river-benthic-v19.yml'
   push:
     branches: [main]
@@ -39,6 +43,10 @@ on:
       - 'river-fish/biota/import_national_birds_v25.py'
       - 'river-fish/biota/build_bird_dataset_v25.py'
       - 'river-fish/biota/test_bird_import_v25.py'
+      - 'river-fish/biota/plant_sources_v27.json'
+      - 'river-fish/biota/import_national_plants_v27.py'
+      - 'river-fish/biota/build_four_group_dataset_v27.py'
+      - 'river-fish/biota/test_plant_import_v27.py'
       - '.github/workflows/river-benthic-v19.yml'
   workflow_dispatch:
 
@@ -93,8 +101,32 @@ jobs:
           retention-days: 14
           if-no-files-found: error
 
+  regional-plant-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      max-parallel: 9
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Stage real SHA-256 authenticated official plant labels, not precise locations
+        run: |
+          python river-fish/biota/import_national_plants_v27.py \
+            --region "${{ matrix.region }}" --out "$RUNNER_TEMP/plant-data"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-river-plant-${{ matrix.region }}
+          path: ${{ runner.temp }}/plant-data/
+          retention-days: 14
+          if-no-files-found: error
+
   consolidated-biological-search:
-    needs: [regional-source-validation, regional-bird-validation]
+    needs: [regional-source-validation, regional-bird-validation, regional-plant-validation]
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -116,6 +148,15 @@ jobs:
         run: |
           python -m unittest discover -s river-fish/biota -p 'test_bird_source_audit_v24.py' -v
           python -m unittest discover -s river-fish/biota -p 'test_bird_import_v25.py' -v
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: official-river-plant-*
+          merge-multiple: true
+          path: river-fish/biota/plants-staged/
+      - name: Verify nationwide audited plant ZIP source pins and CSV safety
+        run: |
+          python -m unittest discover -s river-fish/biota -p 'test_plant_source_audit_v26.py' -v
+          python -m unittest discover -s river-fish/biota -p 'test_plant_import_v27.py' -v
       - name: Test all 9 staged benthic datasets and verify no direct river or prefecture attribution
         run: |
           python -m unittest discover -s river-fish/biota -p 'test_benthic_v19.py' -v
@@ -285,6 +326,58 @@ jobs:
             ${{ runner.temp }}/biota-v25-status.json
             ${{ runner.temp }}/biota-v25-bird-regions.json
             ${{ runner.temp }}/biota-v25-ota-birds.json
+          retention-days: 14
+          if-no-files-found: error
+      - name: Build complete 4-group research snapshot using unchanged dynamic v2.3 engine
+        run: |
+          python river-fish/biota/build_four_group_dataset_v27.py \
+            --legacy-db "$RUNNER_TEMP/national-biota-v19.sqlite" \
+            --birds-staged "river-fish/biota/birds-staged" \
+            --plants-staged "river-fish/biota/plants-staged" \
+            --db "$RUNNER_TEMP/biota-snapshot-v27.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v27.json" \
+            --generated-dir "$RUNNER_TEMP/four-group-generated-v27" > "$RUNNER_TEMP/four-group-status-v27.json"
+          python river-fish/biota/engine_v23.py \
+            --db "$RUNNER_TEMP/biota-snapshot-v27.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v27.json" \
+            --direction region_explore --region chugoku --group plants > "$RUNNER_TEMP/chugoku-plants-v27.json"
+          python river-fish/biota/engine_v23.py \
+            --db "$RUNNER_TEMP/biota-snapshot-v27.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v27.json" \
+            --direction watershed_to_organism --region chugoku \
+            --watershed 太田川 --watershed-match exact --group plants > "$RUNNER_TEMP/ota-plants-v27.json"
+          python - <<'PY'
+          import json,os,pathlib,sys
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          m=json.loads((root/"biota-snapshot-v27.json").read_text())
+          assert m["group_counts"]=={"fish":18814,"benthic_animals":74949,"birds":44093,"plants":270180}
+          assert m["total_survey_rows"]==408036
+          assert m["publication_status"]=="research_only_not_wordpress"
+          assert m["wordpress_modified"] is False
+          assert m["individual_river_verified"] is False
+          assert m["taxonomy_identity_verified"] is False
+          assert {x["id"] for x in m["groups"]}=={"fish","benthic_animals","birds","plants"}
+          for path in ("chugoku-plants-v27.json","ota-plants-v27.json"):
+              r=json.loads((root/path).read_text())
+              assert r["total"]>0
+              assert r["selected_groups"]==["plants"]
+              assert r["taxonomy_identity_verified"] is False
+              assert r["individual_river_verified"] is False
+              assert r["current_distribution_verified"] is False
+              assert len(r["results"])<=20
+              print("PLANT_FOUR_GROUP_SEARCH_PASS",path,r["total"])
+          print("NATIONAL_FOUR_GROUP_RESEARCH_SURVEY_RECORDS",m["total_survey_rows"])
+          PY
+      - name: Upload 4-group verified research-only SQLite and manifest, not WordPress
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-only-biota-four-groups-v27
+          path: |
+            ${{ runner.temp }}/biota-snapshot-v27.sqlite
+            ${{ runner.temp }}/biota-snapshot-v27.json
+            ${{ runner.temp }}/four-group-status-v27.json
+            ${{ runner.temp }}/chugoku-plants-v27.json
+            ${{ runner.temp }}/ota-plants-v27.json
           retention-days: 14
           if-no-files-found: error
       - name: Upload independently audited regional context and research SQLite, not WordPress
