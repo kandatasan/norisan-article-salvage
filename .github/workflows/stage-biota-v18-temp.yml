@@ -1,0 +1,39 @@
+name: TEMP stage official 2025 all-biota list into research branch
+
+on:
+  push:
+    branches:
+      - feat/national-biodiversity-catalog-v18-20261018
+    paths:
+      - 'river-fish/biota/import_official_biota_v18.py'
+      - '.github/workflows/stage-biota-v18-temp.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  generate-once:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/national-biodiversity-catalog-v18-20261018
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download official 2025 all-organism reference and stage name rows, no observation locations
+        run: |
+          python river-fish/biota/import_official_biota_v18.py \
+            --download \
+            --output river-fish/biota/official_biota_reference_2025_v18.csv \
+            --manifest river-fish/biota/official_biota_manifest_2025_v18.json
+          du -h river-fish/biota/official_biota_reference_2025_v18.csv
+      - name: Commit source-verified static biota catalogue to research branch only
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/biota/official_biota_reference_2025_v18.csv river-fish/biota/official_biota_manifest_2025_v18.json
+          git commit -m "Stage official MLIT 2025 all-biota taxon rows and category flags" || exit 0
+          git push origin HEAD:feat/national-biodiversity-catalog-v18-20261018
