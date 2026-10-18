@@ -1,0 +1,131 @@
+{
+  "version": "v1.9 source pins",
+  "verified_index_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/dl_00_index.html",
+  "terms_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/Mokj_chui.htm",
+  "checked_at": "2026-10-18",
+  "verified_scope": "nine regional river-version benthic animal confirmed name lists, not all Japanese watersheds nor all rivers",
+  "regions": [
+    {
+      "region": "hokkaido",
+      "official_region": "北海道",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT81_B02.zip",
+      "xlsx_member": "RT81_B02/底生_北海道.xlsx",
+      "checksum_sha256": "cdba9c293ad649d957e1c36de4b83e8a0fcb43abf080f5f4c6fdcbed09989221",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "tohoku",
+      "official_region": "東北",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT82_B02.zip",
+      "xlsx_member": "RT82_B02/底生_東北.xlsx",
+      "checksum_sha256": "6296459c712373f171d26b98948c3cdfa59d221410c199327be97b287763be3a",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "kanto",
+      "official_region": "関東",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT83_B02.zip",
+      "xlsx_member": "RT83_B02/底生_関東.xlsx",
+      "checksum_sha256": "114779588ab37b38519b70e174353eb21a8b4e4107b7ce4d557844a5aca62bfe",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "hokuriku",
+      "official_region": "北陸",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT84_B02.zip",
+      "xlsx_member": "RT84_B02/底生_北陸.xlsx",
+      "checksum_sha256": "ff1ec0c0ee3d69fe2c5c7ede6cd7f05b847276696d78e3f4b7e4879ab407362f",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "chubu",
+      "official_region": "中部",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B02.zip",
+      "xlsx_member": "RT85_B02/底生_中部.xlsx",
+      "checksum_sha256": "c6d2f5616048c8651de2901a8bf7ecd3671dbe7d1ad012e4386c4875c03a00d1",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "kinki",
+      "official_region": "近畿",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT86_B02.zip",
+      "xlsx_member": "RT86_B02/底生_近畿.xlsx",
+      "checksum_sha256": "732f34c61d69e1b8c71c7bc71afe4983cd56d6901ba53fbddb1088ff7715fc98",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "chugoku",
+      "official_region": "中国",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B02.zip",
+      "xlsx_member": "RT87_B02/底生_中国.xlsx",
+      "checksum_sha256": "ec020a0bcc97be8b804a156471ddd67044c64d07058781648f5bae441492f603",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "shikoku",
+      "official_region": "四国",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT88_B02.zip",
+      "xlsx_member": "RT88_B02/底生_四国.xlsx",
+      "checksum_sha256": "66d6767610f37b074cf98bcf028a74ac6219ee04ee016546d6de5f193f12226f",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    },
+    {
+      "region": "kyushu",
+      "official_region": "九州",
+      "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+      "xlsx_member": "RT89_B02/底生_九州.xlsx",
+      "checksum_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1",
+      "checked_schema": {
+        "C": "生物項目",
+        "F": "水系",
+        "G": "調査年度",
+        "J": "種名"
+      }
+    }
+  ],
+  "uncovered": "Okinawa river-version records unavailable from this national index",
+  "geography": "region_watershed_year_only_no_precise_location_or_prefecture",
+  "privacy": "Do not import detailed occurrence stations or sensitive species sites",
+  "wordpress_modified": false,
+  "public_site_status": "research_only"
+}
