@@ -7,6 +7,8 @@ on:
       - 'river-fish/biota/benthic_sources_v19.json'
       - 'river-fish/biota/build_biota_with_benthic_v19.py'
       - 'river-fish/biota/test_benthic_v19.py'
+      - 'river-fish/biota/three_axis_search_v20.py'
+      - 'river-fish/biota/test_three_axis_v20.py'
       - '.github/workflows/river-benthic-v19.yml'
   push:
     branches: [main]
@@ -15,6 +17,8 @@ on:
       - 'river-fish/biota/benthic_sources_v19.json'
       - 'river-fish/biota/build_biota_with_benthic_v19.py'
       - 'river-fish/biota/test_benthic_v19.py'
+      - 'river-fish/biota/three_axis_search_v20.py'
+      - 'river-fish/biota/test_three_axis_v20.py'
       - '.github/workflows/river-benthic-v19.yml'
   workflow_dispatch:
 
@@ -76,6 +80,25 @@ jobs:
           assert stats["verified_individual_river_locations"]==0
           assert stats["wordpress_updated"] is False
           print("NATIONAL_BENTHIC_SEARCH_PASS",stats["benthic_watershed_year_name_records"])
+          PY
+      - name: Verify three-axis search against all real official fish and benthic evidence
+        run: |
+          python river-fish/biota/three_axis_search_v20.py --db "$RUNNER_TEMP/national-biota-v19.sqlite" --direction organism_to_watershed --organism アユ --region chugoku > "$RUNNER_TEMP/v20-organism-to-watershed.json"
+          python river-fish/biota/three_axis_search_v20.py --db "$RUNNER_TEMP/national-biota-v19.sqlite" --direction watershed_to_organism --watershed 太田川 > "$RUNNER_TEMP/v20-watershed-to-organism.json"
+          python river-fish/biota/three_axis_search_v20.py --db "$RUNNER_TEMP/national-biota-v19.sqlite" --direction region_explore --region chugoku --group benthic_animals > "$RUNNER_TEMP/v20-region-explore.json"
+          python - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          for file in ("v20-organism-to-watershed.json","v20-watershed-to-organism.json","v20-region-explore.json"):
+              data=json.loads((root/file).read_text())
+              assert data["total"]>0, f"Empty real-data search: {file}"
+              assert data["wordpress_modified"] is False
+              assert data["specific_river_presence_verified"] is False
+              assert data["prefecture_presence_verified"] is False
+              assert data["taxonomy_identity_verified"] is False
+              assert all(row["verified_individual_river"] is None for row in data["results"])
+              assert all(row["approved_2025_taxon_code"] is None for row in data["results"])
+              print("THREE_AXIS_REAL_DATA_PASS",file,data["total"])
           PY
       - name: Upload independently audited regional context and research SQLite, not WordPress
         uses: actions/upload-artifact@v4
