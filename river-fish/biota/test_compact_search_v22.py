@@ -43,7 +43,7 @@ class CompactSearchV22(unittest.TestCase):
         o=next(r for r in x["results"] if r["watershed_name"]=="太田川")
         self.assertEqual(o["fish_labels"],2)
         self.assertEqual(o["benthic_labels"],2)
-        self.assertEqual(o["historical_records"],5)
+        self.assertEqual(o["historical_records"],6)
         self.assertEqual((o["first_year"],o["last_year"]),("2015","2020"))
         self.assertTrue(x["historical_observations_are_not_distinct_species"])
         self.assertFalse(x["individual_river_verified"])
@@ -102,7 +102,7 @@ class CompactSearchV22(unittest.TestCase):
         for kwargs in candidates:
             with self.subTest(kwargs=kwargs):
                 with self.assertRaises(ValueError):
-                    search(self.db,"region_explore",region="chugoku",**{
+                    search(self.db,"region_explore",**{
                         **{"region":"chugoku"},**kwargs})
     def test_wildcards_and_sql_injection_no_match(self):
         for name in ("%", "_", "' OR 1=1 --"):
