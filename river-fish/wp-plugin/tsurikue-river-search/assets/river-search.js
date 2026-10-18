@@ -104,8 +104,8 @@
     }
     async function search(){
       const token=++requestSeq;
-      if(!conf.isReady){
-        status.textContent="データ未取込です。管理者が「ツール → 全国河川DB」で取込を完了すると検索できます。";
+      if(!conf.endpoint){
+        status.textContent="検索の接続先が設定されていません。";
         showEmpty("");return;
       }
       if(!hasQuery()){
@@ -130,7 +130,7 @@
       }
       try {
         const response=await fetch(url.toString(),{credentials:"same-origin",headers:{Accept:"application/json"}});
-        if(!response.ok)throw new Error("検索API: HTTP "+response.status);
+        if(!response.ok)throw new Error(response.status===503?"データ未取込です。管理者が取込を完了してください。":"検索API: HTTP "+response.status);
         const data=await response.json();
         if(token!==requestSeq)return;
         total=Number(data.total||0);
@@ -149,7 +149,7 @@
         pageInfo.textContent=String(page)+" / "+String(Math.max(1,Math.ceil(total/20)))+" ページ";
       } catch(e) {
         if(token!==requestSeq)return;
-        status.textContent="検索できませんでした。管理者にご確認ください。";
+        status.textContent=e.message||"検索できませんでした。管理者にご確認ください。";
         showEmpty("通信またはデータベースのエラーです。");
       }
     }
