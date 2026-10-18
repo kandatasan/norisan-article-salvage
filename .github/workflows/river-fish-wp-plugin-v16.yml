@@ -1,0 +1,119 @@
+name: WordPress nationwide river plugin ZIP v1.6
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/wp-plugin/**'
+      - 'river-fish/build_wp_plugin_v16.py'
+      - 'river-fish/test_wp_plugin_v16.py'
+      - 'river-fish/test_wp_plugin_runtime_v16.php'
+      - '.github/workflows/river-fish-wp-plugin-v16.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/wp-plugin/**'
+      - 'river-fish/build_wp_plugin_v16.py'
+      - 'river-fish/test_wp_plugin_v16.py'
+      - 'river-fish/test_wp_plugin_runtime_v16.php'
+      - '.github/workflows/river-fish-wp-plugin-v16.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, mysqli, zip
+          coverage: none
+      - name: Validate installable plugin package with full real data
+        run: python -m unittest discover -s river-fish -p 'test_wp_plugin_v16.py' -v
+      - name: Check PHP and Javascript syntax
+        run: |
+          for file in river-fish/wp-plugin/tsurikue-river-search/*.php river-fish/wp-plugin/tsurikue-river-search/includes/*.php; do
+            php -l "$file"
+          done
+          node --check river-fish/wp-plugin/tsurikue-river-search/assets/river-search.js
+          node --check river-fish/wp-plugin/tsurikue-river-search/assets/river-admin.js
+      - name: Build real WordPress installable ZIP (no deployment)
+        run: |
+          python river-fish/build_wp_plugin_v16.py \
+            --out "$RUNNER_TEMP/wp-river-package" \
+            --zip "$RUNNER_TEMP/tsurikue-river-search.zip"
+      - name: Validate archive contents and SHA checksums
+        run: |
+          python - <<'PY'
+          import hashlib,json,os,pathlib,zipfile
+          home=pathlib.Path(os.environ['RUNNER_TEMP'])
+          z=home/'tsurikue-river-search.zip'
+          with zipfile.ZipFile(z) as f:
+            assert f.testzip() is None
+            names=f.namelist()
+            assert len(names)==13
+            assert all(n.startswith('tsurikue-river-search/') for n in names)
+            data=json.loads(f.read('tsurikue-river-search/data/manifest.json'))
+            assert data['counts']=={'codes':35449,'local':1449,'fish':18814}
+            for mode,file in (('codes','river_codes.csv'),('local','source_mentions.csv'),('fish','watershed_fish.csv')):
+              assert hashlib.sha256(f.read('tsurikue-river-search/data/'+file)).hexdigest()==data['sha256'][mode]
+          print('WORDPRESS_INSTALLABLE_ZIP_OK',z.stat().st_size,'bytes')
+          PY
+      - name: Upload manually installable plugin ZIP
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsurikue-river-wordpress-plugin-v16
+          path: ${{ runner.temp }}/tsurikue-river-search.zip
+          retention-days: 30
+          if-no-files-found: error
+
+  ephemeral-wordpress-integration:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: test_password_only
+          MYSQL_DATABASE: wordpress_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -ptest_password_only"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, mysqli, curl, zip
+          coverage: none
+      - name: Create isolated fresh WordPress and install beta plugin
+        run: |
+          set -euo pipefail
+          curl -fsSL -o "$RUNNER_TEMP/wp-cli.phar" https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+          php "$RUNNER_TEMP/wp-cli.phar" --info
+          mkdir -p "$RUNNER_TEMP/test-wordpress"
+          php "$RUNNER_TEMP/wp-cli.phar" core download --path="$RUNNER_TEMP/test-wordpress" --quiet
+          php "$RUNNER_TEMP/wp-cli.phar" config create --path="$RUNNER_TEMP/test-wordpress" --dbname=wordpress_test --dbuser=root --dbpass=test_password_only --dbhost=127.0.0.1 --skip-check --quiet
+          php "$RUNNER_TEMP/wp-cli.phar" core install --path="$RUNNER_TEMP/test-wordpress" --url=https://wp-river-test.example.test --title="River Plugin QA" --admin_user=admin --admin_password=test_admin_only --admin_email=qa@example.test --skip-email --quiet
+          python river-fish/build_wp_plugin_v16.py --out "$RUNNER_TEMP/wp-zip-data" --zip "$RUNNER_TEMP/tsurikue-river-search.zip" >/dev/null
+          php "$RUNNER_TEMP/wp-cli.phar" plugin install "$RUNNER_TEMP/tsurikue-river-search.zip" --path="$RUNNER_TEMP/test-wordpress" --activate --quiet
+      - name: Actually import 55,712 records and smoke test public REST + generation isolation
+        run: |
+          php "$RUNNER_TEMP/wp-cli.phar" eval-file "$GITHUB_WORKSPACE/river-fish/test_wp_plugin_runtime_v16.php" --path="$RUNNER_TEMP/test-wordpress"
