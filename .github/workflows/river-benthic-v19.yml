@@ -11,6 +11,10 @@ on:
       - 'river-fish/biota/test_three_axis_v20.py'
       - 'river-fish/biota/compact_search_v22.py'
       - 'river-fish/biota/test_compact_search_v22.py'
+      - 'river-fish/biota/build_dataset_v23.py'
+      - 'river-fish/biota/dataset_sources_v23.json'
+      - 'river-fish/biota/engine_v23.py'
+      - 'river-fish/biota/test_dataset_engine_v23.py'
       - '.github/workflows/river-benthic-v19.yml'
   push:
     branches: [main]
@@ -23,6 +27,10 @@ on:
       - 'river-fish/biota/test_three_axis_v20.py'
       - 'river-fish/biota/compact_search_v22.py'
       - 'river-fish/biota/test_compact_search_v22.py'
+      - 'river-fish/biota/build_dataset_v23.py'
+      - 'river-fish/biota/dataset_sources_v23.json'
+      - 'river-fish/biota/engine_v23.py'
+      - 'river-fish/biota/test_dataset_engine_v23.py'
       - '.github/workflows/river-benthic-v19.yml'
   workflow_dispatch:
 
@@ -141,6 +149,51 @@ jobs:
           assert grouped <= raw, "Same region and exact watershed grouped names cannot exceed raw rows"
           print("COMPACT_REDUCTION_SAME_REGION_WATERSHED",raw,grouped)
           PY
+      - name: Build immutable 2-group v2.3 contract data snapshot
+        run: |
+          python river-fish/biota/build_dataset_v23.py \
+            --legacy-db "$RUNNER_TEMP/national-biota-v19.sqlite" \
+            --db "$RUNNER_TEMP/biota-snapshot-v23.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v23.json" > "$RUNNER_TEMP/biota-v23-status.json"
+          python river-fish/biota/engine_v23.py \
+            --db "$RUNNER_TEMP/biota-snapshot-v23.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v23.json" \
+            --direction region_explore --region chugoku > "$RUNNER_TEMP/biota-v23-chugoku.json"
+          python river-fish/biota/engine_v23.py \
+            --db "$RUNNER_TEMP/biota-snapshot-v23.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v23.json" \
+            --direction watershed_to_organism --region chugoku \
+            --watershed 太田川 --watershed-match exact > "$RUNNER_TEMP/biota-v23-ota.json"
+          python - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          m=json.loads((root/"biota-snapshot-v23.json").read_text())
+          assert m["group_counts"]=={"fish":18814,"benthic_animals":74949}
+          assert m["total_survey_rows"]==93763
+          assert m["publication_status"]=="research_only_not_wordpress"
+          assert m["individual_river_verified"] is False
+          assert m["wordpress_modified"] is False
+          for file,total in (("biota-v23-chugoku.json",13),("biota-v23-ota.json",623)):
+              r=json.loads((root/file).read_text())
+              assert r["total"]==total,(file,r["total"])
+              assert r["taxonomy_identity_verified"] is False
+              assert r["individual_river_verified"] is False
+              assert len(r["results"])<=20
+              print("V23_DYNAMIC_ENGINE_REAL_DATA_PASS",file,r["total"])
+          print("V23_DATASET_SIGNATURE_VERIFIED",m["database_sha256"],m["total_survey_rows"])
+          PY
+      - name: Upload v2.3 immutable data + SHA catalog, not the search program or WordPress
+        uses: actions/upload-artifact@v4
+        with:
+          name: research-only-biota-data-v23
+          path: |
+            ${{ runner.temp }}/biota-snapshot-v23.sqlite
+            ${{ runner.temp }}/biota-snapshot-v23.json
+            ${{ runner.temp }}/biota-v23-status.json
+            ${{ runner.temp }}/biota-v23-chugoku.json
+            ${{ runner.temp }}/biota-v23-ota.json
+          retention-days: 14
+          if-no-files-found: error
       - name: Upload independently audited regional context and research SQLite, not WordPress
         uses: actions/upload-artifact@v4
         with:

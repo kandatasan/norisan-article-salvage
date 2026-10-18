@@ -1,0 +1,59 @@
+name: Data / engine separation QA v2.3
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/build_dataset_v23.py'
+      - 'river-fish/biota/dataset_sources_v23.json'
+      - 'river-fish/biota/engine_v23.py'
+      - 'river-fish/biota/engine_frontend_v23.html'
+      - 'river-fish/biota/test_dataset_engine_v23.py'
+      - 'river-fish/biota/DATA_ENGINE_CONTRACT_V23.md'
+      - '.github/workflows/river-biota-contract-v23.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/biota/build_dataset_v23.py'
+      - 'river-fish/biota/dataset_sources_v23.json'
+      - 'river-fish/biota/engine_v23.py'
+      - 'river-fish/biota/engine_frontend_v23.html'
+      - 'river-fish/biota/test_dataset_engine_v23.py'
+      - 'river-fish/biota/DATA_ENGINE_CONTRACT_V23.md'
+      - '.github/workflows/river-biota-contract-v23.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  data-interface-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate schema, source adapter, future data-only group, checksum, API and old search
+        run: |
+          python -m py_compile river-fish/biota/build_dataset_v23.py river-fish/biota/engine_v23.py
+          python -m unittest discover -s river-fish/biota -p 'test_dataset_engine_v23.py' -v
+          python -m unittest discover -s river-fish/biota -p 'test_compact_search_v22.py' -v
+      - name: Verify dynamic checkbox frontend script is valid and uses only safe DOM primitives
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path("river-fish/biota/engine_frontend_v23.html").read_text()
+          assert html.count("<script>")==1 and html.count("</script>")==1
+          assert "innerHTML" not in html
+          assert "textContent" in html
+          assert "noindex,nofollow" in html
+          assert "/api/catalog" in html
+          assert "catalog.groups" not in html or "result.groups.forEach" in html
+          assert "https://cdn" not in html
+          Path("/tmp/biota-engine-v23.js").write_text(html.split("<script>",1)[1].split("</script>",1)[0])
+          PY
+          node --check /tmp/biota-engine-v23.js
