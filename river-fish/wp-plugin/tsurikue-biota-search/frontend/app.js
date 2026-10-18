@@ -131,7 +131,7 @@
       params.set("direction",direction);
       params.set("watershed_match",exact?"exact":"contains");
       params.set("page",String(page));params.set("per_page","20");
-      if(!params.has("group")){reset("生物分類を1つ以上選んでください。");return;}
+      if(groups.length===0){reset("生物分類を1つ以上選んでください。");return;}
       if(direction==="region_explore"&&!params.get("region")){reset("地方を選んでください。");return;}
       if(direction==="watershed_to_organism"&&!params.get("watershed")?.trim()){reset("水系名を入力してください。");return;}
       if(direction==="organism_to_watershed"&&!params.get("organism")?.trim()){reset("生物名を入力してください。");return;}
