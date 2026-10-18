@@ -59,6 +59,16 @@ jobs:
           assert 'form.elements.organism.value=""' not in drill
           assert 'form.elements.year.value=""' not in drill
           assert 'switchDirection("watershed_to_organism",true)' in drill
+          css=(path/"frontend/style.css").read_text()
+          view=(path/"frontend/view.php").read_text()
+          assert ":host{" in css and ".tbs-hero" in css
+          assert "@media(max-width:580px)" in css
+          assert "@media(prefers-reduced-motion:reduce)" in css
+          assert 'class="tbs-hero"' in view
+          assert "data-direction=\"region_explore\"" in view
+          assert "data-direction=\"watershed_to_organism\"" in view
+          assert "data-direction=\"organism_to_watershed\"" in view
+          assert "tbs-check" in app and "item.dataset.group=group.id" in app
           assert "innerHTML" not in app
           assert "attachShadow({mode:\"open\"})" in app
           assert "textContent" in app
