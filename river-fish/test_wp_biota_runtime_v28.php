@@ -18,6 +18,15 @@ tsb_assert(!TBS_REST::ready(),'Activation cannot automatically expose data');
 
 $not_ready=tsb_request('catalog');
 tsb_assert($not_ready->get_status()===503,'Unimported catalog must reject');
+// MySQL's default case/accent-insensitive collation can merge different
+// historical organism labels. Ensure literal source names remain distinct.
+global $wpdb;
+$collation=$wpdb->get_var($wpdb->prepare(
+    "SELECT COLLATION_NAME FROM information_schema.COLUMNS
+     WHERE TABLE_SCHEMA=DATABASE() AND TABLE_NAME=%s AND COLUMN_NAME=%s",
+    Tsurikue_Biota_Search::table(),'recorded_name'));
+tsb_assert($collation==='utf8mb4_bin',
+    'Recorded historical names require byte-exact utf8mb4_bin, got '.strval($collation));
 $pre_posts=(int)wp_count_posts('post')->publish;
 $begin=new ReflectionMethod('TBS_Data','begin');
 $step=new ReflectionMethod('TBS_Data','step');
@@ -72,7 +81,8 @@ $plants=tsb_request('search',array(
 ));
 tsb_assert($plants->get_status()===200,'Plant search API failed');
 $plantData=$plants->get_data();
-tsb_assert($plantData['total']===1212,'Ota watershed real plant literal labels count changed');
+tsb_assert($plantData['total']===1212,
+    'Ota watershed real plant literal labels count changed: got '.strval($plantData['total']));
 tsb_assert(!isset($plantData['results'][0]['prefecture']),
     'A survey observation must not be attributed to a prefecture');
 tsb_assert($plantData['results'][0]['verified_individual_river']===null,
