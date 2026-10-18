@@ -4,15 +4,16 @@ if (!defined('ABSPATH')) {exit;}
 <div id="<?php echo esc_attr($id); ?>" data-tbs-mount="1" class="tbs-mount">
   <template data-tbs-view>
     <section class="tbs-app" aria-label="つりくえ！全国の生物と水系">
-      <header>
+      <header class="tbs-hero">
+        <div class="tbs-dots" aria-hidden="true"><span></span><span></span><span></span></div>
         <p class="tbs-kicker">つりくえ！ 全国生物×水系図鑑</p>
-        <h2>川の生き物を探す</h2>
-        <p>国土交通省の過去の調査記録から、地方・水系・生物名で検索できます。</p>
+        <h2>川には、どんな生き物がいる？</h2>
+        <p>魚や鳥、植物まで。全国の川の調査記録を、気になる場所や生き物の名前から探してみよう！</p>
       </header>
       <div class="tbs-tabs" role="group" aria-label="検索方法">
-        <button type="button" data-direction="region_explore" aria-pressed="true">地域 → 水系</button>
-        <button type="button" data-direction="watershed_to_organism" aria-pressed="false">水系 → 生物</button>
-        <button type="button" data-direction="organism_to_watershed" aria-pressed="false">生物 → 水系</button>
+        <button type="button" data-direction="region_explore" aria-pressed="true">🗾 地域から探す</button>
+        <button type="button" data-direction="watershed_to_organism" aria-pressed="false">🏞️ 川から探す</button>
+        <button type="button" data-direction="organism_to_watershed" aria-pressed="false">🐟 生き物から探す</button>
       </div>
       <form data-tbs-form role="search">
         <div class="tbs-fields">
@@ -41,7 +42,7 @@ if (!defined('ABSPATH')) {exit;}
           <div data-tbs-groups class="tbs-checks"><span>検証済みデータを確認しています…</span></div>
           <div data-tbs-pending class="tbs-checks"></div>
         </fieldset>
-        <button type="submit" class="tbs-submit">調査記録を検索する</button>
+        <button type="submit" class="tbs-submit">🔎 生き物を探してみる</button>
       </form>
       <section aria-live="polite" aria-label="検索結果">
         <h3>検索結果</h3>
