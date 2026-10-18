@@ -9,6 +9,8 @@ on:
       - 'river-fish/biota/test_benthic_v19.py'
       - 'river-fish/biota/three_axis_search_v20.py'
       - 'river-fish/biota/test_three_axis_v20.py'
+      - 'river-fish/biota/compact_search_v22.py'
+      - 'river-fish/biota/test_compact_search_v22.py'
       - '.github/workflows/river-benthic-v19.yml'
   push:
     branches: [main]
@@ -19,6 +21,8 @@ on:
       - 'river-fish/biota/test_benthic_v19.py'
       - 'river-fish/biota/three_axis_search_v20.py'
       - 'river-fish/biota/test_three_axis_v20.py'
+      - 'river-fish/biota/compact_search_v22.py'
+      - 'river-fish/biota/test_compact_search_v22.py'
       - '.github/workflows/river-benthic-v19.yml'
   workflow_dispatch:
 
@@ -99,6 +103,35 @@ jobs:
               assert all(row["verified_individual_river"] is None for row in data["results"])
               assert all(row["approved_2025_taxon_code"] is None for row in data["results"])
               print("THREE_AXIS_REAL_DATA_PASS",file,data["total"])
+          PY
+      - name: Verify grouped name and watershed results against real 9-region research data
+        run: |
+          python river-fish/biota/compact_search_v22.py --db "$RUNNER_TEMP/national-biota-v19.sqlite" --direction region_explore --region chugoku > "$RUNNER_TEMP/v22-region-summary.json"
+          python river-fish/biota/compact_search_v22.py --db "$RUNNER_TEMP/national-biota-v19.sqlite" --direction watershed_to_organism --region chugoku --watershed 太田川 --watershed-match exact > "$RUNNER_TEMP/v22-watershed-labels.json"
+          python river-fish/biota/compact_search_v22.py --db "$RUNNER_TEMP/national-biota-v19.sqlite" --direction organism_to_watershed --region chugoku --organism アユ --group fish > "$RUNNER_TEMP/v22-fish-to-watersheds.json"
+          python - <<'PY'
+          import json,os,pathlib
+          root=pathlib.Path(os.environ["RUNNER_TEMP"])
+          checks=[
+              ("v22-region-summary.json","watershed_summary"),
+              ("v22-watershed-labels.json","distinct_source_labels_by_watershed"),
+              ("v22-fish-to-watersheds.json","distinct_source_labels_by_watershed")]
+          for filename,typ in checks:
+              x=json.loads((root/filename).read_text())
+              assert x["result_type"]==typ
+              assert x["total"]>0
+              assert x["wordpress_modified"] is False
+              assert x["individual_river_verified"] is False
+              assert x["prefecture_presence_verified"] is False
+              assert x["current_distribution_verified"] is False
+              assert x["aquatic_insect_subgroup_available"] is False
+              assert x["birds_survey_records_available"] is False
+              assert len(x["results"])<=x["per_page"]
+              print("COMPACT_REAL_DATA_PASS",filename,x["total"])
+          raw=json.loads((root/"v20-watershed-to-organism.json").read_text())["total"]
+          grouped=json.loads((root/"v22-watershed-labels.json").read_text())["total"]
+          assert grouped <= raw, "Group count cannot exceed all-region raw record count"
+          print("COMPACT_REDUCTION_RAW_VS_GROUPED",raw,grouped)
           PY
       - name: Upload independently audited regional context and research SQLite, not WordPress
         uses: actions/upload-artifact@v4
