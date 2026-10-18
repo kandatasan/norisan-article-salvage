@@ -143,7 +143,14 @@
     direction=to;
     for(const b of tabButtons)b.setAttribute("aria-pressed",String(b.dataset.direction===to));
     if(!fromDrill) {
-      if(to==="region_explore")form.elements.watershed.value="";
+      if(to==="region_explore"){
+        form.elements.watershed.value="";
+        form.elements.organism.value="";
+      } else if(to==="watershed_to_organism"){
+        form.elements.organism.value="";
+      } else if(to==="organism_to_watershed"){
+        form.elements.watershed.value="";
+      }
       watershedMatch="contains";
     }
     clearResult("条件を入力して検索してください。");
