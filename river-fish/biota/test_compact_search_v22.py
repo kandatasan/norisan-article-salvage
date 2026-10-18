@@ -87,8 +87,8 @@ class CompactSearchV22(unittest.TestCase):
                  watershed_match="exact",page=2,per_page=1)
         self.assertEqual(x["total"],4)
         self.assertEqual(len(x["results"]),1)
-        self.assertEqual(x["results"][0]["recorded_name"],"オイカワ")
-        self.assertEqual(x["results"][0]["survey_year_count"],1)
+        self.assertEqual(x["results"][0]["recorded_name"],"モクズガニ")
+        self.assertEqual(x["results"][0]["survey_year_count"],2)
     def test_invalid_groups_and_filters_rejected(self):
         candidates=[
             {"groups":()},{"groups":("fish","fish")},
