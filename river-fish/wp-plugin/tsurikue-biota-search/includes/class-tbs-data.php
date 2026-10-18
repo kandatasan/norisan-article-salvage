@@ -92,11 +92,11 @@ final class TBS_Data {
     }
     private static function lock() {
         $key='tsb_import_mutex';
-        if (add_option($key,time(),'no')) { return; }
+        if (add_option($key,time(),'',false)) { return; }
         $old=(int)get_option($key,0);
         if ($old>0 && $old<time()-120) {
             delete_option($key);
-            if (add_option($key,time(),'no')) {return;}
+            if (add_option($key,time(),'',false)) {return;}
         }
         throw new RuntimeException('別の取込操作が進行中です。');
     }
@@ -145,7 +145,8 @@ final class TBS_Data {
         if (!isset(self::GROUP_COUNTS[$group])
             || !in_array($region,self::REGIONS,true)
             || $watershed==='' || $name===''
-            || mb_strlen($watershed,'UTF-8')>80 || mb_strlen($name,'UTF-8')>150
+            || (function_exists('mb_strlen') ? mb_strlen($watershed,'UTF-8') : strlen($watershed))>80
+            || (function_exists('mb_strlen') ? mb_strlen($name,'UTF-8') : strlen($name))>150
             || preg_match('/^[=+@-]/u',$watershed) || preg_match('/^[=+@-]/u',$name)
             || !preg_match('/^(19|20)[0-9]{2}$/D',$year) || $year>'2026'
             || !preg_match('~^https://www\.nilim\.go\.jp/lab/fbg/ksnkankyo/[^\s]*$~D',$url)
@@ -179,7 +180,10 @@ final class TBS_Data {
         }
         $actual=array();
         foreach ($counts as $row) { $actual[$row['group_id']]=(int)$row['n']; }
-        if ($actual !== self::GROUP_COUNTS) {
+        ksort($actual);
+        $expected=self::GROUP_COUNTS;
+        ksort($expected);
+        if ($actual !== $expected) {
             throw new RuntimeException('取込分類件数が原本と一致しません。旧版を保持します。');
         }
         $old=self::active();
