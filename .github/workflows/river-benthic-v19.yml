@@ -128,10 +128,18 @@ jobs:
               assert x["birds_survey_records_available"] is False
               assert len(x["results"])<=x["per_page"]
               print("COMPACT_REAL_DATA_PASS",filename,x["total"])
-          raw=json.loads((root/"v20-watershed-to-organism.json").read_text())["total"]
+          import sqlite3
+          db=sqlite3.connect(str(root/"national-biota-v19.sqlite"))
+          try:
+              raw=sum(db.execute(
+                  "SELECT COUNT(*) FROM "+table+" WHERE region=? AND watershed_name=?",
+                  ("chugoku","太田川")).fetchone()[0] for table in
+                  ("watershed_year_fish_evidence","watershed_year_benthic_evidence"))
+          finally:
+              db.close()
           grouped=json.loads((root/"v22-watershed-labels.json").read_text())["total"]
-          assert grouped <= raw, "Group count cannot exceed all-region raw record count"
-          print("COMPACT_REDUCTION_RAW_VS_GROUPED",raw,grouped)
+          assert grouped <= raw, "Same region and exact watershed grouped names cannot exceed raw rows"
+          print("COMPACT_REDUCTION_SAME_REGION_WATERSHED",raw,grouped)
           PY
       - name: Upload independently audited regional context and research SQLite, not WordPress
         uses: actions/upload-artifact@v4
