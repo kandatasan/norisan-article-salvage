@@ -30,8 +30,8 @@ class OfflineBetaV15(unittest.TestCase):
 
     def test_source_categories_separate(self):
         sources=self.payload["localEvidence"]
-        self.assertEqual(len([s for s in sources if s[2]=="river"]),996)
-        self.assertEqual(len([s for s in sources if s[2]=="watershed"]),443)
+        self.assertEqual(len([s for s in sources if s[2]=="river"]),997)
+        self.assertEqual(len([s for s in sources if s[2]=="watershed"]),442)
         self.assertEqual(len([s for s in sources if s[2]=="planning_region"]),10)
         self.assertEqual(len({s[6] for s in sources}),1449)
 
