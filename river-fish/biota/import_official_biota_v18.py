@@ -107,7 +107,7 @@ def xlsx_rows(raw):
             row.clear()
 
 def import_workbook(raw):
-    seen=set();records=[];cats=Counter()
+    seen=set();records=[];cats=Counter();structural_rows=0
     for rowno,cells in xlsx_rows(raw):
         if rowno==1:
             for col,title in EXPECTED_HEADER.items():
@@ -117,8 +117,16 @@ def import_workbook(raw):
         if rowno<2:continue
         if rowno in seen:raise ValueError("Duplicate row index")
         seen.add(rowno)
-        if not cells.get("Y") or not cells.get("AA"):
-            raise ValueError(f"Missing original taxon code or Japanese name in row {rowno}")
+        if not cells.get("Y"):
+            # The official all-organism workbook includes structural grouping
+            # rows. They show higher taxonomy but no individual taxon ID/name.
+            # Do not invent a species entry for those separators.
+            if cells.get("AA") or cells.get("Z"):
+                raise ValueError(f"Uncoded organism label requires human review: row {rowno}")
+            structural_rows+=1
+            continue
+        if not (cells.get("AA") or cells.get("Z")):
+            raise ValueError(f"Taxon code without either literal scientific or Japanese name: row {rowno}")
         flags={label:1 if cells.get(col)=="●" else 0 for col,label in CATEGORIES.items()}
         for col,label in CATEGORIES.items():
             if cells.get(col,"") not in ("","●"):
@@ -128,12 +136,12 @@ def import_workbook(raw):
         info.update(flags)
         records.append(info)
         cats.update({name:1 for name,has in flags.items() if has})
-    if len(records)!=37812 or len(seen)!=37812:
+    if len(records)+structural_rows!=37812 or len(seen)!=37812:
         raise ValueError("Official 2025 taxonomy source changed; re-audit before ingest")
-    return records,cats
+    return records,cats,structural_rows
 
 def write_staged(raw,output,manifest_path):
-    rows,category_count=import_workbook(raw)
+    rows,category_count,structural=import_workbook(raw)
     output=Path(output);manifest_path=Path(manifest_path)
     output.parent.mkdir(parents=True,exist_ok=True)
     with output.open("w",encoding="utf-8",newline="") as f:
@@ -149,6 +157,8 @@ def write_staged(raw,output,manifest_path):
         "official_version_note":"2025-10-10 list; fish list revised 2025-11-27. 2026 plankton revision not yet applied",
         "source_workbook_sha256":hashlib.sha256(raw).hexdigest(),
         "staged_csv_sha256":hashlib.sha256(output.read_bytes()).hexdigest(),
+        "source_workbook_data_rows_including_structural":37812,
+        "excluded_structural_rows_without_taxon_code":structural,
         "reference_rows":len(rows),
         "distinct_japanese_labels_not_species_count":reference_names,
         "distinct_taxon_code_and_literal_name_pairs":id_pairs,
