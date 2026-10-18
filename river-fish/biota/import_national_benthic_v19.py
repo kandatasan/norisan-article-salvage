@@ -23,7 +23,66 @@ ROOT=Path(__file__).resolve().parent
 RIVER_ROOT=ROOT.parent
 import sys
 sys.path.insert(0,str(RIVER_ROOT))
-from aggregate_official_workbook import excel_rows
+import xml.etree.ElementTree as ET
+
+M="{http://schemas.openxmlformats.org/spreadsheetml/2006/main}"
+APPROVED_COLUMNS={"C":"生物項目","F":"水系","G":"調査年度","J":"種名"}
+MAX_UNCOMPRESSED_SHEET=1_800_000_000
+
+def excel_rows_benthic(zip_bytes, member):
+    """Bounded streaming parser for large approved official bottom-animal XML.
+
+    The existing fish parser deliberately retains a 300MB max sheet limit;
+    DO NOT alter it. All ZIP hashes are pinned separately before this call.
+    """
+    with ZipFile(BytesIO(zip_bytes)) as outer:
+        meta=outer.getinfo(member)
+        if meta.file_size<=0 or meta.file_size>220_000_000:
+            raise ValueError("Unexpected source workbook size")
+        raw=outer.read(member)
+    with ZipFile(BytesIO(raw)) as workbook:
+        sh=workbook.getinfo("xl/worksheets/sheet1.xml")
+        if sh.file_size>MAX_UNCOMPRESSED_SHEET:
+            raise ValueError("Large XML sheet exceeds reviewed stream bound: "+str(sh.file_size))
+        shared=[]
+        with workbook.open("xl/sharedStrings.xml") as f:
+            context=ET.iterparse(f,events=("start","end"))
+            _,root=next(context)
+            for ev,e in context:
+                if ev=="end" and e.tag==M+"si":
+                    shared.append("".join(t.text or "" for t in e.iter(M+"t")))
+                    e.clear()
+                    root.clear()
+        first=True
+        with workbook.open("xl/worksheets/sheet1.xml") as stream:
+            context=ET.iterparse(stream,events=("start","end"))
+            _,root=next(context)
+            for ev,row in context:
+                if ev!="end" or row.tag!=M+"row":continue
+                values={}
+                for c in row.findall(M+"c"):
+                    ref=c.get("r","")
+                    col=re.match(r"^([A-Z]+)",ref)
+                    name=col.group(1) if col else ""
+                    if name not in APPROVED_COLUMNS:continue
+                    txt=c.findtext(M+"v") or ""
+                    if c.get("t")=="s" and txt.isdecimal():
+                        index=int(txt)
+                        if index>=len(shared):raise ValueError("Unknown shared-string index")
+                        txt=shared[index]
+                    elif c.get("t")=="inlineStr":
+                        txt="".join(t.text or "" for t in c.iter(M+"t"))
+                    values[name]=txt.strip()
+                if first:
+                    if values!=APPROVED_COLUMNS:
+                        raise ValueError("Bottom-animal schema changed; stop source import")
+                    first=False
+                else:
+                    yield values
+                row.clear()
+                root.clear()
+        if first:raise ValueError("Empty biological observation sheet")
+
 from inspect_nationwide_source_v06 import fetch,source_verified_in_official_index,MAX_ZIP
 
 PINS=ROOT/"benthic_sources_v19.json"
@@ -95,7 +154,7 @@ def transform(region,raw,output=BASE):
     with ZipFile(BytesIO(raw)) as z:
         members=[o.filename for o in z.infolist() if not o.is_dir()]
         if members!=[info["xlsx_member"]]:raise ValueError("Official workbook member changed")
-    aggregate,stats=aggregate_benthic(excel_rows(raw,member=info["xlsx_member"]))
+    aggregate,stats=aggregate_benthic(excel_rows_benthic(raw,member=info["xlsx_member"]))
     output=Path(output)/region
     output.mkdir(parents=True,exist_ok=True)
     file=output/CSV_NAME
