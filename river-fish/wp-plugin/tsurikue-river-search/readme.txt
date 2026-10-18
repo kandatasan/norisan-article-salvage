@@ -3,7 +3,7 @@ Contributors: tsurikue
 Tags: river, fish, search
 Requires at least: 6.2
 Requires PHP: 7.4
-Stable tag: 0.1.0
+Stable tag: 0.2.0
 License: GPLv2 or later
 
 == Description ==
@@ -41,3 +41,11 @@ WordPressの既存バックアップを確保してから手動取込を行っ�
 日本の都道府県・自治体公式河川関連ページ。加工済の研究用データ。
 コード・現地魚類・県内河川の網羅確認ができたことを意味しません。
 商用サイトでの公開には、各原典の利用条件と一次資料の名称の追加監査が必要です。
+
+== v0.2.0: ハード／ソフト分離（2026-10-18） ==
+
+旧v0.1.0から更新しても、これまでに手動取込した河川データは残ります。再取込は不要です。
+ハード：専用DB（3テーブル）・CSV取込・読み取り専用REST検索。
+ソフト：frontend/view.php／frontend/style.css／frontend/app.js。
+検索ツールはShadow DOMの独立表示を使用し、SWELLの見出し・フォーム・ボタンCSSの干渉を避けます。
+更新後、ページを再読み込みして表示を確認してください。旧プラグインと同時有効化しないでください。
