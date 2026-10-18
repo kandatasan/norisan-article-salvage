@@ -64,6 +64,6 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: tsurikue-national-river-search-beta-v15
-          path: \${{ runner.temp }}/tsurikue-river-search-beta.zip
+          path: ${{ runner.temp }}/tsurikue-river-search-beta.zip
           retention-days: 30
           if-no-files-found: error
