@@ -143,8 +143,10 @@ final class TBS_REST {
         }
         foreach ($rows as &$r) {
             if ($p['direction']==='region_explore') {
-                $group_sql="SELECT group_id,COUNT(DISTINCT recorded_name) AS count_labels FROM {$table} WHERE generation=%d AND region_code=%s AND watershed_name=%s AND group_id IN ({$placeholders})";
-                $params=array_merge(array((int)$active['generation'],$r['region_code'],$r['watershed_name']),$p['groups']);
+                // Reuse the exact same filters as the summary, including year and name,
+                // or category chips will overstate matches for filtered searches.
+                $group_sql="SELECT group_id,COUNT(DISTINCT recorded_name) AS count_labels FROM {$src} AND region_code=%s AND watershed_name=%s";
+                $params=array_merge($args,array($r['region_code'],$r['watershed_name']));
                 $group_sql.=' GROUP BY group_id';
                 $counts=$wpdb->get_results($wpdb->prepare($group_sql,$params),ARRAY_A);
                 if ($counts===null || $wpdb->last_error) {
