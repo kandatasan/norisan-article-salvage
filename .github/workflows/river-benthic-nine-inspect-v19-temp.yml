@@ -1,0 +1,61 @@
+name: TEMP inspect nine official benthic river downloads
+
+on:
+  push:
+    branches: [feat/national-benthic-survey-v19-20261018]
+    paths: [.github/workflows/river-benthic-nine-inspect-v19-temp.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    strategy:
+      fail-fast: false
+      max-parallel: 9
+      matrix:
+        include:
+          - {region: hokkaido, code: 81, label: 北海道}
+          - {region: tohoku, code: 82, label: 東北}
+          - {region: kanto, code: 83, label: 関東}
+          - {region: hokuriku, code: 84, label: 北陸}
+          - {region: chubu, code: 85, label: 中部}
+          - {region: kinki, code: 86, label: 近畿}
+          - {region: chugoku, code: 87, label: 中国}
+          - {region: shikoku, code: 88, label: 四国}
+          - {region: kyushu, code: 89, label: 九州}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check MLIT-listed benthic archive, ZIP digest and schema; do not export observations
+        run: |
+          python - <<'PY'
+          import io,hashlib,json,os
+          from zipfile import ZipFile
+          from inspect_nationwide_source_v06 import fetch,source_verified_in_official_index,sheet_header,MAX_ZIP
+          rid=os.environ['RID'];code=os.environ['REGION_CODE'];label=os.environ['REGION_LABEL']
+          url=f'https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT{code}_B02.zip'
+          index='https://www.nilim.go.jp/lab/fbg/ksnkankyo/dl_00_index.html'
+          if not source_verified_in_official_index(url,index):raise ValueError('Not officially listed')
+          raw=fetch(url,MAX_ZIP)
+          with ZipFile(io.BytesIO(raw)) as z:
+            files=[(x.filename,x.file_size) for x in z.infolist() if not x.is_dir()]
+            xlsx=[x for x in z.namelist() if x.lower().endswith('.xlsx')]
+            if len(xlsx)!=1:raise ValueError('Unexpected official archive membership')
+            schema=sheet_header(z.read(xlsx[0]))
+          if schema['header_columns']!={'C':'生物項目','F':'水系','G':'調査年度','J':'種名'}:
+            raise ValueError('Unsafe sheet structure')
+          print('OFFICIAL_BENTHIC_INVENTORY '+json.dumps({
+            'region':rid,'official_region':label,'source_url':url,'sha256':hashlib.sha256(raw).hexdigest(),
+            'compressed_bytes':len(raw),'members':files,'xlsx_member':xlsx[0],
+            'checked_schema':schema['header_columns'],'source_index':index,
+            'geographic_status':'region_and_watershed_only_no_locations'
+          },ensure_ascii=False))
+          PY
+        working-directory: river-fish
+        env:
+          RID: ${{ matrix.region }}
+          REGION_CODE: ${{ matrix.code }}
+          REGION_LABEL: ${{ matrix.label }}
