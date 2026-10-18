@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - 'river-fish/biota/import_national_benthic_v19.py'
+      - 'river-fish/biota/audit_aquatic_insect_names_v29.py'
       - 'river-fish/biota/benthic_sources_v19.json'
       - 'river-fish/biota/build_biota_with_benthic_v19.py'
       - 'river-fish/biota/test_benthic_v19.py'
@@ -31,6 +32,7 @@ on:
     branches: [main]
     paths:
       - 'river-fish/biota/import_national_benthic_v19.py'
+      - 'river-fish/biota/audit_aquatic_insect_names_v29.py'
       - 'river-fish/biota/benthic_sources_v19.json'
       - 'river-fish/biota/build_biota_with_benthic_v19.py'
       - 'river-fish/biota/test_benthic_v19.py'
@@ -374,6 +376,32 @@ jobs:
               print("PLANT_FOUR_GROUP_SEARCH_PASS",path,r["total"])
           print("NATIONAL_FOUR_GROUP_RESEARCH_SURVEY_RECORDS",m["total_survey_rows"])
           PY
+      - name: Audit aquatic-insect literal-name candidates without publishing a subgroup
+        run: |
+          python river-fish/biota/audit_aquatic_insect_names_v29.py --self-test
+          python river-fish/biota/audit_aquatic_insect_names_v29.py \
+            --db "$RUNNER_TEMP/biota-snapshot-v27.sqlite" \
+            --manifest "$RUNNER_TEMP/biota-snapshot-v27.json" \
+            --out "$RUNNER_TEMP/aquatic-insect-name-screening-v29.json"
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"aquatic-insect-name-screening-v29.json"
+          x=json.loads(p.read_text())
+          assert x["benthic_survey_records"]==74949
+          assert sum(x["records_by_screening_status"].values())==74949
+          assert x["aquatic_insect_group_can_be_published"] is False
+          assert x["survey_names_identified_as_species"]==0
+          assert x["records_assigned_to_individual_river"]==0
+          assert x["wordpress_modified"] is False
+          print("AQUATIC_INSECT_AUDIT_BOUNDARY_PASS")
+          PY
+      - name: Upload research-only aquatic-insect name screening counts
+        uses: actions/upload-artifact@v4
+        with:
+          name: aquatic-insect-name-screening-v29
+          path: ${{ runner.temp }}/aquatic-insect-name-screening-v29.json
+          retention-days: 30
+          if-no-files-found: error
       - name: Upload 4-group verified research-only SQLite and manifest, not WordPress
         uses: actions/upload-artifact@v4
         with:
