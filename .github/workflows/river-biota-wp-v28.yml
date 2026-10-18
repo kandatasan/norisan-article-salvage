@@ -54,6 +54,11 @@ jobs:
           from pathlib import Path
           path=Path("river-fish/wp-plugin/tsurikue-biota-search")
           app=(path/"frontend/app.js").read_text()
+          # A year/name-filtered watershed card must not widen the search on drill.
+          drill=app.split('function waterCard(row)',1)[1].split('function organismCard(row)',1)[0]
+          assert 'form.elements.organism.value=""' not in drill
+          assert 'form.elements.year.value=""' not in drill
+          assert 'switchDirection("watershed_to_organism",true)' in drill
           assert "innerHTML" not in app
           assert "attachShadow({mode:\"open\"})" in app
           assert "textContent" in app
