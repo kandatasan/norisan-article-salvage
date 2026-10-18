@@ -105,6 +105,8 @@ class WordpressRiverPluginPackage(unittest.TestCase):
         css=(self.plugin/"frontend/style.css").read_text(encoding="utf-8")
         self.assertIn(":host",css)
         self.assertIn("grid-template-columns:minmax(0,1fr)",css)
+        self.assertIn(".tsr-controls label[hidden]",css)
+        self.assertIn(".tsr-pager[hidden]",css)
         self.assertNotIn("innerHTML",js)
         self.assertIn('url.searchParams.set("per_page","20")',js)
         self.assertIn('credentials:"same-origin"',js)
