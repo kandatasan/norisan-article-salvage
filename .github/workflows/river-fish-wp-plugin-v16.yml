@@ -1,4 +1,4 @@
-name: WordPress nationwide river plugin ZIP v1.6
+name: WordPress nationwide river plugin ZIP — isolated Soft v0.2
 
 on:
   pull_request:
@@ -61,7 +61,7 @@ jobs:
           with zipfile.ZipFile(z) as f:
             assert f.testzip() is None
             names=f.namelist()
-            assert len(names)==13
+            assert len(names)==14
             assert all(n.startswith('tsurikue-river-search/') for n in names)
             data=json.loads(f.read('tsurikue-river-search/data/manifest.json'))
             assert data['counts']=={'codes':35449,'local':1449,'fish':18814}
