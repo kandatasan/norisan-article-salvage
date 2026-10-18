@@ -1,0 +1,56 @@
+name: Compact national river biota v2.2 QA
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/compact_search_v22.py'
+      - 'river-fish/biota/compact_frontend_v22.html'
+      - 'river-fish/biota/test_compact_search_v22.py'
+      - 'river-fish/biota/COMPACT_SEARCH_V22.md'
+      - '.github/workflows/river-biota-compact-v22.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/biota/compact_search_v22.py'
+      - 'river-fish/biota/compact_frontend_v22.html'
+      - 'river-fish/biota/test_compact_search_v22.py'
+      - 'river-fish/biota/COMPACT_SEARCH_V22.md'
+      - '.github/workflows/river-biota-compact-v22.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  offline-compact-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Compile backend and verify SQL grouping, read-only access and API safety
+        run: |
+          python -m py_compile river-fish/biota/compact_search_v22.py river-fish/biota/test_compact_search_v22.py
+          python -m unittest discover -s river-fish/biota -p 'test_compact_search_v22.py' -v
+          python -m unittest discover -s river-fish/biota -p 'test_three_axis_v20.py' -v
+      - name: Check frontend script syntax and local-only research boundaries
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          html=Path("river-fish/biota/compact_frontend_v22.html").read_text()
+          assert html.count("<script>")==1 and html.count("</script>")==1
+          assert "innerHTML" not in html
+          assert "textContent" in html
+          assert "noindex,nofollow" in html
+          assert 'value="fish" checked' in html
+          assert 'value="benthic_animals" checked' in html
+          assert html.count('type="checkbox" disabled')==2
+          assert "https://cdn" not in html
+          Path("/tmp/river-compact-v22.js").write_text(html.split("<script>",1)[1].split("</script>",1)[0])
+          PY
+          node --check /tmp/river-compact-v22.js
