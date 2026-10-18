@@ -1,0 +1,65 @@
+name: WordPress biodiversity plugin v0.1 isolated QA
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/wp-plugin/tsurikue-biota-search/**'
+      - 'river-fish/build_wp_biota_plugin_v28.py'
+      - 'river-fish/test_wp_biota_runtime_v28.php'
+      - 'river-fish/WORDPRESS_BIOTA_PREVIEW_V28.md'
+      - '.github/workflows/river-biota-wp-v28.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/wp-plugin/tsurikue-biota-search/**'
+      - 'river-fish/build_wp_biota_plugin_v28.py'
+      - 'river-fish/test_wp_biota_runtime_v28.php'
+      - 'river-fish/WORDPRESS_BIOTA_PREVIEW_V28.md'
+      - '.github/workflows/river-biota-wp-v28.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  static-isolated-wp-plugin-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, mysqli, zip
+          coverage: none
+      - name: Lint WordPress plugin PHP and existing river search remains independent
+        run: |
+          for f in river-fish/wp-plugin/tsurikue-biota-search/*.php \
+            river-fish/wp-plugin/tsurikue-biota-search/includes/*.php \
+            river-fish/wp-plugin/tsurikue-biota-search/frontend/*.php \
+            river-fish/wp-plugin/tsurikue-biota-search/data/*.php \
+            river-fish/test_wp_biota_runtime_v28.php; do php -l "$f"; done
+      - name: Validate JS, data exporter and source namespace separation
+        run: |
+          node --check river-fish/wp-plugin/tsurikue-biota-search/frontend/app.js
+          node --check river-fish/wp-plugin/tsurikue-biota-search/assets/admin.js
+          python -m py_compile river-fish/build_wp_biota_plugin_v28.py
+          python - <<'PY'
+          from pathlib import Path
+          path=Path("river-fish/wp-plugin/tsurikue-biota-search")
+          app=(path/"frontend/app.js").read_text()
+          assert "innerHTML" not in app
+          assert "attachShadow({mode:\"open\"})" in app
+          assert "textContent" in app
+          assert "aquatic_insects" not in (path/"includes/class-tbs-data.php").read_text()
+          assert "register_rest_route" in (path/"includes/class-tbs-rest.php").read_text()
+          assert "[tsurikue_biota_search]" in (path/"readme.txt").read_text()
+          assert (path/"data/.htaccess").is_file()
+          assert (path/"data/index.php").is_file()
+          PY
