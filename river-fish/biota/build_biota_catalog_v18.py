@@ -49,7 +49,8 @@ def read_reference(root=BIO):
     if (m["publication_status"]!="research_only_not_wordpress"
         or m["contains_species_occurrence_or_river_presence"] is not False
         or m["sensitive_locations_in_data"] is not False
-        or m["reference_rows"]!=37812
+        or m["source_workbook_data_rows_including_structural"]!=37812
+        or m["reference_rows"] + m["excluded_structural_rows_without_taxon_code"]!=37812
         or hashlib.sha256(csv_file.read_bytes()).hexdigest()!=m["staged_csv_sha256"]):
         raise ValueError("Official biota reference manifest must be reviewed")
     with csv_file.open(encoding="utf-8-sig",newline="") as f:
@@ -57,13 +58,16 @@ def read_reference(root=BIO):
         if reader.fieldnames!=TAXA_FIELDS:
             raise ValueError("Taxonomy column scheme changed")
         result=list(reader)
-    if len(result)!=37812:raise ValueError("37,812 original reference rows expected")
+    if len(result)!=m["reference_rows"]:raise ValueError("Official taxon references inconsistent with manifest")
     counts=Counter()
-    for i,r in enumerate(result,2):
+    last_row=1
+    for r in result:
         if (r["evidence_kind"]!="2025_official_taxon_reference_not_observation"
-            or str(i)!=r["source_row"] or not r["japanese_name"]
+            or int(r["source_row"])<=last_row or int(r["source_row"])>37813
+            or not (r["japanese_name"] or r["scientific_name"])
             or not r["official_taxon_code"]):
-            raise ValueError("Invalid original taxon code/name or source row: "+str(i))
+            raise ValueError("Invalid original taxon code/name or source row: "+r["source_row"])
+        last_row=int(r["source_row"])
         for group in CATEGORIES:
             if r[group] not in ("0","1"):raise ValueError("Non-boolean list membership")
             if r[group]=="1":counts[group]+=1
