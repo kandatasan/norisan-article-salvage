@@ -110,7 +110,7 @@ KEY fish_lookup (generation,fish_name(80))
         );
         wp_localize_script('tsurikue-river-front', 'TsurikueRiverSearchSettings', array(
             'endpoint' => esc_url_raw(rest_url('tsurikue-rivers/v1/search')),
-            'styleUrl' => esc_url_raw(plugins_url('frontend/style.css', TSR_PLUGIN_FILE)),
+            'styleUrl' => esc_url_raw(add_query_arg('ver', TSR_PLUGIN_VERSION, plugins_url('frontend/style.css', TSR_PLUGIN_FILE))),
             'prefectures' => array(
                 '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
                 '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
