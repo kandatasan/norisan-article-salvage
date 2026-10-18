@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <meta name="description" content="全国の河川コード・県の資料に載る川・水系別魚類記録を、出典と情報の範囲を区別して探す研究用の検索β版。">
+  <title>全国の川を探す｜つりくえ！河川図鑑 β</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="search-core.js"></script>
+  <script defer src="data.js"></script>
+  <script defer src="app.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">検索へ移動</a>
+  <header class="topbar">
+    <div class="wrap brand"><span class="logo-mark" aria-hidden="true">≈</span><span>つりくえ！ <span class="muted">｜全国の川図鑑</span></span><span class="beta">β 試作版</span></div>
+  </header>
+
+  <main id="main" class="wrap">
+    <section class="hero" aria-labelledby="hero-title">
+      <p class="eyebrow">JAPAN RIVER ATLAS · RESEARCH BETA</p>
+      <h1 id="hero-title">あの川、どこまで分かる？</h1>
+      <p class="lede">全国の川名と水系を探して、<strong>資料に書かれていること</strong>を確認する検索β版。魚の記録も、調査された範囲のまま表示します。</p>
+      <div class="stats" aria-label="収録データの件数">
+        <div><strong id="statRivers">35,449</strong><span>全国の河川コード掲載行</span></div>
+        <div><strong id="statSources">1,449</strong><span>県・自治体資料の掲載行</span></div>
+        <div><strong id="statFish">18,814</strong><span>水系×年度×魚名の記録</span></div>
+      </div>
+      <p class="micro">※ 河川コード掲載行＝すべての川の本数ではありません。データは収集時点の資料に基づきます。</p>
+    </section>
+
+    <section class="searchbox" aria-labelledby="search-title">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">SEARCH</p>
+          <h2 id="search-title">川を探す</h2>
+        </div>
+        <span class="offline"><span class="offline-dot" aria-hidden="true"></span>オフラインでも検索OK</span>
+      </div>
+
+      <div class="tabs" role="tablist" aria-label="検索データの種類">
+        <button class="tab active" type="button" role="tab" aria-selected="true" aria-controls="panel-codes" id="tab-codes" data-tab="codes">全国の川名・コード</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-local" id="tab-local" data-tab="local" tabindex="-1">都道府県別の資料</button>
+        <button class="tab" type="button" role="tab" aria-selected="false" aria-controls="panel-fish" id="tab-fish" data-tab="fish" tabindex="-1">水系別の魚類調査</button>
+      </div>
+
+      <section class="tab-panel" id="panel-codes" role="tabpanel" aria-labelledby="tab-codes">
+        <p class="panel-description">国交省の10桁コード一覧から、川名・水系名・コードで検索。<strong>河川が通る都道府県は、この一覧だけでは分かりません。</strong></p>
+        <form id="form-codes" class="search-form" novalidate>
+          <label for="codeQuery">川名・水系名・10桁コード</label>
+          <div class="fieldrow">
+            <input id="codeQuery" name="river-name" type="search" placeholder="例：諸木川、太田川、8707090023" autocomplete="off">
+            <button class="primary" type="submit">検索する</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="tab-panel" id="panel-local" role="tabpanel" aria-labelledby="tab-local" hidden>
+        <p class="panel-description">47都道府県の公式資料から抜き出した掲載名を検索。<strong>県内のすべての川が載っているわけではありません。</strong>河川名・水系名・計画圏域は別々に表示します。</p>
+        <form id="form-local" class="search-form" novalidate>
+          <div class="fields-two">
+            <div>
+              <label for="localPrefecture">都道府県</label>
+              <select id="localPrefecture"><option value="">全国の掲載情報</option></select>
+            </div>
+            <div>
+              <label for="localKind">資料の掲載区分</label>
+              <select id="localKind">
+                <option value="">すべての区分</option>
+                <option value="river">河川名</option>
+                <option value="watershed">水系名</option>
+                <option value="planning_region">整備計画圏域</option>
+              </select>
+            </div>
+          </div>
+          <label for="localQuery">川名・水系名・資料の地域名</label>
+          <div class="fieldrow">
+            <input id="localQuery" type="search" placeholder="例：沖縄県を選ぶ、国場川、諸木川" autocomplete="off">
+            <button class="primary" type="submit">検索する</button>
+          </div>
+        </form>
+      </section>
+
+      <section class="tab-panel" id="panel-fish" role="tabpanel" aria-labelledby="tab-fish" hidden>
+        <p class="panel-description"><strong>水系×調査年度の魚類記録</strong>を検索。これは特定の支流や釣り場の魚を証明する記録ではありません。魚が未掲載でも、その川にいないとは限りません。</p>
+        <form id="form-fish" class="search-form" novalidate>
+          <div class="fields-two">
+            <div>
+              <label for="fishRegion">調査の地域</label>
+              <select id="fishRegion"><option value="">全国9地域</option></select>
+            </div>
+            <div>
+              <label for="fishWatershed">調査の水系</label>
+              <input id="fishWatershed" type="search" placeholder="例：太田川、筑後川" autocomplete="off">
+            </div>
+          </div>
+          <label for="fishQuery">魚の名前</label>
+          <div class="fieldrow">
+            <input id="fishQuery" type="search" placeholder="例：アユ、オイカワ" autocomplete="off">
+            <button class="primary" type="submit">検索する</button>
+          </div>
+        </form>
+      </section>
+    </section>
+
+    <section class="results" aria-live="polite" aria-relevant="additions text" aria-labelledby="results-title">
+      <div class="result-head">
+        <div>
+          <p class="eyebrow">RESULTS</p>
+          <h2 id="results-title">検索結果 <span class="result-count" id="resultCount"></span></h2>
+        </div>
+        <button class="clear-button" type="button" id="clearSearch">条件をクリア</button>
+      </div>
+      <p class="scope-note" id="scopeNote"></p>
+      <div id="resultList" class="result-list" role="list"></div>
+      <nav class="pager" aria-label="検索結果ページ" id="pager" hidden>
+        <button type="button" id="prevPage">前の25件</button>
+        <span id="pageInfo" aria-live="off"></span>
+        <button type="button" id="nextPage">次の25件</button>
+      </nav>
+    </section>
+
+    <section class="explainer" aria-labelledby="read-title">
+      <p class="eyebrow">HOW TO READ</p>
+      <h2 id="read-title">この図鑑で分かること・まだ分からないこと</h2>
+      <div class="explain-grid">
+        <article>
+          <span class="explain-num">01</span>
+          <h3>全国の川名・コード</h3>
+          <p>全国共通の10桁コードと資料上の名前、水系を表示。コードの先頭から県名や合流先を推測しません。</p>
+        </article>
+        <article>
+          <span class="explain-num">02</span>
+          <h3>県の資料に出てくる川</h3>
+          <p>どの県や自治体の資料に名前が出たかを確認。同名河川は統合せず、資料ごとに残します。</p>
+        </article>
+        <article>
+          <span class="explain-num">03</span>
+          <h3>水系別の魚類調査</h3>
+          <p>魚の記録は地域・水系・調査年度単位。川一本ごとの生息魚や釣れる魚とは限りません。</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="wrap">
+      <p>つりくえ！ 全国河川図鑑 β — 研究・確認用プレビュー</p>
+      <p>出典：<a href="https://nlftp.mlit.go.jp/ksj/gml/codelist/RiverCodeCd.html" target="_blank" rel="noopener noreferrer">国交省・河川コード一覧</a>／<a href="https://www.nilim.go.jp/lab/fbg/ksnkankyo/dl_00_index.html" target="_blank" rel="noopener noreferrer">河川水辺の国勢調査</a>／各県・市町村の公式資料（結果内に掲載）。収録データの内容を整理・加工しています。</p>
+      <p>現在の生息状況・釣りの可否・立入可能区域・遊漁規則を保証するものではありません。希少種の詳細位置は掲載していません。</p>
+    </div>
+  </footer>
+</body>
+</html>
