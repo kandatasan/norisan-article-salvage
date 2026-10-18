@@ -1,0 +1,56 @@
+name: Official survey archive index inventory v2.1
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/audit_official_source_index_v21.py'
+      - 'river-fish/biota/test_official_source_index_v21.py'
+      - 'river-fish/biota/SOURCE_INDEX_V21.md'
+      - '.github/workflows/biota-source-index-v21.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/biota/audit_official_source_index_v21.py'
+      - 'river-fish/biota/test_official_source_index_v21.py'
+      - 'river-fish/biota/SOURCE_INDEX_V21.md'
+      - '.github/workflows/biota-source-index-v21.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  provenance-and-inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify no source filename guessing or unreviewed taxonomy attribution
+        run: |
+          python -m py_compile river-fish/biota/audit_official_source_index_v21.py
+          python -m unittest discover -s river-fish/biota -p 'test_official_source_index_v21.py' -v
+      - name: Inventory all official river-version source links without downloading survey ZIPs
+        run: |
+          python river-fish/biota/audit_official_source_index_v21.py --out "$RUNNER_TEMP/unreviewed-biota-source-index.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          x=json.loads((Path(os.environ["RUNNER_TEMP"])/"unreviewed-biota-source-index.json").read_text())
+          assert len(x["regions"])==9
+          assert x["existing_v19_benthic_sources"]==9
+          assert x["candidate_url_count"]>=18
+          assert x["new_survey_categories_approved"]==0
+          assert x["new_biological_observations_imported"]==0
+          assert x["raw_archive_downloaded"] is False
+          assert x["wordpress_modified"] is False
+          print("OFFICIAL_BIOLOGICAL_SOURCE_LINKS_VERIFIED", x["candidate_url_count"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: research-only-unreviewed-biological-source-links-v21
+          path: ${{ runner.temp }}/unreviewed-biota-source-index.json
+          retention-days: 14
+          if-no-files-found: error
