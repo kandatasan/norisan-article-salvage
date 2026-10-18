@@ -1,0 +1,59 @@
+name: TEMP inspect 2025 official biological list XLSX
+
+on:
+  push:
+    branches:
+      - feat/national-biodiversity-catalog-v18-20261018
+    paths:
+      - .github/workflows/inspect-biota-v18-temp.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fetch official 2025 national species lists and inspect sheet schema (no location records)
+        run: |
+          python - <<'PY'
+          import urllib.request,zipfile,xml.etree.ElementTree as ET,io,re,json
+          root='https://www.nilim.go.jp/lab/fbg/ksnkankyo/mizukokuweb/system/DownLoad/List/R07List/'
+          for name in ['R07zenseibutsu.xlsx','R07gyorui.xlsx','R07teisei.xlsx']:
+            try:
+              req=urllib.request.Request(root+name,headers={'User-Agent':'TsurikueAtlasResearch/1.0'})
+              with urllib.request.urlopen(req,timeout=90) as resp:raw=resp.read(80*1024*1024)
+              print('SOURCE',name,'BYTES',len(raw))
+              z=zipfile.ZipFile(io.BytesIO(raw))
+              p='{http://schemas.openxmlformats.org/spreadsheetml/2006/main}'
+              text=[]
+              if 'xl/sharedStrings.xml' in z.namelist():
+                sr=ET.fromstring(z.read('xl/sharedStrings.xml'))
+                text=[''.join(t.text or '' for t in e.iter(p+'t')) for e in sr.findall(p+'si')]
+              sheets=sorted(x for x in z.namelist() if re.fullmatch(r'xl/worksheets/sheet[0-9]+.xml',x))
+              print('SHEETS',len(sheets),'SHARED_STRINGS',len(text))
+              for sh in sheets[:6]:
+                sample=[]; nrows=0
+                with z.open(sh) as f:
+                  for event,element in ET.iterparse(f,events=('end',)):
+                    if element.tag==p+'row':
+                      nrows+=1
+                      if nrows<=8:
+                        values=[]
+                        for c in list(element)[:16]:
+                          v=c.find(p+'v')
+                          inline=c.find(p+'is')
+                          val=v.text if v is not None else (''.join(t.text or '' for t in inline.iter(p+'t')) if inline is not None else '')
+                          if c.attrib.get('t')=='s' and val:
+                            val=text[int(val)] if int(val)<len(text) else val
+                          values.append({'ref':c.attrib.get('r'),'value':str(val)[:85]})
+                        sample.append(values)
+                      element.clear()
+                print('SHEET',sh,'ROWS',nrows,'HEAD',json.dumps(sample,ensure_ascii=False))
+            except Exception as exc:
+              print('SOURCE_ERROR',name,str(exc))
+              raise
+          PY
