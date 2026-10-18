@@ -1,0 +1,51 @@
+name: Research biota three-axis search v2.0
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/three_axis_search_v20.py'
+      - 'river-fish/biota/three_axis_frontend_v20.html'
+      - 'river-fish/biota/test_three_axis_v20.py'
+      - 'river-fish/biota/THREE_AXIS_SEARCH_V20.md'
+      - '.github/workflows/river-biota-three-axis-v20.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/biota/three_axis_search_v20.py'
+      - 'river-fish/biota/three_axis_frontend_v20.html'
+      - 'river-fish/biota/test_three_axis_v20.py'
+      - 'river-fish/biota/THREE_AXIS_SEARCH_V20.md'
+      - '.github/workflows/river-biota-three-axis-v20.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-search-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python compile and synthetic three-axis provenance/API tests
+        run: |
+          python -m py_compile river-fish/biota/three_axis_search_v20.py river-fish/biota/test_three_axis_v20.py
+          python -m unittest discover -s river-fish/biota -p 'test_three_axis_v20.py' -v
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Static frontend has no remote dependencies and JavaScript is valid
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from html.parser import HTMLParser
+          html=Path("river-fish/biota/three_axis_frontend_v20.html").read_text(encoding="utf-8")
+          assert html.count("<script>")==1 and html.count("</script>")==1
+          assert "https://cdn" not in html and "<iframe" not in html
+          assert "textContent" in html and "innerHTML" not in html
+          Path("/tmp/tsurikue-three-axis-v20.js").write_text(html.split("<script>",1)[1].split("</script>",1)[0], encoding="utf-8")
+          PY
+          node --check /tmp/tsurikue-three-axis-v20.js
