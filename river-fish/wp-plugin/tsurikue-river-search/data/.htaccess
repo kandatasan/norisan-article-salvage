@@ -1,0 +1,2 @@
+# Block direct public downloads of plugin import snapshots on Apache.
+Require all denied
