@@ -103,7 +103,8 @@
       button.addEventListener("click",()=>{
         form.elements.region.value=row.region_code;
         form.elements.watershed.value=row.watershed_name;
-        form.elements.organism.value="";form.elements.year.value="";
+        // Preserve the user's organism/year filters when drilling down:
+        // otherwise a filtered watershed card silently expands its results.
         switchDirection("watershed_to_organism",true);
         exact=true;search();
       });
