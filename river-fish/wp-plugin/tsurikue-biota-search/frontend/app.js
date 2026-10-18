@@ -58,7 +58,9 @@
       const checkbox=el("input");
       checkbox.type="checkbox";checkbox.name="group";checkbox.value=group.id;
       checkbox.checked=enabled;checkbox.disabled=!enabled;
-      item.append(checkbox,el("span",group.label));
+      item.dataset.group=group.id;
+      const icons={fish:"🐟",benthic_animals:"🦀",birds:"🐦",plants:"🌿",aquatic_insects:"🪲"};
+      item.append(checkbox,el("span",(icons[group.id]||"🔎")+" "+group.label));
       if(!enabled)item.append(el("small",group.note||"分類の監査待ち"));
       (enabled?groupBox:pending).append(item);
     }
@@ -89,7 +91,7 @@
     }
     function waterCard(row){
       const card=el("article",undefined,"tbs-card");
-      card.append(el("h4",row.watershed_name+"水系"));
+      card.append(el("h4","🏞️ "+row.watershed_name+"水系"));
       appendMeta(card,(regionNames[row.region_code]||row.region_code)+"の過去の調査記録");
       const chips=el("div",undefined,"tbs-chips");
       Object.entries(row.group_label_counts||{}).forEach(([g,n])=>{
@@ -112,7 +114,7 @@
     }
     function organismCard(row){
       const card=el("article",undefined,"tbs-card");
-      card.append(el("h4",row.recorded_name+" ／ "+row.watershed_name+"水系"));
+      card.append(el("h4","🔎 "+row.recorded_name+" ／ "+row.watershed_name+"水系"));
       appendMeta(card,(regionNames[row.region_code]||row.region_code)+
         "・"+label(row.survey_group)+"・"+row.survey_year_count+"年度で掲載");
       const details=el("details");
