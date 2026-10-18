@@ -1,0 +1,89 @@
+name: National bottom-animal survey archive QA v1.9
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/import_national_benthic_v19.py'
+      - 'river-fish/biota/benthic_sources_v19.json'
+      - 'river-fish/biota/build_biota_with_benthic_v19.py'
+      - 'river-fish/biota/test_benthic_v19.py'
+      - '.github/workflows/river-benthic-v19.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/biota/import_national_benthic_v19.py'
+      - 'river-fish/biota/benthic_sources_v19.json'
+      - 'river-fish/biota/build_biota_with_benthic_v19.py'
+      - 'river-fish/biota/test_benthic_v19.py'
+      - '.github/workflows/river-benthic-v19.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  regional-source-validation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 9
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Import officially listed source using audited SHA256 with no station columns
+        run: |
+          python river-fish/biota/import_national_benthic_v19.py --region "${{ matrix.region }}" --out "$RUNNER_TEMP/benthic-data"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-benthic-${{ matrix.region }}
+          path: ${{ runner.temp }}/benthic-data/
+          retention-days: 14
+          if-no-files-found: error
+
+  consolidated-biological-search:
+    needs: regional-source-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: official-benthic-*
+          merge-multiple: true
+          path: river-fish/biota/benthic-staged/
+      - name: Test all 9 staged benthic datasets and verify no direct river or prefecture attribution
+        run: |
+          python -m unittest discover -s river-fish/biota -p 'test_benthic_v19.py' -v
+      - name: Combine 2025 official taxonomy, nine-region benthic and old fish survey records
+        run: |
+          python river-fish/biota/build_biota_with_benthic_v19.py --build --db "$RUNNER_TEMP/national-biota-v19.sqlite" > "$RUNNER_TEMP/v19-status.json"
+          python river-fish/biota/build_biota_with_benthic_v19.py --db "$RUNNER_TEMP/national-biota-v19.sqlite" --benthic-name カワゲラ --region chugoku --limit 6 > "$RUNNER_TEMP/benthic-results.json"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])
+          stats=json.loads((p/"v19-status.json").read_text())
+          assert stats["benthic_regions"]==9
+          assert stats["national_taxonomic_reference_names"]==37648
+          assert stats["existing_national_fish_watershed_records"]==18814
+          assert stats["verified_individual_river_locations"]==0
+          assert stats["wordpress_updated"] is False
+          print("NATIONAL_BENTHIC_SEARCH_PASS",stats["benthic_watershed_year_name_records"])
+          PY
+      - name: Upload independently audited regional context and research SQLite, not WordPress
+        uses: actions/upload-artifact@v4
+        with:
+          name: national-biota-benthic-research-v19
+          path: |
+            ${{ runner.temp }}/national-biota-v19.sqlite
+            ${{ runner.temp }}/v19-status.json
+            ${{ runner.temp }}/benthic-results.json
+          retention-days: 14
+          if-no-files-found: error
