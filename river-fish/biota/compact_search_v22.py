@@ -26,7 +26,9 @@ SOURCE_SELECT = {"fish": FISH_SQL, "benthic_animals": BENTHIC_SQL}
 MAX_PAGE = 20000
 MAX_PAGE_SIZE = 25
 
-def validate(direction, groups, region, watershed, organism, year, page, per_page):
+def validate(direction, groups, region, watershed, organism, year, page, per_page, watershed_match):
+    if watershed_match not in ('contains','exact'):
+        raise ValueError('水系名の一致条件が不正です')
     if direction not in DIRECTIONS:
         raise ValueError("検索方向が不正です")
     if not isinstance(groups, (tuple, list)) or not groups or len(groups) > 2:
@@ -52,8 +54,8 @@ def validate(direction, groups, region, watershed, organism, year, page, per_pag
         raise ValueError("地域を選択してください")
 
 def search(db, direction, groups=("fish","benthic_animals"), region="",
-           watershed="", organism="", year="", page=1, per_page=20):
-    validate(direction,groups,region,watershed,organism,year,page,per_page)
+           watershed="", organism="", year="", page=1, per_page=20, watershed_match="contains"):
+    validate(direction,groups,region,watershed,organism,year,page,per_page,watershed_match)
     path=Path(db).resolve()
     if not path.is_file():
         raise FileNotFoundError("研究用データベースが見つかりません")
@@ -65,8 +67,12 @@ def search(db, direction, groups=("fish","benthic_animals"), region="",
     if region:
         conditions.append("region=?");params.append(region)
     if watershed.strip():
-        conditions.append("watershed_name LIKE ? ESCAPE '\\'")
-        params.append(like(watershed.strip()))
+        if watershed_match=="exact":
+            conditions.append("watershed_name=?")
+            params.append(watershed.strip())
+        else:
+            conditions.append("watershed_name LIKE ? ESCAPE '\\'")
+            params.append(like(watershed.strip()))
     if organism.strip():
         conditions.append("recorded_name LIKE ? ESCAPE '\\'")
         params.append(like(organism.strip()))
@@ -123,6 +129,7 @@ def search(db, direction, groups=("fish","benthic_animals"), region="",
             r["approved_2025_taxon_code"]=None
         return {
             "direction":direction,
+            "watershed_match":watershed_match,
             "selected_groups":[g for g in GROUPS if g in groups],
             "result_type":result_type,
             "total":total,
@@ -158,7 +165,7 @@ def create_app(db):
             return [b""]
         try:
             items=parse_qs(environ.get("QUERY_STRING",""),keep_blank_values=True,max_num_fields=12)
-            allowed={"direction","group","region","watershed","organism","year","page","per_page"}
+            allowed={"direction","group","region","watershed","organism","year","page","per_page","watershed_match"}
             if set(items)-allowed:
                 raise ValueError("未対応の検索項目です")
             if any(len(v)!=1 for k,v in items.items() if k!="group"):
@@ -170,7 +177,8 @@ def create_app(db):
             result=search(db,direction=single("direction"),groups=groups,
                           region=single("region"),watershed=single("watershed"),
                           organism=single("organism"),year=single("year"),
-                          page=int(single("page","1")),per_page=int(single("per_page","20")))
+                          page=int(single("page","1")),per_page=int(single("per_page","20")),
+                          watershed_match=single("watershed_match","contains"))
             status="200 OK"
         except (ValueError,FileNotFoundError,sqlite3.DatabaseError) as err:
             result={"error":str(err),"results":[],"total":0}
@@ -192,6 +200,7 @@ def main():
     p.add_argument("--watershed",default="")
     p.add_argument("--organism",default="")
     p.add_argument("--year",default="")
+    p.add_argument("--watershed-match",choices=("contains","exact"),default="contains")
     p.add_argument("--page",type=int,default=1)
     args=p.parse_args()
     if args.serve:
@@ -201,6 +210,6 @@ def main():
     else:
         print(json.dumps(search(args.db,args.direction,tuple(args.group or GROUPS),
                                 args.region,args.watershed,args.organism,args.year,
-                                args.page),ensure_ascii=False,indent=2))
+                                args.page,watershed_match=args.watershed_match),ensure_ascii=False,indent=2))
 if __name__=="__main__":
     main()
