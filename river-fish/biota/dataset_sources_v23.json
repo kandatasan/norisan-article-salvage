@@ -1,0 +1,27 @@
+{
+  "contract_version": 1,
+  "publication_status": "research_only_not_wordpress",
+  "geographic_scope": "regional_watershed_year_only",
+  "taxonomy_identity_verified": false,
+  "source_groups": [
+    {
+      "id": "fish",
+      "label": "魚類",
+      "note": "過去の河川版調査で水系と年度別に記載された魚類名",
+      "kind": "legacy_v19_fish",
+      "expected_rows": 18814
+    },
+    {
+      "id": "benthic_animals",
+      "label": "底生動物",
+      "note": "過去の河川版調査で水系と年度別に記載された底生動物名。水生昆虫を個別区分として確定していない",
+      "kind": "legacy_v19_benthic",
+      "expected_rows": 74949
+    }
+  ],
+  "unavailable_separate_groups": {
+    "aquatic_insects": "底生動物からの厳密な分類照合が未完了",
+    "birds": "水系・年度別の確認種記録は未取込"
+  },
+  "note": "新しい調査区分は、監査済みCSVを source_groups に追加してデータセットだけ更新する。検索エンジンと画面は変更しない。"
+}
