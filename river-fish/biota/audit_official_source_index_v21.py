@@ -13,6 +13,8 @@ import re
 from urllib.parse import urljoin
 from html.parser import HTMLParser
 
+import sys
+sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from inspect_nationwide_source_v06 import fetch
 
 HERE=Path(__file__).resolve().parent
