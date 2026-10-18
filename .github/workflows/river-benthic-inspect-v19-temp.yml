@@ -36,7 +36,7 @@ jobs:
                       if href:self.urls.append(urljoin(page,href))
           with urlopen(Request(page,headers={'User-Agent':'TsurikueOfficialAudit/1.0'}),timeout=80) as r: body=r.read(600000)
           x=P();x.feed(body.decode('utf-8','replace'))
-          urls=sorted(u for u in x.urls if re.search(r'RT8[1-9]_B02\\.zip',u))
+          urls=sorted(u for u in x.urls if any(u.endswith('RT8'+str(n)+'_B02.zip') for n in range(1,10)))
           print('BENTHIC_URLS',json.dumps(urls,ensure_ascii=False))
           if len(urls)!=9:raise ValueError('Expected 9 bottom-animal official downloadable archives')
           target=next(u for u in urls if 'RT87_B02.zip' in u)
