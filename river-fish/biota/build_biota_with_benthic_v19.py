@@ -142,7 +142,11 @@ def search(db,name="",scientific="",group="",region="",watershed="",
            survey_name="",benthic_name="",year="",limit=25,offset=0):
     # Independently query the v1.8 name reference and old fish evidence.
     v18=search_v18(db,name,scientific,group,region,watershed,survey_name,limit,offset)
-    new=search_benthic(db,benthic_name or name,region,watershed,year,limit,offset)
+    # A fish-only query must not flood the screen with unrelated benthic
+    # regional rows merely because "region" is present.
+    request_benthic=bool(benthic_name or name or (not survey_name and (region or watershed or year) and group in ("","benthic_animals")))
+    new=(search_benthic(db,benthic_name or name,region,watershed,year,limit,offset)
+         if request_benthic else search_benthic(db,limit=limit,offset=offset))
     v18.update(new)
     v18["biological_taxonomy_river_fish_and_benthic_are_not_auto_joined"]=True
     return v18
