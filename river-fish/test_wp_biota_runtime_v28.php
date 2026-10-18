@@ -34,9 +34,9 @@ tsb_assert($state['generation']===1,'First verified generation must be one');
 global $wpdb;
 $table=Tsurikue_Biota_Search::table();
 $actual=$wpdb->get_results($wpdb->prepare(
-    "SELECT group_id, COUNT(*) AS rows FROM {$table} WHERE generation=%d GROUP BY group_id",1),ARRAY_A);
+    "SELECT group_id, COUNT(*) AS record_count FROM {$table} WHERE generation=%d GROUP BY group_id",1),ARRAY_A);
 $counts=array();
-foreach($actual as $row){$counts[$row['group_id']]=(int)$row['rows'];}
+foreach($actual as $row){$counts[$row['group_id']]=(int)$row['record_count'];}
 tsb_assert($counts['fish']===18814,'Fish historical record count changed');
 tsb_assert($counts['benthic_animals']===74949,'Benthic historical record count changed');
 tsb_assert($counts['birds']===44093,'Bird historical record count changed');
@@ -82,6 +82,22 @@ tsb_assert($plantData['results'][0]['approved_taxon_code']===null,
 tsb_assert(isset($plantData['results'][0]['survey_years']),
     'Historical survey years not aggregated');
 
+// Watershed summary classification chips must honor the selected survey year,
+// rather than silently counting labels from every year.
+$selected_year=$plantData['results'][0]['survey_years'][0];
+$year_filters=array('direction'=>'region_explore','group'=>array('plants'),
+    'region'=>'chugoku','watershed'=>'太田川','watershed_match'=>'exact',
+    'year'=>$selected_year);
+$year_waters=tsb_request('search',$year_filters);
+$year_names=tsb_request('search',array_merge($year_filters,
+    array('direction'=>'watershed_to_organism')));
+tsb_assert($year_waters->get_status()===200&&$year_names->get_status()===200,
+    'Year-filtered searches must succeed');
+tsb_assert($year_waters->get_data()['total']===1,'Filtered Ota watershed absent');
+tsb_assert($year_waters->get_data()['results'][0]['group_label_counts']['plants']
+    ===$year_names->get_data()['total'],
+    'Watershed category chip must use selected year filter');
+
 $birds=tsb_request('search',array(
     'direction'=>'watershed_to_organism','group'=>array('birds'),
     'region'=>'chugoku','watershed'=>'太田川','watershed_match'=>'exact'
@@ -112,4 +128,30 @@ $still=tsb_request('search',array(
     'direction'=>'region_explore','region'=>'chugoku','group'=>array('plants')));
 tsb_assert($still->get_status()===200 && $still->get_data()['total']===13,
     'Old data must stay available while writing inactive generation');
-echo "BIOTA_WORDPRESS_REAL_DATA_PASS 408036 rows; 4 classifications, WP REST queries, shortcode and staged re-import intact; batches=".$steps."\n";
+
+// Finish re-import into the alternate generation, then actually restore
+// the original generation and verify that it is still queryable.
+$reimport_steps=1;
+while ($partial['importing']) {
+    $partial=$step->invoke(null);$reimport_steps++;
+    if ($reimport_steps>850) {
+        throw new RuntimeException('Second-generation batch loop exceeded 850');
+    }
+}
+tsb_assert($partial['ready']===true && $partial['generation']===2,
+    'Verified second generation did not become active');
+tsb_assert($partial['rollback_available']===true,
+    'Original generation is not marked as restorable');
+$restored=$rollback->invoke(null);
+tsb_assert($restored['ready']===true && $restored['generation']===1
+    && $restored['rollback_available']===true,
+    'Rollback failed to restore original generation');
+$after=tsb_request('search',array(
+    'direction'=>'watershed_to_organism','group'=>array('plants'),
+    'region'=>'chugoku','watershed'=>'太田川','watershed_match'=>'exact'
+));
+tsb_assert($after->get_status()===200 && $after->get_data()['total']===1212,
+    'Restored generation has changed Ota plant results');
+tsb_assert((int)wp_count_posts('post')->publish===$pre_posts,
+    'A re-import or rollback unexpectedly changed WordPress posts');
+echo "BIOTA_WORDPRESS_REAL_DATA_PASS 408036 records; 4 groups, REST, shortcode, 2 full imports and successful rollback; batches=".$steps."+".$reimport_steps."\n";
