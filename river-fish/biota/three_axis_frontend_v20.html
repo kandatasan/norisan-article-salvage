@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>つりくえ！全国生物・水系検索 — 研究用プレビュー v2.0</title>
+<style>
+  :root{font-family:system-ui,-apple-system,"Hiragino Kaku Gothic ProN",sans-serif;color:#18312e;background:#f4f8f7}
+  *,*::before,*::after{box-sizing:border-box}
+  body{margin:0;padding:20px 12px}
+  main{margin:auto;max-width:920px}
+  .panel{background:white;padding:clamp(16px,3vw,28px);border:1px solid #d7e6e0;border-radius:18px;margin-bottom:18px;box-shadow:0 2px 8px #163d3110}
+  h1{font-size:clamp(22px,3vw,30px);margin:0 0 9px}
+  h2{font-size:18px;margin:0 0 12px}
+  p{line-height:1.7}
+  .subtle{color:#42615a;font-size:14px}
+  .tabs{display:flex;gap:8px;flex-wrap:wrap;margin:20px 0}
+  .tabs button{flex:1;min-width:135px;background:#edf4f1;color:#174b40;border:1px solid #bad4cb}
+  .tabs button[aria-pressed=true]{background:#126550;color:white;border-color:#126550}
+  button,input,select{font:inherit;min-height:44px;border-radius:9px}
+  button{cursor:pointer;padding:9px 12px}
+  label{font-weight:600;font-size:14px;display:flex;flex-direction:column;gap:7px}
+  input,select{width:100%;border:1px solid #94b7ac;background:#fff;padding:10px}
+  input:focus,select:focus,button:focus-visible{outline:3px solid #b2d9ba;outline-offset:2px}
+  .fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+  .submit{margin-top:16px;width:100%;background:#126550;color:white;border:0;font-weight:bold}
+  .results{display:grid;gap:11px}
+  .record{border:1px solid #dce8e3;border-radius:11px;padding:15px}
+  .record strong{display:block;font-size:17px;margin-bottom:6px;overflow-wrap:anywhere}
+  .record div{font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+  .record a{color:#126550}
+  .paging{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:16px}
+  .paging button{background:#edf4f1;border:1px solid #a8c8bd;color:#163e34}
+  .paging button:disabled{opacity:.4;cursor:default}
+  .notice{border-left:4px solid #b19b4f;padding-left:12px;background:#faf8ec;color:#514723}
+  @media(max-width:590px){.fields{grid-template-columns:1fr}.tabs{display:grid;grid-template-columns:1fr}.tabs button{width:100%}}
+</style>
+</head>
+<body>
+<main>
+  <section class="panel">
+    <h1>全国生物・水系検索</h1>
+    <p class="subtle">国土交通省「河川水辺の国勢調査」を整理した研究用プレビュー。魚類・底生動物の過去の<b>水系単位</b>の掲載情報を検索します。一般公開版ではありません。</p>
+    <div class="tabs" aria-label="検索する方向">
+      <button type="button" data-direction="organism_to_watershed" aria-pressed="true">生物 → 水系</button>
+      <button type="button" data-direction="watershed_to_organism" aria-pressed="false">水系 → 生物</button>
+      <button type="button" data-direction="region_explore" aria-pressed="false">地域から探す</button>
+    </div>
+    <form id="search" novalidate>
+      <div class="fields">
+        <label>生物名<input name="organism" placeholder="例：アユ・カワゲラ" autocomplete="off"></label>
+        <label>水系名<input name="watershed" placeholder="例：太田川" autocomplete="off"></label>
+        <label>地方
+          <select name="region"><option value="">すべての地方</option>
+          <option value="hokkaido">北海道</option><option value="tohoku">東北</option><option value="kanto">関東</option><option value="hokuriku">北陸</option><option value="chubu">中部</option><option value="kinki">近畿</option><option value="chugoku">中国</option><option value="shikoku">四国</option><option value="kyushu">九州</option></select>
+        </label>
+        <label>調査区分<select name="group"><option value="both">魚類・底生動物</option><option value="fish">魚類のみ</option><option value="benthic_animals">底生動物のみ</option></select></label>
+        <label>調査年度（任意）<input name="year" placeholder="例：2020" inputmode="numeric" maxlength="4"></label>
+      </div>
+      <button class="submit" type="submit">公式調査記録を検索</button>
+    </form>
+  </section>
+  <section class="panel" aria-live="polite" aria-atomic="false">
+    <h2>検索結果</h2>
+    <p id="status" class="subtle">検索条件を選んでください。</p>
+    <div id="records" class="results"></div>
+    <div id="paging" class="paging" hidden>
+      <button type="button" id="prev">前の25件</button><span id="page-info"></span>
+      <button type="button" id="next">次の25件</button>
+    </div>
+    <p class="notice">掲載は過去の「地方×水系×年度×記録名」。個々の川・都道府県での生息、現在の生息、正式な種同定を示すものではありません。検索結果がなくても「生息しない」とは判断できません。</p>
+  </section>
+</main>
+<script>
+(() => {
+  "use strict";
+  const form=document.getElementById("search"), records=document.getElementById("records"),
+    status=document.getElementById("status"), paging=document.getElementById("paging"),
+    prev=document.getElementById("prev"), next=document.getElementById("next"),
+    pageInfo=document.getElementById("page-info");
+  const regions={hokkaido:"北海道",tohoku:"東北",kanto:"関東",hokuriku:"北陸",chubu:"中部",kinki:"近畿",chugoku:"中国",shikoku:"四国",kyushu:"九州"};
+  let direction="organism_to_watershed", page=1, lastTotal=0, inFlight=0;
+  for(const tab of document.querySelectorAll("[data-direction]")){
+    tab.addEventListener("click",()=>{
+      direction=tab.dataset.direction;
+      for(const t of document.querySelectorAll("[data-direction]")) t.setAttribute("aria-pressed",String(t===tab));
+      form.elements.organism.required=direction==="organism_to_watershed";
+      form.elements.watershed.required=direction==="watershed_to_organism";
+      form.elements.region.required=direction==="region_explore";
+      status.textContent="検索方向を変更しました。条件を入力してください。";
+      records.replaceChildren();paging.hidden=true;page=1;
+    });
+  }
+  const element=(tag, text, className)=>{
+    const e=document.createElement(tag);e.textContent=text;
+    if(className)e.className=className;return e;
+  };
+  function appendMeta(parent,text){parent.append(element("div",text));}
+  async function search(){
+    const searchId=++inFlight;
+    const p=new URLSearchParams(new FormData(form));
+    p.set("direction",direction);p.set("page",String(page));p.set("per_page","25");
+    records.replaceChildren();paging.hidden=true;status.textContent="検索中…";
+    try{
+      const response=await fetch("/api/search?"+p.toString(),{cache:"no-store"});
+      const data=await response.json();
+      if(searchId!==inFlight)return;
+      if(!response.ok)throw new Error(data.error||"検索エラー");
+      lastTotal=data.total;
+      status.textContent=data.total.toLocaleString()+"件の水系・年度別掲載記録が見つかりました。";
+      for(const r of data.results){
+        const card=element("article","","record");
+        card.append(element("strong",r.recorded_name+" ／ "+r.watershed_name+"水系"));
+        appendMeta(card,(regions[r.region]||r.region)+"・"+r.survey_year+"年調査・"+(r.survey_group==="fish"?"魚類":"底生動物"));
+        const link=element("a","出典ZIP（国土交通省）");
+        if(/^https:\/\/www\.nilim\.go\.jp\//.test(r.source_url)){
+          link.href=r.source_url;link.target="_blank";link.rel="noopener noreferrer";
+          card.append(link);
+        }
+        records.append(card);
+      }
+      if(!data.results.length)records.append(element("p","該当する掲載記録は見つかりませんでした（生息しないという意味ではありません）。"));
+      paging.hidden=!lastTotal;
+      prev.disabled=page===1;
+      next.disabled=page*25>=lastTotal;
+      pageInfo.textContent=page+"ページ";
+    }catch(e){if(searchId===inFlight)status.textContent=e.message||"検索できませんでした。";}
+  }
+  form.addEventListener("submit",e=>{e.preventDefault();page=1;search();});
+  prev.addEventListener("click",()=>{if(page>1){page--;search();}});
+  next.addEventListener("click",()=>{if(page*25<lastTotal){page++;search();}});
+})();
+</script>
+</body>
+</html>
