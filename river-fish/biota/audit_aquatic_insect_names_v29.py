@@ -24,13 +24,11 @@ def reference_class(row):
     scientific = row["class_scientific"].strip().casefold()
     jp_insect = japanese in ("昆虫綱", "昆虫")
     sci_insect = scientific == "insecta"
-    if japanese and scientific and jp_insect != sci_insect:
+    # Candidate insect status requires BOTH matching official class fields.
+    # Missing/disagreeing fields are unresolved, never inferred from one field.
+    if not japanese or not scientific or jp_insect != sci_insect:
         return "uncertain_class"
-    if jp_insect or sci_insect:
-        return "insect"
-    if japanese or scientific:
-        return "other_class"
-    return "uncertain_class"
+    return "insect" if jp_insect else "other_class"
 
 
 def index_reference(rows):
@@ -139,9 +137,10 @@ def self_test():
         record("unknown", "", "", "1"),
         record("outside", "昆虫綱", "Insecta", "0"),
         record("conflict", "昆虫綱", "Malacostraca", "1"),
+        record("missingclass", "昆虫綱", "", "1"),
     ])
     actual = {x: classify(x, index) for x in
-              ("insect", "non", "mixed", "unknown", "outside", "conflict", "missing")}
+              ("insect", "non", "mixed", "unknown", "outside", "conflict", "missingclass", "missing")}
     assert actual == {
         "insect": "insect_name_candidate_not_verified",
         "non": "non_insect_reference_name",
@@ -149,6 +148,7 @@ def self_test():
         "unknown": "uncertain_reference_class",
         "outside": "outside_benthic_reference_membership",
         "conflict": "uncertain_reference_class",
+        "missingclass": "uncertain_reference_class",
         "missing": "no_exact_2025_reference_name",
     }, actual
     print("AQUATIC_INSECT_NAME_SCREENING_UNIT_PASS")
