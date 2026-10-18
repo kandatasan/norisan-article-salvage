@@ -1,0 +1,54 @@
+name: National river bird survey source audit v2.4
+
+on:
+  pull_request:
+    paths:
+      - 'river-fish/biota/audit_bird_sources_v24.py'
+      - 'river-fish/biota/test_bird_source_audit_v24.py'
+      - 'river-fish/biota/BIRD_SOURCE_AUDIT_V24.md'
+      - '.github/workflows/river-bird-audit-v24.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-schema-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check original bird category, exact header and region controls
+        run: |
+          python -m py_compile river-fish/biota/audit_bird_sources_v24.py
+          python -m unittest discover -s river-fish/biota -p 'test_bird_source_audit_v24.py' -v
+
+  audit-nine-official-river-edition-bird-archives:
+    needs: synthetic-schema-qa
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      max-parallel: 9
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit direct MLIT link / ZIP SHA / Excel columns / literal bird source category
+        run: |
+          python river-fish/biota/audit_bird_sources_v24.py \
+            --region "${{ matrix.region }}" \
+            --out "$RUNNER_TEMP/bird-audit/${{ matrix.region }}.json"
+      - name: Upload source audit metadata only (not precise locations or observation files)
+        uses: actions/upload-artifact@v4
+        with:
+          name: bird-source-audit-${{ matrix.region }}
+          path: ${{ runner.temp }}/bird-audit/${{ matrix.region }}.json
+          retention-days: 14
+          if-no-files-found: error
