@@ -17,7 +17,7 @@
   writing-mode: horizontal-tb;
 }
 *,*::before,*::after{box-sizing:border-box}
-[hidden]{display:none!important}
+[hidden], .tsr-controls label[hidden], .tsr-pager[hidden] {display:none!important}
 button,input,select{font:inherit;letter-spacing:normal;writing-mode:horizontal-tb;min-width:0;max-width:100%}
 button{cursor:pointer}
 button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #dca853;outline-offset:2px}
