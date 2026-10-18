@@ -2,7 +2,7 @@
 from io import BytesIO
 from zipfile import ZipFile,ZIP_DEFLATED
 import unittest
-from audit_plant_sources_v24 import audit
+from audit_plant_sources_v26 import audit
 
 M="http://schemas.openxmlformats.org/spreadsheetml/2006/main"
 def bundle(region="chugoku",category="植物",header="種名",rows=60):
