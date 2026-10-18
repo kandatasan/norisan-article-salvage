@@ -1,4 +1,4 @@
-name: WordPress nationwide river plugin ZIP v1.6
+name: WordPress nationwide river plugin ZIP — isolated Soft v0.2
 
 on:
   pull_request:
@@ -42,10 +42,10 @@ jobs:
         run: python -m unittest discover -s river-fish -p 'test_wp_plugin_v16.py' -v
       - name: Check PHP and Javascript syntax
         run: |
-          for file in river-fish/wp-plugin/tsurikue-river-search/*.php river-fish/wp-plugin/tsurikue-river-search/includes/*.php; do
+          for file in river-fish/wp-plugin/tsurikue-river-search/*.php river-fish/wp-plugin/tsurikue-river-search/includes/*.php river-fish/wp-plugin/tsurikue-river-search/frontend/view.php; do
             php -l "$file"
           done
-          node --check river-fish/wp-plugin/tsurikue-river-search/assets/river-search.js
+          node --check river-fish/wp-plugin/tsurikue-river-search/frontend/app.js
           node --check river-fish/wp-plugin/tsurikue-river-search/assets/river-admin.js
       - name: Build real WordPress installable ZIP (no deployment)
         run: |
@@ -61,7 +61,7 @@ jobs:
           with zipfile.ZipFile(z) as f:
             assert f.testzip() is None
             names=f.namelist()
-            assert len(names)==13
+            assert len(names)==14
             assert all(n.startswith('tsurikue-river-search/') for n in names)
             data=json.loads(f.read('tsurikue-river-search/data/manifest.json'))
             assert data['counts']=={'codes':35449,'local':1449,'fish':18814}
@@ -72,7 +72,7 @@ jobs:
       - name: Upload manually installable plugin ZIP
         uses: actions/upload-artifact@v4
         with:
-          name: tsurikue-river-wordpress-plugin-v16
+          name: tsurikue-river-wordpress-plugin-soft-v02
           path: ${{ runner.temp }}/tsurikue-river-search.zip
           retention-days: 30
           if-no-files-found: error

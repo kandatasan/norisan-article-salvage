@@ -2,7 +2,7 @@
 /**
  * Plugin Name: つりくえ！全国河川検索
  * Description: 全国河川コード、都道府県公式資料の掲載名、水系単位の魚類記録を出典別に検索する。手動インポート式のβ版。
- * Version: 0.1.0
+ * Version: 0.2.0
  * Requires at least: 6.2
  * Requires PHP: 7.4
  * Author: つりくえ！
@@ -12,7 +12,7 @@
 if (!defined('ABSPATH')) {
     exit;
 }
-define('TSR_PLUGIN_VERSION', '0.1.0');
+define('TSR_PLUGIN_VERSION', '0.2.0');
 define('TSR_DATA_VERSION', 'v1.5-20261018');
 define('TSR_PLUGIN_FILE', __FILE__);
 define('TSR_PLUGIN_DIR', plugin_dir_path(__FILE__));
@@ -93,21 +93,24 @@ KEY fish_lookup (generation,fish_name(80))
         // activates the dataset automatically.
     }
 
+    /**
+     * HARD LAYER owns the read-only API and data only.
+     * SOFT LAYER owns the PHP view template, Shadow DOM CSS and JS.
+     * The shortcode contract remains unchanged after upgrading v0.1 => v0.2.
+     */
     public static function shortcode($attributes = array()) {
         $id = function_exists('wp_unique_id') ? wp_unique_id('tsr-') : 'tsr-river-search';
-        wp_enqueue_style(
-            'tsurikue-river-front',
-            plugins_url('assets/river-search.css', TSR_PLUGIN_FILE),
-            array(), TSR_PLUGIN_VERSION
-        );
+
+        // No global UI stylesheet: SWELL cannot bleed into the shadow root.
+        // The Soft app injects its own scoped <link> into each widget.
         wp_enqueue_script(
             'tsurikue-river-front',
-            plugins_url('assets/river-search.js', TSR_PLUGIN_FILE),
+            plugins_url('frontend/app.js', TSR_PLUGIN_FILE),
             array(), TSR_PLUGIN_VERSION, true
         );
         wp_localize_script('tsurikue-river-front', 'TsurikueRiverSearchSettings', array(
             'endpoint' => esc_url_raw(rest_url('tsurikue-rivers/v1/search')),
-            'isReady' => TSR_Search::ready(),
+            'styleUrl' => esc_url_raw(add_query_arg('ver', TSR_PLUGIN_VERSION, plugins_url('frontend/style.css', TSR_PLUGIN_FILE))),
             'prefectures' => array(
                 '北海道','青森県','岩手県','宮城県','秋田県','山形県','福島県',
                 '茨城県','栃木県','群馬県','埼玉県','千葉県','東京都','神奈川県',
@@ -118,64 +121,9 @@ KEY fish_lookup (generation,fish_name(80))
                 '熊本県','大分県','宮崎県','鹿児島県','沖縄県'
             )
         ));
+
         ob_start();
-        ?>
-        <div class="tsr-app" id="<?php echo esc_attr($id); ?>" data-tsr-app="1">
-          <div class="tsr-heading">
-            <p class="tsr-kicker">つりくえ！ 全国河川図鑑 β</p>
-            <h2>全国の川を探す</h2>
-            <p>川の名前、県の公式資料、水系ごとの魚類調査を検索できます。<strong>生息魚や所在地が未確認の情報は、推測して表示しません。</strong></p>
-          </div>
-          <div class="tsr-tabs" role="tablist" aria-label="検索する情報">
-            <button type="button" role="tab" aria-selected="true" class="tsr-selected" data-mode="codes">全国の川名・コード</button>
-            <button type="button" role="tab" aria-selected="false" data-mode="local" tabindex="-1">県別資料</button>
-            <button type="button" role="tab" aria-selected="false" data-mode="fish" tabindex="-1">水系別の魚</button>
-          </div>
-          <form class="tsr-form">
-            <div class="tsr-controls">
-              <label class="tsr-pref-wrap" hidden>都道府県
-                <select name="prefecture"><option value="">すべての都道府県</option></select>
-              </label>
-              <label class="tsr-kind-wrap" hidden>資料の区分
-                <select name="kind">
-                  <option value="">すべて</option>
-                  <option value="river">河川名</option>
-                  <option value="watershed">水系名</option>
-                  <option value="planning_region">整備計画圏域</option>
-                </select>
-              </label>
-              <label class="tsr-region-wrap" hidden>魚類調査の地域
-                <select name="region">
-                  <option value="">全国9地域</option>
-                  <option value="hokkaido">北海道</option>
-                  <option value="tohoku">東北</option>
-                  <option value="kanto">関東</option>
-                  <option value="hokuriku">北陸</option>
-                  <option value="chubu">中部</option>
-                  <option value="kinki">近畿</option>
-                  <option value="chugoku">中国</option>
-                  <option value="shikoku">四国</option>
-                  <option value="kyushu">九州</option>
-                </select>
-              </label>
-              <label class="tsr-watershed-wrap" hidden>調査対象の水系
-                <input name="watershed" type="search" maxlength="70" placeholder="例：太田川">
-              </label>
-              <label class="tsr-query-wrap">川名・水系名・河川コード
-                <input name="q" type="search" maxlength="70" placeholder="例：諸木川" autocomplete="off">
-              </label>
-            </div>
-            <button class="tsr-submit" type="submit">検索する</button>
-          </form>
-          <p class="tsr-scope" data-scope>全国河川コードは所在地県を示すものではありません。水系の魚類情報も支流ごとの生息情報ではありません。</p>
-          <p data-status class="tsr-status" role="status" aria-live="polite"></p>
-          <div data-results class="tsr-results"></div>
-          <div class="tsr-pager" data-pager hidden>
-            <button type="button" data-prev>前へ</button><span data-page-info></span><button type="button" data-next>次へ</button>
-          </div>
-          <p class="tsr-footnote">資料に名前がない川・魚も「存在しない」とは限りません。各結果の公式出典と掲載時点をご確認ください。</p>
-        </div>
-        <?php
+        include TSR_PLUGIN_DIR . 'frontend/view.php';
         return ob_get_clean();
     }
 

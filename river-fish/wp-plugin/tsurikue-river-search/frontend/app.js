@@ -1,4 +1,4 @@
-/* WordPress plugin front end. Data fetched in bounded pages, never preload 55k records. */
+/* SOFT LAYER: standalone browser UI. Shadow DOM prevents SWELL style collisions. */
 (function () {
   "use strict";
   const conf=window.TsurikueRiverSearchSettings||{};
@@ -165,9 +165,9 @@
       });
       prefWrap.hidden=kindWrap.hidden=mode!=="local";
       regionWrap.hidden=watershedWrap.hidden=mode!=="fish";
-      q.parentElement.querySelector('input').placeholder=(mode==="codes"?"例：諸木川・8707090023":
+      q.placeholder=(mode==="codes"?"例：諸木川・8707090023":
         mode==="local"?"例：国場川（県だけの選択も可）":"例：アユ");
-      queryWrap.firstChild.textContent=(mode==="codes"?"川名・水系名・10桁コード":
+      queryWrap.querySelector('[data-query-label]').textContent=(mode==="codes"?"川名・水系名・10桁コード":
         mode==="local"?"河川名・水系名・地域名":"魚の名前");
       q.value="";p.value="";kind.value="";region.value="";watershed.value="";
       note.textContent=hints[mode];
@@ -193,7 +193,21 @@
     next.addEventListener("click",()=>{page+=1;search();});
     activate("codes");
   }
-  function init(){document.querySelectorAll("[data-tsr-app]").forEach(setup);}
+  function init(){
+    // The template lives in a plain HTML file. Only the UI is mounted in a
+    // browser shadow root, completely separate from the hard DB / REST layer.
+    document.querySelectorAll('[data-tsr-app]').forEach(host=>{
+      if(host.shadowRoot)return;
+      const template=host.querySelector('template[data-tsr-layout]');
+      if(!template)return;
+      const shadow=host.attachShadow({mode:'open'});
+      const css=document.createElement('link');
+      css.rel='stylesheet';
+      css.href=conf.styleUrl;
+      shadow.append(css,template.content.cloneNode(true));
+      setup(shadow);
+    });
+  }
   if(document.readyState==="loading")document.addEventListener("DOMContentLoaded",init,{once:true});
   else init();
 })();
