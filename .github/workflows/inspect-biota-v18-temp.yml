@@ -41,9 +41,9 @@ jobs:
                   for event,element in ET.iterparse(f,events=('end',)):
                     if element.tag==p+'row':
                       nrows+=1
-                      if nrows<=8:
+                      if nrows<=2:
                         values=[]
-                        for c in list(element)[:16]:
+                        for c in list(element)[:90]:
                           v=c.find(p+'v')
                           inline=c.find(p+'is')
                           val=v.text if v is not None else (''.join(t.text or '' for t in inline.iter(p+'t')) if inline is not None else '')
