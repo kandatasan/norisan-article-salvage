@@ -99,6 +99,7 @@ tsr_assert(count($bounds->get_data()['rows'])<=25, 'Public API exceeded 25-row l
 $shortcode = do_shortcode('[tsurikue_river_search]');
 tsr_assert(strpos($shortcode,'data-tsr-app="1"')!==false, 'Shortcode did not output an accessible search widget');
 tsr_assert(strpos($shortcode,'[tsurikue_river_search]')===false, 'Shortcode was not evaluated');
+tsr_assert(strpos($shortcode,'<template data-tsr-layout>')!==false, 'Soft frontend template is missing');
 
 // Re-import starts writing the INACTIVE generation. Old generation remains
 // queryable until ALL three sets pass final checks.
