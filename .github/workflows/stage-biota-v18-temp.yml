@@ -25,6 +25,18 @@ jobs:
           python-version: '3.12'
       - name: Download official 2025 all-organism reference and stage name rows, no observation locations
         run: |
+          python - <<'PY'
+          import sys
+          sys.path.insert(0,"river-fish/biota")
+          from import_official_biota_v18 import fetch_official,xlsx_rows
+          raw=fetch_official()
+          samples=[]
+          for idx,cell in xlsx_rows(raw):
+            if idx<35 or (idx<500 and (not cell.get("Y") or not cell.get("AA"))):
+              if idx>1:samples.append({"row":idx,"code":cell.get("Y"),"jp":cell.get("AA"),"scientific":cell.get("Z"),"phylum":cell.get("B")})
+            if idx>=500:break
+          print("SOURCE_NULL_SAMPLES",samples[:90])
+          PY
           python river-fish/biota/import_official_biota_v18.py \
             --download \
             --output river-fish/biota/official_biota_reference_2025_v18.csv \
