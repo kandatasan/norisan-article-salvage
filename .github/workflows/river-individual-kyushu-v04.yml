@@ -1,0 +1,30 @@
+name: Kyushu river evidence discovery v04 (research only)
+on:
+  push:
+    branches:
+      - research/river-individual-kyushu-20261020
+    paths:
+      - river-fish/research-individual-v04/*.py
+      - .github/workflows/river-individual-kyushu-v04.yml
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  kyushu-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Parse official MLIT distribution list
+        run: |
+          python -m py_compile river-fish/research-individual-v04/*.py
+          python river-fish/research-individual-v04/probe_kyushu_official_page.py --out /tmp/kyushu-v04/mlit_official_page_probe.json
+      - name: Store read-only research audit
+        uses: actions/upload-artifact@v4
+        with:
+          name: kyushu-independent-source-probe-v04
+          path: /tmp/kyushu-v04/
+          if-no-files-found: error
