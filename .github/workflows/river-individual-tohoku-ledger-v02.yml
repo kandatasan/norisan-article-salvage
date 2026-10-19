@@ -25,6 +25,11 @@ jobs:
           command -v pdftotext
       - name: Download and inspect official Tohoku river code PDF
         run: python river-fish/research-individual-v02/inspect_tohoku_code_ledger.py --out /tmp/tohoku-ledger-research
+      - name: Verify pinned PDF and build independent candidate crosswalk
+        run: |
+          python river-fish/research-individual-v02/verify_tohoku_independent_matches.py \
+            --pdf /tmp/tohoku-ledger-research/tohoku-source.pdf \
+            --out /tmp/tohoku-ledger-research
       - name: Validate extracted candidate evidence without publishing
         run: |
           python - <<'PY'
@@ -34,6 +39,11 @@ jobs:
           d=json.loads((p/'tohoku_ledger_inspection.json').read_text())
           assert d['inspection_only_no_new_A_approved'] is True
           assert d['pdf_pages']>2 and d['source_sha256']
+          review=json.loads((p/'tohoku_crosswalk_review.json').read_text())
+          assert review['production_changed'] is False
+          assert review['candidate_B_records_supported_by_ledger']<=review['tohoku_B_grouped_records_before']
+          assert review['candidate_watersheds_with_records']<=12
+          print('STRICT_LEDGER',review)
           print('PARSED',d['ledger_rows_regex_matched'],'POTENTIAL',d['strict_page_and_national_matches'])
           PY
       - name: Upload candidate evidence without raw PDF
@@ -43,4 +53,7 @@ jobs:
           path: |
             /tmp/tohoku-ledger-research/tohoku_ledger_inspection.json
             /tmp/tohoku-ledger-research/tohoku_unapproved_evidence.csv
+            /tmp/tohoku-ledger-research/tohoku_independent_crosswalk.csv
+            /tmp/tohoku-ledger-research/tohoku_B_to_A_candidate_counts.csv
+            /tmp/tohoku-ledger-research/tohoku_crosswalk_review.json
           if-no-files-found: error
