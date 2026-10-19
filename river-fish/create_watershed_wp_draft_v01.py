@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Create one guarded, unpublished WordPress page for river atlas preview."""
 import base64
+import html as html_lib
 import json
 import os
 import urllib.parse
@@ -29,7 +30,7 @@ def main():
     html=(OUTPUT/"standalone.html").read_text(encoding="utf-8")
     if "window.RIVER_ATLAS=" not in html or "8707090029" not in html:raise RuntimeError("Real data missing")
     # The editor receives a Gutenberg custom HTML block. Never create a published page.
-    body="<!-- "+MARKER+" -->\n<!-- wp:html -->\n"+html+"\n<!-- /wp:html -->"
+    body="<!-- "+MARKER+" -->\n<!-- wp:html -->\n<iframe title=\"日本の河川大図鑑プレビュー\" loading=\"lazy\" style=\"width:100%;height:86vh;min-height:680px;border:0\" srcdoc=\""+html_lib.escape(html,quote=True)+"\"></iframe>\n<!-- /wp:html -->"
     q=urllib.parse.urlencode({"context":"edit","slug":SLUG,"status":"any","per_page":20})
     existing,_=request("/pages?"+q,auth)
     if existing:raise RuntimeError("Existing page with same slug: refuse overwrite")
