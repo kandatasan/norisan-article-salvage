@@ -34,7 +34,7 @@ jobs:
           assert m["status"]=="research_preview_only_no_server_or_wordpress_changes"
           assert m["riverCodes"]>20
           assert m["fishSurveyRecords"]>0
-          assert (p/"index.html").is_file() and (p/"data.js").is_file()
+          assert (p/"index.html").is_file() and (p/"data.js").is_file() and (p/"standalone.html").is_file()
           print("ATLAS_REAL_DATA_PREVIEW_OK",m)
           PY
       - name: Check generated JavaScript syntax
