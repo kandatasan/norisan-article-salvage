@@ -13,7 +13,7 @@ class NamedRiverTests(unittest.TestCase):
         self.assertEqual(review_name("十三湖"),"nonriver_waterbody")
         self.assertEqual(review_name("○○ダム"),"nonriver_waterbody")
     def test_composite_sections_remain_review_only(self):
-        self.assertEqual(review_name("信濃川（本川下流）"),"parenthesized_river_section")
+        self.assertEqual(review_name("信濃川（本川下流）"),"survey_section_label")
         self.assertEqual(review_name("○○川・△△川"),"composite_river_label")
         self.assertEqual(review_name("○○川流域"),"general_or_nonriver_label")
     def test_normal_named_rivers_accepted(self):
