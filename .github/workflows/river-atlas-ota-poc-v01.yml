@@ -37,6 +37,18 @@ jobs:
           assert (p/"index.html").is_file() and (p/"data.js").is_file()
           print("ATLAS_REAL_DATA_PREVIEW_OK",m)
           PY
+      - name: Check generated JavaScript syntax
+        run: |
+          python - <<'PY'
+          import os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"ota-river-atlas"
+          page=(p/"index.html").read_text(encoding="utf-8")
+          inline=page.split("<script>")[-1].split("</script>")[0]
+          assert "function draw()" in inline
+          (p/"atlas-app.js").write_text(inline,encoding="utf-8")
+          PY
+          node --check "$RUNNER_TEMP/ota-river-atlas/atlas-app.js"
+          node --check "$RUNNER_TEMP/ota-river-atlas/data.js"
       - name: Upload offline preview (never deploy to tsurikue.com)
         uses: actions/upload-artifact@v4
         with:
