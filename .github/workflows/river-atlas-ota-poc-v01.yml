@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - 'river-fish/build_river_atlas_poc_v01.py'
-      - 'river-fish/test_river_atlas_poc_v01.py'
+      - 'river-fish/test_river_atlas_poc_v01.py'\n      - 'river-fish/ota_official_river_connections_v01.json'\n      - 'river-fish/build_river_atlas_discovery_v02.py'\n      - 'river-fish/test_river_atlas_discovery_v02.py'\n      - 'river-fish/build_river_atlas_poc_v01.py'
       - 'river-fish/atlas-poc-v01/**'
       - '.github/workflows/river-atlas-ota-poc-v01.yml'
   workflow_dispatch:
@@ -20,6 +20,8 @@ jobs:
           python-version: '3.12'
       - name: Verify real river membership and safe survey scopes
         run: python -m unittest discover -s river-fish -p 'test_river_atlas_poc_v01.py' -v
+      - name: Verify discovery index evidence boundaries
+        run: python -m unittest discover -s river-fish -p 'test_river_atlas_discovery_v02.py' -v
       - name: Build offline Ota river-explorer ZIP from GitHub source data
         run: |
           python river-fish/build_river_atlas_poc_v01.py \
