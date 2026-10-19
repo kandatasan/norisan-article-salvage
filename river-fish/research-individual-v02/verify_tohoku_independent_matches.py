@@ -43,7 +43,7 @@ def verify(pdf,out):
     info,matched=analyze(pdf)
     headers=page_watersheds(pdf)
     if len(set(headers.values()))!=12 or len(headers)<50:
-        raise ValueError("Too few unambiguous watershed page headers")
+        raise ValueError(f"Too few unambiguous watershed page headers: count={len(headers)} names={sorted(set(headers.values()))} sample={list(headers.items())[:5]}")
     correct=[r for r in matched if headers.get(r["source_page"])==r["national_watershed"]]
     pairs=Counter((r["national_watershed"],r["ledger_river_name"]) for r in correct)
     # Even same name on two separate river codes must stay B.
