@@ -1,0 +1,26 @@
+{
+  "real_data_checks_passed": 14,
+  "checks": [
+    "SQLite integrity",
+    "all 408036 original aggregate keys preserved",
+    "original group counts preserved",
+    "no duplicate recovered evidence",
+    "no unapproved codes",
+    "every A row independently approved",
+    "no station/coordinate/date/distance columns exported",
+    "Misasa 4 actual group counts",
+    "Neya missing birds is not filled from watershed",
+    "watershed context separated from direct evidence",
+    "prefecture never inferred from code prefix",
+    "SQL/code injection rejected",
+    "existing snapshot unchanged",
+    "research database unchanged by read-only queries"
+  ],
+  "unit_tests_passed": 7,
+  "source_snapshot_unchanged_sha256": "05ea1bd3f1965d6b88066f9c2fb1e77f667f7ede56d04709c1edcac27111fe83",
+  "research_database_sha256": "1662df7d2b7bf7d31408d58ce2258a088c2b0c2a0a8a567ec30318eb99782b18",
+  "wordpress_changes": 0,
+  "mysql_changes": 0,
+  "api_changes": 0,
+  "deployment": false
+}

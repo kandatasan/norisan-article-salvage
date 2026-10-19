@@ -1,0 +1,131 @@
+{
+  "river_code": "8707090029",
+  "river_name": "三篠川",
+  "watershed_code": "870709",
+  "watershed_name": "太田川",
+  "prefecture": null,
+  "prefecture_status": "not_inferred",
+  "direct_records": {
+    "fish": {
+      "label": "魚類",
+      "status": "individual_river_records_confirmed",
+      "records": 67,
+      "literal_names_not_species": 25,
+      "year_min": "2009",
+      "year_max": "2023",
+      "items": [
+        {
+          "survey_year": "2009",
+          "recorded_name": "アユ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip"
+        },
+        {
+          "survey_year": "2009",
+          "recorded_name": "イトモロコ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "benthic_animals": {
+      "label": "底生動物",
+      "status": "individual_river_records_confirmed",
+      "records": 464,
+      "literal_names_not_species": 244,
+      "year_min": "1995",
+      "year_max": "2010",
+      "items": [
+        {
+          "survey_year": "1995",
+          "recorded_name": "Antocha属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B02.zip"
+        },
+        {
+          "survey_year": "1995",
+          "recorded_name": "Apatania属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B02.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "birds": {
+      "label": "鳥類",
+      "status": "individual_river_records_confirmed",
+      "records": 214,
+      "literal_names_not_species": 68,
+      "year_min": "1991",
+      "year_max": "2018",
+      "items": [
+        {
+          "survey_year": "1991",
+          "recorded_name": "アオゲラ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B04.zip"
+        },
+        {
+          "survey_year": "1991",
+          "recorded_name": "アオサギ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B04.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "plants": {
+      "label": "植物",
+      "status": "individual_river_records_confirmed",
+      "records": 1347,
+      "literal_names_not_species": 589,
+      "year_min": "1997",
+      "year_max": "2016",
+      "items": [
+        {
+          "survey_year": "1997",
+          "recorded_name": "アオイスミレ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B03.zip"
+        },
+        {
+          "survey_year": "1997",
+          "recorded_name": "アオカモジグサ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B03.zip"
+        }
+      ],
+      "has_more": true
+    }
+  },
+  "watershed_context": {
+    "scope": "watershed_only_not_this_river",
+    "region": "chugoku",
+    "watershed_name": "太田川",
+    "records_by_group": [
+      {
+        "group_id": "benthic_animals",
+        "records": 1124,
+        "literal_names_not_species": 544,
+        "year_min": "1995",
+        "year_max": "2010"
+      },
+      {
+        "group_id": "birds",
+        "records": 423,
+        "literal_names_not_species": 120,
+        "year_min": "1991",
+        "year_max": "2018"
+      },
+      {
+        "group_id": "fish",
+        "records": 197,
+        "literal_names_not_species": 79,
+        "year_min": "2009",
+        "year_max": "2023"
+      },
+      {
+        "group_id": "plants",
+        "records": 3404,
+        "literal_names_not_species": 1212,
+        "year_min": "1997",
+        "year_max": "2016"
+      }
+    ],
+    "notice": "This separate context never fills missing individual-river records."
+  },
+  "notice": "Historical literal survey names, not current presence or verified species counts. No detailed locations."
+}

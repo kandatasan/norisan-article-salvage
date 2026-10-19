@@ -1,0 +1,5 @@
+group,collapsed_records,distinct_literal_names_not_species,year_min,year_max,keys_with_river_name,keys_with_any_A
+benthic_animals,74949,3524,1991,2010,73943,9522
+birds,44093,425,1991,2023,41353,4361
+fish,18814,601,1999,2023,18771,2104
+plants,270180,4838,1992,2023,267592,38737

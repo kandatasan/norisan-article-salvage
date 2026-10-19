@@ -29,7 +29,7 @@ def integrate(baseline,manifest,research_db,out):
     duplicate=c.execute('SELECT COUNT(*) FROM (SELECT group_id,region,watershed_name,survey_year,recorded_name,COUNT(*) n FROM survey_evidence GROUP BY 1,2,3,4,5 HAVING n>1)').fetchone()[0]
     if duplicate:raise ValueError('Baseline duplicate keys')
     if research_db.parent!=out:raise ValueError('Output must be the research DB folder')
-    r=sqlite3.connect(research_db)
+    r=sqlite3.connect(research_db,uri=True)
     # Explicit URI read-only attachment: original snapshot cannot be changed.
     r.execute('ATTACH DATABASE ? AS old',('file:'+quote(str(baseline),safe='/')+'?mode=ro',))
     inspected=r.execute('SELECT DISTINCT group_id,region FROM collapsed_keys').fetchall()
@@ -74,6 +74,7 @@ def integrate(baseline,manifest,research_db,out):
       'original_snapshot_individual_river_not_null':c.execute('SELECT COUNT(*) FROM survey_evidence WHERE verified_individual_river IS NOT NULL').fetchone()[0],
       'original_snapshot_prefecture_not_null':c.execute('SELECT COUNT(*) FROM survey_evidence WHERE verified_prefecture IS NOT NULL').fetchone()[0],
       'taxonomically_confirmed_species_count':None,'baseline_duplicate_keys':duplicate,
+      'baseline_records_missing_source_archive_sha256':c.execute("SELECT COUNT(*) FROM survey_evidence WHERE source_archive_sha256 IS NULL OR length(source_archive_sha256)!=64").fetchone()[0],
       'river_code_rows':len(national),'river_code_duplicates':duplicates(national,['river_code']),
       'watershed_code_rows':len(waters),'watershed_code_duplicates':duplicates(waters,['watershed_code']),
       'river_name_labels':len({x['river_name'] for x in national}),

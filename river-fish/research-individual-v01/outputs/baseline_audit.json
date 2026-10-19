@@ -1,0 +1,197 @@
+{
+  "baseline_artifact_run": 39130312796,
+  "baseline_artifact_id": 12137787609,
+  "baseline_artifact_head_commit": "af62f05cf1a86eec07a8e7a3b541fd010985b5ad",
+  "baseline_db_sha256": "05ea1bd3f1965d6b88066f9c2fb1e77f667f7ede56d04709c1edcac27111fe83",
+  "baseline_count": 408036,
+  "baseline_group_counts": {
+    "benthic_animals": 74949,
+    "birds": 44093,
+    "fish": 18814,
+    "plants": 270180
+  },
+  "baseline_literal_names_all_groups": 9320,
+  "baseline_region_watershed_pairs": 111,
+  "baseline_distinct_watershed_labels": 110,
+  "original_snapshot_individual_river_not_null": 0,
+  "original_snapshot_prefecture_not_null": 0,
+  "taxonomically_confirmed_species_count": null,
+  "baseline_duplicate_keys": 0,
+  "river_code_rows": 35449,
+  "river_code_duplicates": 0,
+  "watershed_code_rows": 5475,
+  "watershed_code_duplicates": 0,
+  "river_name_labels": 22524,
+  "river_rows_without_watershed_code_match": 19,
+  "inspected_baseline_records": 408036,
+  "baseline_class_counts": {
+    "A": 50907,
+    "B": 348915,
+    "C": 8214
+  },
+  "baseline_class_percent": {
+    "A": 12.4761,
+    "B": 85.5108,
+    "C": 2.0131,
+    "D": 0.0
+  },
+  "baseline_keys_with_any_A": 54724,
+  "baseline_keys_with_original_river_name_verified": 401659,
+  "recovered_river_variant_class_counts": {
+    "A": 84965,
+    "B": 569596,
+    "C": 24917
+  },
+  "source_coverage": [
+    [
+      "benthic_animals",
+      "chubu"
+    ],
+    [
+      "benthic_animals",
+      "chugoku"
+    ],
+    [
+      "benthic_animals",
+      "hokkaido"
+    ],
+    [
+      "benthic_animals",
+      "hokuriku"
+    ],
+    [
+      "benthic_animals",
+      "kanto"
+    ],
+    [
+      "benthic_animals",
+      "kinki"
+    ],
+    [
+      "benthic_animals",
+      "kyushu"
+    ],
+    [
+      "benthic_animals",
+      "shikoku"
+    ],
+    [
+      "benthic_animals",
+      "tohoku"
+    ],
+    [
+      "birds",
+      "chubu"
+    ],
+    [
+      "birds",
+      "chugoku"
+    ],
+    [
+      "birds",
+      "hokkaido"
+    ],
+    [
+      "birds",
+      "hokuriku"
+    ],
+    [
+      "birds",
+      "kanto"
+    ],
+    [
+      "birds",
+      "kinki"
+    ],
+    [
+      "birds",
+      "kyushu"
+    ],
+    [
+      "birds",
+      "shikoku"
+    ],
+    [
+      "birds",
+      "tohoku"
+    ],
+    [
+      "fish",
+      "chubu"
+    ],
+    [
+      "fish",
+      "chugoku"
+    ],
+    [
+      "fish",
+      "hokkaido"
+    ],
+    [
+      "fish",
+      "hokuriku"
+    ],
+    [
+      "fish",
+      "kanto"
+    ],
+    [
+      "fish",
+      "kinki"
+    ],
+    [
+      "fish",
+      "kyushu"
+    ],
+    [
+      "fish",
+      "shikoku"
+    ],
+    [
+      "fish",
+      "tohoku"
+    ],
+    [
+      "plants",
+      "chubu"
+    ],
+    [
+      "plants",
+      "chugoku"
+    ],
+    [
+      "plants",
+      "hokkaido"
+    ],
+    [
+      "plants",
+      "hokuriku"
+    ],
+    [
+      "plants",
+      "kanto"
+    ],
+    [
+      "plants",
+      "kinki"
+    ],
+    [
+      "plants",
+      "kyushu"
+    ],
+    [
+      "plants",
+      "shikoku"
+    ],
+    [
+      "plants",
+      "tohoku"
+    ]
+  ],
+  "mysql_production": "unverified",
+  "api_entire_dataset": "unverified",
+  "prefecture_presence_not_inferred": true,
+  "parent_class_rule": "A only if every recovered variant A; B if any named-unapproved variant; C if verified unnamed variant; D for uninspected source. Parent A count differs from keys with any A.",
+  "baseline_rows_are_aggregated_water_year_name_not_raw_observations": true,
+  "baseline_records_missing_source_archive_sha256": 18814
+}
