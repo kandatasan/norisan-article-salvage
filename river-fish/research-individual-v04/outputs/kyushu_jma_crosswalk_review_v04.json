@@ -1,0 +1,120 @@
+{
+  "source_pages": [
+    "https://www.data.jma.go.jp/suishin/oshirase/pdf/20260422.pdf",
+    "https://www.mlit.go.jp/river/hourei_tsutatsu/riyou/kasen_riyou/oudan/kyuushuu.html"
+  ],
+  "source_sha256": {
+    "jma": "1fd72d7aaca4c42292249012de4dee03e0fa2e40554ac55b33ab12e306bb3275",
+    "mlit": "36d0cfacef4c6fffbb0df7b2019aeadcdb0a5b3e554894a0c236263894077489"
+  },
+  "B_total_recovered_contexts": 115062,
+  "strict_matched_rivers": 9,
+  "matched_old_B_recovered_contexts": 21621,
+  "independently_checked_jma_titles": 31,
+  "excluded": {
+    "titles_reviewed": 31,
+    "not_literal_river_titles": [
+      {
+        "label": "遠賀川上流部",
+        "code": "8909010001"
+      },
+      {
+        "label": "遠賀川下流部",
+        "code": "8909010001"
+      },
+      {
+        "label": "筑後川下流部",
+        "code": "8909060001"
+      },
+      {
+        "label": "筑後川上中流部",
+        "code": "8909060001"
+      },
+      {
+        "label": "矢部川下流部",
+        "code": "8909070001"
+      },
+      {
+        "label": "厳木川",
+        "code": "8909020049"
+      },
+      {
+        "label": "菊池川水系",
+        "code": "8909080001"
+      },
+      {
+        "label": "白川",
+        "code": "8909090001"
+      },
+      {
+        "label": "緑川水系",
+        "code": "8909100001"
+      },
+      {
+        "label": "番匠川水系",
+        "code": "8909170001"
+      },
+      {
+        "label": "大野川水系",
+        "code": "8909180001"
+      },
+      {
+        "label": "山国川上流部",
+        "code": "8909200001"
+      },
+      {
+        "label": "山国川下流部",
+        "code": "8909200001"
+      },
+      {
+        "label": "大淀川上流部",
+        "code": "8909140001"
+      },
+      {
+        "label": "大淀川下流部",
+        "code": "8909140001"
+      },
+      {
+        "label": "五ヶ瀬川・大瀬川",
+        "code": "8909160001"
+      },
+      {
+        "label": "川内川上流部",
+        "code": "8909120001"
+      },
+      {
+        "label": "川内川下流部",
+        "code": "8909120001"
+      },
+      {
+        "label": "肝属川水系",
+        "code": "8909130001"
+      }
+    ],
+    "no_independent_pair": [
+      {
+        "water": "遠賀川",
+        "name": "彦山川",
+        "code": "8909010103"
+      },
+      {
+        "water": "大分川",
+        "name": "七瀬川",
+        "code": "8909190011"
+      }
+    ],
+    "missing_B": [],
+    "catalog_disagreed": [
+      {
+        "water": "松浦川",
+        "name": "松浦川",
+        "code": "8909020001"
+      }
+    ]
+  },
+  "match_rules": "literal river name and JMA 10-digit code + MLIT independent watershed-river pairing + national catalog unique match; no forecast-zone suffix stripping",
+  "no_prefecture_inference": true,
+  "no_tributary_inference": true,
+  "production_changed": false,
+  "db_still_unchanged": true
+}
