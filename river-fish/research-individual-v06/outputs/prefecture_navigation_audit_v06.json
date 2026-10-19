@@ -1,0 +1,176 @@
+{
+  "version": "v06",
+  "source_db_sha256": "dfa193bc882dfbc1dc3c30dc226bf81bc2e3754007069fed1b25e3007f4c1dd1",
+  "prefectures_offered": 47,
+  "official_prefecture_source_rows": 740,
+  "official_prefecture_watershed_pairs": 466,
+  "linked_prefecture_watershed_pairs": 95,
+  "prefectures_with_verified_documentary_navigation": 34,
+  "prefectures_pending_matching_documentary_navigation": 13,
+  "prefecture_to_survey_river_display_links": 537,
+  "river_links_with_direct_official_prefecture_river_mention": 22,
+  "unmatched_documented_watershed_pairs": 371,
+  "withheld_multiple_survey_region_watershed_labels": 0,
+  "unmatched_examples": [
+    {
+      "prefecture": "京都府",
+      "watershed": "伊佐津川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "京都府",
+      "watershed": "佐濃谷川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "京都府",
+      "watershed": "大手川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "京都府",
+      "watershed": "川上谷川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "京都府",
+      "watershed": "福田川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "京都府",
+      "watershed": "竹野川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "京都府",
+      "watershed": "野田川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "京都府",
+      "watershed": "高野川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "伊万里川系",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "佐志川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "志佐川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "有田川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "浜川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "玉島川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "立川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "佐賀県",
+      "watershed": "鹿島川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "三原川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "堀切川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "塩屋川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "夙川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "山田川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "岩戸川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "志筑川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "新川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "本庄川",
+      "documentary_evidence": 1,
+      "status": "official_name_only_no_covered_biota_river"
+    }
+  ],
+  "held_ambiguities": [],
+  "original_named_rivers_unchanged": 428,
+  "original_name_first_biota_contexts_unchanged": 553351,
+  "navigation_is_documentary_not_geographic": true,
+  "river_prefecture_not_inferred_from_watershed": true,
+  "prefecture_does_not_imply_all_tributaries_inside": true,
+  "code_not_required": true,
+  "watershed_has_no_biota_panel": true,
+  "sensitive_survey_coordinates_included": false,
+  "production_modified": false
+}
