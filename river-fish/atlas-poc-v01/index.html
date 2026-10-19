@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>日本の河川大図鑑・太田川水系 試作品｜つりくえ！</title>
+<style>
+:root{color-scheme:light}*{box-sizing:border-box}
+body{margin:0;background:#f1f6f7;font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif}
+#tsu-river-atlas{--sea:#126e82;--deep:#123c50;--light:#eaf7f5;--muted:#516a74;max-width:990px;margin:0 auto;padding:16px 14px 65px;color:#18333f;font-size:16px;line-height:1.7}
+#tsu-river-atlas button,#tsu-river-atlas input{font:inherit}
+#tsu-river-atlas button{cursor:pointer}
+#tsu-river-atlas button:focus-visible,#tsu-river-atlas a:focus-visible,#tsu-river-atlas input:focus-visible{outline:3px solid #db9231;outline-offset:3px}
+#tsu-river-atlas .hero{background:linear-gradient(125deg,#164457,#188e8b);color:white;border-radius:24px;padding:29px 23px 27px;box-shadow:0 12px 27px #16445725;position:relative;overflow:hidden}
+#tsu-river-atlas .hero:after{content:"≈";position:absolute;right:12px;bottom:-90px;font-size:250px;opacity:.13;pointer-events:none}
+#tsu-river-atlas .eyebrow{font-size:12px;letter-spacing:.15em;font-weight:700;opacity:.86;margin:0 0 4px}
+#tsu-river-atlas h1{margin:5px 0 9px;font-size:clamp(26px,6vw,42px);line-height:1.28;letter-spacing:.01em}
+#tsu-river-atlas .hero p:last-child{margin-bottom:0;max-width:650px}
+#tsu-river-atlas .topnav{display:flex;align-items:center;gap:9px;flex-wrap:wrap;margin:18px 0;color:var(--muted);font-size:14px;min-height:35px}
+#tsu-river-atlas .topnav button{border:0;background:none;padding:6px 3px;color:#146c7f;font-weight:700}
+#tsu-river-atlas .topnav .current{color:#1d3c47;font-weight:700}
+#tsu-river-atlas .panel{border-radius:21px;background:white;padding:24px 22px;margin:15px 0;box-shadow:0 5px 21px #173d4910}
+#tsu-river-atlas h2{font-size:clamp(22px,5vw,29px);line-height:1.4;margin:0 0 8px}
+#tsu-river-atlas h3{font-size:19px;margin:0}
+#tsu-river-atlas p{margin:6px 0 13px}
+#tsu-river-atlas .subtle{color:var(--muted);font-size:14px}
+#tsu-river-atlas .cta{display:flex;align-items:center;justify-content:space-between;gap:16px;text-align:left;border:1px solid #d5e9e8;background:#f6fcfb;color:#194453;border-radius:16px;padding:18px 17px;width:100%;transition:background .1s}
+#tsu-river-atlas .cta:hover{background:#e6f6f3}
+#tsu-river-atlas .cta strong{display:block;font-size:20px}
+#tsu-river-atlas .cta small{color:var(--muted);display:block;font-size:13px;margin-top:3px}
+#tsu-river-atlas .arrow{font-size:25px;color:var(--sea)}
+#tsu-river-atlas .pill{display:inline-flex;align-items:center;background:#e1f4ed;color:#176653;border-radius:999px;padding:2px 11px;font-size:12px;font-weight:700;margin:0 0 11px}
+#tsu-river-atlas .warning{font-size:13px;color:#425e69;background:#f3f7f8;border-left:3px solid #6a9db0;padding:11px 13px;margin:14px 0;border-radius:0 10px 10px 0}
+#tsu-river-atlas .searchline{display:flex;gap:10px;align-items:center;margin:15px 0;flex-wrap:wrap}
+#tsu-river-atlas input[type=search]{width:100%;background:white;color:#18343d;border:1px solid #b5cccf;border-radius:13px;padding:12px 14px;min-width:0}
+#tsu-river-atlas .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(205px,1fr));gap:9px}
+#tsu-river-atlas .river{border:1px solid #dbe7e9;background:#fff;border-radius:13px;min-height:77px;padding:12px;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px}
+#tsu-river-atlas .river:hover{border-color:#36a49b;background:#f5fcfa}
+#tsu-river-atlas .river .code{display:block;color:#607780;font-size:11px;font-variant-numeric:tabular-nums}
+#tsu-river-atlas .river .name{font-weight:700;font-size:16px;overflow-wrap:anywhere}
+#tsu-river-atlas .tabs{display:flex;gap:7px;margin:18px 0 16px}
+#tsu-river-atlas .tabs button{border:1px solid #cbdfe1;border-radius:999px;background:white;padding:9px 16px;color:#33525e;font-weight:700}
+#tsu-river-atlas .tabs button[aria-selected=true]{background:var(--deep);color:white;border-color:var(--deep)}
+#tsu-river-atlas .count{font-weight:700;color:#276d75;margin-bottom:10px}
+#tsu-river-atlas .pager{display:flex;justify-content:center;gap:15px;align-items:center;flex-wrap:wrap;margin:18px 0 7px}
+#tsu-river-atlas .pager button,#tsu-river-atlas .link-button{background:var(--deep);color:white;border:0;border-radius:11px;padding:11px 16px;font-weight:700}
+#tsu-river-atlas .pager button:disabled{opacity:.3;cursor:not-allowed}
+#tsu-river-atlas .fact{border-bottom:1px solid #edf2f3;padding:13px 0;display:grid;grid-template-columns:125px minmax(0,1fr);gap:12px}
+#tsu-river-atlas .fact dt{color:var(--muted);font-size:14px}
+#tsu-river-atlas .fact dd{margin:0;font-weight:700;overflow-wrap:anywhere}
+#tsu-river-atlas .source{font-size:13px;margin-top:17px}
+#tsu-river-atlas a{color:#0a6679}
+#tsu-river-atlas .foot{margin-top:25px;color:#546e78;font-size:12px}
+#tsu-river-atlas .empty{padding:30px 14px;text-align:center;background:#f6f9fa;border-radius:14px;color:#516974}
+@media(max-width:620px){#tsu-river-atlas{padding:8px 10px 40px}#tsu-river-atlas .hero{padding:23px 17px;border-radius:18px}#tsu-river-atlas .panel{padding:19px 14px;border-radius:16px}#tsu-river-atlas .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}#tsu-river-atlas .river{padding:10px 9px;min-height:74px}#tsu-river-atlas .fact{grid-template-columns:1fr;gap:1px}#tsu-river-atlas .topnav{gap:5px;font-size:13px}#tsu-river-atlas .tabs button{padding:9px 11px}}
+@media(max-width:350px){#tsu-river-atlas .grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main id="tsu-river-atlas">
+<header class="hero">
+<p class="eyebrow">TSURIKUE! · RIVER EXPLORER · 試作版</p>
+<h1>近所の川から、<br>知らない川へ。</h1>
+<p>水系を開けば、川の名前が次々と出てくる。まずは太田川水系を探検してみよう。</p>
+</header>
+<nav id="atlas-crumbs" class="topnav" aria-label="現在位置"></nav>
+<div id="atlas-stage" aria-live="polite"></div>
+<footer class="foot">国土交通省の河川・水系コード一覧、広島県公式資料、河川水辺の国勢調査を加工。研究用の試作品です。地理・生物の情報は確認できた範囲ごとに分けて表示しています。</footer>
+</main>
+<script src="data.js"></script>
+<script>
+(function(){
+"use strict";
+const d=window.TSURI_ATLAS_POC;
+const root=document.getElementById("atlas-stage"),crumbs=document.getElementById("atlas-crumbs");
+const W=d&&d.watershed;
+let view="home",riverCode="",tab="rivers",term="",page=0,chosenFish="";
+const SIZE=36;
+function el(tag,text,cls){const e=document.createElement(tag);if(cls)e.className=cls;if(text!==undefined&&text!==null)e.textContent=String(text);return e}
+function add(parent,...kids){parent.append(...kids);return parent}
+function button(text,cls,fn){const x=el("button",text,cls);x.type="button";x.addEventListener("click",fn);return x}
+function link(url,label){try{const u=new URL(url);if(u.protocol!=="https:"||!u.hostname.endsWith(".jp"))return el("span","出典URL要確認");const a=el("a",label);a.href=u.href;a.target="_blank";a.rel="noopener noreferrer";return a}catch{return el("span","出典URL要確認")}}
+function panel(title,desc){const p=el("section",null,"panel");p.append(el("h2",title));if(desc)p.append(el("p",desc,"subtle"));root.append(p);return p}
+function box(text){return el("p",text,"warning")}
+function nav(){crumbs.replaceChildren();let path=[["全国","home"]];if(view!=="home")path.push([d.prefectureEntry,"pref"]);if(view==="water"||view==="detail")path.push([W.name+"水系","water"]);if(view==="detail")path.push([d.rivers.find(r=>r.riverCode===riverCode)?.riverName||"川の詳細","detail"]);path.forEach(([name,target],i)=>{if(i)crumbs.append(el("span","›"));if(i===path.length-1)crumbs.append(el("span",name,"current"));else crumbs.append(button(name,"",()=>go(target)))})}
+function go(target,code){view=target; if(code)riverCode=code;if(target==="water"){tab="rivers";term="";page=0;chosenFish=""}draw();window.scrollTo({top:0,behavior:"smooth"})}
+function card(title,sub,fn){const c=button("","cta",fn);const group=el("span");group.append(el("strong",title));group.append(el("small",sub));c.append(group,el("span","→","arrow"));return c}
+function headingTag(text){return el("span",text,"pill")}
+function home(){const p=panel("まずは、どの地域から？","都道府県を選ぶだけでスタート。現在は広島県の太田川水系を先行公開した試作品です。");p.append(headingTag("試作品で探検できる地域"));p.append(card("広島県","太田川水系の河川名を探してみる",()=>go("pref")));p.append(box("全国47都道府県の名称資料は研究データにありますが、県と河川コードの対応はまだ一括確定していません。ほかの県は順次追加します。"))}
+function pref(){const p=panel("広島県の川を探そう","県の資料に登場する水系を入口にしています。");p.append(card("太田川水系","国交省の同一水系コードに属する河川名を一覧で開く",()=>go("water")));p.append(box("ここから開く全国河川コードの各行が、すべて広島県内にあるという意味ではありません。"));const s=el("p",null,"source");s.append("県資料： ");d.prefectureEvidence.sourceUrls.forEach((u,i)=>{if(i)s.append(" ／ ");s.append(link(u,"広島県公式資料"))});p.append(s)}
+function scopedFish(){const m=new Map();for(const r of d.fishSurvey){if(!m.has(r.recordedName))m.set(r.recordedName,[]);m.get(r.recordedName).push(r)}return [...m.entries()].map(([name,rows])=>({name,rows}))}
+function controls(p){const t=el("div",null,"tabs");for(const [id,name] of [["rivers","川の名前"],["fish","魚類調査"]]){const b=button(name,"",()=>{tab=id;term="";page=0;chosenFish="";draw()});b.setAttribute("aria-selected",String(tab===id));t.append(b)}p.append(t)}
+function water(){const p=panel(W.name+"水系","6桁水系コード "+W.code);p.append(el("p", "川は同じ水系コードでまとめています。直接の支流・合流先の関係を示すものではありません。"));controls(p);if(tab==="rivers")showRivers(p);else showFish(p)}
+function searchbox(p,placeholder,renderList){const line=el("div",null,"searchline");const input=el("input");input.type="search";input.value=term;input.placeholder=placeholder;input.setAttribute("aria-label","表示中の名前を絞り込む");input.addEventListener("input",()=>{term=input.value;page=0;renderList()});line.append(input);p.append(line)}
+function pager(p,total,onChange){if(total<=SIZE)return;const s=el("nav",null,"pager");s.setAttribute("aria-label","ページ送り");const prev=button("← 前へ","",()=>onChange(page-1));prev.disabled=page===0;const next=button("次へ →","",()=>onChange(page+1));next.disabled=(page+1)*SIZE>=total;s.append(prev,el("span",String(page+1)+" / "+Math.ceil(total/SIZE)+"ページ"),next);p.append(s)}
+function showRivers(p){p.append(headingTag("水系コードで照合した河川名"));p.append(box("国の河川コード掲載名を表示しています。重複する川名も別コードで残し、所在地や合流先は推測しません。"));const host=el("div");p.append(host);searchbox(p,"川の名前で絞り込む（例：三篠川）",list);function list(){host.replaceChildren();const rows=d.rivers.filter(r=>r.riverName.includes(term.trim())||r.riverCode.includes(term.trim()));host.append(el("div",rows.length.toLocaleString("ja-JP")+"件の河川コード掲載名","count"));if(!rows.length){host.append(el("div","一致する名前がありません","empty"));return}const g=el("div",null,"grid");for(const r of rows.slice(page*SIZE,(page+1)*SIZE)){const b=button("","river",()=>go("detail",r.riverCode));const content=el("span");content.append(el("span",r.riverName,"name"),el("span",r.riverCode,"code"));b.append(content,el("span","›","arrow"));g.append(b)}host.append(g);pager(host,rows.length,n=>{page=n;list()})}list()}
+function showFish(p){p.append(headingTag("中国地方・太田川の魚類調査資料"));p.append(box("生物記録は調査資料上の「地方＋水系名」の一致による参考情報。6桁コードとの同一性は未承認で、個々の支流の生息記録でもありません。"));const species=scopedFish();const host=el("div");p.append(host);searchbox(p,"魚の名前で絞り込む（例：アユ）",list);function list(){host.replaceChildren();const rows=species.filter(x=>x.name.includes(term.trim()));host.append(el("div",rows.length.toLocaleString("ja-JP")+"種類の名前表記・元記録"+d.fishSurvey.length.toLocaleString("ja-JP")+"件","count"));if(!rows.length){host.append(el("div","この条件の掲載記録はありません","empty"));return}const g=el("div",null,"grid");for(const r of rows.slice(page*SIZE,(page+1)*SIZE)){const b=button("","river",()=>{chosenFish=chosenFish===r.name?"":r.name;list()});b.append(el("span",r.name,"name"),el("span",chosenFish===r.name?"−":"＋","arrow"));g.append(b)}host.append(g);const selected=rows.find(x=>x.name===chosenFish);if(selected){const detail=el("div",null,"panel");detail.append(el("h3",selected.name));detail.append(el("p","調査年度："+[...new Set(selected.rows.map(r=>r.surveyYear))].join("・")));detail.append(el("p","資料掲載："+selected.rows.length+"件"));detail.append(link(selected.rows[0].sourceUrl,"調査資料の原本を見る ↗"));host.append(detail)}pager(host,rows.length,n=>{page=n;chosenFish="";list()})}list()}
+function fact(dl,label,value){const row=el("div",null,"fact");row.append(el("dt",label),el("dd",value));dl.append(row)}
+function detail(){const r=d.rivers.find(x=>x.riverCode===riverCode);if(!r){go("water");return}const p=panel(r.riverName,"河川コードに掲載された名前と所属水系を確認できます。");const dl=el("dl");fact(dl,"河川コード",r.riverCode);fact(dl,"水系",W.name+"水系");fact(dl,"水系コード",W.code);fact(dl,"所在地県","未確認");fact(dl,"直接の合流先","未確認");fact(dl,"この川で確認された生物","個別河川の調査資料は未登録");p.append(dl);p.append(box("この川の生物記録はまだありません。水系名義の調査情報を、そのままこの川の生息情報にはしません。"));p.append(card(W.name+"水系の川へ戻る","同じ水系コードに属する別の川を探す",()=>go("water")));p.append(el("p",null,"source")).lastChild.append("出典：",link(d.riverSource,"国交省・河川コード一覧 ↗"))}
+function draw(){root.replaceChildren();nav();if(!d||!W){root.append(el("div","実データが読み込まれていません。data.jsを同じ場所に置いてください。","empty"));return}if(view==="home")home();if(view==="pref")pref();if(view==="water")water();if(view==="detail")detail()}
+draw();
+})();
+</script>
+</body>
+</html>
