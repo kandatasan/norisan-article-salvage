@@ -83,12 +83,19 @@ def build(out, archive=None):
     out.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ASSETS/"index.html", out/"index.html")
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    (out/"data.js").write_text("window.TSURI_ATLAS_POC = " + payload + ";\n", encoding="utf-8")
+    data_script = "window.TSURI_ATLAS_POC = " + payload + ";\\n"
+    (out/"data.js").write_text(data_script, encoding="utf-8")
+    standalone = (out/"index.html").read_text(encoding="utf-8").replace(
+        '<script src="data.js"></script>',
+        '<script>\\n' + data_script + '</script>', 1)
+    if '<script src="data.js"></script>' in standalone:
+        raise ValueError("Standalone preview still loads external data")
+    (out/"standalone.html").write_text(standalone, encoding="utf-8")
     manifest = {
         "status": STATUS, "watershed": CODE, "watershedName": NAME,
         "riverCodes": len(data["rivers"]), "fishSurveyRecords": len(data["fishSurvey"]),
         "prefectureMapping": "not_per_river", "directSpecies": "not_per_river",
-        "files": ["index.html", "data.js"]
+        "files": ["index.html", "data.js", "standalone.html"]
     }
     (out/"manifest.json").write_text(
         json.dumps(manifest, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
