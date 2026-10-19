@@ -1,0 +1,44 @@
+name: Audit independent Tohoku river ledger (research only)
+on:
+  push:
+    branches: [research/river-individual-expansion-20261020]
+    paths:
+      - 'river-fish/research-individual-v02/**'
+      - '.github/workflows/river-individual-tohoku-ledger-v02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect-official-ledger:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source inspector and system pdf tools
+        run: |
+          python -m py_compile river-fish/research-individual-v02/inspect_tohoku_code_ledger.py
+          command -v pdftotext
+      - name: Download and inspect official Tohoku river code PDF
+        run: python river-fish/research-individual-v02/inspect_tohoku_code_ledger.py --out /tmp/tohoku-ledger-research
+      - name: Validate extracted candidate evidence without publishing
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/tohoku-ledger-research')
+          d=json.loads((p/'tohoku_ledger_inspection.json').read_text())
+          assert d['inspection_only_no_new_A_approved'] is True
+          assert d['pdf_pages']>2 and d['source_sha256']
+          print('PARSED',d['ledger_rows_regex_matched'],'POTENTIAL',d['strict_page_and_national_matches'])
+          PY
+      - name: Upload candidate evidence without raw PDF
+        uses: actions/upload-artifact@v4
+        with:
+          name: tohoku-ledger-research-v02
+          path: |
+            /tmp/tohoku-ledger-research/tohoku_ledger_inspection.json
+            /tmp/tohoku-ledger-research/tohoku_unapproved_evidence.csv
+          if-no-files-found: error
