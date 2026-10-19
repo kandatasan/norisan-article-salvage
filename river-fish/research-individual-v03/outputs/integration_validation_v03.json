@@ -1,0 +1,72 @@
+{
+  "schema": "v03",
+  "baseline_sqlite_sha256": "9143419acb23c9181eaea8112ca44d0b219a92a15723baa1ae43ef075b0b9f34",
+  "tohoku_ledger_sha256": "cde06431d9f50fbccf9ac4606544a595168d86ea44b1864a9c47ccbf8e5111f8",
+  "baseline": {
+    "original_keys": 408036,
+    "recovered": 679478,
+    "approved": 84965,
+    "original_classes": {
+      "A": 50907,
+      "B": 348915,
+      "C": 8214
+    },
+    "groups": {
+      "benthic_animals": 74949,
+      "birds": 44093,
+      "fish": 18814,
+      "plants": 270180
+    },
+    "misasa": {
+      "benthic_animals": 464,
+      "birds": 214,
+      "fish": 67,
+      "plants": 1347
+    }
+  },
+  "expanded": {
+    "original_keys": 408036,
+    "recovered": 679478,
+    "approved": 155156,
+    "original_classes": {
+      "A": 89473,
+      "B": 308884,
+      "C": 9679
+    },
+    "groups": {
+      "benthic_animals": 74949,
+      "birds": 44093,
+      "fish": 18814,
+      "plants": 270180
+    },
+    "misasa": {
+      "benthic_animals": 464,
+      "birds": 214,
+      "fish": 67,
+      "plants": 1347
+    },
+    "tohoku": 70191
+  },
+  "new_tohoku_rivers": 62,
+  "new_tohoku_individual_record_contexts": 70191,
+  "total_confirmed_rivers": 106,
+  "tohoku_example_code": "8202040001",
+  "tohoku_example_group_counts": {
+    "benthic_animals": 688,
+    "birds": 304,
+    "fish": 193,
+    "plants": 4757
+  },
+  "changed_original_key_classes": {
+    "A": 38566,
+    "B": -40031,
+    "C": 1465,
+    "D": 0
+  },
+  "unit": "river / year / literal name / category contexts, not raw observations",
+  "research_only": true,
+  "wordpress_changed": false,
+  "mysql_changed": false,
+  "prefecture_not_inferred": true,
+  "individual_river_scope_only": true
+}
