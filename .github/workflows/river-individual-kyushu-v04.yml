@@ -7,6 +7,9 @@ on:
       - river-fish/research-individual-v04/*.py
       - .github/workflows/river-individual-kyushu-v04.yml
   workflow_dispatch:
+concurrency:
+  group: kyushu-river-v04-${{ github.ref }}
+  cancel-in-progress: true
 permissions:
   contents: write
 jobs:
@@ -20,6 +23,10 @@ jobs:
           python-version: '3.12'
       - name: Verify source parsers and research invariants
         run: python -m unittest discover -s river-fish/research-individual-v04 -p 'test_kyushu_evidence_v04.py' -v
+      - name: Install official PDF text extractor
+        run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
+      - name: Inspect JMA 2026 official 10-digit river numbers
+        run: python river-fish/research-individual-v04/probe_jma_river_codes_v04.py --out /tmp/kyushu-v04/jma_2026_river_numbers_probe.json
       - name: Parse official MLIT distribution list
         run: |
           python -m py_compile river-fish/research-individual-v04/*.py
