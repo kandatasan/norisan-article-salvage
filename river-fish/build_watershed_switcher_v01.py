@@ -43,6 +43,9 @@ def main():
     data=build()
     (out/"index.html").write_text((UI/"index.html").read_text(encoding="utf-8"),encoding="utf-8")
     (out/"data.js").write_text("window.RIVER_ATLAS="+json.dumps(data,ensure_ascii=False,separators=(",",":"))+";\n",encoding="utf-8")
+    html=(UI/"index.html").read_text(encoding="utf-8")
+    datajs=(out/"data.js").read_text(encoding="utf-8")
+    (out/"standalone.html").write_text(html.replace('<script src="data.js"></script>',"<script>"+datajs+"</script>"),encoding="utf-8")
     print("watersheds",len(data["watersheds"]),"ota rivers",len(next(w[2] for w in data["watersheds"] if w[0]=="870709")))
 
 if __name__=="__main__":main()
