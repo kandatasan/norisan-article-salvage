@@ -199,6 +199,14 @@ prefecture,watershed,identity_key,river_name,individual_river_explicit_prefectur
 岩手県,北上川,rn_a7ff973d0f3b73296a92630f,雫石川,0,unverified
 岩手県,米代川,rn_fc4403e2413ff52ddff56d23,米代川,0,unverified
 岩手県,馬淵川,rn_e079f9c845bd0edbc92b76e6,馬淵川,0,unverified
+広島県,太田川,rn_bbdfd93b839597c49a7e2c81,三篠川,1,source_mentioned
+広島県,太田川,rn_6ed4bf034468ceab0cb9c441,元安川,0,unverified
+広島県,太田川,rn_552d674e4a0a5fca6635cd08,古川,0,unverified
+広島県,太田川,rn_104f70f9848e7c6e4b727b03,天満川,0,unverified
+広島県,太田川,rn_09ffa2b6b65b7ddd81cbb6ed,太田川,1,source_mentioned
+広島県,太田川,rn_d5b0bcfaf7667c985df3bb62,旧太田川,0,unverified
+広島県,太田川,rn_b7072646a935e7cd906599eb,根谷川,1,source_mentioned
+広島県,太田川,rn_f6ecf42a014b9d893d41e8de,滝山川,1,source_mentioned
 広島県,小瀬川,rn_c51c50d1cac53368be1219f7,小瀬川,1,source_mentioned
 広島県,江の川,rn_4a7e83288891a6ae0514e9d4,江の川,1,source_mentioned
 広島県,江の川,rn_4127b559d74bbaeedaf383d6,神野瀬川,0,unverified

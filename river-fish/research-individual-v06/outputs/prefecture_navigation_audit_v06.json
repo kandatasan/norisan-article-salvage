@@ -4,17 +4,18 @@
   "prefectures_offered": 47,
   "official_prefecture_source_rows": 740,
   "official_prefecture_watershed_pairs": 466,
-  "linked_prefecture_watershed_pairs": 55,
+  "linked_prefecture_watershed_pairs": 56,
   "prefectures_with_verified_documentary_navigation": 26,
   "prefectures_pending_matching_documentary_navigation": 21,
-  "prefecture_to_survey_river_display_links": 378,
-  "river_links_with_direct_official_prefecture_river_mention": 12,
+  "prefecture_to_survey_river_display_links": 386,
+  "river_links_with_direct_official_prefecture_river_mention": 16,
   "unmatched_documented_watershed_pairs": 371,
-  "withheld_ambiguous_prefecture_watershed_pairs": 40,
+  "withheld_ambiguous_prefecture_watershed_pairs": 39,
   "withheld_by_reason": {
-    "multiple_national_watershed_codes_same_name": 39,
-    "prefecture_and_survey_source_bureau_region_conflict": 1
+    "multiple_national_watershed_codes_same_name": 26,
+    "prefecture_and_survey_source_bureau_region_conflict": 13
   },
+  "cross_documentary_duplicate_name_overrides": 1,
   "nationwide_watershed_same_name_code_guard": true,
   "prefecture_survey_authority_region_guard": true,
   "unmatched_examples": [
@@ -236,7 +237,7 @@
       "possible_source_regions": [
         "kanto"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 2,
       "evidence_urls": [
         "https://www.pref.saga.lg.jp/kiji00312081/index.html"
@@ -248,7 +249,7 @@
       "possible_source_regions": [
         "chubu"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 11,
       "evidence_urls": [
         "https://web.pref.hyogo.lg.jp/ks13/wd15_000000039.html"
@@ -260,7 +261,7 @@
       "possible_source_regions": [
         "chugoku"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 10,
       "evidence_urls": [
         "https://www.pref.wakayama.lg.jp/prefg/080400/hoshin/kihonhosin.html"
@@ -296,7 +297,7 @@
       "possible_source_regions": [
         "chugoku"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 2,
       "evidence_urls": [
         "https://www.pref.osaka.lg.jp/o130100/kasenseibi/keikaku/nikyukihonseibi.html"
@@ -356,7 +357,7 @@
       "possible_source_regions": [
         "kanto"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 4,
       "evidence_urls": [
         "https://www.pref.yamagata.jp/180006/kurashi/kendo/kasen_dam/kasenseibi/kihonhousin-seibikeikaku.html"
@@ -372,18 +373,6 @@
       "national_name_candidates": 5,
       "evidence_urls": [
         "https://www.pref.yamagata.jp/180006/kurashi/kendo/kasen_dam/kasenseibi/kihonhousin-seibikeikaku.html"
-      ]
-    },
-    {
-      "prefecture": "広島県",
-      "watershed": "太田川",
-      "possible_source_regions": [
-        "chugoku"
-      ],
-      "reason": "multiple_national_watershed_codes_same_name",
-      "national_name_candidates": 10,
-      "evidence_urls": [
-        "https://www.pref.hiroshima.lg.jp/uploaded/attachment/429109.pdf"
       ]
     },
     {
@@ -488,7 +477,7 @@
       "possible_source_regions": [
         "kyushu"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 6,
       "evidence_urls": [
         "https://www.pref.ishikawa.lg.jp/kasen/kasenseibi/"
@@ -512,7 +501,7 @@
       "possible_source_regions": [
         "kanto"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 2,
       "evidence_urls": [
         "https://www.pref.fukushima.lg.jp/sec/41045a/housinnkeikaku20.html"
@@ -572,7 +561,7 @@
       "possible_source_regions": [
         "kinki"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 8,
       "evidence_urls": [
         "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
@@ -584,7 +573,7 @@
       "possible_source_regions": [
         "chugoku"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 10,
       "evidence_urls": [
         "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
@@ -596,7 +585,7 @@
       "possible_source_regions": [
         "shikoku"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 2,
       "evidence_urls": [
         "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
@@ -608,7 +597,7 @@
       "possible_source_regions": [
         "tohoku"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 4,
       "evidence_urls": [
         "https://www.pref.kagawa.lg.jp/kasensabo/kasen/03_seibi.html"
@@ -644,7 +633,7 @@
       "possible_source_regions": [
         "kinki"
       ],
-      "reason": "multiple_national_watershed_codes_same_name",
+      "reason": "prefecture_and_survey_source_bureau_region_conflict",
       "national_name_candidates": 3,
       "evidence_urls": [
         "https://www.pref.tottori.lg.jp/item/219859.htm"

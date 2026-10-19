@@ -26,6 +26,7 @@ prefecture,jis_prefecture_code,watershed,survey_region,surveyed_river_name_ids,s
 岩手県,03,北上川,tohoku,13,16905,1,0,prefecture_official_watershed_name_and_survey_name_agree
 岩手県,03,米代川,tohoku,1,4352,1,0,prefecture_official_watershed_name_and_survey_name_agree
 岩手県,03,馬淵川,tohoku,1,2137,1,0,prefecture_official_watershed_name_and_survey_name_agree
+広島県,34,太田川,chugoku,8,12867,0,26,prefecture_official_watershed_name_and_survey_name_agree
 広島県,34,小瀬川,chugoku,1,4185,0,6,prefecture_official_watershed_name_and_survey_name_agree
 広島県,34,江の川,chugoku,4,10842,0,8,prefecture_official_watershed_name_and_survey_name_agree
 愛媛県,38,仁淀川,shikoku,3,4615,1,0,prefecture_official_watershed_name_and_survey_name_agree
