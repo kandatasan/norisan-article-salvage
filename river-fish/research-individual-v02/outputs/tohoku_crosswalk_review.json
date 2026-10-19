@@ -1,0 +1,17 @@
+{
+  "source_url": "https://www.thr.mlit.go.jp/bumon/b00037/k00290/river-hp/kasen/code/data/ikkyuusuikei/0200_ikkatu.pdf",
+  "pinned_sha256": "cde06431d9f50fbccf9ac4606544a595168d86ea44b1864a9c47ccbf8e5111f8",
+  "watershed_headers_verified": 96,
+  "independent_ledger_exact_matches": 2181,
+  "unique_regional_code_name_pairs": 1953,
+  "ambiguous_ledger_code_name_rows_excluded": 228,
+  "tohoku_B_grouped_records_before": 73381,
+  "candidate_B_records_supported_by_ledger": 70191,
+  "remaining_B_grouped_records": 3190,
+  "candidate_rivers_with_records": 62,
+  "candidate_watersheds_with_records": 12,
+  "candidate_group_rows": 152,
+  "new_A_records_NOT_YET_loaded_into_SQLite": true,
+  "production_changed": false,
+  "counts_are_restored_river_contexts_not_new_observations": true
+}
