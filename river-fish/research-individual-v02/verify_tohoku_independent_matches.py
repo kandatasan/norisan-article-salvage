@@ -31,7 +31,7 @@ def page_watersheds(pdf):
         if not match:continue
         header=page[:match.start()]
         labels=set(re.findall(r"(?m)^\s*東北地方整備局\s+([^\s]+)\s*$",header))
-        if len(labels)==1 and "水 系 名" in header:
+        if len(labels)==1 and re.search(r"水\\s*系\\s*名",header):
             mapping[number]=next(iter(labels))
     return mapping
 
@@ -53,7 +53,7 @@ def verify(pdf,out):
         m=code_start.search(page)
         if not m:continue
         header=page[:m.start()]
-        if "東北地方整備局" not in header or "水 系 名" not in header:continue
+        if "東北地方整備局" not in header or not re.search(r"水\\s*系\\s*名",header):continue
         claimed={r["national_watershed"] for r in matched if r["source_page"]==pg}
         if len(claimed)!=1:continue
         name=next(iter(claimed))
