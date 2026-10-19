@@ -47,6 +47,18 @@ jobs:
           assert len(q)==286 and all(r['match_class']=='B' for r in q)
           print('RESEARCH_B_ONLY',data['independently_confirmed_name_pairs_with_unique_catalog_candidate'])
           PY
+      - name: Cross-verify JMA ten-digit codes against official MLIT water/river pairs
+        run: |
+          python river-fish/research-individual-v04/verify_kyushu_jma_crosswalk.py --out /tmp/kyushu-v04
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          d=json.loads(Path('/tmp/kyushu-v04/kyushu_jma_crosswalk_review_v04.json').read_text())
+          assert d['strict_matched_rivers']>0
+          assert d['matched_old_B_recovered_contexts']>0
+          assert d['production_changed'] is False
+          print('INDEPENDENT_10_DIGIT_MATCHES',d['strict_matched_rivers'])
+          PY
       - name: Store read-only research audit
         uses: actions/upload-artifact@v4
         with:
