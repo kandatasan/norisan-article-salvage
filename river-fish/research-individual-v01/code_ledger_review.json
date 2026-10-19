@@ -1,0 +1,11 @@
+{
+  "source_url": "https://www.cgr.mlit.go.jp/kasen/code/pdf/000ikkatu201612.pdf",
+  "sha256": "3664a4a0c39026165c641247602b668ceae8da57f4957913cd68a4c9440879c2",
+  "edition": "2016-12",
+  "verified_ledger_rows": 1769,
+  "approved_exact_code_name_rows": 1633,
+  "ambiguous_pairs_within_verified_ledger": 62,
+  "watersheds": 13,
+  "prefecture_inferred_from_prefix": false,
+  "limitations": "historical regional ledger + national name/code corroboration; no independent proof of present-day river extent or direct confluence"
+}
