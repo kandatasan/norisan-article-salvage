@@ -1,0 +1,19 @@
+{
+  "checks_passed": 11,
+  "checks": [
+    "SQLite integrity",
+    "36 official archives match archived SHA",
+    "408036 original keys preserved",
+    "679478 recovered river contexts",
+    "conservative original-key classification preserved",
+    "no unapproved code attached",
+    "all A codes independently approved",
+    "Misasa four direct counts",
+    "Neya missing direct birds stays empty",
+    "prefecture not inferred",
+    "no detailed-location fields"
+  ],
+  "sqlite_sha256": "9143419acb23c9181eaea8112ca44d0b219a92a15723baa1ae43ef075b0b9f34",
+  "source_report": "prior run key-for-key compared with v27 artifact; recovery run reverified pinned original archives and archived per-source counts",
+  "baseline_artifact_retrieved_in_this_run": false
+}

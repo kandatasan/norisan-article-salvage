@@ -78,8 +78,8 @@ outputs/baseline_watershed_counts.csv が既存水系別、outputs/watershed_cou
 
 ## 実装と検証・保存状況
 独立SQLiteを生成し、原本復元・厳格なコード承認・旧キー全件保持・正規化・読み取り専用検索を実装。単体7テスト、実データ14検査が成功。詳細はoutputs/qa_results.json。
-研究用ブランチに処理プログラム、照合表、集計CSV、実測JSON、検索出力例を保存。
-**SQLite本体のGitHubアップロードは容量制限で失敗して未保存。完成DBの再生成・分割保存は未完了。プログラムと集計の保存を、DB本体の納品完了とは扱わない。**
+研究用ブランチに処理プログラム、照合表、集計CSV、実測JSON、検索出力例、独立SQLiteの圧縮3分割ファイルを保存。`snapshot_parts.py` と `outputs/snapshot_parts.json` で組み立て、SHA256とSQLiteの整合性を検査できる。
+容量制限で失敗した初回ファイルは、公式原本36資料を全て再取得・SHA照合して再生成した。元キー408,036件・河川文脈679,478件、分類別・水系別・河川別CSVのハッシュが前回と一致。再生成DBの検査11項目は `outputs/recovery_validation.json`。この回に既存v27 DBを再取得できなかった点と前回のDB本体とのバイト単位の相違はREADMEに明記した。
 WordPress、既存API、MySQLの変更・削除・デプロイは0。
 
 ## 出典と利用条件

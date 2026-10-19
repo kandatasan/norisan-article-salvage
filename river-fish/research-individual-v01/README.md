@@ -58,9 +58,17 @@ Aは現行生息や現在の河川形状を保証しない。コード台帳は2
 
 ## DBと検索の契約
 
-**保存状況：SQLite本体のGitHubアップロードは容量制限で失敗し、未保存。生成・検証済みの実行結果と、再生成用プログラム・照合表・集計CSV・検索出力例を本ブランチに保存している。以下は試作DBの構造であり、本ブランチを取得しただけではDB検索を実行できない。上記ファイルが保存済みであるとは扱わない。**
+SQLite本体はアップロード上限のため `outputs/river_individual_research.sqlite.gz.part000` ～ `part002` の3ファイルに分割した。`outputs/snapshot_parts.json` に各部品・圧縮ファイル・復元SQLiteのSHA256を収録。`snapshot_parts.py` で結合・展開・ハッシュとSQLite整合性を確認できる。
 
-再生成したSQLiteを使用する。正規化した出典・水系・掲載名・河川文脈のテーブルと、以下の読み取り用ビューを持つ。
+```bash
+python river-fish/research-individual-v01/snapshot_parts.py assemble \
+  --parts-dir river-fish/research-individual-v01/outputs \
+  --output /tmp/river_individual_research.sqlite.gz
+python river-fish/research-individual-v01/river_detail.py \
+  --db /tmp/river_individual_research.sqlite --river-code 8707090029 --limit 20
+```
+
+展開したSQLiteは、正規化した出典・水系・掲載名・河川文脈のテーブルと、以下の読み取り用ビューを持つ。
 
 - `evidence`：原本から復元したA/B/C/Dの河川文脈別記録。出典・SHA・年度・掲載名・照合理由・公開注意を含む。
 - `approved_individual_river`：Aの個別河川記録のみ。河川詳細は10桁コードでここを検索。
@@ -87,6 +95,8 @@ python -m unittest discover -s river-fish/research-individual-v01 -p 'test_*.py'
 
 全国原本の並列検査は `parallel_audit.py`（3プロセス上限、出典SHA・処理コードSHA・照合表SHA付きの再利用キャッシュ）でも実行できる。各出力先は既存フォルダへの上書きを拒否する。
 
+保存失敗後の再生成では公式原本36ZIPを再取得して各SHAを検査し、`parallel_audit.py` で全件を再監査した。前回の原本別件数と、`group_counts.csv`・`watershed_counts.csv`・`river_counts.csv` のハッシュは完全一致。前回の v27 ベースライン成果物はこの再生成時には再取得できなかったため、前回のキー全件双方向照合結果を保持した監査JSONと照合し、`restore_key_index.py` で旧キーを復元した。新しいDBについては `outputs/recovery_validation.json` の11項目と、分割→結合→展開のSHA・SQLite整合性で再検査した。前回のDB本体とはバイト単位の同一性を主張しない。
+
 既存DBは [Actions run 39130312796](https://github.com/kandatasan/norisan-article-salvage/actions/runs/39130312796) の `research-only-biota-four-groups-v27`（artifact ID `12137787609`）を使用。既存manifestとDB本体SHAの一致を検証。生成時コミットは `af62f05cf1a86eec07a8e7a3b541fd010985b5ad`。
 
 ## 未完了
@@ -98,6 +108,6 @@ python -m unittest discover -s river-fish/research-individual-v01 -p 'test_*.py'
 
 集計結果・分野別評価・テスト結果は以下の実測結果と `outputs/` を参照。
 
-## 保存状況の補足
+## 検証記録
 
-`outputs/qa_results.json` は生成時に完了したテストの実行結果であり、DB本体がGitHubに含まれることの保証ではない。SQLite完成物の再生成・分割保存は未完了。DB本体を保存できるまでは、成果物一式の納品完了とはしない。
+`outputs/qa_results.json` は初回生成時に既存 v27 スナップショットと直接照合した14項目の結果。`outputs/recovery_validation.json` は今回再生成したSQLiteの11項目の結果。新しいSQLiteのSHA256は `9143419acb23c9181eaea8112ca44d0b219a92a15723baa1ae43ef075b0b9f34`。
