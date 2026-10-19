@@ -1,0 +1,25 @@
+{
+  "version": 5,
+  "db_name": "river_individual_research_v05.sqlite",
+  "db_sha256": "dfa193bc882dfbc1dc3c30dc226bf81bc2e3754007069fed1b25e3007f4c1dd1",
+  "db_bytes": 87453696,
+  "gzip_sha256": "f21ffa43574317e0c707cb08f1fb0db77d63048619339629e4638ac5feb8c981",
+  "gzip_bytes": 19245614,
+  "parts": [
+    {
+      "name": "river_individual_research_v05.sqlite.gz.part000",
+      "bytes": 7500000,
+      "sha256": "2713e51df9c0ff6f046b6ebcdb7fb5b85a26b727aebe57cfba1833c27283b8be"
+    },
+    {
+      "name": "river_individual_research_v05.sqlite.gz.part001",
+      "bytes": 7500000,
+      "sha256": "f77e1745672450127c52bd1687f09f3bbee1b55bfc4543beacae45caf3eed27f"
+    },
+    {
+      "name": "river_individual_research_v05.sqlite.gz.part002",
+      "bytes": 4245614,
+      "sha256": "1934cfc4e293e4090e7aa45c153b5d89e95eaa1309f5f1aecc36905b115ef3f7"
+    }
+  ]
+}

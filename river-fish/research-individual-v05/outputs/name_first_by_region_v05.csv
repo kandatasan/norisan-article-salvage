@@ -1,0 +1,13 @@
+region,code_confidence,river_names,historical_record_contexts
+chubu,source_river_name_only,46,63033
+chugoku,approved_10digit,44,84965
+chugoku,source_river_name_only,9,2098
+hokkaido,source_river_name_only,38,47141
+hokuriku,source_river_name_only,27,35798
+kanto,source_river_name_only,62,66734
+kinki,source_river_name_only,37,51598
+kyushu,approved_10digit,9,21621
+kyushu,source_river_name_only,77,79143
+shikoku,source_river_name_only,16,31006
+tohoku,approved_10digit,62,70191
+tohoku,source_river_name_only,1,23

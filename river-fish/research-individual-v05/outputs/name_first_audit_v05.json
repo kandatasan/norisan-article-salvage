@@ -1,0 +1,111 @@
+{
+  "schema": "name-first-v05",
+  "immutable_v04_input_sha256": "caeb69a82eb328a85ee22fc70968156162b05b34b1ffc99f27bf479363d1b77f",
+  "original_aggregate_keys": 408036,
+  "source_recovered_river_contexts": 679478,
+  "original_code_A_river_count": 115,
+  "original_code_A_contexts": 176777,
+  "eligible_river_name_identities": 428,
+  "new_eligible_name_only_rivers": 313,
+  "name_only_historical_contexts": 376574,
+  "total_eligible_name_first_contexts": 553351,
+  "held_identity_count": 47,
+  "held_historical_contexts": 101210,
+  "all_four_categories": {
+    "benthic_animals": 92576,
+    "birds": 64691,
+    "fish": 25843,
+    "plants": 370241
+  },
+  "region_breakdown": [
+    {
+      "region": "chubu",
+      "code_status": "source_river_name_only",
+      "river_names": 46,
+      "records": 63033
+    },
+    {
+      "region": "chugoku",
+      "code_status": "approved_10digit",
+      "river_names": 44,
+      "records": 84965
+    },
+    {
+      "region": "chugoku",
+      "code_status": "source_river_name_only",
+      "river_names": 9,
+      "records": 2098
+    },
+    {
+      "region": "hokkaido",
+      "code_status": "source_river_name_only",
+      "river_names": 38,
+      "records": 47141
+    },
+    {
+      "region": "hokuriku",
+      "code_status": "source_river_name_only",
+      "river_names": 27,
+      "records": 35798
+    },
+    {
+      "region": "kanto",
+      "code_status": "source_river_name_only",
+      "river_names": 62,
+      "records": 66734
+    },
+    {
+      "region": "kinki",
+      "code_status": "source_river_name_only",
+      "river_names": 37,
+      "records": 51598
+    },
+    {
+      "region": "kyushu",
+      "code_status": "approved_10digit",
+      "river_names": 9,
+      "records": 21621
+    },
+    {
+      "region": "kyushu",
+      "code_status": "source_river_name_only",
+      "river_names": 77,
+      "records": 79143
+    },
+    {
+      "region": "shikoku",
+      "code_status": "source_river_name_only",
+      "river_names": 16,
+      "records": 31006
+    },
+    {
+      "region": "tohoku",
+      "code_status": "approved_10digit",
+      "river_names": 62,
+      "records": 70191
+    },
+    {
+      "region": "tohoku",
+      "code_status": "source_river_name_only",
+      "river_names": 1,
+      "records": 23
+    }
+  ],
+  "hold_reason_counts": {
+    "composite_river_label": 1,
+    "nonriver_waterbody": 3,
+    "parenthesized_river_section": 1,
+    "same_name_in_watershed_multiple_codes": 41,
+    "survey_section_label": 1
+  },
+  "database_integrity": "ok",
+  "source_identity_rule": "source administrative region + independent source authority + survey watershed label + survey river label",
+  "survey_name_not_necessarily_geospatially_verified": true,
+  "not_a_current_species_checklist": true,
+  "prefecture_not_inferred": true,
+  "watershed_only_C_not_in_individual_river_results": true,
+  "original_A_B_C_preserved": true,
+  "code_optional_not_auto_inferred": true,
+  "wordpress_changed": false,
+  "production_mysql_changed": false
+}
