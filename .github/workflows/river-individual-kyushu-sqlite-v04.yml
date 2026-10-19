@@ -1,0 +1,89 @@
+name: Build 115-river Kyushu individual-biota SQLite v04 (research only)
+on:
+  push:
+    branches:
+      - research/river-individual-kyushu-20261020
+    paths:
+      - 'river-fish/research-individual-v04/*.py'
+      - '.github/workflows/river-individual-kyushu-sqlite-v04.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: kyushu-biota-sqlite-v04-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  sqlite:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Restore pinned prior 106-river research DB
+        run: |
+          python -m py_compile river-fish/research-individual-v04/promote_kyushu_v04.py
+          python -m py_compile river-fish/research-individual-v04/snapshot_parts_v04.py
+          python river-fish/research-individual-v03/snapshot_parts_v03.py verify \
+            --parts-dir river-fish/research-individual-v03/outputs \
+            --db /tmp/river_individual_research_v03.sqlite
+      - name: Build NEW Kyushu-expanded SQLite; do not modify v03
+        run: |
+          python river-fish/research-individual-v04/promote_kyushu_v04.py \
+            --source /tmp/river_individual_research_v03.sqlite \
+            --out /tmp/river_individual_research_v04.sqlite \
+            --report-dir river-fish/research-individual-v04/expanded-db
+      - name: Test nine new Kyushu rivers and old China/Tohoku regressions
+        run: |
+          python - <<'PY'
+          import json,sqlite3,sys
+          from pathlib import Path
+          sys.path.insert(0,str(Path('river-fish/research-individual-v01').resolve()))
+          from river_detail import detail
+          base='river-fish/research-individual-v04/outputs/kyushu_strict_independent_code_crosswalk_v04.csv'
+          db='/tmp/river_individual_research_v04.sqlite'
+          hon=detail(db,'8909030001',3,approvals=base)
+          groups={k:v['records'] for k,v in hon['direct_records'].items()}
+          assert groups=={'fish':90,'benthic_animals':492,'birds':391,'plants':2112},groups
+          assert hon['watershed_context'] and hon['watershed_context']['scope']=='watershed_only_not_this_river'
+          old=detail(db,'8707090029',3)
+          assert {k:v['records'] for k,v in old['direct_records'].items()}=={'fish':67,'benthic_animals':464,'birds':214,'plants':1347}
+          neya=detail(db,'8707090047',3)
+          assert neya['direct_records']['birds']['records']==0
+          kit=detail(db,'8202040001',3,approvals='river-fish/research-individual-v02/outputs/tohoku_independent_crosswalk.csv')
+          assert kit['direct_records']['fish']['records']==193
+          c=sqlite3.connect('file:'+db+'?mode=ro',uri=True)
+          assert c.execute('SELECT COUNT(*) FROM approved_individual_river').fetchone()[0]==176777
+          assert c.execute('SELECT COUNT(DISTINCT river_code) FROM approved_individual_river').fetchone()[0]==115
+          assert c.execute('PRAGMA integrity_check').fetchone()[0]=='ok'
+          c.close()
+          print('PASS KYUSHU',json.dumps(groups,ensure_ascii=False))
+          PY
+      - name: Package and independently SHA-restore new SQLite
+        run: |
+          rm -f river-fish/research-individual-v04/expanded-db/river_individual_research_v04.sqlite.gz.part*
+          rm -f river-fish/research-individual-v04/expanded-db/snapshot_parts_v04.json
+          rm -f river-fish/research-individual-v04/expanded-db/river_individual_research_v04.sqlite.gz
+          python river-fish/research-individual-v04/snapshot_parts_v04.py package \
+            --db /tmp/river_individual_research_v04.sqlite \
+            --parts-dir river-fish/research-individual-v04/expanded-db
+          python river-fish/research-individual-v04/snapshot_parts_v04.py verify \
+            --db /tmp/river_individual_research_v04_restored.sqlite \
+            --parts-dir river-fish/research-individual-v04/expanded-db
+      - name: Upload approved research snapshot (NOT public deployment)
+        uses: actions/upload-artifact@v4
+        with:
+          name: kyushu-expanded-115-river-research-v04
+          path: river-fish/research-individual-v04/expanded-db/
+          if-no-files-found: error
+      - name: Save checked research results to Kyushu branch only
+        run: |
+          test "${GITHUB_REF_NAME}" = "research/river-individual-kyushu-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v04/expanded-db/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: archive rigorously verified 115-river Kyushu biota SQLite v04"
+            git push origin HEAD:refs/heads/research/river-individual-kyushu-20261020
+          fi
