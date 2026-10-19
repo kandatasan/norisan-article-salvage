@@ -140,17 +140,6 @@ def compute(db,out):
                              "reason":"same_watershed_name_under_multiple_survey_authorities",
                              "evidence_urls":sorted({e["source_url"] for e in evidence})})
                 continue
-            # If national code data has multiple distinct watersheds with
-            # the same name, the exact basin's identity is unresolved.
-            # Matching the first name would silently assign biota to the
-            # wrong prefecture (e.g. 太田川 or 那珂川).
-            if national_watershed_names[water]!=1:
-                held.append({"prefecture":pref,"watershed":water,
-                             "possible_source_regions":sorted(regions),
-                             "reason":"multiple_national_watershed_codes_same_name",
-                             "national_name_candidates":national_watershed_names[water],
-                             "evidence_urls":sorted({ev["source_url"] for ev in evidence})})
-                continue
             region=next(iter(regions))
             if region not in PREF_ALLOWED_SOURCE_REGIONS[pref]:
                 held.append({"prefecture":pref,"watershed":water,
@@ -159,8 +148,31 @@ def compute(db,out):
                              "national_name_candidates":national_watershed_names[water],
                              "evidence_urls":sorted({ev["source_url"] for ev in evidence})})
                 continue
-            # This remains an official prefecture document entry-point, NOT a
-            # confirmed prefecture location for every river in the watershed.
+            # A common name may denote 10 separate watersheds nationwide.
+            # Only override the collision guard when independent prefecture
+            # documentation explicitly names >= 2 DIFFERENT river names which
+            # also have individually approved 10-digit codes sharing one
+            # common parent 6-digit code in the surveyed watershed.
+            explicitly_mentioned={ev["river"] for ev in evidence if ev["kind"]=="river"}
+            corroborated=[
+                r for r in matches if r["river_name"] in explicitly_mentioned
+                and r["river_code"] and r["code_confidence"]=="approved_10digit"
+            ]
+            code_roots={r["river_code"][:6] for r in corroborated}
+            corroborating_names={r["river_name"] for r in corroborated}
+            collision_override=(len(corroborating_names)>=2 and len(code_roots)==1)
+            if national_watershed_names[water]!=1 and not collision_override:
+                held.append({"prefecture":pref,"watershed":water,
+                             "possible_source_regions":sorted(regions),
+                             "reason":"multiple_national_watershed_codes_same_name",
+                             "national_name_candidates":national_watershed_names[water],
+                             "evidence_urls":sorted({ev["source_url"] for ev in evidence})})
+                continue
+            identity_basis=("two_or_more_exact_prefecture_documented_approved_rivers"
+                            if national_watershed_names[water]!=1 else
+                            "globally_unique_national_watershed_name")
+            # Still only a prefecture's official documented name ENTRY POINT,
+            # not proof that every tributary in the watershed flows there.
             linked_rivers=[]
             for river in matches:
                 exact=[e for e in evidence if e["kind"]=="river" and e["river"]==river["river_name"]]
@@ -176,6 +188,8 @@ def compute(db,out):
                 "river_official_mentions":sum(e["kind"]=="river" for e in evidence),
                 "official_evidence_urls":sorted({e["source_url"] for e in evidence}),
                 "navigation_status":"prefecture_official_watershed_name_and_survey_name_agree",
+                "identity_basis":identity_basis,
+                "direct_verified_crosscheck_names":sorted(corroborating_names) if collision_override else [],
                 "no_claim_all_watershed_rivers_within_prefecture":True,
                 "no_verified_physical_tributary_relationship":True
             })
@@ -279,6 +293,7 @@ def compute(db,out):
             "unmatched_documented_watershed_pairs":len(unmatched),
             "withheld_ambiguous_prefecture_watershed_pairs":len(held),
             "withheld_by_reason":dict(Counter(x["reason"] for x in held)),
+            "cross_documentary_duplicate_name_overrides":sum(x["identity_basis"]=="two_or_more_exact_prefecture_documented_approved_rivers" for x in links),
             "nationwide_watershed_same_name_code_guard":True,
             "prefecture_survey_authority_region_guard":True,
             "unmatched_examples":unmatched[:25],"held_ambiguities":held,
