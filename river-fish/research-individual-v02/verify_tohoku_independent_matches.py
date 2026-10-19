@@ -42,6 +42,22 @@ def verify(pdf,out):
         raise ValueError("Official Tohoku PDF changed; do not automatically approve")
     info,matched=analyze(pdf)
     headers=page_watersheds(pdf)
+    # Some official pages place the authority and watershed on separate header
+    # lines; allow an EXACT watershed token only before the first code row.
+    # Never infer watershed using a river name or a code prefix alone.
+    pages=subprocess.check_output(["pdftotext","-layout",str(pdf),"-"],text=True).split("\f")
+    code_start=re.compile(r"^\s*\d{1,6}\s+\d{10}\s+\d{1,2}\s+\S+",re.M)
+    for pg in {r["source_page"] for r in matched}:
+        if pg in headers:continue
+        page=pages[pg-1]
+        m=code_start.search(page)
+        if not m:continue
+        header=page[:m.start()]
+        if "東北地方整備局" not in header or "水 系 名" not in header:continue
+        claimed={r["national_watershed"] for r in matched if r["source_page"]==pg}
+        if len(claimed)!=1:continue
+        name=next(iter(claimed))
+        if name in header.split():headers[pg]=name
     if len(set(headers.values()))!=12 or len(headers)<50:
         raise ValueError(f"Too few unambiguous watershed page headers: count={len(headers)} names={sorted(set(headers.values()))} sample={list(headers.items())[:5]}")
     correct=[r for r in matched if headers.get(r["source_page"])==r["national_watershed"]]
