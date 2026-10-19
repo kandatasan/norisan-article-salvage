@@ -8,7 +8,7 @@ on:
       - .github/workflows/river-individual-kyushu-v04.yml
   workflow_dispatch:
 permissions:
-  contents: read
+  contents: write
 jobs:
   kyushu-evidence:
     runs-on: ubuntu-latest
@@ -18,13 +18,44 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verify source parsers and research invariants
+        run: python -m unittest discover -s river-fish/research-individual-v04 -p 'test_kyushu_evidence_v04.py' -v
       - name: Parse official MLIT distribution list
         run: |
           python -m py_compile river-fish/research-individual-v04/*.py
           python river-fish/research-individual-v04/probe_kyushu_official_page.py --out /tmp/kyushu-v04/mlit_official_page_probe.json
+      - name: Join source pairs with original Kyushu B research records
+        run: |
+          python river-fish/research-individual-v04/build_kyushu_evidence_queue.py --out /tmp/kyushu-v04
+          python - <<'PY'
+          from pathlib import Path
+          import csv,json
+          out=Path('/tmp/kyushu-v04')
+          data=json.loads((out/'kyushu_audit_v04.json').read_text())
+          assert data['B_remain_B'] and data['new_A_rivers']==0 and data['new_A_contexts']==0
+          assert data['recovered_B_contexts']==115062
+          assert data['official_watersheds']==20 and data['source_B_distinct_pairs']==92
+          with (out/'kyushu_B_triage_v04.csv').open() as f:
+              q=list(csv.DictReader(f))
+          assert len(q)==286 and all(r['match_class']=='B' for r in q)
+          print('RESEARCH_B_ONLY',data['independently_confirmed_name_pairs_with_unique_catalog_candidate'])
+          PY
       - name: Store read-only research audit
         uses: actions/upload-artifact@v4
         with:
           name: kyushu-independent-source-probe-v04
           path: /tmp/kyushu-v04/
           if-no-files-found: error
+      - name: Commit research-only audit results
+        run: |
+          test "${GITHUB_REF_NAME}" = "research/river-individual-kyushu-20261020"
+          mkdir -p river-fish/research-individual-v04/outputs
+          cp /tmp/kyushu-v04/*.json river-fish/research-individual-v04/outputs/
+          cp /tmp/kyushu-v04/*.csv river-fish/research-individual-v04/outputs/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v04/outputs
+          if ! git diff --cached --quiet; then
+            git commit -m "research: save confirmed Kyushu river name pairs and unresolved-code triage"
+            git push origin HEAD:refs/heads/research/river-individual-kyushu-20261020
+          fi
