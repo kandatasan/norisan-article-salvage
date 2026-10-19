@@ -1,0 +1,85 @@
+{
+  "schema": "research-v04",
+  "input_sqlite_sha256": "67046cdea0533a708a1a9101ef8889ad756a9fb963c25eff794599e32c96f4dc",
+  "kyushu_jma_source_sha256": "1fd72d7aaca4c42292249012de4dee03e0fa2e40554ac55b33ab12e306bb3275",
+  "kyushu_mlit_source_sha256": "36d0cfacef4c6fffbb0df7b2019aeadcdb0a5b3e554894a0c236263894077489",
+  "before": {
+    "original": 408036,
+    "recovered": 679478,
+    "approved": 155156,
+    "rivers": 106,
+    "original_classes": {
+      "A": 89473,
+      "B": 308884,
+      "C": 9679
+    },
+    "recovered_classes": {
+      "A": 155156,
+      "B": 499405,
+      "C": 24917
+    },
+    "group_counts": {
+      "benthic_animals": 74949,
+      "birds": 44093,
+      "fish": 18814,
+      "plants": 270180
+    }
+  },
+  "after": {
+    "original": 408036,
+    "recovered": 679478,
+    "approved": 176777,
+    "rivers": 115,
+    "original_classes": {
+      "A": 100401,
+      "B": 297418,
+      "C": 10217
+    },
+    "recovered_classes": {
+      "A": 176777,
+      "B": 477784,
+      "C": 24917
+    },
+    "group_counts": {
+      "benthic_animals": 74949,
+      "birds": 44093,
+      "fish": 18814,
+      "plants": 270180
+    }
+  },
+  "new_kyushu_confirmed_rivers": 9,
+  "new_kyushu_confirmed_contexts": 21621,
+  "total_approved_rivers": 115,
+  "total_approved_contexts": 176777,
+  "unchanged_chugoku_misasa": {
+    "benthic_animals": 464,
+    "birds": 214,
+    "fish": 67,
+    "plants": 1347
+  },
+  "unchanged_tohoku_kitakami": {
+    "benthic_animals": 688,
+    "birds": 304,
+    "fish": 193,
+    "plants": 4757
+  },
+  "kyushu_example_honmyogawa": {
+    "benthic_animals": 492,
+    "birds": 391,
+    "fish": 90,
+    "plants": 2112
+  },
+  "kyushu_example_ushizugawa": {
+    "benthic_animals": 329,
+    "birds": 293,
+    "fish": 65,
+    "plants": 839
+  },
+  "classification_unit": "category x regional watershed x river x survey year x literal name",
+  "raw_observations_not_added": true,
+  "w05_noncommercial_gis_not_used": true,
+  "prefecture_inference": false,
+  "direct_confluence_inference": false,
+  "production_wordpress_changed": false,
+  "production_mysql_changed": false
+}
