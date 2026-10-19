@@ -1,0 +1,34 @@
+name: Update existing river atlas WordPress draft to v02
+on:
+  push:
+    branches: [feature/river-atlas-watershed-switcher-20261019]
+    paths:
+      - '.github/workflows/update-river-atlas-wp-draft-v02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  update-draft:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build v02 from official CSVs
+        run: |
+          python -m unittest discover -s river-fish -p 'test_watershed_switcher_v01.py' -v
+          python river-fish/build_watershed_switcher_v02.py --out river-fish/watershed-switcher-v02
+          python -m py_compile river-fish/update_watershed_wp_draft_v02.py
+      - name: Update only existing draft 4230
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python river-fish/update_watershed_wp_draft_v02.py
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: river-atlas-wp-draft-v02-result
+          path: river-fish/watershed-switcher-v02/wp-draft-update-result.json
+          if-no-files-found: warn
