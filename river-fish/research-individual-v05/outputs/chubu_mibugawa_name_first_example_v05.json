@@ -1,0 +1,140 @@
+{
+  "status": "name_first_river_record",
+  "identity_key": "rn_4f4044ec352748fee6d97248",
+  "region_source": "chubu",
+  "source_authority": "中部地方整備局",
+  "watershed_name": "天竜川",
+  "river_name": "三峰川",
+  "river_code_optional": null,
+  "code_confidence": "source_river_name_only",
+  "prefecture": null,
+  "prefecture_status": "not_inferred",
+  "biota": {
+    "fish": {
+      "label": "魚類",
+      "status": "source_documented_named_river",
+      "historical_record_contexts": 32,
+      "literal_labels_not_verified_species": 13,
+      "year_min": "2007",
+      "year_max": "2022",
+      "items": [
+        {
+          "survey_year": "2007",
+          "recorded_name": "アブラハヤ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B01.zip"
+        },
+        {
+          "survey_year": "2007",
+          "recorded_name": "アユ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B01.zip"
+        },
+        {
+          "survey_year": "2007",
+          "recorded_name": "ウグイ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B01.zip"
+        },
+        {
+          "survey_year": "2007",
+          "recorded_name": "オイカワ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B01.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "benthic_animals": {
+      "label": "底生動物",
+      "status": "source_documented_named_river",
+      "historical_record_contexts": 205,
+      "literal_labels_not_verified_species": 142,
+      "year_min": "2002",
+      "year_max": "2007",
+      "items": [
+        {
+          "survey_year": "2002",
+          "recorded_name": "Acentrella属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B02.zip"
+        },
+        {
+          "survey_year": "2002",
+          "recorded_name": "Antocha属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B02.zip"
+        },
+        {
+          "survey_year": "2002",
+          "recorded_name": "Baetis属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B02.zip"
+        },
+        {
+          "survey_year": "2002",
+          "recorded_name": "Cricotopus属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B02.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "birds": {
+      "label": "鳥類",
+      "status": "source_documented_named_river",
+      "historical_record_contexts": 51,
+      "literal_labels_not_verified_species": 51,
+      "year_min": "2015",
+      "year_max": "2015",
+      "items": [
+        {
+          "survey_year": "2015",
+          "recorded_name": "アオサギ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip"
+        },
+        {
+          "survey_year": "2015",
+          "recorded_name": "アカゲラ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip"
+        },
+        {
+          "survey_year": "2015",
+          "recorded_name": "アトリ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip"
+        },
+        {
+          "survey_year": "2015",
+          "recorded_name": "イカルチドリ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "plants": {
+      "label": "植物",
+      "status": "source_documented_named_river",
+      "historical_record_contexts": 905,
+      "literal_labels_not_verified_species": 462,
+      "year_min": "2001",
+      "year_max": "2016",
+      "items": [
+        {
+          "survey_year": "2001",
+          "recorded_name": "アイノコクマワラビ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B03.zip"
+        },
+        {
+          "survey_year": "2001",
+          "recorded_name": "アオイスミレ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B03.zip"
+        },
+        {
+          "survey_year": "2001",
+          "recorded_name": "アオイチゴツナギ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B03.zip"
+        },
+        {
+          "survey_year": "2001",
+          "recorded_name": "アオカモジグサ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B03.zip"
+        }
+      ],
+      "has_more": true
+    }
+  },
+  "watershed_only_data_used": false,
+  "notice": "Historic survey river-name evidence. Code-less records are identified by region+authority+watershed+literal river name; physical river identity, current presence and species-level taxonomy are not independently verified. No site coordinates."
+}

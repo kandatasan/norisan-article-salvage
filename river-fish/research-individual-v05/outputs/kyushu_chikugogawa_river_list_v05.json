@@ -1,0 +1,119 @@
+{
+  "region": "kyushu",
+  "watershed": "筑後川",
+  "rivers": [
+    {
+      "identity_key": "rn_134540202124ad56e58cae6a",
+      "river_name": "佐田川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 268
+    },
+    {
+      "identity_key": "rn_d6ad65871c455b677e1de21c",
+      "river_name": "佐賀江川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 48
+    },
+    {
+      "identity_key": "rn_e11bddd606e8ea998c4cb430",
+      "river_name": "城原川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 614
+    },
+    {
+      "identity_key": "rn_ef716a18a8e836c32d61ce22",
+      "river_name": "安良川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 502
+    },
+    {
+      "identity_key": "rn_09dc08fa89c3bb69d324c217",
+      "river_name": "宝満川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 622
+    },
+    {
+      "identity_key": "rn_52eb08203c0788c093edf036",
+      "river_name": "小石原川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 457
+    },
+    {
+      "identity_key": "rn_bc2f409d62ea5c526f1b3be3",
+      "river_name": "巨瀬川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 1103
+    },
+    {
+      "identity_key": "rn_17aec7b5ff9916d712a3405a",
+      "river_name": "広川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 498
+    },
+    {
+      "identity_key": "rn_6cd93c0d613c3986fdc62c57",
+      "river_name": "庄手川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 121
+    },
+    {
+      "identity_key": "rn_5737ee1527a396d31480b87e",
+      "river_name": "早津江川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 795
+    },
+    {
+      "identity_key": "rn_e1c63c04b37d33c646e93cc1",
+      "river_name": "玖珠川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 162
+    },
+    {
+      "identity_key": "rn_8defb01dba609825979b573a",
+      "river_name": "田手川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 85
+    },
+    {
+      "identity_key": "rn_b13d8ac40b02d29647c6aca4",
+      "river_name": "筑後川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 3256
+    },
+    {
+      "identity_key": "rn_5972fd87a41aff6cd1a4de88",
+      "river_name": "花月川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 986
+    },
+    {
+      "identity_key": "rn_6a38a741f080666ef8dacf7c",
+      "river_name": "隈上川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 383
+    },
+    {
+      "identity_key": "rn_5d5174cca98c94f60e0d37c9",
+      "river_name": "高良川",
+      "river_code": null,
+      "code_confidence": "source_river_name_only",
+      "survey_record_contexts": 495
+    }
+  ],
+  "notice": "Survey river labels, not geocoded points; no prefecture is inferred."
+}

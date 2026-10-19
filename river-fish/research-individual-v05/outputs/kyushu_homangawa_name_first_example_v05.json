@@ -1,0 +1,119 @@
+{
+  "status": "name_first_river_record",
+  "identity_key": "rn_09dc08fa89c3bb69d324c217",
+  "region_source": "kyushu",
+  "source_authority": "九州地方整備局",
+  "watershed_name": "筑後川",
+  "river_name": "宝満川",
+  "river_code_optional": null,
+  "code_confidence": "source_river_name_only",
+  "prefecture": null,
+  "prefecture_status": "not_inferred",
+  "biota": {
+    "fish": {
+      "label": "魚類",
+      "status": "個別河川の調査記録は未確認",
+      "historical_record_contexts": 0,
+      "literal_labels_not_verified_species": 0,
+      "year_min": null,
+      "year_max": null,
+      "items": [],
+      "has_more": false
+    },
+    "benthic_animals": {
+      "label": "底生動物",
+      "status": "source_documented_named_river",
+      "historical_record_contexts": 124,
+      "literal_labels_not_verified_species": 94,
+      "year_min": "1993",
+      "year_max": "2003",
+      "items": [
+        {
+          "survey_year": "1993",
+          "recorded_name": "Baetis属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip"
+        },
+        {
+          "survey_year": "1993",
+          "recorded_name": "Chironomus属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip"
+        },
+        {
+          "survey_year": "1993",
+          "recorded_name": "Einfeldia属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip"
+        },
+        {
+          "survey_year": "1993",
+          "recorded_name": "Hydropsyche属",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "birds": {
+      "label": "鳥類",
+      "status": "source_documented_named_river",
+      "historical_record_contexts": 6,
+      "literal_labels_not_verified_species": 5,
+      "year_min": "2004",
+      "year_max": "2015",
+      "items": [
+        {
+          "survey_year": "2004",
+          "recorded_name": "アマサギ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B04.zip"
+        },
+        {
+          "survey_year": "2004",
+          "recorded_name": "コサギ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B04.zip"
+        },
+        {
+          "survey_year": "2004",
+          "recorded_name": "ダイサギ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B04.zip"
+        },
+        {
+          "survey_year": "2004",
+          "recorded_name": "ムクドリ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B04.zip"
+        }
+      ],
+      "has_more": true
+    },
+    "plants": {
+      "label": "植物",
+      "status": "source_documented_named_river",
+      "historical_record_contexts": 492,
+      "literal_labels_not_verified_species": 262,
+      "year_min": "2001",
+      "year_max": "2019",
+      "items": [
+        {
+          "survey_year": "2001",
+          "recorded_name": "アオカモジグサ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B03.zip"
+        },
+        {
+          "survey_year": "2001",
+          "recorded_name": "アオビユ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B03.zip"
+        },
+        {
+          "survey_year": "2001",
+          "recorded_name": "アカメヤナギ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B03.zip"
+        },
+        {
+          "survey_year": "2001",
+          "recorded_name": "アキノエノコログサ",
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B03.zip"
+        }
+      ],
+      "has_more": true
+    }
+  },
+  "watershed_only_data_used": false,
+  "notice": "Historic survey river-name evidence. Code-less records are identified by region+authority+watershed+literal river name; physical river identity, current presence and species-level taxonomy are not independently verified. No site coordinates."
+}
