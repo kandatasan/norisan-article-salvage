@@ -20,6 +20,30 @@ ROOT=Path(__file__).resolve().parents[1]
 BASE_SHA="dfa193bc882dfbc1dc3c30dc226bf81bc2e3754007069fed1b25e3007f4c1dd1"
 LEVELS={"watershed","river"}
 GROUPS={"fish":"魚類","benthic_animals":"底生動物","birds":"鳥類","plants":"植物"}
+# Administrative bureau-region restrictions are a conservative BLOCKLIST gate,
+# not evidence that a particular river is physically within a prefecture.
+# National river-code prefix digits are never interpreted as prefectures.
+PREF_ALLOWED_SOURCE_REGIONS={
+    "北海道":{"hokkaido"},
+    "青森県":{"tohoku"},"岩手県":{"tohoku"},"宮城県":{"tohoku"},
+    "秋田県":{"tohoku"},"山形県":{"tohoku"},"福島県":{"tohoku"},
+    "茨城県":{"kanto"},"栃木県":{"kanto"},"群馬県":{"kanto"},
+    "埼玉県":{"kanto"},"千葉県":{"kanto"},"東京都":{"kanto"},
+    "神奈川県":{"kanto"},"新潟県":{"hokuriku"},"富山県":{"hokuriku"},
+    "石川県":{"hokuriku"},"福井県":{"hokuriku","kinki"},
+    "山梨県":{"kanto"},"長野県":{"hokuriku","chubu","kanto"},
+    "岐阜県":{"chubu"},"静岡県":{"chubu","kanto"},
+    "愛知県":{"chubu"},"三重県":{"chubu","kinki"},
+    "滋賀県":{"kinki"},"京都府":{"kinki"},"大阪府":{"kinki"},
+    "兵庫県":{"kinki"},"奈良県":{"kinki"},"和歌山県":{"kinki"},
+    "鳥取県":{"chugoku"},"島根県":{"chugoku"},"岡山県":{"chugoku"},
+    "広島県":{"chugoku"},"山口県":{"chugoku"},
+    "徳島県":{"shikoku"},"香川県":{"shikoku"},
+    "愛媛県":{"shikoku"},"高知県":{"shikoku"},
+    "福岡県":{"kyushu"},"佐賀県":{"kyushu"},"長崎県":{"kyushu"},
+    "熊本県":{"kyushu"},"大分県":{"kyushu"},"宮崎県":{"kyushu"},
+    "鹿児島県":{"kyushu"},"沖縄県":set()
+}
 
 def source_rows(path):
     with Path(path).open(encoding="utf-8-sig",newline="") as f:
@@ -80,6 +104,8 @@ def compute(db,out):
     pref_rows=source_rows(ROOT/"japan_prefectures_v06.csv")
     prefs={r["prefecture_name"]:r["jis_prefecture_code"] for r in pref_rows}
     if len(prefs)!=47 or len(set(prefs.values()))!=47:raise ValueError("Prefecture master changed")
+    if set(PREF_ALLOWED_SOURCE_REGIONS)!=set(prefs):raise ValueError("Region guard is missing a prefecture")
+    national_watershed_names=Counter(r["watershed_name"] for r in source_rows(ROOT/"national-codes-staged/watershed_codes_national_v07.csv"))
     official=load_existing_official_mentions()
     if set(x["prefecture"] for x in official)-set(prefs):raise ValueError("Official mention cites unknown prefecture")
     conn=sqlite3.connect("file:"+quote(str(db),safe="/")+"?mode=ro",uri=True)
@@ -114,9 +140,27 @@ def compute(db,out):
                              "reason":"same_watershed_name_under_multiple_survey_authorities",
                              "evidence_urls":sorted({e["source_url"] for e in evidence})})
                 continue
-            # This is an official prefecture document entry-point, NOT a
-            # confirmed prefecture location for every river in the watershed.
+            # If national code data has multiple distinct watersheds with
+            # the same name, the exact basin's identity is unresolved.
+            # Matching the first name would silently assign biota to the
+            # wrong prefecture (e.g. 太田川 or 那珂川).
+            if national_watershed_names[water]!=1:
+                held.append({"prefecture":pref,"watershed":water,
+                             "possible_source_regions":sorted(regions),
+                             "reason":"multiple_national_watershed_codes_same_name",
+                             "national_name_candidates":national_watershed_names[water],
+                             "evidence_urls":sorted({ev["source_url"] for ev in evidence})})
+                continue
             region=next(iter(regions))
+            if region not in PREF_ALLOWED_SOURCE_REGIONS[pref]:
+                held.append({"prefecture":pref,"watershed":water,
+                             "possible_source_regions":sorted(regions),
+                             "reason":"prefecture_and_survey_source_bureau_region_conflict",
+                             "national_name_candidates":national_watershed_names[water],
+                             "evidence_urls":sorted({ev["source_url"] for ev in evidence})})
+                continue
+            # This remains an official prefecture document entry-point, NOT a
+            # confirmed prefecture location for every river in the watershed.
             linked_rivers=[]
             for river in matches:
                 exact=[e for e in evidence if e["kind"]=="river" and e["river"]==river["river_name"]]
@@ -221,6 +265,8 @@ def compute(db,out):
                "individual_river_explicit_prefecture_mentions","river_location_in_prefecture"],pairs)
         write("unlinked_official_watersheds_v06.csv",
               ["prefecture","watershed","documentary_evidence","status"],unmatched)
+        write("held_prefecture_watershed_matches_v06.csv",
+              ["prefecture","watershed","reason","national_name_candidates"],held)
         report={
             "version":"v06","source_db_sha256":BASE_SHA,
             "prefectures_offered":47,"official_prefecture_source_rows":len(official),
@@ -231,7 +277,10 @@ def compute(db,out):
             "prefecture_to_survey_river_display_links":len(pairs),
             "river_links_with_direct_official_prefecture_river_mention":sum(bool(x["individual_river_explicit_prefecture_mentions"]) for x in pairs),
             "unmatched_documented_watershed_pairs":len(unmatched),
-            "withheld_multiple_survey_region_watershed_labels":len(held),
+            "withheld_ambiguous_prefecture_watershed_pairs":len(held),
+            "withheld_by_reason":dict(Counter(x["reason"] for x in held)),
+            "nationwide_watershed_same_name_code_guard":True,
+            "prefecture_survey_authority_region_guard":True,
             "unmatched_examples":unmatched[:25],"held_ambiguities":held,
             "original_named_rivers_unchanged":len(river_data),
             "original_name_first_biota_contexts_unchanged":sum(g["record_contexts"] for g in grouped.values()),
