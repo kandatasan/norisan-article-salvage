@@ -18,6 +18,16 @@ jobs:
         run: python -m unittest discover -s river-fish -p 'test_watershed_switcher_v01.py' -v
       - name: Build preview from the two official-code CSVs
         run: python river-fish/build_watershed_switcher_v01.py --out /tmp/watershed-switcher
+      - name: Validate standalone page includes actual river records
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path("/tmp/watershed-switcher/standalone.html").read_text(encoding="utf-8")
+          assert "window.RIVER_ATLAS=" in p
+          assert "三篠川" in p and "8707090029" in p
+          assert '<script src="data.js"></script>' not in p
+          print("STANDALONE_REAL_DATA_OK",len(p))
+          PY
       - name: JavaScript syntax
         run: |
           python - <<'PY'
@@ -28,7 +38,7 @@ jobs:
           node --check /tmp/watershed-switcher/app.js
           node --check /tmp/watershed-switcher/data.js
       - name: Package offline HTML and data
-        run: cd /tmp/watershed-switcher && zip -q /tmp/tsurikue-watershed-switcher.zip index.html data.js
+        run: cd /tmp/watershed-switcher && zip -q /tmp/tsurikue-watershed-switcher.zip standalone.html index.html data.js
       - uses: actions/upload-artifact@v4
         with:
           name: tsurikue-watershed-switcher-v01
