@@ -27,7 +27,7 @@ python -m unittest discover -s river-fish -p 'test_river_atlas_poc_v01.py' -v
 python river-fish/build_river_atlas_poc_v01.py --out /tmp/ota-atlas --zip /tmp/ota-atlas.zip
 ```
 
-ZIPを展開し、同じフォルダの `index.html` と `data.js` をそのまま開く。Xserver APIやログインは不要。GitHub Actionsの `Ota watershed atlas proof-of-concept (offline only)` もZIP Artifactを生成する。ZIPは再現可能なQA成果物であり、サイト公開ではない。
+ZIPを展開し、`standalone.html` を1ファイルで開く。`index.html`＋`data.js` の2ファイル構成でも動く。Xserver APIやログインは不要。GitHub Actionsの `Ota watershed atlas proof-of-concept (offline only)` もZIP Artifactを生成する。ZIPは再現可能なQA成果物であり、サイト公開ではない。
 
 ## 本番へ持ち込む前の条件
 
