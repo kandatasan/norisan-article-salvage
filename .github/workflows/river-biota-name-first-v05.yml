@@ -1,0 +1,100 @@
+name: Build code-optional named-river biology database v05 (research only)
+on:
+  push:
+    branches:
+      - research/river-biota-name-first-20261020
+    paths:
+      - 'river-fish/research-individual-v05/*.py'
+      - '.github/workflows/river-biota-name-first-v05.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: river-biota-name-first-v05
+  cancel-in-progress: true
+jobs:
+  offline_name_first:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source identity rules
+        run: |
+          python -m py_compile river-fish/research-individual-v05/*.py
+          python -m unittest discover -s river-fish/research-individual-v05 -p 'test_*.py' -v
+      - name: Restore exactly the previously audited v04 database
+        run: |
+          python river-fish/research-individual-v04/snapshot_parts_v04.py verify \
+            --parts-dir river-fish/research-individual-v04/expanded-db \
+            --db /tmp/river_individual_research_v04.sqlite
+      - name: Build NEW name-first river index (no official code required)
+        run: |
+          python river-fish/research-individual-v05/build_name_first_v05.py \
+            --source /tmp/river_individual_research_v04.sqlite \
+            --out /tmp/river_individual_research_v05.sqlite \
+            --report-dir river-fish/research-individual-v05/outputs
+      - name: Verify old coded rivers, new code-free river, source URLs and group windows
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import csv,sys,json
+          source=Path('river-fish/research-individual-v05')
+          sys.path.insert(0,str(source.resolve()))
+          from name_first_detail_v05 import connect,lookup
+          c=connect('/tmp/river_individual_research_v05.sqlite')
+          try:
+              report=json.loads((source/'outputs/name_first_audit_v05.json').read_text())
+              assert report['original_aggregate_keys']==408036
+              assert report['source_recovered_river_contexts']==679478
+              assert report['original_code_A_contexts']==176777
+              assert report['new_eligible_name_only_rivers']>0
+              assert report['name_only_historical_contexts']>0
+              with (source/'outputs/name_first_rivers_v05.csv').open() as f:
+                  rows=list(csv.DictReader(f))
+              new=next(r for r in rows if r['code_confidence']=='source_river_name_only')
+              result=lookup(c,identity_key=new['identity_key'])
+              assert result['status']=='name_first_river_record'
+              assert result['river_code_optional'] is None
+              assert result['watershed_only_data_used'] is False
+              assert set(result['biota'])=={'fish','benthic_animals','birds','plants'}
+              assert sum(v['historical_record_contexts'] for v in result['biota'].values())>0
+              assert lookup(c,region=new['region'],watershed=new['watershed_name'],river=new['river_name'])['status']=='name_first_river_record'
+              assert lookup(c,region=new['region'],watershed=new['watershed_name'],list_rivers=True)['rivers']
+              old=lookup(c,region='chugoku',watershed='太田川',river='三篠川')
+              assert {k:v['historical_record_contexts'] for k,v in old['biota'].items()}=={'fish':67,'benthic_animals':464,'birds':214,'plants':1347}
+              neya=lookup(c,region='chugoku',watershed='太田川',river='根谷川')
+              assert neya['biota']['birds']['historical_record_contexts']==0
+              assert c.execute("SELECT COUNT(*) FROM name_first_evidence WHERE original_code_match_class='C'").fetchone()[0]==0
+              print('PASS_NAME_FIRST',json.dumps({'new_example':new,'regions':report['region_breakdown']},ensure_ascii=False))
+          finally:c.close()
+          PY
+      - name: Independently package and SHA-verify new research database
+        run: |
+          rm -f river-fish/research-individual-v05/outputs/river_individual_research_v05.sqlite.gz.part*
+          rm -f river-fish/research-individual-v05/outputs/snapshot_parts_v05.json
+          rm -f river-fish/research-individual-v05/outputs/river_individual_research_v05.sqlite.gz
+          python river-fish/research-individual-v05/snapshot_parts_v05.py package \
+            --db /tmp/river_individual_research_v05.sqlite \
+            --parts-dir river-fish/research-individual-v05/outputs
+          python river-fish/research-individual-v05/snapshot_parts_v05.py verify \
+            --db /tmp/river_individual_research_v05_restored.sqlite \
+            --parts-dir river-fish/research-individual-v05/outputs
+      - name: Upload research-only deliverables
+        uses: actions/upload-artifact@v4
+        with:
+          name: name-first-biota-v05-research-only
+          path: river-fish/research-individual-v05/outputs/
+          if-no-files-found: error
+      - name: Save evidence only in the research branch
+        run: |
+          test "$GITHUB_REF_NAME" = "research/river-biota-name-first-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v05/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: archive independent name-first biological river index and evidence counts"
+            git push origin HEAD:refs/heads/research/river-biota-name-first-20261020
+          fi
