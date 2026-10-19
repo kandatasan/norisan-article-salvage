@@ -49,10 +49,13 @@ class TestAtlasPrototype(unittest.TestCase):
             self.assertNotIn("wp-json",page)
             self.assertNotIn("fetch(",page)
             self.assertIn("window.TSURI_ATLAS_POC",js)
+            one=(p/"output/standalone.html").read_text(encoding="utf-8")
+            self.assertIn("window.TSURI_ATLAS_POC",one)
+            self.assertNotIn('<script src="data.js"></script>',one)
             self.assertNotIn('"prefecture":"広島県"',js)
             with zipfile.ZipFile(p/"preview.zip") as z:
                 self.assertIsNone(z.testzip())
-                self.assertEqual(len(z.namelist()),3)
+                self.assertEqual(len(z.namelist()),4)
             with self.assertRaises(FileExistsError):
                 build(p/"output")
 
