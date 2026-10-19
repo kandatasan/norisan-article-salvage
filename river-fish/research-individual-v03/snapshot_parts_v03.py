@@ -40,7 +40,7 @@ def verify(parts_dir,db):
     parts_dir=Path(parts_dir);db=Path(db)
     meta=json.loads((parts_dir/"snapshot_parts_v03.json").read_text())
     if meta["version"]!=3 or db.exists():raise ValueError("Invalid v03 manifest or output exists")
-    z=parts_dir/(meta["db_name"]+".gz")
+    # Reassemble in /tmp near the restored DB, not within the source/output tree.\n    z=db.with_name(meta["db_name"]+".gz")
     with z.open("wb") as out:
         for part in meta["parts"]:
             inp=parts_dir/part["name"]
