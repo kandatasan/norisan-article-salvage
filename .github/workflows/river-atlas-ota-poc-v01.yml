@@ -1,0 +1,46 @@
+name: Ota watershed atlas proof-of-concept (offline only)
+on:
+  pull_request:
+    paths:
+      - 'river-fish/build_river_atlas_poc_v01.py'
+      - 'river-fish/test_river_atlas_poc_v01.py'
+      - 'river-fish/atlas-poc-v01/**'
+      - '.github/workflows/river-atlas-ota-poc-v01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build-and-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify real river membership and safe survey scopes
+        run: python -m unittest discover -s river-fish -p 'test_river_atlas_poc_v01.py' -v
+      - name: Build offline Ota river-explorer ZIP from GitHub source data
+        run: |
+          python river-fish/build_river_atlas_poc_v01.py \
+            --out "$RUNNER_TEMP/ota-river-atlas" \
+            --zip "$RUNNER_TEMP/tsurikue-ota-river-atlas-poc.zip"
+      - name: Check manifest and resulting page
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"ota-river-atlas"
+          m=json.loads((p/"manifest.json").read_text(encoding="utf-8"))
+          assert m["status"]=="research_preview_only_no_server_or_wordpress_changes"
+          assert m["riverCodes"]>20
+          assert m["fishSurveyRecords"]>0
+          assert (p/"index.html").is_file() and (p/"data.js").is_file()
+          print("ATLAS_REAL_DATA_PREVIEW_OK",m)
+          PY
+      - name: Upload offline preview (never deploy to tsurikue.com)
+        uses: actions/upload-artifact@v4
+        with:
+          name: tsurikue-ota-river-atlas-poc-v01
+          path: ${{ runner.temp }}/tsurikue-ota-river-atlas-poc.zip
+          retention-days: 30
+          if-no-files-found: error
