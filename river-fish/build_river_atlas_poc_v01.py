@@ -9,7 +9,7 @@ import argparse
 import json
 from pathlib import Path
 import shutil
-import zipfile
+import zipfile\nfrom collections import Counter
 
 from build_river_beta_v15 import create_payload, records
 
@@ -50,6 +50,14 @@ def collect():
     if any(len(r) != 5 or r[0] != FISH_REGION or r[1] != NAME for r in fish):
         raise ValueError("Fish source scope changed")
 
+    connections = json.loads((ROOT/"ota_official_river_connections_v01.json").read_text(encoding="utf-8"))
+    edges = connections["edges"]
+    allowed = {"tributary_confluence", "distributary_branch"}
+    if any(e["relation"] not in allowed or not e["sourceUrl"].startswith("https://www.mlit.go.jp/") or
+           e["riverCodeMapping"] != "unverified" for e in edges):
+        raise ValueError("Unsafe connection provenance or implicit code mapping")
+    if len({(e["fromName"], e["toName"], e["relation"]) for e in edges}) != len(edges):
+        raise ValueError("Duplicate connection")
     # Keep separate evidence objects: never insert local prefecture, survey
     # species, parent-river, or presence fields into coded river objects.
     return {
@@ -66,7 +74,7 @@ def collect():
         "riverSource": source["meta"]["officialRiverSource"],
         "rivers": [{"riverCode": r[0], "riverName": r[1]}
                    for r in sorted(coded, key=lambda x: (x[1], x[0]))],
-        "fishSurvey": [{"region": r[0], "watershedLabel": r[1],
+        "namedConnections": edges,\n        "connectionCodeMappingStatus": "unverified",\n        "fishSurvey": [{"region": r[0], "watershedLabel": r[1],
                         "surveyYear": r[2], "recordedName": r[3], "sourceUrl": r[4]}
                        for r in sorted(fish, key=lambda x: (x[3], x[2]))],
         "fishJoinStatus": "name_and_region_context_only_not_official_code_identity",
