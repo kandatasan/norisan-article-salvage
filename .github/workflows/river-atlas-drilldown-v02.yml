@@ -1,0 +1,43 @@
+name: Build river atlas drilldown v02 (research only)
+on:
+  push:
+    branches:
+      - feature/river-atlas-watershed-switcher-20261019
+    paths:
+      - 'river-fish/watershed-switcher-v02/**'
+      - 'river-fish/build_watershed_switcher_v02.py'
+      - '.github/workflows/river-atlas-drilldown-v02.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate national source and build v02
+        run: |
+          python -m unittest discover -s river-fish -p 'test_watershed_switcher_v01.py' -v
+          python river-fish/build_watershed_switcher_v02.py --out /tmp/river-atlas-v02
+      - name: Check script syntax and standalone contents
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('/tmp/river-atlas-v02/standalone.html').read_text(encoding='utf-8')
+          assert 'window.RIVER_ATLAS=' in p and '8707090029' in p
+          assert 'riverCards' in p and 'selectSystem' in p and 'selectRiver' in p
+          assert '<iframe' not in p
+          Path('/tmp/river-atlas-v02/app.js').write_text(p.rsplit('<script>',1)[1].split('</script>')[0])
+          PY
+          node --check /tmp/river-atlas-v02/app.js
+          node --check /tmp/river-atlas-v02/data.js
+      - name: Bundle offline preview
+        run: cd /tmp/river-atlas-v02 && zip -q /tmp/river-atlas-v02.zip standalone.html index.html data.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: tsurikue-river-atlas-drilldown-v02
+          path: /tmp/river-atlas-v02.zip
+          if-no-files-found: error
