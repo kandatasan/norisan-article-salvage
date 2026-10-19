@@ -1,0 +1,262 @@
+{
+  "source_url": "https://www.data.jma.go.jp/suishin/oshirase/pdf/20260422.pdf",
+  "source_sha256": "1fd72d7aaca4c42292249012de4dee03e0fa2e40554ac55b33ab12e306bb3275",
+  "pdf_pages": 10,
+  "kyushu_code_occurrences": 32,
+  "distinct_kyushu_codes": 26,
+  "samples": [
+    {
+      "page": 8,
+      "code": "8909010001",
+      "line": "国   遠賀川上流部         福岡管区気象台            8909010001   01    JPFK   VXKO50 JPFK",
+      "above": "国   物部川            高知地方気象台            8808050001   00    JPMC   VXKO52 JPMC",
+      "below": "国   遠賀川下流部         福岡管区気象台            8909010001   02    JPFK   VXKO51 JPFK"
+    },
+    {
+      "page": 8,
+      "code": "8909010001",
+      "line": "国   遠賀川下流部         福岡管区気象台            8909010001   02    JPFK   VXKO51 JPFK",
+      "above": "国   遠賀川上流部         福岡管区気象台            8909010001   01    JPFK   VXKO50 JPFK",
+      "below": "国   彦山川            福岡管区気象台            8909010103   00    JPFK   VXKO52 JPFK"
+    },
+    {
+      "page": 8,
+      "code": "8909010103",
+      "line": "国   彦山川            福岡管区気象台            8909010103   00    JPFK   VXKO52 JPFK",
+      "above": "国   遠賀川下流部         福岡管区気象台            8909010001   02    JPFK   VXKO51 JPFK",
+      "below": "国   筑後川下流部         福岡管区気象台            8909060001   02    JPFK   VXKO53 JPFK"
+    },
+    {
+      "page": 8,
+      "code": "8909060001",
+      "line": "国   筑後川下流部         福岡管区気象台            8909060001   02    JPFK   VXKO53 JPFK",
+      "above": "国   彦山川            福岡管区気象台            8909010103   00    JPFK   VXKO52 JPFK",
+      "below": "国   筑後川上中流部        福岡管区気象台            8909060001   04    JPFK   VXKO54 JPFK"
+    },
+    {
+      "page": 8,
+      "code": "8909060001",
+      "line": "国   筑後川上中流部        福岡管区気象台            8909060001   04    JPFK   VXKO54 JPFK",
+      "above": "国   筑後川下流部         福岡管区気象台            8909060001   02    JPFK   VXKO53 JPFK",
+      "below": "国   矢部川下流部         福岡管区気象台            8909070001   00    JPFK   VXKO55 JPFK"
+    },
+    {
+      "page": 8,
+      "code": "8909070001",
+      "line": "国   矢部川下流部         福岡管区気象台            8909070001   00    JPFK   VXKO55 JPFK",
+      "above": "国   筑後川上中流部        福岡管区気象台            8909060001   04    JPFK   VXKO54 JPFK",
+      "below": "県   御笠川水系御笠川       福岡管区気象台            4000180001   00    JPFK   VXKO70 JPFK"
+    },
+    {
+      "page": 8,
+      "code": "8909070001",
+      "line": "県   矢部川中流部         福岡管区気象台            8909070001   03    JPFK   VXKO71 JPFK",
+      "above": "県   御笠川水系御笠川       福岡管区気象台            4000180001   00    JPFK   VXKO70 JPFK",
+      "below": "国   松浦川            佐賀地方気象台            8909020001   00    JPFC   VXKO50 JPFC"
+    },
+    {
+      "page": 8,
+      "code": "8909020001",
+      "line": "国   松浦川            佐賀地方気象台            8909020001   00    JPFC   VXKO50 JPFC",
+      "above": "県   矢部川中流部         福岡管区気象台            8909070001   03    JPFK   VXKO71 JPFK",
+      "below": "国   徳須恵川           佐賀地方気象台            8909020013   00    JPFC   VXKO51 JPFC"
+    },
+    {
+      "page": 8,
+      "code": "8909020013",
+      "line": "国   徳須恵川           佐賀地方気象台            8909020013   00    JPFC   VXKO51 JPFC",
+      "above": "国   松浦川            佐賀地方気象台            8909020001   00    JPFC   VXKO50 JPFC",
+      "below": ""
+    },
+    {
+      "page": 9,
+      "code": "8909020049",
+      "line": "国    厳木川             佐賀地方気象台 8909020049           00    JPFC   VXKO52 JPFC",
+      "above": "番号用）        官署名（XML）",
+      "below": "国    六角川             佐賀地方気象台 8909040001           00    JPFC   VXKO53 JPFC"
+    },
+    {
+      "page": 9,
+      "code": "8909040001",
+      "line": "国    六角川             佐賀地方気象台 8909040001           00    JPFC   VXKO53 JPFC",
+      "above": "国    厳木川             佐賀地方気象台 8909020049           00    JPFC   VXKO52 JPFC",
+      "below": "国    牛津川             佐賀地方気象台 8909040003           00    JPFC   VXKO54 JPFC"
+    },
+    {
+      "page": 9,
+      "code": "8909040003",
+      "line": "国    牛津川             佐賀地方気象台 8909040003           00    JPFC   VXKO54 JPFC",
+      "above": "国    六角川             佐賀地方気象台 8909040001           00    JPFC   VXKO53 JPFC",
+      "below": "国    嘉瀬川             佐賀地方気象台 8909050001           00    JPFC   VXKO55 JPFC"
+    },
+    {
+      "page": 9,
+      "code": "8909050001",
+      "line": "国    嘉瀬川             佐賀地方気象台 8909050001           00    JPFC   VXKO55 JPFC",
+      "above": "国    牛津川             佐賀地方気象台 8909040003           00    JPFC   VXKO54 JPFC",
+      "below": "国    本明川             長崎地方気象台 8909030001           00    JPFE   VXKO50 JPFE"
+    },
+    {
+      "page": 9,
+      "code": "8909030001",
+      "line": "国    本明川             長崎地方気象台 8909030001           00    JPFE   VXKO50 JPFE",
+      "above": "国    嘉瀬川             佐賀地方気象台 8909050001           00    JPFC   VXKO55 JPFC",
+      "below": "国    菊池川水系           熊本地方気象台 8909080001           00    JPFD   VXKO50 JPFD"
+    },
+    {
+      "page": 9,
+      "code": "8909080001",
+      "line": "国    菊池川水系           熊本地方気象台 8909080001           00    JPFD   VXKO50 JPFD",
+      "above": "国    本明川             長崎地方気象台 8909030001           00    JPFE   VXKO50 JPFE",
+      "below": "国    白川              熊本地方気象台 8909090001           00    JPFD   VXKO51 JPFD"
+    },
+    {
+      "page": 9,
+      "code": "8909090001",
+      "line": "国    白川              熊本地方気象台 8909090001           00    JPFD   VXKO51 JPFD",
+      "above": "国    菊池川水系           熊本地方気象台 8909080001           00    JPFD   VXKO50 JPFD",
+      "below": "国    緑川水系            熊本地方気象台 8909100001           00    JPFD   VXKO52 JPFD"
+    },
+    {
+      "page": 9,
+      "code": "8909100001",
+      "line": "国    緑川水系            熊本地方気象台 8909100001           00    JPFD   VXKO52 JPFD",
+      "above": "国    白川              熊本地方気象台 8909090001           00    JPFD   VXKO51 JPFD",
+      "below": "国    球磨川             熊本地方気象台 8909110001           00    JPFD   VXKO53 JPFD"
+    },
+    {
+      "page": 9,
+      "code": "8909110001",
+      "line": "国    球磨川             熊本地方気象台 8909110001           00    JPFD   VXKO53 JPFD",
+      "above": "国    緑川水系            熊本地方気象台 8909100001           00    JPFD   VXKO52 JPFD",
+      "below": "国    番匠川水系           大分地方気象台 8909170001           00    JPFB   VXKO50 JPFB"
+    },
+    {
+      "page": 9,
+      "code": "8909170001",
+      "line": "国    番匠川水系           大分地方気象台 8909170001           00    JPFB   VXKO50 JPFB",
+      "above": "国    球磨川             熊本地方気象台 8909110001           00    JPFD   VXKO53 JPFD",
+      "below": "国    大野川水系           大分地方気象台 8909180001           00    JPFB   VXKO51 JPFB"
+    },
+    {
+      "page": 9,
+      "code": "8909180001",
+      "line": "国    大野川水系           大分地方気象台 8909180001           00    JPFB   VXKO51 JPFB",
+      "above": "国    番匠川水系           大分地方気象台 8909170001           00    JPFB   VXKO50 JPFB",
+      "below": "国    大分川             大分地方気象台 8909190001           00    JPFB   VXKO52 JPFB"
+    },
+    {
+      "page": 9,
+      "code": "8909190001",
+      "line": "国    大分川             大分地方気象台 8909190001           00    JPFB   VXKO52 JPFB",
+      "above": "国    大野川水系           大分地方気象台 8909180001           00    JPFB   VXKO51 JPFB",
+      "below": "国    七瀬川             大分地方気象台 8909190011           00    JPFB   VXKO53 JPFB"
+    },
+    {
+      "page": 9,
+      "code": "8909190011",
+      "line": "国    七瀬川             大分地方気象台 8909190011           00    JPFB   VXKO53 JPFB",
+      "above": "国    大分川             大分地方気象台 8909190001           00    JPFB   VXKO52 JPFB",
+      "below": "国    山国川上流部          大分地方気象台 8909200001           01    JPFB   VXKO54 JPFB"
+    },
+    {
+      "page": 9,
+      "code": "8909200001",
+      "line": "国    山国川上流部          大分地方気象台 8909200001           01    JPFB   VXKO54 JPFB",
+      "above": "国    七瀬川             大分地方気象台 8909190011           00    JPFB   VXKO53 JPFB",
+      "below": "国    山国川下流部          大分地方気象台 8909200001           02    JPFB   VXKO55 JPFB"
+    },
+    {
+      "page": 9,
+      "code": "8909200001",
+      "line": "国    山国川下流部          大分地方気象台 8909200001           02    JPFB   VXKO55 JPFB",
+      "above": "国    山国川上流部          大分地方気象台 8909200001           01    JPFB   VXKO54 JPFB",
+      "below": "県    駅館川水系駅館川        大分地方気象台 4400080001           00    JPFB   VXKO70 JPFB"
+    },
+    {
+      "page": 9,
+      "code": "8909140001",
+      "line": "国    大淀川上流部          宮崎地方気象台 8909140001           01    JPKA   VXKO50 JPKA",
+      "above": "県    駅館川水系駅館川        大分地方気象台 4400080001           00    JPFB   VXKO70 JPFB",
+      "below": "国    大淀川下流部          宮崎地方気象台 8909140001           02    JPKA   VXKO51 JPKA"
+    },
+    {
+      "page": 9,
+      "code": "8909140001",
+      "line": "国    大淀川下流部          宮崎地方気象台 8909140001           02    JPKA   VXKO51 JPKA",
+      "above": "国    大淀川上流部          宮崎地方気象台 8909140001           01    JPKA   VXKO50 JPKA",
+      "below": "国    本庄川             宮崎地方気象台 8909140033           00    JPKA   VXKO52 JPKA"
+    },
+    {
+      "page": 9,
+      "code": "8909140033",
+      "line": "国    本庄川             宮崎地方気象台 8909140033           00    JPKA   VXKO52 JPKA",
+      "above": "国    大淀川下流部          宮崎地方気象台 8909140001           02    JPKA   VXKO51 JPKA",
+      "below": "国    小丸川             宮崎地方気象台 8909150001           00    JPKA   VXKO53 JPKA"
+    },
+    {
+      "page": 9,
+      "code": "8909150001",
+      "line": "国    小丸川             宮崎地方気象台 8909150001           00    JPKA   VXKO53 JPKA",
+      "above": "国    本庄川             宮崎地方気象台 8909140033           00    JPKA   VXKO52 JPKA",
+      "below": "国    五ヶ瀬川・大瀬川        宮崎地方気象台 8909160001           00    JPKA   VXKO54 JPKA"
+    },
+    {
+      "page": 9,
+      "code": "8909160001",
+      "line": "国    五ヶ瀬川・大瀬川        宮崎地方気象台 8909160001           00    JPKA   VXKO54 JPKA",
+      "above": "国    小丸川             宮崎地方気象台 8909150001           00    JPKA   VXKO53 JPKA",
+      "below": "県    清武川水系清武川        宮崎地方気象台 4500260001           00    JPKA   VXKO70 JPKA"
+    },
+    {
+      "page": 9,
+      "code": "8909120001",
+      "line": "国    川内川上流部          鹿児島地方気象台 8909120001          01    JPKG   VXKO50 JPKG",
+      "above": "県    広渡川水系酒谷川        宮崎地方気象台 4500400007           00    JPKA   VXKO72 JPKA",
+      "below": "国    川内川下流部          鹿児島地方気象台 8909120001          02    JPKG   VXKO51 JPKG"
+    },
+    {
+      "page": 9,
+      "code": "8909120001",
+      "line": "国    川内川下流部          鹿児島地方気象台 8909120001          02    JPKG   VXKO51 JPKG",
+      "above": "国    川内川上流部          鹿児島地方気象台 8909120001          01    JPKG   VXKO50 JPKG",
+      "below": "国    肝属川水系           鹿児島地方気象台 8909130001          00    JPKG   VXKO52 JPKG"
+    },
+    {
+      "page": 9,
+      "code": "8909130001",
+      "line": "国    肝属川水系           鹿児島地方気象台 8909130001          00    JPKG   VXKO52 JPKG",
+      "above": "国    川内川下流部          鹿児島地方気象台 8909120001          02    JPKG   VXKO51 JPKG",
+      "below": "県    万之瀬川水系万之瀬川・加世田川 鹿児島地方気象台 4600600001          00    JPKG   VXKO70 JPKG"
+    }
+  ],
+  "all_matching_codes": [
+    "8909010001",
+    "8909010103",
+    "8909020001",
+    "8909020013",
+    "8909020049",
+    "8909030001",
+    "8909040001",
+    "8909040003",
+    "8909050001",
+    "8909060001",
+    "8909070001",
+    "8909080001",
+    "8909090001",
+    "8909100001",
+    "8909110001",
+    "8909120001",
+    "8909130001",
+    "8909140001",
+    "8909140033",
+    "8909150001",
+    "8909160001",
+    "8909170001",
+    "8909180001",
+    "8909190001",
+    "8909190011",
+    "8909200001"
+  ],
+  "no_automatic_A_promotion": true
+}
