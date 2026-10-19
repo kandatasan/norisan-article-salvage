@@ -83,11 +83,11 @@ def build(out, archive=None):
     out.mkdir(parents=True, exist_ok=True)
     shutil.copyfile(ASSETS/"index.html", out/"index.html")
     payload = json.dumps(data, ensure_ascii=False, separators=(",", ":")).replace("</", "<\\/")
-    data_script = "window.TSURI_ATLAS_POC = " + payload + ";\\n"
+    data_script = "window.TSURI_ATLAS_POC = " + payload + ";\n"
     (out/"data.js").write_text(data_script, encoding="utf-8")
     standalone = (out/"index.html").read_text(encoding="utf-8").replace(
         '<script src="data.js"></script>',
-        '<script>\\n' + data_script + '</script>', 1)
+        '<script>\n' + data_script + '</script>', 1)
     if '<script src="data.js"></script>' in standalone:
         raise ValueError("Standalone preview still loads external data")
     (out/"standalone.html").write_text(standalone, encoding="utf-8")
