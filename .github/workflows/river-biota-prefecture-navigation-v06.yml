@@ -62,6 +62,29 @@ jobs:
           print('VERIFIED_RESEARCH_NAVIGATION',json.dumps({
               k:v for k,v in s.items() if isinstance(v,(int,bool))},ensure_ascii=False))
           PY
+      - name: Generate no-iframe mobile click-through research prototype
+        run: |
+          python river-fish/research-individual-v06/render_offline_navigation_v06.py \
+            --source river-fish/research-individual-v06/outputs/river_atlas_navigation_v06.json \
+            --out river-fish/research-individual-v06/outputs/river_atlas_prefecture_preview_v06.html
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('river-fish/research-individual-v06/outputs')
+          data=json.loads((p/'river_atlas_navigation_v06.json').read_text())
+          html=(p/'river_atlas_prefecture_preview_v06.html').read_text()
+          assert '<iframe' not in html and 'fetch(' not in html
+          assert '都道府県' in html and '生物調査' in html
+          assert not any(x['prefecture']=='佐賀県' and x['watershed']=='那珂川' for x in data['prefecture_watershed_entries'])
+          assert not any(x['prefecture']=='和歌山県' and x['watershed']=='太田川' for x in data['prefecture_watershed_entries'])
+          assert not any(x['prefecture']=='大阪府' and x['watershed']=='芦田川' for x in data['prefecture_watershed_entries'])
+          hi=[x for x in data['prefecture_watershed_entries'] if x['prefecture']=='広島県' and x['watershed']=='太田川']
+          assert len(hi)==1 and hi[0]['identity_basis']=='two_or_more_exact_prefecture_documented_approved_rivers'
+          links={x['river_name'] for x in data['prefecture_river_links'] if x['prefecture']=='広島県' and x['watershed']=='太田川'}
+          assert '三篠川' in links and '根谷川' in links
+          print('HIROSHIMA_OTA',sorted(links))
+          assert len(html.encode())<2_000_000
+          PY
       - name: Upload source-validated research files
         uses: actions/upload-artifact@v4
         with:
