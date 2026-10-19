@@ -1,0 +1,20 @@
+{
+  "source_url": "https://www.mlit.go.jp/river/hourei_tsutatsu/riyou/kasen_riyou/oudan/kyuushuu.html",
+  "source_sha256": "36d0cfacef4c6fffbb0df7b2019aeadcdb0a5b3e554894a0c236263894077489",
+  "license_note": "Independent official names are not a 10-digit code ledger. W05 geographic product excluded due to noncommercial license.",
+  "official_watersheds": 20,
+  "official_name_pairs": 87,
+  "source_B_group_rows": 286,
+  "source_B_distinct_pairs": 92,
+  "recovered_B_contexts": 115062,
+  "independently_confirmed_name_pairs_with_unique_catalog_candidate": 42,
+  "independently_confirmed_name_pair_contexts": 60673,
+  "other_B_contexts": 54389,
+  "B_remain_B": true,
+  "new_A_rivers": 0,
+  "new_A_contexts": 0,
+  "public_wordpress_deployed": false,
+  "db_modified": false,
+  "source_river_code_proof": "not_available",
+  "next_step": "Find independent region-specific code ledger or explicitly licensed code/name geographic reference, then promote only cross-verified items"
+}
