@@ -71,6 +71,31 @@ jobs:
               print('PASS_NAME_FIRST',json.dumps({'new_example':new,'regions':report['region_breakdown']},ensure_ascii=False))
           finally:c.close()
           PY
+      - name: Preserve four-category examples for newly included code-free rivers
+        run: |
+          python river-fish/research-individual-v05/name_first_detail_v05.py \
+            --db /tmp/river_individual_research_v05.sqlite \
+            --region kyushu --watershed 筑後川 --river 宝満川 --limit 4 \
+            > river-fish/research-individual-v05/outputs/kyushu_homangawa_name_first_example_v05.json
+          python river-fish/research-individual-v05/name_first_detail_v05.py \
+            --db /tmp/river_individual_research_v05.sqlite \
+            --region chubu --watershed 天竜川 --river 三峰川 --limit 4 \
+            > river-fish/research-individual-v05/outputs/chubu_mibugawa_name_first_example_v05.json
+          python river-fish/research-individual-v05/name_first_detail_v05.py \
+            --db /tmp/river_individual_research_v05.sqlite \
+            --region kyushu --watershed 筑後川 --list-rivers \
+            > river-fish/research-individual-v05/outputs/kyushu_chikugogawa_river_list_v05.json
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('river-fish/research-individual-v05/outputs')
+          for f in ['kyushu_homangawa_name_first_example_v05.json','chubu_mibugawa_name_first_example_v05.json']:
+              d=json.loads((p/f).read_text())
+              assert d['status']=='name_first_river_record'
+              assert d['river_code_optional'] is None
+              assert sum(x['historical_record_contexts'] for x in d['biota'].values())>0
+              print('PROVEN_NAME_FIRST',d['watershed_name'],d['river_name'],{k:v['historical_record_contexts'] for k,v in d['biota'].items()})
+          PY
       - name: Independently package and SHA-verify new research database
         run: |
           rm -f river-fish/research-individual-v05/outputs/river_individual_research_v05.sqlite.gz.part*
