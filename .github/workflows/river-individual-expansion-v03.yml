@@ -1,0 +1,80 @@
+name: Build 106-river individual-biota SQLite v03 (research only)
+on:
+  push:
+    branches:
+      - research/river-individual-expansion-20261020
+    paths:
+      - 'river-fish/research-individual-v03/*.py'
+      - '.github/workflows/river-individual-expansion-v03.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  research-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python compile and source integrity
+        run: |
+          python -m py_compile river-fish/research-individual-v03/*.py
+          test "${GITHUB_REF_NAME}" = "research/river-individual-expansion-20261020"
+          python river-fish/research-individual-v01/snapshot_parts.py assemble \
+            --parts-dir river-fish/research-individual-v01/outputs \
+            --output /tmp/river_individual_research_v01.sqlite.gz
+      - name: Promote only independently pinned Tohoku river contexts
+        run: |
+          python river-fish/research-individual-v03/promote_tohoku_v03.py \
+            --source /tmp/river_individual_research_v01.sqlite \
+            --out /tmp/river_individual_research_v03.sqlite \
+            --report-dir river-fish/research-individual-v03/outputs
+      - name: Functional regression for 44 Chugoku and 62 Tohoku rivers
+        run: |
+          python - <<'PY'
+          import sys,json,sqlite3
+          from pathlib import Path
+          root=Path('river-fish/research-individual-v01')
+          sys.path.insert(0,str(root.resolve()))
+          from river_detail import detail
+          db='/tmp/river_individual_research_v03.sqlite'
+          x=detail(db,'8707090029',limit=3)
+          assert {g:v['records'] for g,v in x['direct_records'].items()}=={'fish':67,'benthic_animals':464,'birds':214,'plants':1347}
+          y=detail(db,'8202040001',limit=3,approvals='river-fish/research-individual-v02/outputs/tohoku_independent_crosswalk.csv')
+          assert y['prefecture'] is None
+          assert y['watershed_context'] and y['watershed_context']['scope']=='watershed_only_not_this_river'
+          assert sum(v['records'] for v in y['direct_records'].values())>0
+          z=detail(db,'8707090047',limit=3)
+          assert z['direct_records']['birds']['records']==0
+          with sqlite3.connect(f'file:{Path(db).resolve()}?mode=ro',uri=True) as c:
+            assert c.execute('SELECT COUNT(DISTINCT river_code) FROM approved_individual_river').fetchone()[0]==106
+            assert c.execute('SELECT COUNT(*) FROM approved_individual_river').fetchone()[0]==155156
+          print('PASS: 106 validated individual rivers, 155156 river contexts; no false Neya bird evidence')
+          print(json.dumps({'tohoku_code':y['river_code'],'tohoku_direct_counts':{g:v['records'] for g,v in y['direct_records'].items()}},ensure_ascii=False))
+          PY
+      - name: Hash-checked archive and restore into separate file
+        run: |
+          python river-fish/research-individual-v03/snapshot_parts_v03.py package \
+            --db /tmp/river_individual_research_v03.sqlite \
+            --parts-dir river-fish/research-individual-v03/outputs
+          python river-fish/research-individual-v03/snapshot_parts_v03.py verify \
+            --db /tmp/river_individual_research_v03_restored.sqlite \
+            --parts-dir river-fish/research-individual-v03/outputs
+      - name: Upload research results, NO WordPress/production access
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-individual-v03-expanded-sqlite
+          path: river-fish/research-individual-v03/outputs/
+          if-no-files-found: error
+      - name: Archive verified outputs on research branch only
+        run: |
+          test "${GITHUB_REF_NAME}" = "research/river-individual-expansion-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v03/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: save verified 106-river individual-biota SQLite v03 and counts"
+            git push origin HEAD:refs/heads/research/river-individual-expansion-20261020
+          fi
