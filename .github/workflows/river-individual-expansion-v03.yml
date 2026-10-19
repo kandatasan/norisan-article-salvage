@@ -56,6 +56,10 @@ jobs:
           PY
       - name: Hash-checked archive and restore into separate file
         run: |
+          # Rebuild staged research outputs on the runner; never overwrite any live DB.
+          rm -f river-fish/research-individual-v03/outputs/river_individual_research_v03.sqlite.gz.part*
+          rm -f river-fish/research-individual-v03/outputs/snapshot_parts_v03.json
+          rm -f river-fish/research-individual-v03/outputs/river_individual_research_v03.sqlite.gz
           python river-fish/research-individual-v03/snapshot_parts_v03.py package \
             --db /tmp/river_individual_research_v03.sqlite \
             --parts-dir river-fish/research-individual-v03/outputs
