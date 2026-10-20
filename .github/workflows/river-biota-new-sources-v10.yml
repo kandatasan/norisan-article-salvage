@@ -64,6 +64,21 @@ jobs:
           assert all(r['survey_year']=='2025' for r in rows)
           print('EXTERNAL_EDNA_NAME_FIRST_CANDIDATES',d['new_name_pairs_not_in_base_428'])
           PY
+      - name: Reassess all 47 former river-code holds at source-name granularity
+        run: |
+          python river-fish/research-individual-v10/review_47_held_river_names_v10.py \
+            river-fish/research-individual-v10/outputs/review_47_held_river_names_v10.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          j=json.loads(Path('river-fish/research-individual-v10/outputs/review_47_held_river_names_v10.json').read_text())
+          assert j["source_held_name_labels"]==47
+          assert j["source_held_contexts"]==101210
+          assert j["baseline_428_rivers_unchanged"]
+          assert j["nonriver_lakes_not_adopted"]
+          assert all(not x["current_physical_river_approval"] for x in j["items"])
+          print("HELD_RIVER_NAME_REVIEW",j["classification"])
+          PY
       - name: Check acquisition honesty
         run: |
           python - <<'PY'
