@@ -1,0 +1,87 @@
+name: Research v26 real Chromium river atlas browser and mobile QA
+on:
+  push:
+    branches:
+      - research/river-atlas-browser-qa-v26-20261020
+    paths:
+      - 'river-fish/research-individual-v26/**'
+      - '.github/workflows/river-fish-browser-v26.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  browser_qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Rebuild SHA-audited v19-v25 river fish research preview
+        run: |
+          python river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v20/build_general_stars_v20.py
+          python river-fish/research-individual-v21/build_47pref_directory_v21.py
+          python river-fish/research-individual-v22/build_same_name_navigation_v22.py
+          python river-fish/research-individual-v23/build_chugoku_watershed_reference_v23.py
+          python river-fish/research-individual-v24/build_reverse_fish_index_v24.py
+          python river-fish/research-individual-v25/build_river_name_search_v25.py
+      - name: Produce v26 visually polished archive with byte-for-byte source preservation
+        run: |
+          python -m py_compile river-fish/research-individual-v26/build_browser_review_v26.py
+          python river-fish/research-individual-v26/build_browser_review_v26.py
+      - name: Verify archive, output sources, and browser JavaScript syntax
+        run: |
+          python - <<'PY'
+          import hashlib,json,zipfile
+          from pathlib import Path
+          out=Path('river-fish/research-individual-v26/outputs')
+          q=json.loads((out/'river_fish_browser_review_qa_v26.json').read_text())
+          assert q['research_only'] and q['not_wordpress_or_production']
+          assert q['all_data_and_references_byte_identical_to_v25']
+          assert q['existing_source_display_groups_unchanged']==1568
+          assert q['existing_named_fish_reverse_search_candidates_unchanged']==349
+          zpath=out/q['zip']
+          assert hashlib.sha256(zpath.read_bytes()).hexdigest()==q['zip_sha256']
+          with zipfile.ZipFile(zpath) as z:
+            assert z.testzip() is None
+            a=json.loads(z.read('atlas.json'))
+            assert len(a['entries'])==1568
+            assert 'sourceOnlyDetail' in z.read('index.html').decode('utf-8')
+            assert 'searchRiverV25' in z.read('index.html').decode('utf-8')
+            assert 'reverseQueryV24' in z.read('index.html').decode('utf-8')
+            assert '#riverFishOnlyV25' in z.read('index.html').decode('utf-8')
+            html=z.read('index.html').decode('utf-8')
+            assert html.count('<script>')==html.count('</script>')==1
+            Path('/tmp/river_fish_v26.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          print('V26_SOURCE_DATA_UNCHANGED_QA_OK')
+          PY
+          node --check /tmp/river_fish_v26.js
+      - name: Install Chromium for actual UI test
+        run: |
+          npm install --no-save --no-package-lock playwright@1.56.1
+          npx playwright install chromium
+      - name: Serve research files and exercise live browser
+        run: |
+          mkdir -p /tmp/riveratlas-v26
+          python - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('river-fish/research-individual-v26/outputs/river_fish_browser_review_v26.zip') as z:
+            z.extractall('/tmp/riveratlas-v26')
+          PY
+          python -m http.server 8765 --bind 127.0.0.1 --directory /tmp/riveratlas-v26 >/tmp/riveratlas-v26.log 2>&1 &
+          SERVER_PID=$!
+          trap 'kill $SERVER_PID || true' EXIT
+          sleep 2
+          node river-fish/research-individual-v26/test_real_browser_v26.cjs /tmp/riveratlas-v26
+      - name: Upload researched archive, QA reports and PC/mobile browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-fish-browser-v26-research
+          path: river-fish/research-individual-v26/outputs/
+          retention-days: 30
