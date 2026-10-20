@@ -1,0 +1,101 @@
+name: Fish editorial 375 name-specific memos v17 (research only)
+on:
+  push:
+    branches:
+      - research/fish-editorial-all-names-v17-20261020
+    paths:
+      - 'river-fish/research-individual-v17/**'
+      - '.github/workflows/river-fish-editorial-v17.yml'
+  pull_request:
+    branches:
+      - research/river-biota-new-sources-20261020
+    paths:
+      - 'river-fish/research-individual-v17/**'
+      - '.github/workflows/river-fish-editorial-v17.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: fish-editorial-375-v17
+  cancel-in-progress: true
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Regenerate full fish memo atlas from original SHA-audited v16
+        run: |
+          set -o pipefail
+          {
+            python -m py_compile river-fish/research-individual-v17/build_all_fish_editorial_v17.py
+            python river-fish/research-individual-v17/build_all_fish_editorial_v17.py
+          } 2>&1 | tee /tmp/fish_v17_log.txt
+      - name: Independent source-name and version QA
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import json,hashlib,csv
+          out=Path("river-fish/research-individual-v17/outputs")
+          qa=json.loads((out/"fish_editorial_coverage_qa_v17.json").read_text())
+          path=out/qa["zip_file"]
+          assert hashlib.sha256(path.read_bytes()).hexdigest()==qa["zip_sha256"]
+          assert qa["source_names_total_not_distinct_fish_species"]==639
+          assert qa["nonfish_exact_names_suppressed"]==50
+          assert qa["named_fish_candidate_labels_before_manual_hold"]==375
+          assert qa["initial_unresolved_or_nonspecies_names"]==214
+          assert qa["new_memo_drafts_added"]==255 and qa["individual_one_line_memo_drafts_total"]==375
+          assert qa["human_approved_editorial_count"]==0
+          assert qa["all_stars_marked_provisional"]
+          assert qa["rights_check_required_before_commercial_publication"]
+          assert qa["underlying_511_river_name_groups_unchanged"]
+          with ZipFile(path) as z:
+            assert z.testzip() is None
+            assert "index.html" in z.namelist()
+            atlas=json.loads(z.read("atlas.json"))
+            master=json.loads(z.read("fish_master.json"))
+            assert len(atlas["entries"])==511
+            assert len(master["taxa"])==639
+            assert sum(x["classification_status"]=="not_fish" for x in master["taxa"].values())==50
+            assert sum("draft_memo" in x for x in master["taxa"].values())==375
+            assert all(x["rarity_stars"] is None and x["taste_stars"] is None for x in master["taxa"].values())
+            js=z.read("index.html").decode().split("<script>",1)[1].split("</script>",1)[0]
+            Path("/tmp/river_fish_v17.js").write_text(js)
+          print("FISH_EDITORIAL_DRAFT_QA_OK",qa["new_additions_batches"])
+          PY
+          node --check /tmp/river_fish_v17.js
+      - name: Preserve diagnostics when original fish ratings fail validation
+        if: failure()
+        run: |
+          mkdir -p river-fish/research-individual-v17/outputs/
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/fish_v17_log.txt')
+          message=p.read_text(errors='replace') if p.exists() else 'The build did not start'
+          Path('river-fish/research-individual-v17/outputs/fish_editorial_v17_failure.json').write_text(
+             json.dumps({'state':'INCOMPLETE_NO_APPROVED_RATINGS','buildlog_tail':message[-5000:]},ensure_ascii=False,indent=2)+'\n')
+          PY
+      - name: Clear outdated QA diagnostic on success
+        if: success()
+        run: rm -f river-fish/research-individual-v17/outputs/fish_editorial_v17_failure.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tsurikue-375-fish-memos-research-v17
+          path: river-fish/research-individual-v17/outputs/
+      - name: Save isolated branch research ZIP and QA results
+        if: always() && github.event_name == 'push'
+        run: |
+          test "$GITHUB_REF_NAME" = "research/fish-editorial-all-names-v17-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v17/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: save 375 provisional source-label fish memos and verified ZIP v17"
+            git push origin HEAD:refs/heads/research/fish-editorial-all-names-v17-20261020
+          fi
