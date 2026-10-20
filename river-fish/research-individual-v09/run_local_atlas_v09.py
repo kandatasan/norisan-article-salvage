@@ -13,7 +13,7 @@ Official prefecture/river evidence remains restricted as in v07.
 """
 from __future__ import annotations
 import argparse
-from functools import partial
+from contextlib import closing
 from http.server import BaseHTTPRequestHandler,ThreadingHTTPServer
 import json
 from pathlib import Path
@@ -44,7 +44,7 @@ class AtlasData:
             self.pref_rivers.setdefault((x["prefecture"],x["watershed"]),[]).append(x)
         if sum(len(x) for x in self.basins.values())<80 or sum(len(x) for x in self.pref_rivers.values())<489:
             raise ValueError("Official research crosswalk is incomplete")
-        with connect(db) as c:
+        with closing(connect(db)) as c:
             if c.execute("SELECT COUNT(*) FROM river").fetchone()[0]!=428:
                 raise ValueError("v08 compact source index changed")
             if c.execute("SELECT SUM(historical_contexts) FROM literal_taxon_label").fetchone()[0]!=553351:
@@ -97,7 +97,7 @@ class AtlasData:
             except (ValueError,TypeError) as e:raise ValueError("Invalid pagination") from e
             if limit<1 or limit>50 or offset<0 or offset>100000:
                 raise ValueError("Pagination is outside supported limits")
-            with connect(self.db) as c:
+            with closing(connect(self.db)) as c:
                 return read(c,identity_key=key,category=category,limit=limit,offset=offset)
         raise KeyError("Unsupported research API path")
 
@@ -148,7 +148,7 @@ def main():
     p.add_argument("--host",default="127.0.0.1")
     p.add_argument("--port",type=int,default=8877)
     args=p.parse_args()
-    if args.host not in ("127.0.0.1","localhost","::1"):
+    if args.host not in ("127.0.0.1","localhost"):
         raise ValueError("Do not expose research server publicly")
     if not 0<=args.port<=65535:raise ValueError("Invalid port")
     app=AtlasData(args.db,args.nav,args.html)
