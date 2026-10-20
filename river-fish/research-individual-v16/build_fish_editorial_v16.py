@@ -14,7 +14,7 @@ DRAFTS=HERE/"fish_editorial_drafts_v16.csv"
 NONFISH=HERE/"nonfish_source_labels_v16.txt"
 ZIPPED=OUT/"river_fish_with_editorial_drafts_v16.zip"
 NONFISH_TERMS=("甲殻類","カニ","貝","エビ")
-UNRESOLVED_RE=re.compile(r"(?:属|科|類|sp\.?|種群|の一種|種不明|型不明|旧|系統|未記載種|または|/|／|×|飼育|改良|[（(].*型|[（(].*種|(?:^| )[AB]$|広域分布種|複数|ルイ|シュ)")
+UNRESOLVED_RE=re.compile(r"(?:属|科|類|sp\.?|種群|の一種|種不明|型不明|旧|系統|未記載種|または|/|／|×|飼育|改良|[（(].*型|[（(].*種|(?:^| )[AB]$|広域分布種|複数|(?:ルイ|シュ)$)")
 def encode(o):
     return (json.dumps(o,ensure_ascii=False,sort_keys=True,separators=(",",":"))+"\n").encode("utf-8")
 def emit(archive,name,blob):
