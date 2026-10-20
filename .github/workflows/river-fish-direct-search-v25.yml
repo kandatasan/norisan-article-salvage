@@ -1,0 +1,110 @@
+name: Research v25 river name search and fish-evidence UI verification
+on:
+  push:
+    branches:
+      - research/river-direct-search-v25-20261020
+    paths:
+      - 'river-fish/research-individual-v25/**'
+      - '.github/workflows/river-fish-direct-search-v25.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  source_search:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rebuild SHA-verified v19-v24 research-only source artifacts
+        run: |
+          python river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v20/build_general_stars_v20.py
+          python river-fish/research-individual-v21/build_47pref_directory_v21.py
+          python river-fish/research-individual-v22/build_same_name_navigation_v22.py
+          python river-fish/research-individual-v23/build_chugoku_watershed_reference_v23.py
+          python river-fish/research-individual-v24/build_reverse_fish_index_v24.py
+      - name: Build v25 direct river-name search archive
+        run: |
+          python -m py_compile river-fish/research-individual-v25/build_river_name_search_v25.py
+          python river-fish/research-individual-v25/build_river_name_search_v25.py
+      - name: Validate independent source fish-label evidence, ZIP bytes and JS
+        run: |
+          python - <<'PY'
+          import csv,hashlib,io,json,zipfile
+          from pathlib import Path
+          root=Path('river-fish/research-individual-v25/outputs')
+          q=json.loads((root/'river_fish_direct_search_qa_v25.json').read_text())
+          assert q['research_only'] and q['no_wordpress_or_live_api_changes']
+          assert q['original_fish_survey_groups']==511
+          assert q['official_name_only_groups']==1057
+          assert q['total_source_navigation_groups']==1568
+          assert q['previous_195_unknown_prefecture_groups_kept']
+          assert q['fish_master_and_atlas_bytes_unchanged']
+          assert q['new_fish_river_attributions_added']==0
+          assert q['river_groups_with_any_fish_name_labels']>0
+          assert q['river_survey_groups_with_no_fish_name_in_import']>=0
+          assert (q['river_groups_with_any_fish_name_labels']+
+            q['river_survey_groups_with_no_fish_name_in_import'])==511
+          zpath=root/q['archive']
+          assert hashlib.sha256(zpath.read_bytes()).hexdigest()==q['archive_sha256']
+          with zipfile.ZipFile(zpath) as z:
+            assert z.testzip() is None
+            a=json.loads(z.read('atlas.json'))
+            m=json.loads(z.read('fish_master.json'))
+            meta=json.loads(z.read('river_fish_label_counts_v25.json'))
+            assert len(a['entries'])==1568 and len(m['taxa'])==639
+            assert len(meta['entries'])==511
+            assert meta['is_recorded_name_label_count_not_distinct_taxonomic_species']
+            assert meta['source_only_entries_have_no_fish_evidence_in_this_dataset']
+            assert meta['DNA_positive_labels_do_not_mean_capture_or_visual_confirmation']
+            byId={e['id']:e for e in a['entries'][:511]}
+            assert set(x['survey_river_group_id'] for x in meta['entries'])==set(byId)
+            historical=0;dna=0;with_any=0
+            for x in meta['entries']:
+              rid=x['survey_river_group_id'];e=byId[rid]
+              h=x['historical_fish_literal_name_count'];d=x['environmental_DNA_fish_literal_name_rows']
+              assert h>=0 and d>=0
+              if h:
+                assert e['old'].get('fish')
+                j=json.loads(z.read(e['old']['fish']))
+                rows=j['labels'] if e['kind']=='historical_national_river_survey' else j['records']
+                assert len(rows)==h
+              if d:
+                assert e['edna']
+                j=json.loads(z.read(e['edna']))
+                assert sum(r['group']=='fish' and r['method']=='eDNA' for r in j['records'])==d
+              assert x['fish_name_in_source_records']==(h>0 or d>0)
+              assert not x['individual_physical_river_identity_approved']
+              historical+=h;dna+=d;with_any+=int(h>0 or d>0)
+            assert historical==q['historical_literal_fish_names_across_original_groups']
+            assert dna==q['environmental_DNA_fish_name_records_across_original_groups']
+            assert with_any==q['river_groups_with_any_fish_name_labels']
+            rows=list(csv.DictReader(io.StringIO(z.read('river_name_search_status_v25.csv').decode('utf-8-sig'))))
+            assert len(rows)==511 and all(r['geographically_identified_individual_river']=='NO' for r in rows)
+            html=z.read('index.html').decode()
+            assert '川の名前から探す' in html and 'searchRiverV25' in html and '魚名が載った調査資料がある項目だけ' in html
+            assert html.count('<script>')==html.count('</script>')==1
+            Path('/tmp/river_name_v25.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          print('RIVER_DIRECT_SEARCH_V25_INDEPENDENT_QA_OK')
+          PY
+          node --check /tmp/river_name_v25.js
+      - name: Test navigation/filters plus backwards compatibility
+        run: |
+          mkdir -p /tmp/tsurikue-v25
+          python - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('river-fish/research-individual-v25/outputs/river_fish_direct_search_v25.zip') as z:
+            z.extractall('/tmp/tsurikue-v25')
+          PY
+          node river-fish/research-individual-v25/test_river_quick_find_v25.cjs /tmp/tsurikue-v25
+          node river-fish/research-individual-v25/test_reverse_compat_v25.cjs /tmp/tsurikue-v25
+          node river-fish/research-individual-v25/test_watershed_compat_v25.cjs /tmp/tsurikue-v25
+      - name: Upload research-only ZIP and QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-direct-name-v25-research
+          path: river-fish/research-individual-v25/outputs/
+          retention-days: 30
