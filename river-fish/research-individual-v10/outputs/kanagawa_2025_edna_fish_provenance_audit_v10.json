@@ -1,0 +1,26 @@
+{
+  "source_url": "https://www.pref.kanagawa.jp/documents/97797/r7_project_kekka.xlsx",
+  "source_sha256": "ca92efc511d26a02a48ca44d6660d8fbc0fa681b594b334003527b54ed159211",
+  "license_url": "https://www.pref.kanagawa.jp/documents/97797/riyo-kiyaku.pdf",
+  "source_parent_page": "https://www.pref.kanagawa.jp/docs/b4f/suigen/edna.html",
+  "survey_method": "eDNA_fish_lamprey_detection_2025_not_catch_or_sighting",
+  "explicit_tributary_columns_with_2025_date": 40,
+  "fish_taxon_rows_reviewed": 76,
+  "read_positive_unique_manual_labels_with_river": 265,
+  "recorded_name_rivers_from_prefecture_eDNA": 26,
+  "new_name_pairs_not_in_base_428": 24,
+  "overlap_with_existing_named_river": 2,
+  "high_confidence_taxa_records": 263,
+  "medium_confidence_taxa_records": 2,
+  "excluded_stations": {
+    "not_plain_named_river": 9
+  },
+  "excluded_low_confidence_taxa_rows": {},
+  "excluded_nonliteral_taxa_names": {},
+  "source_method_separate_from_existing_553351_survey_contexts": true,
+  "no_existing_biota_db_changed": true,
+  "wordPress_or_mysql_changed": false,
+  "fish_live_capture_observations_added": 0,
+  "no_coordinates_or_detailed_sites_saved": true,
+  "rights_note": "Commercial re-use on source page allowed with clear attribution and source modification notice, but third-party rights must be checked separately."
+}
