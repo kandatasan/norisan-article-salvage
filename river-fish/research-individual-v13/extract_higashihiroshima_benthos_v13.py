@@ -98,7 +98,7 @@ def extract_per_site(pages):
         raise ValueError("Expected indicator summary table missing")
     # Bound every raw table row by its own enumerated site heading; this detects
     # unintended changes to the published PDF. No stations or positions export.
-    section=b.split("表3-2-1",1)[-1].split("※1",1)[0]
+    section=b.split("表3-2-1",1)[-1]
     numbered=list(re.finditer(r"(?<![0-9])([1-9]|1[0-9]|2[0-3])\)",section))
     bynumber={}
     for k,m0 in enumerate(numbered):
