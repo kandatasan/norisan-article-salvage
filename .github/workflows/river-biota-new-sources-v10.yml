@@ -42,6 +42,28 @@ jobs:
         run: |
           python river-fish/research-individual-v10/audit_kanagawa_edna_matrix_v10.py \
             river-fish/research-individual-v10/outputs/kanagawa_named_tributary_edna_audit_v10.json
+      - name: Extract official 2025 Kanagawa fish eDNA river-name candidates
+        run: |
+          python river-fish/research-individual-v10/extract_kanagawa_fish_edna_v10.py \
+            --out river-fish/research-individual-v10/outputs
+          python - <<'PY'
+          import csv,json
+          from pathlib import Path
+          p=Path('river-fish/research-individual-v10/outputs')
+          d=json.loads((p/'kanagawa_2025_edna_fish_provenance_audit_v10.json').read_text())
+          assert d['recorded_name_rivers_from_prefecture_eDNA']>=20
+          assert d['new_name_pairs_not_in_base_428']>=15
+          assert d['fish_live_capture_observations_added']==0
+          assert d['source_method_separate_from_existing_553351_survey_contexts']
+          assert d['no_coordinates_or_detailed_sites_saved']
+          with (p/'kanagawa_2025_tributary_fish_edna_candidate_labels_v10.csv').open() as f:
+              rows=list(csv.DictReader(f))
+          assert len(rows)==d['read_positive_unique_manual_labels_with_river']
+          assert all(r['survey_method']=='environmental_DNA_positive_sequence_reads' for r in rows)
+          assert all(r['source_taxon_confidence'] in ('高','中') for r in rows)
+          assert all(r['survey_year']=='2025' for r in rows)
+          print('EXTERNAL_EDNA_NAME_FIRST_CANDIDATES',d['new_name_pairs_not_in_base_428'])
+          PY
       - name: Check acquisition honesty
         run: |
           python - <<'PY'
