@@ -1,0 +1,100 @@
+{
+  "source": "東広島市 令和6年度主要水域（河川）における水生生物調査等業務報告書",
+  "source_pdf_url": "https://www.city.higashihiroshima.lg.jp/material/files/group/204/R6suiseiseibutsu.pdf",
+  "source_landing": "https://www.city.higashihiroshima.lg.jp/soshiki/seikatsukankyo/5/12/43734.html",
+  "official_pdf_sha256": "39dd3545bb9f8b635569f836a21ea0cc36d78e339e85489e9b9fa9ee80d25b67",
+  "byte_length": 5982918,
+  "survey_date": "2024-11-18/2024-11-19",
+  "publication_report_date": "2025-02",
+  "original_document_sites_with_field_collected_benthos": 23,
+  "source_river_name_groups": 19,
+  "research_aggregated_river_taxon_indicator_facts": 21,
+  "previous_research_display_name_groups": 511,
+  "new_river_name_candidates_after_chugoku_scope_511_baseline": 19,
+  "new_river_name_candidates_list": [
+    {
+      "watershed": "三津大川",
+      "river_name": "三津大川"
+    },
+    {
+      "watershed": "太田川",
+      "river_name": "東川"
+    },
+    {
+      "watershed": "太田川",
+      "river_name": "関川"
+    },
+    {
+      "watershed": "沼田川",
+      "river_name": "入野川"
+    },
+    {
+      "watershed": "沼田川",
+      "river_name": "宮領川"
+    },
+    {
+      "watershed": "沼田川",
+      "river_name": "杵原川"
+    },
+    {
+      "watershed": "沼田川",
+      "river_name": "椋梨川"
+    },
+    {
+      "watershed": "沼田川",
+      "river_name": "沼田川"
+    },
+    {
+      "watershed": "沼田川",
+      "river_name": "造賀川"
+    },
+    {
+      "watershed": "瀬野川",
+      "river_name": "椛坂川"
+    },
+    {
+      "watershed": "瀬野川",
+      "river_name": "瀬野川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "中川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "光路川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "深堂川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "温井川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "竹保川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "笹野川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "米満川"
+    },
+    {
+      "watershed": "黒瀬川",
+      "river_name": "黒瀬川"
+    }
+  ],
+  "specific_sampling_sites_and_coordinates_in_export": false,
+  "not_all_confirmed_species": "Published table specifies ONLY the single representative most common indicator per sampling site; never full species list",
+  "family_or_genus_taxon_labels_preserved_verbatim": true,
+  "publication_rights_source": "https://www.city.higashihiroshima.lg.jp/shisei/5/6701.html",
+  "commercial_publication_rights_cleared": false,
+  "research_only": true,
+  "old_511_preview_not_modified": true,
+  "WordPress_and_public_API_not_modified": true
+}
