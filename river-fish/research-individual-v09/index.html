@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>日本の河川大図鑑｜4分類・全生物名検索｜研究用</title>
+<style>
+:root{font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP",sans-serif;color:#193944;background:#edf6f8}
+*{box-sizing:border-box}body{margin:0}
+header{background:linear-gradient(115deg,#0b5770,#149b8e);color:white;padding:22px 15px}
+.inner{max-width:850px;margin:0 auto;padding:0 14px}
+h1{font-size:1.42rem;margin:0 0 7px}h2{font-size:1.14rem;margin:16px 0 9px}h3{font-size:1rem;margin:12px 0 6px}
+p{line-height:1.65;margin:9px 0}main{padding-top:15px!important;padding-bottom:40px!important}
+.hint{background:#fff;padding:13px;border-left:4px solid #138a98;border-radius:8px;line-height:1.6;font-size:.86rem;color:#375965}
+.muted{font-size:.86rem;color:#5c7580}
+nav{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:15px 0}
+nav button{padding:6px 2px;background:none;color:#00788e;border:0;text-decoration:underline;font:inherit;cursor:pointer}
+nav strong{overflow-wrap:anywhere}
+input{width:100%;padding:12px;border:1px solid #adcdd4;border-radius:9px;background:white;font:inherit;margin:8px 0 13px}
+.cards,.four{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.pick,.cat{color:inherit;background:#fff;text-align:left;border:1px solid #bcd7dd;border-radius:11px;padding:13px;cursor:pointer;font:inherit;min-height:80px}
+.pick:hover,.cat:hover,.pick:focus-visible,.cat:focus-visible{background:#e4f8f6;border-color:#008899;outline-offset:2px}
+.pick strong,.cat strong,.pick small,.cat small{display:block;overflow-wrap:anywhere}
+.pick small,.cat small{color:#5c7580;font-size:.78rem;margin-top:5px;line-height:1.4}
+.cat.selected{background:#dff6f3;border:2px solid #0c8c93}
+.panel{padding:14px;border-radius:13px;border:1px solid #c6dbe0;background:#fff}
+#details[hidden],#list[hidden],#filter[hidden]{display:none}
+#results{margin-top:10px;min-height:1em}
+.taxon{border-top:1px solid #e4edf1;padding:10px 0}
+.taxon strong{display:block;overflow-wrap:anywhere}
+.taxon .meta{display:block;font-size:.81rem;color:#5d7482;padding:3px 0}
+.taxon a{margin-right:7px;font-size:.84rem}
+a{color:#087493}
+.more,.restart{font:inherit;border-radius:9px;padding:12px 17px;cursor:pointer}
+.more{background:#0b728b;border:0;color:white;margin:8px 0}
+.restart{border:1px solid #a8c9d3;color:#126980;background:#fff;margin-top:22px}
+.notice{border-left:4px solid #e9b35c;background:#fff8ea;padding:8px 12px;border-radius:7px;font-size:.85rem}
+#message{font-size:.88rem;color:#5d6770;min-height:14px;margin:8px 0}
+footer{margin-top:20px;color:#6d7e86;font-size:.8rem}
+@media(min-width:700px){.cards{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header><div class="inner"><h1>🌊 日本の河川大図鑑</h1><div>研究用デモ｜都道府県 → 水系 → 河川 → 生物4分類</div></div></header>
+<main class="inner">
+<p class="hint"><strong>研究段階の調査記録です。</strong>選んだ県の公的資料に載る水系から、資料上の河川名と過去の生物記録を探せます。水系内の全支流がその県内を流れるわけではありません。河川コードなしの川も収録しています。</p>
+<nav id="breadcrumbs" aria-label="選択経路"></nav>
+<h2 id="step-title">① 都道府県を選ぶ</h2>
+<p id="step-notice" class="muted"></p>
+<input id="filter" type="search" placeholder="表示中の名前から検索" aria-label="名前を絞り込む">
+<div id="list" class="cards"></div>
+<section id="details" class="panel" hidden>
+  <h2 id="river-name"></h2>
+  <p id="river-info" class="muted"></p>
+  <p class="notice">以下は過去の調査資料に掲載された名前・年度です。「記録未確認」は生息しないという意味ではありません。属・科などの名前も含むため、件数は厳密な種数ではありません。</p>
+  <div id="category-cards" class="four" aria-label="生物分類を選ぶ"></div>
+  <section id="results" aria-live="polite"></section>
+  <button id="more" class="more" type="button" hidden>さらに生物名を表示</button>
+</section>
+<div id="message" aria-live="polite"></div>
+<button id="restart" class="restart" type="button">← 都道府県から選び直す</button>
+<footer>ブラウザへ全件を送らず、選択した川・分類の記録だけを取得する研究用サーバーです。WordPressには未導入。</footer>
+</main>
+<script>
+'use strict';
+const ui={
+  crumb:document.getElementById('breadcrumbs'),
+  title:document.getElementById('step-title'),
+  notice:document.getElementById('step-notice'),
+  filter:document.getElementById('filter'),
+  list:document.getElementById('list'),
+  details:document.getElementById('details'),
+  riverName:document.getElementById('river-name'),
+  riverInfo:document.getElementById('river-info'),
+  cats:document.getElementById('category-cards'),
+  results:document.getElementById('results'),
+  more:document.getElementById('more'),
+  message:document.getElementById('message')
+};
+const categoryTypes=[['fish','🐟 魚類'],['benthic_animals','🪲 底生動物'],['birds','🐦 鳥類'],['plants','🌿 植物']];
+let st={step:0,pref:null,water:null,river:null,category:null,offset:0,hasMore:false,items:[],riverData:null,version:0};
+const q=encodeURIComponent;
+const text=(tag,label,klass)=>{const e=document.createElement(tag);if(label!==undefined)e.textContent=label;if(klass)e.className=klass;return e};
+const empty=e=>e.replaceChildren();
+const setMessage=message=>{ui.message.textContent=message};
+async function getJSON(path){
+  const r=await fetch(path,{credentials:'omit',cache:'no-store'});
+  const obj=await r.json();
+  if(!r.ok)throw new Error(obj.reason||'データの読み込みに失敗しました');
+  return obj;
+}
+function setStep(step,fields){
+  st.version+=1;st.step=step;Object.assign(st,fields);
+  st.category=null;st.offset=0;st.hasMore=false;st.riverData=null;
+  ui.filter.value='';ui.filter.hidden=step===3;
+  ui.details.hidden=step!==3;ui.list.hidden=step===3;
+  breadcrumbs();
+  if(step===0)loadList('/api/v1/prefectures','① 都道府県を選ぶ','47都道府県を表示。調査記録と水系を照合できない県は調査中。',step);
+  if(step===1)loadList('/api/v1/watersheds?pref='+q(st.pref),'② 水系を選ぶ','ここでは生物を表示しません。県の公的資料に名前が出る水系を案内します。',step);
+  if(step===2)loadList('/api/v1/rivers?pref='+q(st.pref)+'&watershed='+q(st.water),'③ 河川を選ぶ','この水系にある資料掲載河川を検索。全てが選択県内とは限りません。',step);
+  if(step===3)showRiver();
+}
+function breadcrumbs(){
+  empty(ui.crumb);
+  const link=(label,n,fields)=>{const b=text('button',label);b.type='button';b.addEventListener('click',()=>setStep(n,fields));ui.crumb.appendChild(b)};
+  link('都道府県',0,{pref:null,water:null,river:null});
+  if(st.pref){ui.crumb.appendChild(text('span',' › '));link(st.pref,1,{water:null,river:null})}
+  if(st.water){ui.crumb.appendChild(text('span',' › '));link(st.water,2,{river:null})}
+  if(st.river){ui.crumb.appendChild(text('span',' › '));ui.crumb.appendChild(text('strong',st.river.river_name))}
+}
+async function loadList(path,title,notice,expectedStep){
+  ui.title.textContent=title;ui.notice.textContent=notice;setMessage('資料を読み込み中…');
+  empty(ui.list);ui.list.hidden=false;
+  const version=st.version;
+  try{
+    const data=await getJSON(path);
+    if(st.version!==version||st.step!==expectedStep)return;
+    st.items=data.items;paintList();setMessage('');
+  }catch(error){if(st.version===version)setMessage('読み込めませんでした：'+error.message)}
+}
+function paintList(){
+  if(st.step===3)return;
+  empty(ui.list);
+  const query=ui.filter.value.trim();
+  const filtered=st.items.filter(item=>{
+    const name=st.step===0?item.prefecture:st.step===1?item.watershed:item.river_name;
+    return name.includes(query);
+  });
+  for(const item of filtered){
+    const b=text('button',undefined,'pick');b.type='button';
+    const name=st.step===0?item.prefecture:st.step===1?item.watershed:item.river_name;
+    b.appendChild(text('strong',name));
+    let note='';
+    if(st.step===0)note=item.available_watersheds?(item.available_watersheds+'水系の入口'):'調査中';
+    if(st.step===1)note=item.surveyed_river_name_ids+'河川名（県内の所在地は別途確認）';
+    if(st.step===2)note=item.historical_contexts.toLocaleString()+'件の過去調査'+(item.individual_river_prefecture_mention?' ／ 県公式資料にも掲載':'');
+    b.appendChild(text('small',note));
+    if(st.step===0)b.addEventListener('click',()=>setStep(1,{pref:name,water:null,river:null}));
+    else if(st.step===1)b.addEventListener('click',()=>setStep(2,{water:name,river:null}));
+    else b.addEventListener('click',()=>setStep(3,{river:item}));
+    ui.list.appendChild(b)
+  }
+  if(!filtered.length)ui.list.appendChild(text('p',st.items.length?'一致する名前はありません':'まだ照合できたデータがありません。','muted'))
+}
+async function showRiver(){
+  ui.title.textContent='④ 河川別の生物調査記録';
+  ui.notice.textContent='魚類・底生動物・鳥類・植物の窓を押すと、その分類の生物名を読み込みます。';
+  ui.riverName.textContent=st.river.river_name;
+  ui.riverInfo.textContent='水系：'+st.water+' ／ 河川コード：'+(st.river.river_code_optional||'未確認')+' ／ 過去調査文脈：'+st.river.historical_contexts.toLocaleString()+'件';
+  empty(ui.results);empty(ui.cats);ui.more.hidden=true;setMessage('4分類の情報を読み込み中…');
+  const version=st.version;
+  try{
+    const data=await getJSON('/api/v1/river/'+q(st.river.identity_key)+'?category=fish&limit=1');
+    if(st.version!==version)return;
+    st.riverData=data;
+    for(const [cat,label] of categoryTypes){
+      const summary=data.four_categories[cat];
+      const b=text('button',undefined,'cat');b.type='button';
+      b.appendChild(text('strong',label));
+      b.appendChild(text('small',summary.historical_contexts?(summary.literal_labels_not_species+'掲載名／'+summary.historical_contexts+'記録'):'個別河川の記録は未確認'));
+      b.addEventListener('click',()=>openCategory(cat));
+      ui.cats.appendChild(b)
+    }
+    ui.results.appendChild(text('p','生物の分類を選ぶと、原資料の掲載名・調査年度・出典を20件ずつ確認できます。','muted'));setMessage('');
+  }catch(error){if(version===st.version)setMessage('読み込めませんでした：'+error.message)}
+}
+async function openCategory(cat){
+  st.version+=1;st.category=cat;st.offset=0;st.hasMore=false;ui.more.hidden=true;
+  for(let i=0;i<ui.cats.children.length;i++)ui.cats.children[i].classList.toggle('selected',categoryTypes[i][0]===cat);
+  empty(ui.results);ui.results.appendChild(text('h3',categoryTypes.find(x=>x[0]===cat)[1]));
+  await addPage(false);
+}
+async function addPage(append){
+  if(!st.river||!st.category)return;
+  const version=st.version,cat=st.category;
+  if(!append)st.offset=0;
+  ui.more.hidden=true;setMessage('生物名を読み込み中…');
+  const path='/api/v1/river/'+q(st.river.identity_key)+'?category='+q(cat)+'&limit=20&offset='+st.offset;
+  try{
+    const data=await getJSON(path);
+    if(st.version!==version||st.category!==cat)return;
+    if(!append){
+      const sum=data.four_categories[cat];
+      ui.results.appendChild(text('p','原資料の掲載名 '+sum.literal_labels_not_species+
+        '表記 ／ 過去の記録 '+sum.historical_contexts+
+        '件 ／ 調査年度 '+(sum.survey_year_min===null?'不明':sum.survey_year_min+'〜'+sum.survey_year_max),'muted'))
+    }
+    if(!data.items.length && !append)ui.results.appendChild(text('p','個別河川の調査記録は未確認です。生息しないことを意味しません。'));
+    for(const t of data.items){
+      const div=text('div',undefined,'taxon');div.appendChild(text('strong',t.literal_recorded_name));
+      div.appendChild(text('span','調査年度 '+t.survey_year_min+'〜'+t.survey_year_max+' ／ '+t.historical_contexts+'記録','meta'));
+      for(const source of t.sources){
+        if(!source.source_url||!source.source_url.startsWith('https://'))continue;
+        const a=text('a','原資料');a.href=source.source_url;a.target='_blank';a.rel='noopener noreferrer';div.appendChild(a)
+      }
+      ui.results.appendChild(div)
+    }
+    st.offset+=data.items.length;st.hasMore=data.has_more;
+    ui.more.hidden=!st.hasMore;
+    setMessage(data.total_literal_names_not_species?('表示中 '+st.offset+'/'+data.total_literal_names_not_species+'掲載名'):'');
+  }catch(error){if(st.version===version)setMessage('読み込めませんでした：'+error.message)}
+}
+ui.filter.addEventListener('input',paintList);
+ui.more.addEventListener('click',()=>addPage(true));
+document.getElementById('restart').addEventListener('click',()=>setStep(0,{pref:null,water:null,river:null}));
+setStep(0,{pref:null,water:null,river:null});
+</script>
+</body></html>
