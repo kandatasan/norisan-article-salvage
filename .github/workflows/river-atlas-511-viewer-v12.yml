@@ -1,0 +1,72 @@
+name: Audit River Atlas 511-group offline viewer v12 (research only)
+on:
+  push:
+    branches:
+      - research/river-atlas-511-viewer-v12-20261020
+    paths:
+      - 'river-fish/research-individual-v12/*.py'
+      - 'river-fish/research-individual-v12/*.html'
+      - '.github/workflows/river-atlas-511-viewer-v12.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: river-atlas-511-viewer-v12
+  cancel-in-progress: false
+jobs:
+  build-review-only:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build research ZIP from previously checked-in originals, without network
+        run: |
+          python -m py_compile river-fish/research-individual-v12/build_511_viewer_v12.py
+          python river-fish/research-individual-v12/build_511_viewer_v12.py
+      - name: Check 511 atlas navigation, method separation, ZIP and JS syntax
+        run: |
+          python - <<'PY'
+          import json, zipfile, re, subprocess, tempfile, pathlib
+          root=pathlib.Path('river-fish/research-individual-v12')
+          audit=json.loads((root/'outputs/viewer_integrity_v12.json').read_text())
+          assert audit['unique_research_display_name_groups']==511
+          assert audit['navigable_display_name_groups']==511
+          assert audit['original_v09_historical_categories']==1712
+          assert audit['v10_held_unresolved_categories']==160
+          assert audit['eDNA_unique_2023_2024']==3570
+          assert audit['eDNA_source_rows_2023_2024']==3675
+          assert audit['eDNA_2025']==265
+          assert audit['all_eDNA_rows_successfully_attached']
+          with zipfile.ZipFile(root/'outputs/river_atlas_static_preview_v12.zip') as z:
+            nav=json.loads(z.read('atlas.json'))
+            assert len(nav['entries'])==511
+            assert len(nav['prefectures'])==47
+            assert nav['method_counts_separate']['historical_contexts']==651435
+            assert all(e['is_a_verified_individual_physical_river'] is False for e in nav['entries'])
+            html=z.read('index.html').decode()
+            assert '<iframe' not in html and 'fetchDoc(' in html and 'other_edna' in html
+            scripts=re.findall(r'<script>(.*?)</script>',html,re.S)
+            assert len(scripts)==1
+            with tempfile.NamedTemporaryFile(mode='w',suffix='.js') as f:
+              f.write(scripts[0]);f.flush()
+              subprocess.run(['node','--check',f.name],check=True)
+          print('ATLAS_511_COUNTS_SCHEMA_AND_JAVASCRIPT_PASS')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: river-atlas-511-offline-research-v12
+          path: river-fish/research-individual-v12/outputs/
+      - name: Save verified research artifacts to isolated branch
+        if: success()
+        run: |
+          test "$GITHUB_REF_NAME" = "research/river-atlas-511-viewer-v12-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v12/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: save validated 511-name offline atlas v12"
+            git push origin HEAD:refs/heads/research/river-atlas-511-viewer-v12-20261020
+          fi
