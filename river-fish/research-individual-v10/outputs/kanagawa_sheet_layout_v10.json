@@ -1,0 +1,537 @@
+{
+  "input_source_url": "https://www.pref.kanagawa.jp/documents/97797/r7_project_kekka.xlsx",
+  "input_sha256": "ca92efc511d26a02a48ca44d6660d8fbc0fa681b594b334003527b54ed159211",
+  "method": "environmental DNA, not confirmed physical catch",
+  "worksheet_rows": 781,
+  "head_structure": [
+    {
+      "row": 1,
+      "A_through_Q": {
+        "A": "綱コウ",
+        "B": "目モク",
+        "C": "科カ",
+        "D": "属ゾク",
+        "E": "種名(機械的な併記処理)シュメイキカイテキヘイキショリ",
+        "F": "種名(手動精査結果)シュメイシュドウセイサケッカ",
+        "G": "学名ガクメイ",
+        "H": "注釈チュウシャク",
+        "I": "MAX(pident*qcovs)",
+        "J": "信頼度シンライド",
+        "K": "国RLクニ",
+        "L": "天然記念物テンネンキネンブツ",
+        "M": "種の保存法 希少種シュホゾンホウキショウモノダネ",
+        "N": "地方自治体RLチホウジチタイ",
+        "O": "特定外来種トクテイガイライシュ",
+        "P": "調査年度チョウサネンド",
+        "Q": "2025年度ネンド"
+      },
+      "named_water_or_group_labels": [],
+      "nonempty_cells": 106
+    },
+    {
+      "row": 2,
+      "A_through_Q": {
+        "P": "調査IDチョウサ",
+        "Q": "25-Pro-01"
+      },
+      "named_water_or_group_labels": [],
+      "nonempty_cells": 91
+    },
+    {
+      "row": 3,
+      "A_through_Q": {
+        "P": "水系名スイケイメイ",
+        "Q": "鶴見川ツルミガワ"
+      },
+      "named_water_or_group_labels": [
+        {
+          "column": "R",
+          "text": "鶴見川ツルミガワ"
+        },
+        {
+          "column": "S",
+          "text": "鶴見川ツルミガワ"
+        },
+        {
+          "column": "T",
+          "text": "多摩川タマガワ"
+        },
+        {
+          "column": "U",
+          "text": "相模川サガミカワ"
+        },
+        {
+          "column": "V",
+          "text": "相模川サガミカワ"
+        },
+        {
+          "column": "W",
+          "text": "滑川ナメリカワ"
+        },
+        {
+          "column": "X",
+          "text": "山王川サンノウガワ"
+        },
+        {
+          "column": "Y",
+          "text": "山王川サンノウガワ"
+        },
+        {
+          "column": "Z",
+          "text": "山王川サンノウガワ"
+        },
+        {
+          "column": "AA",
+          "text": "関根川セキネガワ"
+        },
+        {
+          "column": "AB",
+          "text": "境川サカイガワ"
+        },
+        {
+          "column": "AC",
+          "text": "酒匂川サカワガワ"
+        },
+        {
+          "column": "AD",
+          "text": "帷子川トバリコカワ"
+        },
+        {
+          "column": "AE",
+          "text": "関根川セキネガワ"
+        },
+        {
+          "column": "AF",
+          "text": "相模川サガミガワ"
+        },
+        {
+          "column": "AG",
+          "text": "鶴見川ツルミガワ"
+        },
+        {
+          "column": "AH",
+          "text": "鶴見川ツルミガワ"
+        },
+        {
+          "column": "AI",
+          "text": "相模川サガミガワ"
+        },
+        {
+          "column": "AJ",
+          "text": "相模川サガミガワ"
+        },
+        {
+          "column": "AK",
+          "text": "相模川サガミガワ"
+        },
+        {
+          "column": "AL",
+          "text": "大岡川オオオカカワ"
+        },
+        {
+          "column": "AM",
+          "text": "早川ハヤカワ"
+        },
+        {
+          "column": "AN",
+          "text": "相模川サガミガワ"
+        },
+        {
+          "column": "AO",
+          "text": "相模川サガミガワ"
+        }
+      ],
+      "nonempty_cells": 91
+    },
+    {
+      "row": 4,
+      "A_through_Q": {
+        "P": "支川名シセンメイ",
+        "Q": "恩田川オンダカワ"
+      },
+      "named_water_or_group_labels": [
+        {
+          "column": "R",
+          "text": "恩田川オンダカワ"
+        },
+        {
+          "column": "S",
+          "text": "早渕川ハヤブチカワ"
+        },
+        {
+          "column": "T",
+          "text": "二カ領用水ニリョウヨウスイ"
+        },
+        {
+          "column": "U",
+          "text": "恩曽川オンソカワ"
+        },
+        {
+          "column": "X",
+          "text": "久野川本流クノガワホンリュウ"
+        },
+        {
+          "column": "Y",
+          "text": "坊所川ボウショカワ"
+        },
+        {
+          "column": "AB",
+          "text": "和泉川イズミカワ"
+        },
+        {
+          "column": "AG",
+          "text": "早渕川ハヤブチカワ"
+        },
+        {
+          "column": "AI",
+          "text": "道保川湧水ミチホカワユウスイ"
+        },
+        {
+          "column": "AJ",
+          "text": "道保川ミチホカワ"
+        },
+        {
+          "column": "AK",
+          "text": "宮川ミヤカワ"
+        },
+        {
+          "column": "AN",
+          "text": "道保川湧水ミチホカワユウスイ"
+        },
+        {
+          "column": "AO",
+          "text": "鳩川湧水ハトカワユウスイ"
+        },
+        {
+          "column": "AP",
+          "text": "鳩川ハトカワ"
+        },
+        {
+          "column": "AX",
+          "text": "二ケ領用水ニリョウヨウスイ"
+        },
+        {
+          "column": "AY",
+          "text": "中津川ナカツガワ"
+        },
+        {
+          "column": "AZ",
+          "text": "道保川ミチホカワ"
+        },
+        {
+          "column": "BD",
+          "text": "道保川ミチホカワ"
+        },
+        {
+          "column": "BE",
+          "text": "道保川ミチホカワ"
+        },
+        {
+          "column": "BF",
+          "text": "道保川ミチホカワ"
+        },
+        {
+          "column": "BG",
+          "text": "道保川ミチホカワ"
+        },
+        {
+          "column": "BI",
+          "text": "小松川コマツガワ"
+        },
+        {
+          "column": "BJ",
+          "text": "小松川コマツガワ"
+        },
+        {
+          "column": "BL",
+          "text": "中沢ナカザワ"
+        }
+      ],
+      "nonempty_cells": 50
+    },
+    {
+      "row": 5,
+      "A_through_Q": {
+        "P": "関係市町村カンケイシチョウソン",
+        "Q": "横浜市ヨコハマシ"
+      },
+      "named_water_or_group_labels": [
+        {
+          "column": "T",
+          "text": "川崎市カワサキシ"
+        },
+        {
+          "column": "AQ",
+          "text": "藤沢市フジサワシ"
+        },
+        {
+          "column": "AX",
+          "text": "川崎市カワサキシ"
+        },
+        {
+          "column": "BO",
+          "text": "藤沢市フジサワシ"
+        },
+        {
+          "column": "BP",
+          "text": "愛川町アイカワマチ"
+        },
+        {
+          "column": "BZ",
+          "text": "藤沢市、綾瀬市フジサワシアヤセシ"
+        },
+        {
+          "column": "CA",
+          "text": "寒川町サムカワマチ"
+        },
+        {
+          "column": "CC",
+          "text": "寒川町サムカワマチ"
+        },
+        {
+          "column": "CD",
+          "text": "藤沢市フジサワシ"
+        }
+      ],
+      "nonempty_cells": 91
+    },
+    {
+      "row": 6,
+      "A_through_Q": {
+        "P": "調査日チョウサビ",
+        "Q": "20250721"
+      },
+      "named_water_or_group_labels": [],
+      "nonempty_cells": 91
+    },
+    {
+      "row": 7,
+      "A_through_Q": {},
+      "named_water_or_group_labels": [],
+      "nonempty_cells": 0
+    },
+    {
+      "row": 8,
+      "A_through_Q": {
+        "A": "普通海綿綱",
+        "B": "タンスイカイメン目",
+        "C": "Metaniidae",
+        "D": "Corvomeyenia",
+        "E": "Corvomeyenia everetti",
+        "F": "Corvomeyenia everetti（生息分布詳細不明）",
+        "G": "Corvomeyenia everetti",
+        "I": "0.99761",
+        "J": "中",
+        "P": "101",
+        "Q": "18"
+      },
+      "named_water_or_group_labels": [],
+      "nonempty_cells": 100
+    }
+  ],
+  "possible_river_names_in_first_70_rows": [
+    {
+      "row": 3,
+      "col": "P",
+      "possible_river_label": "水系名スイケイメイ"
+    },
+    {
+      "row": 3,
+      "col": "Q",
+      "possible_river_label": "鶴見川ツルミガワ"
+    },
+    {
+      "row": 3,
+      "col": "R",
+      "possible_river_label": "鶴見川ツルミガワ"
+    },
+    {
+      "row": 3,
+      "col": "S",
+      "possible_river_label": "鶴見川ツルミガワ"
+    },
+    {
+      "row": 3,
+      "col": "T",
+      "possible_river_label": "多摩川タマガワ"
+    },
+    {
+      "row": 3,
+      "col": "U",
+      "possible_river_label": "相模川サガミカワ"
+    },
+    {
+      "row": 3,
+      "col": "V",
+      "possible_river_label": "相模川サガミカワ"
+    },
+    {
+      "row": 3,
+      "col": "W",
+      "possible_river_label": "滑川ナメリカワ"
+    },
+    {
+      "row": 3,
+      "col": "X",
+      "possible_river_label": "山王川サンノウガワ"
+    },
+    {
+      "row": 3,
+      "col": "Y",
+      "possible_river_label": "山王川サンノウガワ"
+    },
+    {
+      "row": 3,
+      "col": "Z",
+      "possible_river_label": "山王川サンノウガワ"
+    },
+    {
+      "row": 3,
+      "col": "AA",
+      "possible_river_label": "関根川セキネガワ"
+    },
+    {
+      "row": 3,
+      "col": "AB",
+      "possible_river_label": "境川サカイガワ"
+    },
+    {
+      "row": 3,
+      "col": "AC",
+      "possible_river_label": "酒匂川サカワガワ"
+    },
+    {
+      "row": 3,
+      "col": "AD",
+      "possible_river_label": "帷子川トバリコカワ"
+    },
+    {
+      "row": 3,
+      "col": "AE",
+      "possible_river_label": "関根川セキネガワ"
+    },
+    {
+      "row": 3,
+      "col": "AF",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AG",
+      "possible_river_label": "鶴見川ツルミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AH",
+      "possible_river_label": "鶴見川ツルミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AI",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AJ",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AK",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AL",
+      "possible_river_label": "大岡川オオオカカワ"
+    },
+    {
+      "row": 3,
+      "col": "AM",
+      "possible_river_label": "早川ハヤカワ"
+    },
+    {
+      "row": 3,
+      "col": "AN",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AO",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AP",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AQ",
+      "possible_river_label": "境川サカイガワ"
+    },
+    {
+      "row": 3,
+      "col": "AR",
+      "possible_river_label": "引地川ヒキチカワ"
+    },
+    {
+      "row": 3,
+      "col": "AS",
+      "possible_river_label": "平作川ヒラサクカワ"
+    },
+    {
+      "row": 3,
+      "col": "AT",
+      "possible_river_label": "平作川ヒラサクカワ"
+    },
+    {
+      "row": 3,
+      "col": "AU",
+      "possible_river_label": "酒匂川サカワガワ"
+    },
+    {
+      "row": 3,
+      "col": "AV",
+      "possible_river_label": "境川サカイガワ"
+    },
+    {
+      "row": 3,
+      "col": "AX",
+      "possible_river_label": "多摩川タマガワ"
+    },
+    {
+      "row": 3,
+      "col": "AY",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "AZ",
+      "possible_river_label": "相模川サガミガワ"
+    },
+    {
+      "row": 3,
+      "col": "BA",
+      "possible_river_label": "葛川クズカワ"
+    },
+    {
+      "row": 3,
+      "col": "BB",
+      "possible_river_label": "葛川クズカワ"
+    },
+    {
+      "row": 3,
+      "col": "BC",
+      "possible_river_label": "葛川クズカワ"
+    },
+    {
+      "row": 3,
+      "col": "BD",
+      "possible_river_label": "相模川サガミガワ"
+    }
+  ],
+  "river_locations_not_confirmed": true,
+  "site_coordinates_and_personal_data_not_exported": true,
+  "label_source_has_not_been_imported_into_main_catalog": true
+}
