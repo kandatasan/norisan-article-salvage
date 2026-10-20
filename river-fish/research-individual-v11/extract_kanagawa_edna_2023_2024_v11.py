@@ -50,10 +50,14 @@ CONFIG = {
     "2024_prefecturewide_vertebrates_invertebrates": dict(year=2024,sheet="結果まとめ(種落ち)",start=7,name="F",cl="A",conf="H",date=1),
 }
 LICENSE = "https://www.pref.kanagawa.jp/documents/97797/riyo-kiyaku.pdf"
+# Variant spelling in official river lists; retain verbatim source label but
+# DO NOT claim one additional physical/display river before resolving identity.
+RIVER_NAME_VARIANT_HOLDS = {("鶴見川","早淵川"): ("鶴見川","早渕川")}
+RIVER_NAMES_REFERENCE = "https://www.city.yokohama.lg.jp/kurashi/machizukuri-kankyo/kasen-gesuido/kasen/shoukai/gaiyou.html"
 PARENT = "https://www.pref.kanagawa.jp/docs/b4f/suigen/edna.html"
 BAD_RIVER = re.compile(r"脇|付近|周辺|小河川|用水|水路|湧水|河口|本流|本川|ダム|貯水|水道|運河|地点|橋|公園|支川")
 COLUMNS = ["evidence_id","prefecture","watershed_name","river_name","river_code_optional",
-           "survey_year","biological_group","verbatim_source_taxon_label","taxonomic_class_verbatim",
+           "survey_year","survey_year_basis","biological_group","verbatim_source_taxon_label","taxonomic_class_verbatim",
            "identification_confidence_verbatim","positive_station_columns_aggregate",
            "survey_method","source_dataset_key","source_file_sha256","source_url","source_page_url",
            "usage_policy_url","existing_v10_display_name_group","record_status","reliability_note"]
@@ -114,6 +118,8 @@ def biological_group(cl, source_key):
     # The source defines biological DNA from water; this is never specimen evidence.
     if source_key.endswith("_fish") and source_key.startswith("2023"):
         return "fish_edna" if cl in ("硬骨魚綱","条鰭綱","頭甲綱","ヤツメウナギ綱") else None
+    if source_key=="2023_source_insects" and cl in ("硬骨魚綱","条鰭綱","頭甲綱","ヤツメウナギ綱"):
+        return None  # off-target fish hits in insect assay: not used as fish evidence
     if cl in ("硬骨魚綱","条鰭綱","頭甲綱","ヤツメウナギ綱"):
         return "fish_edna"
     if cl=="鳥綱":
@@ -215,7 +221,8 @@ def main():
                 "evidence_id":"edna"+str(spec["year"])[2:]+"_"+evidence_id,
                 "prefecture":"神奈川県","watershed_name":water,"river_name":river,
                 "river_code_optional":"","survey_year":spec["year"],
-                "biological_group":group,"verbatim_source_taxon_label":name,
+                "survey_year_basis":"sample_calendar_year_on_excel_row_6" if spec["date"]==6 else "official_fiscal_year_worksheet_row_1",
+            "biological_group":group,"verbatim_source_taxon_label":name,
                 "taxonomic_class_verbatim":cl,"identification_confidence_verbatim":conf,
                 "positive_station_columns_aggregate":len(sitecols),
                 "survey_method":"environmental_DNA_positive_sequence_reads_not_capture",
@@ -248,13 +255,15 @@ def main():
         raise RuntimeError("No verified eDNA read positives found")
     # Different 2023 programs may report the same river/taxon/year. Preserve
     # every source evidence row, but count unique river+label+year only once.
-    newkeys=sorted(set(river_source_groups)-baseline_keys)
+    holds=sorted(set(river_source_groups).intersection(RIVER_NAME_VARIANT_HOLDS))
+    newkeys=sorted(set(river_source_groups)-baseline_keys-set(RIVER_NAME_VARIANT_HOLDS))
     groups=[]
     for water,river in sorted(river_source_groups):
         subset=[r for r in allrows if r["watershed_name"]==water and r["river_name"]==river]
         years=sorted(set(r["survey_year"] for r in subset))
         groups.append({"prefecture":"神奈川県","watershed_name":water,"river_name":river,
-            "river_code_optional":None,"years":years,"eDNA_only":True,
+            "river_code_optional":None,"years":years,"new_layer_method":"eDNA_only_no_capture",
+            "spelling_variant_identity_hold":(water,river) in RIVER_NAME_VARIANT_HOLDS,
             "source_dataset_keys":sorted(set(r["source_dataset_key"] for r in subset)),
             "eDNA_category_keys":sorted(set(r["biological_group"] for r in subset)),
             "eDNA_source_rows_not_unique_species":len(subset),
@@ -279,7 +288,8 @@ def main():
         "new_candidate_name_pairs":[{"watershed_name":a,"river_name":b} for a,b in newkeys],
         "v10_base_label_groups_preserved":492,
         "v10_2025_edna_counts_preserved_separately":265,
-        "new_combined_display_name_group_candidates_approx":492+len(newkeys),
+        "potential_combined_display_name_groups_excluding_held_spellings":492+len(newkeys),
+        "method_outside_assay_target_taxa_are_not_promoted":True,
         "new_direct_fish_capture_records":0,
         "eDNA_insects_or_invertebrates_not_assumed_confirmed_benthic_animals":True,
         "birds_from_eDNA_not_assumed_visual_or_specimen":True,
