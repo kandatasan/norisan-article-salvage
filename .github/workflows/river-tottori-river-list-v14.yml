@@ -1,0 +1,79 @@
+name: Verify Tottori official river list 2023 from three region PDFs (research only)
+on:
+  push:
+    branches:
+      - research/tottori-official-river-list-v14-20261020
+    paths:
+      - 'river-fish/research-individual-v14/*.py'
+      - '.github/workflows/river-tottori-river-list-v14.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: tottori-inventory-v14
+  cancel-in-progress: false
+jobs:
+  corroborate-originals:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify original PDF bytes, title, date, each river-list row and source scope
+        id: verify
+        run: |
+          set -o pipefail
+          {
+            python -m py_compile river-fish/research-individual-v14/extract_tottori_inventory_v14.py
+            pdftotext -v
+            python river-fish/research-individual-v14/extract_tottori_inventory_v14.py
+          } 2>&1 | tee /tmp/tottori_v14_runlog.txt
+      - name: Validate exact source separation, 511 baseline and three original SHA
+        if: success()
+        run: |
+          python - <<'PY'
+          import json,csv,pathlib
+          out=pathlib.Path('river-fish/research-individual-v14/outputs')
+          qa=json.loads((out/'tottori_river_inventory_provenance_qa_v14.json').read_text())
+          rows=list(csv.DictReader((out/'tottori_official_river_source_rows_research_v14.csv').open()))
+          assert len(rows)==qa['source_rows_not_distinct_river_count']
+          assert len(rows)>180
+          assert qa['all_prefecture_level_sources_originals_verified']
+          assert qa['baseline_511_undisturbed'] and qa['no_biological_species_claims']
+          assert qa['pdf_row_numbers_not_10_digit_river_codes']
+          assert qa['river_name_prefix_without_watershed_not_assigned_by_inference']
+          assert qa['reproduction_and_commercial_site_use_prohibited_until_review']
+          assert len({x['original_pdf_url'] for x in rows})==3
+          assert all(len(x['source_file_sha256'])==64 for x in rows)
+          assert all(x['prefecture']=='鳥取県' for x in rows)
+          print('VERIFIED_OFFICIAL_TOTTORI_RIVER_LIST_ROWS',len(rows))
+          PY
+      - name: Persist diagnostics when source cannot be checked
+        if: failure()
+        run: |
+          mkdir -p river-fish/research-individual-v14/outputs
+          python - <<'PY'
+          import pathlib,json
+          log=pathlib.Path('/tmp/tottori_v14_runlog.txt')
+          raw=log.read_text(errors='replace') if log.exists() else 'NO_RUN_LOG'
+          (pathlib.Path('river-fish/research-individual-v14/outputs')/'diagnostic_v14.json').write_text(
+              json.dumps({'status':'INCOMPLETE_NO_NEW_RIVERS_ADOPTED','error_tail':raw[-5000:]},ensure_ascii=False,indent=2)+'\n')
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: official-tottori-2023-river-name-audit-v14
+          path: river-fish/research-individual-v14/outputs/
+      - name: Save only research CSV and QA diagnostics, never original PDFs
+        if: always()
+        run: |
+          test "$GITHUB_REF_NAME" = "research/tottori-official-river-list-v14-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v14/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: save verified Tottori river-name administrative inventory v14"
+            git push origin HEAD:refs/heads/research/tottori-official-river-list-v14-20261020
+          fi
