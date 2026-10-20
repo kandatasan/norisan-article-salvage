@@ -1,0 +1,821 @@
+{
+  "baseline_428_rivers_unchanged": true,
+  "baseline_553351_contexts_unchanged": true,
+  "source_held_name_labels": 47,
+  "source_held_contexts": 101210,
+  "classification": {
+    "mixed_code_root_hold": 24,
+    "mixed_code_root_contexts": 79338,
+    "candidate_name_buckets": 17,
+    "candidate_contexts": 18789,
+    "nonriver_or_section_hold": 6,
+    "nonriver_or_section_contexts": 3083
+  },
+  "items": [
+    {
+      "source_region": "chubu",
+      "survey_watershed": "大井川",
+      "survey_river_label": "大井川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 6,
+      "distinct_6digit_watershed_roots": 6,
+      "candidate_parent_watershed_codes": [
+        "230100",
+        "350014",
+        "350085",
+        "460551",
+        "470028",
+        "850503"
+      ],
+      "historical_contexts": 3692,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chubu",
+      "survey_watershed": "天竜川",
+      "survey_river_label": "天竜川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "060008",
+        "850505"
+      ],
+      "historical_contexts": 6130,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chubu",
+      "survey_watershed": "宮川",
+      "survey_river_label": "宮川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 11,
+      "distinct_6digit_watershed_roots": 11,
+      "candidate_parent_watershed_codes": [
+        "140003",
+        "260021",
+        "280020",
+        "300017",
+        "310012",
+        "350105",
+        "350177",
+        "380141",
+        "380205",
+        "440103",
+        "850513"
+      ],
+      "historical_contexts": 3667,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chubu",
+      "survey_watershed": "木曽川",
+      "survey_river_label": "根尾川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "850509"
+      ],
+      "historical_contexts": 1908,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chubu",
+      "survey_watershed": "矢作川",
+      "survey_river_label": "矢作川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "030095",
+        "850507"
+      ],
+      "historical_contexts": 3753,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chubu",
+      "survey_watershed": "豊川",
+      "survey_river_label": "豊川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "420210",
+        "850506"
+      ],
+      "historical_contexts": 4165,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chugoku",
+      "survey_watershed": "千代川",
+      "survey_river_label": "新袋川・袋川",
+      "source_held_reason": "composite_river_label",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 0,
+      "distinct_6digit_watershed_roots": 0,
+      "candidate_parent_watershed_codes": [],
+      "historical_contexts": 289,
+      "new_name_level_decision": "hold_nonriver_composite_or_survey_section",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chugoku",
+      "survey_watershed": "千代川",
+      "survey_river_label": "袋川（旧）",
+      "source_held_reason": "parenthesized_river_section",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 0,
+      "distinct_6digit_watershed_roots": 0,
+      "candidate_parent_watershed_codes": [],
+      "historical_contexts": 34,
+      "new_name_level_decision": "hold_nonriver_composite_or_survey_section",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chugoku",
+      "survey_watershed": "斐伊川",
+      "survey_river_label": "中海",
+      "source_held_reason": "nonriver_waterbody",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 0,
+      "distinct_6digit_watershed_roots": 0,
+      "candidate_parent_watershed_codes": [],
+      "historical_contexts": 1235,
+      "new_name_level_decision": "hold_nonriver_composite_or_survey_section",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "chugoku",
+      "survey_watershed": "斐伊川",
+      "survey_river_label": "宍道湖",
+      "source_held_reason": "nonriver_waterbody",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 0,
+      "distinct_6digit_watershed_roots": 0,
+      "candidate_parent_watershed_codes": [],
+      "historical_contexts": 1123,
+      "new_name_level_decision": "hold_nonriver_composite_or_survey_section",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "信濃川",
+      "survey_river_label": "信濃川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "230050",
+        "840403"
+      ],
+      "historical_contexts": 4702,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "信濃川",
+      "survey_river_label": "信濃川（本川下流）",
+      "source_held_reason": "survey_section_label",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 0,
+      "distinct_6digit_watershed_roots": 0,
+      "candidate_parent_watershed_codes": [],
+      "historical_contexts": 301,
+      "new_name_level_decision": "hold_nonriver_composite_or_survey_section",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "信濃川",
+      "survey_river_label": "奈良井川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "840403"
+      ],
+      "historical_contexts": 35,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "信濃川",
+      "survey_river_label": "魚野川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "840403"
+      ],
+      "historical_contexts": 810,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "姫川",
+      "survey_river_label": "姫川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 3,
+      "distinct_6digit_watershed_roots": 3,
+      "candidate_parent_watershed_codes": [
+        "010145",
+        "300016",
+        "840405"
+      ],
+      "historical_contexts": 2920,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "犀川",
+      "survey_river_label": "犀川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "170006",
+        "260013"
+      ],
+      "historical_contexts": 43,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "荒川",
+      "survey_river_label": "荒川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 4,
+      "distinct_6digit_watershed_roots": 4,
+      "candidate_parent_watershed_codes": [
+        "460070",
+        "470054",
+        "830304",
+        "840401"
+      ],
+      "historical_contexts": 3753,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "hokuriku",
+      "survey_watershed": "関川",
+      "survey_river_label": "関川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 4,
+      "distinct_6digit_watershed_roots": 4,
+      "candidate_parent_watershed_codes": [
+        "150137",
+        "380130",
+        "430045",
+        "840404"
+      ],
+      "historical_contexts": 2455,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "久慈川",
+      "survey_river_label": "久慈川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "030005",
+        "830301"
+      ],
+      "historical_contexts": 3539,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "利根川",
+      "survey_river_label": "中川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 4,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "830303"
+      ],
+      "historical_contexts": 2555,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "利根川",
+      "survey_river_label": "大谷川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "830303"
+      ],
+      "historical_contexts": 53,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "利根川",
+      "survey_river_label": "江戸川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "830303"
+      ],
+      "historical_contexts": 3001,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "利根川",
+      "survey_river_label": "秋山川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "830303"
+      ],
+      "historical_contexts": 45,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "富士川",
+      "survey_river_label": "塩川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 3,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "830308"
+      ],
+      "historical_contexts": 42,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "荒川",
+      "survey_river_label": "荒川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 4,
+      "distinct_6digit_watershed_roots": 4,
+      "candidate_parent_watershed_codes": [
+        "460070",
+        "470054",
+        "830304",
+        "840401"
+      ],
+      "historical_contexts": 4588,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "那珂川",
+      "survey_river_label": "桜川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 3,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "830302"
+      ],
+      "historical_contexts": 614,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kanto",
+      "survey_watershed": "那珂川",
+      "survey_river_label": "那珂川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "400017",
+        "830302"
+      ],
+      "historical_contexts": 4208,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kinki",
+      "survey_watershed": "北川",
+      "survey_river_label": "北川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 8,
+      "distinct_6digit_watershed_roots": 8,
+      "candidate_parent_watershed_codes": [
+        "080021",
+        "220014",
+        "230093",
+        "240056",
+        "380108",
+        "420030",
+        "440016",
+        "860608"
+      ],
+      "historical_contexts": 3228,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kinki",
+      "survey_watershed": "大和川",
+      "survey_river_label": "大和川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 3,
+      "distinct_6digit_watershed_roots": 3,
+      "candidate_parent_watershed_codes": [
+        "010832",
+        "460139",
+        "860603"
+      ],
+      "historical_contexts": 2138,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kinki",
+      "survey_watershed": "淀川",
+      "survey_river_label": "服部川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "860604"
+      ],
+      "historical_contexts": 117,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kinki",
+      "survey_watershed": "淀川",
+      "survey_river_label": "木津川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "860604"
+      ],
+      "historical_contexts": 3467,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kinki",
+      "survey_watershed": "淀川",
+      "survey_river_label": "淀川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "040023",
+        "860604"
+      ],
+      "historical_contexts": 1487,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kinki",
+      "survey_watershed": "由良川",
+      "survey_river_label": "由良川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 3,
+      "distinct_6digit_watershed_roots": 3,
+      "candidate_parent_watershed_codes": [
+        "300070",
+        "310027",
+        "860609"
+      ],
+      "historical_contexts": 3534,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kinki",
+      "survey_watershed": "紀の川",
+      "survey_river_label": "紀の川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "170028",
+        "860602"
+      ],
+      "historical_contexts": 3715,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kyushu",
+      "survey_watershed": "五ヶ瀬川",
+      "survey_river_label": "大瀬川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "890916"
+      ],
+      "historical_contexts": 1702,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kyushu",
+      "survey_watershed": "大野川",
+      "survey_river_label": "大野川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 5,
+      "distinct_6digit_watershed_roots": 5,
+      "candidate_parent_watershed_codes": [
+        "010126",
+        "160039",
+        "170007",
+        "400070",
+        "890918"
+      ],
+      "historical_contexts": 2276,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kyushu",
+      "survey_watershed": "川内川",
+      "survey_river_label": "川内川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 7,
+      "distinct_6digit_watershed_roots": 7,
+      "candidate_parent_watershed_codes": [
+        "020054",
+        "420053",
+        "420285",
+        "460128",
+        "460344",
+        "460381",
+        "890912"
+      ],
+      "historical_contexts": 3903,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kyushu",
+      "survey_watershed": "松浦川",
+      "survey_river_label": "松浦川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "010878",
+        "890902"
+      ],
+      "historical_contexts": 2574,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kyushu",
+      "survey_watershed": "緑川",
+      "survey_river_label": "緑川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "010268",
+        "890910"
+      ],
+      "historical_contexts": 2469,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "kyushu",
+      "survey_watershed": "菊池川",
+      "survey_river_label": "岩野川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "890908"
+      ],
+      "historical_contexts": 1374,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "shikoku",
+      "survey_watershed": "吉野川",
+      "survey_river_label": "吉野川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 3,
+      "distinct_6digit_watershed_roots": 3,
+      "candidate_parent_watershed_codes": [
+        "010877",
+        "260010",
+        "880807"
+      ],
+      "historical_contexts": 4061,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "shikoku",
+      "survey_watershed": "渡川",
+      "survey_river_label": "渡川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 2,
+      "candidate_parent_watershed_codes": [
+        "380023",
+        "880803"
+      ],
+      "historical_contexts": 2338,
+      "new_name_level_decision": "hold_multiple_official_watershed_code_roots",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "tohoku",
+      "survey_watershed": "岩木川",
+      "survey_river_label": "十三湖",
+      "source_held_reason": "nonriver_waterbody",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 0,
+      "distinct_6digit_watershed_roots": 0,
+      "candidate_parent_watershed_codes": [],
+      "historical_contexts": 101,
+      "new_name_level_decision": "hold_nonriver_composite_or_survey_section",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "tohoku",
+      "survey_watershed": "最上川",
+      "survey_river_label": "金山川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "820211"
+      ],
+      "historical_contexts": 623,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "tohoku",
+      "survey_watershed": "阿武隈川",
+      "survey_river_label": "松川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "820201"
+      ],
+      "historical_contexts": 45,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "tohoku",
+      "survey_watershed": "阿武隈川",
+      "survey_river_label": "白石川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 2,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "820201"
+      ],
+      "historical_contexts": 14,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    },
+    {
+      "source_region": "tohoku",
+      "survey_watershed": "阿武隈川",
+      "survey_river_label": "荒川",
+      "source_held_reason": "same_name_in_watershed_multiple_codes",
+      "current_physical_river_approval": false,
+      "candidate_10digit_code_count": 3,
+      "distinct_6digit_watershed_roots": 1,
+      "candidate_parent_watershed_codes": [
+        "820201"
+      ],
+      "historical_contexts": 2384,
+      "new_name_level_decision": "river_name_only_multiple_segments_one_watershed",
+      "claim_of_unique_physical_river": false,
+      "future_ui_label": "同名・複数区間の資料掲載名。位置と河川コードは未確定"
+    }
+  ],
+  "no_name_bundle_is_a_legal_10digit_river_identity": true,
+  "nonriver_lakes_not_adopted": true,
+  "historical_biology_not_current_biological_presence": true,
+  "production_unchanged": true
+}
