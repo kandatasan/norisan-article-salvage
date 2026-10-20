@@ -1,0 +1,2168 @@
+{
+  "source_page": "https://www.pref.kanagawa.jp/docs/b4f/suigen/edna.html",
+  "license_page": "https://www.pref.kanagawa.jp/documents/97797/riyo-kiyaku.pdf",
+  "scope": "2023 and 2024 separate fish/vertebrate/invertebrate eDNA workbooks",
+  "2025_baseline_undisturbed": true,
+  "not_a_direct_capture_survey": true,
+  "files": [
+    {
+      "source_key": "2023_source_fish",
+      "source_url": "https://www.pref.kanagawa.jp/documents/97797/r5_kenmin_gyorui.xlsx",
+      "survey_method": "environmental_DNA_detection_only_not_capture",
+      "capture_observations_added": 0,
+      "exact_sites_exported": false,
+      "download_ok": true,
+      "bytes": 1038854,
+      "sha256": "60c18a87a9522c5f8bd0ba90021d58a663a5b3696f5592a033ff85f8ed78d62a",
+      "sheets": [
+        {
+          "sheet": "R5魚類",
+          "dimension": "A1:AA70",
+          "physical_sheet_rows": 70,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "G": "調査年度チョウサネンド",
+                "H": "2023年度ネンド",
+                "I": "2023年度ネンド",
+                "J": "2023年度ネンド",
+                "K": "2023年度ネンド",
+                "L": "2023年度ネンド",
+                "M": "2023年度ネンド"
+              },
+              "populated_columns": 21
+            },
+            {
+              "row": 2,
+              "first_columns": {
+                "G": "調査地点IDチョウサチテン",
+                "H": "MF-K-20",
+                "I": "K-23-1",
+                "J": "K-23-2",
+                "K": "K-23-3",
+                "L": "K-23-4",
+                "M": "K-23-5"
+              },
+              "populated_columns": 21
+            },
+            {
+              "row": 3,
+              "first_columns": {
+                "G": "水系スイケイ",
+                "H": "酒匂川サカワガワ",
+                "I": "相模川",
+                "J": "相模川",
+                "K": "酒匂川",
+                "L": "酒匂川",
+                "M": "相模川"
+              },
+              "populated_columns": 21
+            },
+            {
+              "row": 4,
+              "first_columns": {
+                "G": "支川名シセンメイ",
+                "H": "-",
+                "I": "中津川ナカツガワ",
+                "J": "中津川ナカツガワ",
+                "K": "中津川ナカツガワ",
+                "L": "中津川ナカツガワ",
+                "M": "小出川コイデガワ"
+              },
+              "populated_columns": 21
+            },
+            {
+              "row": 5,
+              "first_columns": {
+                "G": "関係市町村カンケイシチョウソン",
+                "H": "小田原市オダワラシ",
+                "I": "愛川町アイカワマチ",
+                "J": "愛川町アイカワマチ",
+                "K": "松田町マツダマチ",
+                "L": "松田町マツダマチ",
+                "M": "茅ヶ崎市チガサキシ"
+              },
+              "populated_columns": 21
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "綱コウ",
+                "B": "目モク",
+                "C": "科カ",
+                "D": "属ゾク",
+                "E": "種名シュメイ",
+                "F": "国RLクニ",
+                "G": "↓県RDB 調査日→ケンチョウサビ",
+                "H": "44598",
+                "I": "45037",
+                "J": "45037",
+                "K": "45102",
+                "L": "45102",
+                "M": "45162"
+              },
+              "populated_columns": 27
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "頭甲綱",
+                "B": "ヤツメウナギ目",
+                "C": "ヤツメウナギ科",
+                "D": "カワヤツメ属",
+                "E": "キタスナヤツメ",
+                "F": "絶滅危惧II類（VU）",
+                "H": "17",
+                "I": "0",
+                "J": "0",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 26
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "頭甲綱",
+                "B": "ヤツメウナギ目",
+                "C": "ヤツメウナギ科",
+                "D": "カワヤツメ属",
+                "E": "ミナミスナヤツメ",
+                "H": "0",
+                "I": "0",
+                "J": "115",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 25
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "ウナギ目",
+                "C": "ウナギ科",
+                "D": "ウナギ属",
+                "E": "ニホンウナギ",
+                "F": "絶滅危惧IB類（EN）",
+                "H": "1873",
+                "I": "0",
+                "J": "28",
+                "K": "0",
+                "L": "0",
+                "M": "1167"
+              },
+              "populated_columns": 26
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "ウナギ目",
+                "C": "ウナギ科",
+                "D": "ウナギ属",
+                "E": "オオウナギ",
+                "H": "0",
+                "I": "0",
+                "J": "0",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 25
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "ニシン目",
+                "C": "ニシン科",
+                "D": "マイワシ属",
+                "E": "マイワシ",
+                "H": "614",
+                "I": "0",
+                "J": "0",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 25
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "ニシン目",
+                "C": "ニシン科",
+                "D": "コノシロ属",
+                "E": "コノシロ",
+                "H": "0",
+                "I": "0",
+                "J": "0",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 25
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [
+            [
+              "相模川",
+              "中津川"
+            ],
+            [
+              "相模川",
+              "串川"
+            ],
+            [
+              "相模川",
+              "目久尻川"
+            ],
+            [
+              "相模川",
+              "谷太郎川"
+            ],
+            [
+              "相模川",
+              "阿津川"
+            ],
+            [
+              "酒匂川",
+              "中津川"
+            ],
+            [
+              "酒匂川",
+              "狩川"
+            ],
+            [
+              "酒匂川",
+              "酒匂川脇の小河川"
+            ]
+          ],
+          "r3_r4_pair_count": 8,
+          "data_column_A_top_values": [
+            [
+              "硬骨魚綱",
+              54
+            ],
+            [
+              "",
+              8
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "0",
+              27
+            ],
+            [
+              "",
+              8
+            ],
+            [
+              "28",
+              1
+            ],
+            [
+              "1018",
+              1
+            ],
+            [
+              "87",
+              1
+            ],
+            [
+              "547",
+              1
+            ],
+            [
+              "1487",
+              1
+            ],
+            [
+              "9442",
+              1
+            ],
+            [
+              "4501",
+              1
+            ],
+            [
+              "9935",
+              1
+            ],
+            [
+              "19",
+              1
+            ],
+            [
+              "2515",
+              1
+            ]
+          ]
+        },
+        {
+          "sheet": "国RL",
+          "dimension": "A1:D2852",
+          "physical_sheet_rows": 2852,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "A": "カテゴリー",
+                "B": "分類群",
+                "C": "和名",
+                "D": "学名"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 2,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "オキナワオオコウモリ",
+                "D": "Pteropus loochoensis"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 3,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ミヤココキクガシラコウモリ",
+                "D": "Rhinolophus pumilus miyakonis"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 4,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "オガサワラアブラコウモリ",
+                "D": "Pipistrellus sturdeei"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 5,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "エゾオオカミ",
+                "D": "Canis lupus hattai"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ニホンオオカミ",
+                "D": "Canis lupus hodophilax"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ニホンカワウソ（本州以南亜種）",
+                "D": "Lutra lutra nippon"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ニホンカワウソ（北海道亜種）",
+                "D": "Lutra lutra whiteleyi"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "センカクモグラ",
+                "D": "Mogera uchidai"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "ダイトウオオコウモリ",
+                "D": "Pteropus dasymallus daitoensis"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "エラブオオコウモリ",
+                "D": "Pteropus dasymallus dasymallus"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "クロアカコウモリ",
+                "D": "Myotis formosus"
+              },
+              "populated_columns": 4
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [],
+          "r3_r4_pair_count": 0,
+          "data_column_A_top_values": [
+            [
+              "準絶滅危惧（NT）",
+              461
+            ],
+            [
+              "絶滅危惧II類（VU）",
+              326
+            ],
+            [
+              "絶滅危惧IB類（EN）",
+              234
+            ],
+            [
+              "情報不足（DD）",
+              207
+            ],
+            [
+              "絶滅危惧IA類（CR）",
+              192
+            ],
+            [
+              "絶滅のおそれのある地域個体群（LP）",
+              48
+            ],
+            [
+              "絶滅（EX）",
+              22
+            ],
+            [
+              "野生絶滅（EW）",
+              1
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "",
+              1491
+            ]
+          ]
+        },
+        {
+          "sheet": "地方自治体RL",
+          "dimension": "A1:F49",
+          "physical_sheet_rows": 49,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "A": "No.",
+                "B": "和名",
+                "C": "学名",
+                "D": "分類群",
+                "E": "ランク",
+                "F": "都道府県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 2,
+              "first_columns": {
+                "A": "1",
+                "B": "キンブナ",
+                "C": "Carassius buergeri subsp. 2",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠB類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 3,
+              "first_columns": {
+                "A": "2",
+                "B": "アブラハヤ",
+                "C": "Phoxinus lagowskii steindachneri",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 4,
+              "first_columns": {
+                "A": "3",
+                "B": "タカハヤ",
+                "C": "Phoxinus oxycephalus jouyi",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠB類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 5,
+              "first_columns": {
+                "A": "4",
+                "B": "ウグイ",
+                "C": "Tribolodon hakonensis",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "5",
+                "B": "シナイモツゴ",
+                "C": "Pseudorasbora pumila",
+                "D": "魚類",
+                "E": "情報不足",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "6",
+                "B": "シマドジョウ",
+                "C": "Cobitis biwae",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "7",
+                "B": "ホトケドジョウ",
+                "C": "Lefua echigonia",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠB類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "8",
+                "B": "ギバチ",
+                "C": "Tachysurus tokiensis",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠA類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "9",
+                "B": "ナマズ",
+                "C": "Silurus asotus",
+                "D": "魚類",
+                "E": "注目種",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "10",
+                "B": "アカザ",
+                "C": "Liobagrus reinii",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠA類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "11",
+                "B": "カマツカ",
+                "C": "Pseudogobio esocinus",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [],
+          "r3_r4_pair_count": 0,
+          "data_column_A_top_values": [
+            [
+              "8",
+              1
+            ],
+            [
+              "9",
+              1
+            ],
+            [
+              "10",
+              1
+            ],
+            [
+              "11",
+              1
+            ],
+            [
+              "12",
+              1
+            ],
+            [
+              "13",
+              1
+            ],
+            [
+              "14",
+              1
+            ],
+            [
+              "15",
+              1
+            ],
+            [
+              "16",
+              1
+            ],
+            [
+              "17",
+              1
+            ],
+            [
+              "18",
+              1
+            ],
+            [
+              "19",
+              1
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "",
+              41
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "2023_source_insects",
+      "source_url": "https://www.pref.kanagawa.jp/documents/97797/r5_kenmin_mtinsects-16s.xlsx",
+      "survey_method": "environmental_DNA_detection_only_not_capture",
+      "capture_observations_added": 0,
+      "exact_sites_exported": false,
+      "download_ok": true,
+      "bytes": 1017248,
+      "sha256": "50865de054e4ac12c097ca4ee8e880713f45b3947cd30364684854079e3957fc",
+      "sheets": [
+        {
+          "sheet": "結果まとめ(種落ち)",
+          "dimension": "A1:BP637",
+          "physical_sheet_rows": 637,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "J": "天然記念物テンネンキネンブツ",
+                "K": "種の保存法 希少種シュホゾンホウキショウモノダネ"
+              },
+              "populated_columns": 22
+            },
+            {
+              "row": 2,
+              "first_columns": {},
+              "populated_columns": 20
+            },
+            {
+              "row": 3,
+              "first_columns": {},
+              "populated_columns": 20
+            },
+            {
+              "row": 4,
+              "first_columns": {},
+              "populated_columns": 20
+            },
+            {
+              "row": 5,
+              "first_columns": {},
+              "populated_columns": 20
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "綱コウ",
+                "B": "目モク",
+                "C": "科カ",
+                "D": "属ゾク",
+                "E": "参考 種名(機械的な併記処理)サンコウシュメイキカイテキヘイキショリ",
+                "F": "種名(手動精査結果)シュメイシュドウセイサケッカ",
+                "G": "MAX(pident*qcovs)",
+                "H": "信頼度シンライド",
+                "I": "国RLクニ",
+                "L": "地方自治体RLチホウジチタイ",
+                "M": "特定外来種トクテイガイライシュ"
+              },
+              "populated_columns": 31
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "小鎖状綱",
+                "B": "-",
+                "C": "クサリヒメウズムシ科",
+                "D": "Stenostomum属",
+                "E": "ウエクチクサリヒメウズムシ（cf.）",
+                "F": "ウエクチクサリヒメウズムシ（cf.）",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 28
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "小鎖状綱",
+                "B": "-",
+                "C": "クサリヒメウズムシ科",
+                "D": "Stenostomum属",
+                "E": "Stenostomum leucops",
+                "F": "Stenostomum leucops（注）チュウ",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 28
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "小鎖状綱",
+                "B": "-",
+                "C": "クサリヒメウズムシ科",
+                "D": "Stenostomum属",
+                "E": "Stenostomum sthenum",
+                "F": "Stenostomum sthenum（注）",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 28
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "小鎖状綱",
+                "B": "-",
+                "C": "クサリヒメウズムシ科",
+                "D": "Stenostomum属",
+                "E": "Stenostomum sthenum/Stenostomum leucops",
+                "F": "Stenostomum sthenum（注）/Stenostomum leucops（注）チュウ",
+                "G": "0.98570999999999998",
+                "H": "低"
+              },
+              "populated_columns": 28
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "有針綱",
+                "B": "単針目",
+                "C": "マミズヒモムシ科",
+                "D": "マミズヒモムシ属",
+                "E": "Prostoma eilhardi",
+                "F": "Prostoma eilhardi（注）",
+                "G": "0.99400999999999995",
+                "H": "中"
+              },
+              "populated_columns": 28
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "有針綱",
+                "B": "単針目",
+                "C": "マミズヒモムシ科",
+                "D": "マミズヒモムシ属",
+                "E": "マミズヒモムシ属の一種",
+                "F": "マミズヒモムシ属の一種",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 28
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [
+            [
+              "相模川",
+              "中津川"
+            ],
+            [
+              "相模川",
+              "串川"
+            ],
+            [
+              "相模川",
+              "小出川"
+            ],
+            [
+              "相模川",
+              "目久尻川"
+            ],
+            [
+              "相模川",
+              "谷太郎川"
+            ],
+            [
+              "相模川",
+              "阿津川"
+            ],
+            [
+              "酒匂川",
+              "中津川"
+            ],
+            [
+              "酒匂川",
+              "狩川"
+            ],
+            [
+              "酒匂川",
+              "酒匂川脇の小河川"
+            ]
+          ],
+          "r3_r4_pair_count": 9,
+          "data_column_A_top_values": [
+            [
+              "昆虫綱",
+              537
+            ],
+            [
+              "条鰭綱",
+              15
+            ],
+            [
+              "軟甲綱",
+              10
+            ],
+            [
+              "環帯綱",
+              9
+            ],
+            [
+              "被喉綱",
+              8
+            ],
+            [
+              "トビムシ綱",
+              8
+            ],
+            [
+              "腹足綱",
+              5
+            ],
+            [
+              "二枚貝綱",
+              5
+            ],
+            [
+              "哺乳綱",
+              4
+            ],
+            [
+              "小鎖状綱",
+              2
+            ],
+            [
+              "有針綱",
+              2
+            ],
+            [
+              "裸喉綱",
+              2
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "",
+              629
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "2023_prefecturewide_fish",
+      "source_url": "https://www.pref.kanagawa.jp/documents/97797/r5_project_gyorui.xlsx",
+      "survey_method": "environmental_DNA_detection_only_not_capture",
+      "capture_observations_added": 0,
+      "exact_sites_exported": false,
+      "download_ok": true,
+      "bytes": 1045836,
+      "sha256": "6292c5829709c7677abf83c6e18437205ea3b3d3964c9bf67a4f2086bce7d48c",
+      "sheets": [
+        {
+          "sheet": "R5プロジェクト_魚類",
+          "dimension": "A1:AN87",
+          "physical_sheet_rows": 87,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "G": "調査年度チョウサネンド",
+                "H": "2023年度ネンド",
+                "I": "2023年度ネンド",
+                "J": "2023年度ネンド",
+                "K": "2023年度ネンド",
+                "L": "2023年度ネンド",
+                "M": "2023年度ネンド"
+              },
+              "populated_columns": 34
+            },
+            {
+              "row": 2,
+              "first_columns": {
+                "G": "調査地点IDチョウサチテン",
+                "H": "23-Pro-01",
+                "I": "23-Pro-02",
+                "J": "23-Pro-03",
+                "K": "23-Pro-04",
+                "L": "23-Pro-05",
+                "M": "23-Pro-06"
+              },
+              "populated_columns": 34
+            },
+            {
+              "row": 3,
+              "first_columns": {
+                "G": "水系スイケイ",
+                "H": "多摩川タマガワ",
+                "I": "多摩川タマガワ",
+                "J": "酒匂川サカワガワ",
+                "K": "多摩川タマガワ",
+                "L": "相模川サガミガワ",
+                "M": "酒匂川サカワガワ"
+              },
+              "populated_columns": 34
+            },
+            {
+              "row": 4,
+              "first_columns": {
+                "G": "支川名シセンメイ",
+                "H": "平瀬川ヒラセガワ",
+                "I": "二ヶ領用水",
+                "J": "-",
+                "K": "二ヶ領用水",
+                "L": "鳩川ハトガワ",
+                "M": "四十八瀬川シジュウハッセガワ"
+              },
+              "populated_columns": 34
+            },
+            {
+              "row": 5,
+              "first_columns": {
+                "G": "関係市町村カンケイシチョウソン",
+                "H": "川崎市カワサキシ",
+                "I": "川崎市カワサキシ",
+                "J": "松田町・開成町マツダマチカイセイマチ",
+                "K": "川崎市カワサキシ",
+                "L": "相模原市サガミハラシ",
+                "M": "秦野市ハダノシ"
+              },
+              "populated_columns": 34
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "綱コウ",
+                "B": "目モク",
+                "C": "科カ",
+                "D": "属ゾク",
+                "E": "種名シュメイ",
+                "F": "国RLクニ",
+                "G": "↓県RDB 調査日→ケンチョウサビ",
+                "H": "45129",
+                "I": "45128",
+                "J": "45131",
+                "K": "45136",
+                "L": "45137",
+                "M": "45136"
+              },
+              "populated_columns": 40
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "頭甲綱",
+                "B": "ヤツメウナギ目",
+                "C": "ヤツメウナギ科",
+                "D": "カワヤツメ属",
+                "E": "キタスナヤツメ",
+                "F": "絶滅危惧II類（VU）",
+                "G": "絶滅危惧ⅠB類",
+                "H": "0",
+                "I": "0",
+                "J": "0",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 40
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "ウナギ目",
+                "C": "ウナギ科",
+                "D": "ウナギ属",
+                "E": "ニホンウナギ",
+                "F": "絶滅危惧IB類（EN）",
+                "H": "0",
+                "I": "0",
+                "J": "183",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 39
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "ニシン目",
+                "C": "ニシン科",
+                "D": "コノシロ属",
+                "E": "コノシロ",
+                "H": "0",
+                "I": "0",
+                "J": "0",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 38
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "ニシン目",
+                "C": "カタクチイワシ科",
+                "D": "カタクチイワシ属",
+                "E": "カタクチイワシ",
+                "H": "0",
+                "I": "0",
+                "J": "0",
+                "K": "0",
+                "L": "0",
+                "M": "0"
+              },
+              "populated_columns": 38
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "コイ目",
+                "C": "コイ科",
+                "D": "コイ属",
+                "E": "コイ（飼育型）",
+                "H": "0",
+                "I": "28302",
+                "J": "1615",
+                "K": "27785",
+                "L": "1838",
+                "M": "0"
+              },
+              "populated_columns": 38
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "硬骨魚綱",
+                "B": "コイ目",
+                "C": "コイ科",
+                "D": "コイ属",
+                "E": "コイ（野生型）",
+                "H": "0",
+                "I": "0",
+                "J": "0",
+                "K": "648",
+                "L": "62",
+                "M": "0"
+              },
+              "populated_columns": 38
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [
+            [
+              "境川",
+              "和泉川"
+            ],
+            [
+              "多摩川",
+              "平瀬川"
+            ],
+            [
+              "大岡川",
+              "堀割川"
+            ],
+            [
+              "相模川",
+              "中津川"
+            ],
+            [
+              "相模川",
+              "姥川"
+            ],
+            [
+              "相模川",
+              "恩曽川"
+            ],
+            [
+              "相模川",
+              "玉川"
+            ],
+            [
+              "相模川",
+              "道志川"
+            ],
+            [
+              "酒匂川",
+              "仙了川"
+            ],
+            [
+              "酒匂川",
+              "河内川"
+            ],
+            [
+              "酒匂川",
+              "狩川"
+            ],
+            [
+              "金目川",
+              "歌川"
+            ],
+            [
+              "金目川",
+              "葛葉川"
+            ],
+            [
+              "金目川",
+              "鈴川"
+            ],
+            [
+              "鶴見川",
+              "奈良川"
+            ]
+          ],
+          "r3_r4_pair_count": 15,
+          "data_column_A_top_values": [
+            [
+              "硬骨魚綱",
+              71
+            ],
+            [
+              "",
+              8
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "0",
+              52
+            ],
+            [
+              "",
+              8
+            ],
+            [
+              "24",
+              2
+            ],
+            [
+              "1615",
+              1
+            ],
+            [
+              "50791",
+              1
+            ],
+            [
+              "973",
+              1
+            ],
+            [
+              "1389",
+              1
+            ],
+            [
+              "3251",
+              1
+            ],
+            [
+              "220",
+              1
+            ],
+            [
+              "707",
+              1
+            ],
+            [
+              "376",
+              1
+            ],
+            [
+              "5419",
+              1
+            ]
+          ]
+        },
+        {
+          "sheet": "国RL",
+          "dimension": "A1:D2852",
+          "physical_sheet_rows": 2852,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "A": "カテゴリー",
+                "B": "分類群",
+                "C": "和名",
+                "D": "学名"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 2,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "オキナワオオコウモリ",
+                "D": "Pteropus loochoensis"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 3,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ミヤココキクガシラコウモリ",
+                "D": "Rhinolophus pumilus miyakonis"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 4,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "オガサワラアブラコウモリ",
+                "D": "Pipistrellus sturdeei"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 5,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "エゾオオカミ",
+                "D": "Canis lupus hattai"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ニホンオオカミ",
+                "D": "Canis lupus hodophilax"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ニホンカワウソ（本州以南亜種）",
+                "D": "Lutra lutra nippon"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "絶滅（EX）",
+                "B": "哺乳類",
+                "C": "ニホンカワウソ（北海道亜種）",
+                "D": "Lutra lutra whiteleyi"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "センカクモグラ",
+                "D": "Mogera uchidai"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "ダイトウオオコウモリ",
+                "D": "Pteropus dasymallus daitoensis"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "エラブオオコウモリ",
+                "D": "Pteropus dasymallus dasymallus"
+              },
+              "populated_columns": 4
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "絶滅危惧IA類（CR）",
+                "B": "哺乳類",
+                "C": "クロアカコウモリ",
+                "D": "Myotis formosus"
+              },
+              "populated_columns": 4
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [],
+          "r3_r4_pair_count": 0,
+          "data_column_A_top_values": [
+            [
+              "準絶滅危惧（NT）",
+              461
+            ],
+            [
+              "絶滅危惧II類（VU）",
+              326
+            ],
+            [
+              "絶滅危惧IB類（EN）",
+              234
+            ],
+            [
+              "情報不足（DD）",
+              207
+            ],
+            [
+              "絶滅危惧IA類（CR）",
+              192
+            ],
+            [
+              "絶滅のおそれのある地域個体群（LP）",
+              48
+            ],
+            [
+              "絶滅（EX）",
+              22
+            ],
+            [
+              "野生絶滅（EW）",
+              1
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "",
+              1491
+            ]
+          ]
+        },
+        {
+          "sheet": "地方自治体RL",
+          "dimension": "A1:F49",
+          "physical_sheet_rows": 49,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "A": "No.",
+                "B": "和名",
+                "C": "学名",
+                "D": "分類群",
+                "E": "ランク",
+                "F": "都道府県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 2,
+              "first_columns": {
+                "A": "1",
+                "B": "キンブナ",
+                "C": "Carassius buergeri subsp. 2",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠB類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 3,
+              "first_columns": {
+                "A": "2",
+                "B": "アブラハヤ",
+                "C": "Phoxinus lagowskii steindachneri",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 4,
+              "first_columns": {
+                "A": "3",
+                "B": "タカハヤ",
+                "C": "Phoxinus oxycephalus jouyi",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠB類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 5,
+              "first_columns": {
+                "A": "4",
+                "B": "ウグイ",
+                "C": "Tribolodon hakonensis",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "5",
+                "B": "シナイモツゴ",
+                "C": "Pseudorasbora pumila",
+                "D": "魚類",
+                "E": "情報不足",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "6",
+                "B": "シマドジョウ",
+                "C": "Cobitis biwae",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "7",
+                "B": "ホトケドジョウ",
+                "C": "Lefua echigonia",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠB類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "8",
+                "B": "ギバチ",
+                "C": "Tachysurus tokiensis",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠA類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "9",
+                "B": "ナマズ",
+                "C": "Silurus asotus",
+                "D": "魚類",
+                "E": "注目種",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "10",
+                "B": "アカザ",
+                "C": "Liobagrus reinii",
+                "D": "魚類",
+                "E": "絶滅危惧ⅠA類",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "11",
+                "B": "カマツカ",
+                "C": "Pseudogobio esocinus",
+                "D": "魚類",
+                "E": "準絶滅危惧",
+                "F": "神奈川県"
+              },
+              "populated_columns": 6
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [],
+          "r3_r4_pair_count": 0,
+          "data_column_A_top_values": [
+            [
+              "8",
+              1
+            ],
+            [
+              "9",
+              1
+            ],
+            [
+              "10",
+              1
+            ],
+            [
+              "11",
+              1
+            ],
+            [
+              "12",
+              1
+            ],
+            [
+              "13",
+              1
+            ],
+            [
+              "14",
+              1
+            ],
+            [
+              "15",
+              1
+            ],
+            [
+              "16",
+              1
+            ],
+            [
+              "17",
+              1
+            ],
+            [
+              "18",
+              1
+            ],
+            [
+              "19",
+              1
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "",
+              41
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "2024_source_vertebrates_invertebrates",
+      "source_url": "https://www.pref.kanagawa.jp/documents/97797/r6_kenmin_mtinsects_amphi.xlsx",
+      "survey_method": "environmental_DNA_detection_only_not_capture",
+      "capture_observations_added": 0,
+      "exact_sites_exported": false,
+      "download_ok": true,
+      "bytes": 989905,
+      "sha256": "fdfc28f2c470625429334e603d62d212b4f7bb5c4bb3bd521c91c500397ab11a",
+      "sheets": [
+        {
+          "sheet": "結果まとめ(種落ち)",
+          "dimension": "A1:AC503",
+          "physical_sheet_rows": 503,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "A": "分類ブンルイ",
+                "K": "天然記念物テンネンキネンブツ",
+                "L": "種の保存法 希少種シュホゾンホウキショウモノダネ"
+              },
+              "populated_columns": 16
+            },
+            {
+              "row": 2,
+              "first_columns": {},
+              "populated_columns": 13
+            },
+            {
+              "row": 3,
+              "first_columns": {},
+              "populated_columns": 13
+            },
+            {
+              "row": 4,
+              "first_columns": {},
+              "populated_columns": 13
+            },
+            {
+              "row": 5,
+              "first_columns": {},
+              "populated_columns": 13
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "B": "綱コウ",
+                "C": "目モク",
+                "D": "科カ",
+                "E": "属ゾク",
+                "F": "参考 種名(機械的な併記処理)サンコウシュメイキカイテキヘイキショリ",
+                "G": "種名(手動精査結果)シュメイシュドウセイサケッカ",
+                "H": "MAX(pident*qcovs)",
+                "I": "信頼度シンライド",
+                "J": "国RLクニ",
+                "M": "地方自治体RLチホウジチタイ"
+              },
+              "populated_columns": 24
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "脊椎動物セキツイドウブツ",
+                "B": "哺乳綱",
+                "C": "ウシ目（偶蹄目）",
+                "D": "シカ科",
+                "E": "シカ属",
+                "F": "ニホンジカ",
+                "G": "ニホンジカ",
+                "H": "1",
+                "I": "高"
+              },
+              "populated_columns": 22
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "脊椎動物セキツイドウブツ",
+                "B": "哺乳綱",
+                "C": "ネコ目（食肉目）",
+                "D": "イヌ科",
+                "E": "イヌ属",
+                "F": "ノイヌ/オオカミ",
+                "G": "ノイヌ/オオカミ",
+                "H": "1",
+                "I": "高"
+              },
+              "populated_columns": 22
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "脊椎動物セキツイドウブツ",
+                "B": "哺乳綱",
+                "C": "ネコ目（食肉目）",
+                "D": "イヌ科",
+                "E": "タヌキ属",
+                "F": "タヌキ",
+                "G": "タヌキ",
+                "H": "1",
+                "I": "高"
+              },
+              "populated_columns": 22
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "脊椎動物セキツイドウブツ",
+                "B": "哺乳綱",
+                "C": "ネコ目（食肉目）",
+                "D": "イタチ科",
+                "E": "テン属",
+                "F": "ホンドテン",
+                "G": "ホンドテン",
+                "H": "1",
+                "I": "高"
+              },
+              "populated_columns": 22
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "脊椎動物セキツイドウブツ",
+                "B": "哺乳綱",
+                "C": "ネコ目（食肉目）",
+                "D": "イタチ科",
+                "E": "アナグマ属",
+                "F": "アナグマ",
+                "G": "アナグマ",
+                "H": "1",
+                "I": "高"
+              },
+              "populated_columns": 22
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "脊椎動物セキツイドウブツ",
+                "B": "哺乳綱",
+                "C": "ネコ目（食肉目）",
+                "D": "アライグマ科",
+                "E": "アライグマ属",
+                "F": "アライグマ",
+                "G": "アライグマ",
+                "H": "1",
+                "I": "高"
+              },
+              "populated_columns": 24
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [
+            [
+              "相模川",
+              "道保川"
+            ],
+            [
+              "相模川",
+              "鳩川"
+            ],
+            [
+              "酒匂川",
+              "中津川"
+            ]
+          ],
+          "r3_r4_pair_count": 3,
+          "data_column_A_top_values": [
+            [
+              "無脊椎動物ムセキツイドウブツ",
+              394
+            ],
+            [
+              "脊椎動物セキツイドウブツ",
+              85
+            ],
+            [
+              "＜表の見方＞ヒョウミカタ",
+              1
+            ],
+            [
+              "表に数字がある種がその地点で検出された種となります。数字が大きいほどその地点ではDNAが多かったことが想定されます。DNAが多い種は生物量も多いという傾向は見られますが、これだけでなく繁殖時期など生物のイベントによる変動もあるため、慎重な判断が必要です。\n「〇〇（cf.）」という表記は〇〇に似ているが確定ではないという意味を示しています。ヒョウスウジシュチテンケンシュツシュスウジオオチテンオオソウテイオオシュオオケイコウミハンショクジキセイブツヘンドウシンチョウハンダンヒツヨウヒョウキニカクテイイミシメ",
+              1
+            ],
+            [
+              "＜関係市町村について＞カンケイシチョウソン",
+              1
+            ],
+            [
+              "それぞれの調査結果には「関係市町村」という欄を設けています。これは調査地点の位置情報から所管する市町村を調べて、掲載しているものです。\n市町村境の河川の場合は「〇〇市・〇〇市」というような併記をしています。\nこのように表記している理由は、市町村の方々に地域の生物多様性情報を提供し、生物多様性計画などの策定・更新に役立てていただきたいという観点から実施しています。\nより詳細に調査地点の情報が必要な場合は適宜お問い合わせいただければ対応させていただきます。チョウサケッカカンケイシチョウソンランモウチョウサチテンイチジョウホウショカンシチョウソンシラベケイサイシチョウソンサカイカセンバアイシシヘイキヒョウキリユウシチョウソンカタガタチイキセイブツタヨウセイジョウホウテイキョウセイブツタヨウセイケイカクサクテイ",
+              1
+            ],
+            [
+              "＜信頼度について＞シンライド",
+              1
+            ],
+            [
+              "H列の「信頼度」については環境中から得られたDNA配列と種を判断するためのリファレンスデータベースのDNA配列との一致率の高さを示しており、100%一致の場合は「高」、99%以上100%未満の場合は「中」、98.5%以上99%未満の場合は「低」としています。信頼度が低い理由は主に2つ考えられます。\n１つ目がDNAデータベースは現状では全ての種を網羅できていないため、本来そこに生息する種の近縁種と判断されてしまった場合(疑陽性)。種リストの中には海外に生息する種が入っていることもありますが、そういったものはこれが原因の可能性が高いと考えられます。\n２つ目が同一種内の遺伝的な多様性が高いために、一致率が低い場合。これは移動性が低い種で発生することがあり、リファレンスデータベースに登録されている個体が捕獲された場所と離れた地域で環境DNA調査をした場合、配列一致率が低くなり、一致率が98.5%より低くなった場合には対象種がいたと判断できなくなります(偽陰性)。例えば非常に遺伝的変異の大きい種として知られるガガンボカゲロウでは同一種であっても配列一致率が80%程度になることがあります。\n上記2つの問題の解決策はDNAデータベースをより充実させることに尽きるため、当センターでも全国でDNAデータベースの整備に取り組んでいます。レツシンライドハイレツシュハンダンハイレツイッチリツタカシメイッチバアイコウイジョウミマンバアイチュウイジョウミマンバアイテイシンライドヒクリユウオモカンガメゲンジョウスベシュモウラホンライセイソクシュキンエンシュハンダンバアイギヨウセイシュナカカイガイセイソクシュハイゲンインカノウセイタカカンガメドウイツシュナイイデンテキタヨウセイタカイッチリツヒクバアイイドウセイヒクシュハッセイトウロクコタイホカクバショハナチイキカンキョウチョウサバアイハイレツイッチリツヒクタイショウシュハンダンギインセイタトヒジョウイデンテキヘンイオオシュシハイレツイッチリツテイドジョウキモンダイカイケツサクジュウジツツトウゼンコクセイビ",
+              1
+            ],
+            [
+              "＜DNA配列の一致率が同一の複数の種が存在した場合の処理＞ハイレツイッチリツドウイツフクスウシュソンザイバアイショリ",
+              1
+            ],
+            [
+              "結果についてはDNA配列を比較した結果、日本に生息していることが確認されている種と海外に生息していて、国内に生息が確認されていない種のDNA配列が同一であった場合、日本に生息する種の名前のみを記載するなどの処理を行っています。ただし、国内に生息する種でも遺伝的な変異が少ない種間では両種を区別できない場合があるので、その際は両種併記としています(例：ツヤナガアシドロムシとキベリナガアシドロムシ等)\nケッカショリオコナコクナイセイソクシュイデンテキヘンイスクシュカンリョウシュクベツバアイサイリョウシュヘイキレイナド",
+              1
+            ],
+            [
+              "＜種名の併記及び和名割り当ての考え方＞シュメイヘイキオヨワメイワアカンガカタ",
+              1
+            ],
+            [
+              "種のところに「/」があるのは、今回の手法では両種を判断できなかったことを示しています。\n綱・目・科・種の判断については、公共のデータベースであるINSDCの分類に従っており、それらの情報から和名を割り当てています。\n和名については、河川水辺の国勢調査のための生物リスト(令和4年度版)と日本分類学会連合の日本産生物種数調査結果の他、複数のインターネット上の情報(公的な機関の報告書や虫ナビ等)の検索結果から総合的に判断して記載しています。もし誤り等があればご連絡ください。\nINSDCと和名割り当てに用いたリストで分類の判断が異なる場合があり、和名で表記した場合に分類がずれることもあります(例えば「目」にアヤトビムシ下目が割り当てられる等)が、これについては目に該当する名称に変更するなどの補正は行っていません。\nまた、今回の結果では必ずしもすべての生物で和名の割り当てができたわけではなく、その場合はINSDCの学名を記載しています。和名を割り当てできない理由はいくつか考えられ、例えば次のような場合が考えられ、それぞれの対応を記載しています。\n①日本に生息あるいは国外から侵入してきた種であるものの、和名がないもの。\n(対応)→インターネット上の情報及びGBIF(地球規模生物多様性情報機構)、iNaturalistを確認し、国内に生息している記録があれば学名の後ろに「（和名なし）」を追記しています。\n②日本に生息する種であるものの、INSDCの分類が随時見直しされているために、和名の割り当てに使用したデータベースとの間に齟齬が生じている。\n(対応)→インターネット上の情報を総合的に判断し、和名との紐づけを実施しています。\n③日本に生息する種のDNAがデータベースに登録されていないために、国外に生息する近縁種と誤判断してしまっている。\n(対応)→インターネット上の情報及びGBIF、iNaturalistを確認し、国内に生息していることが確認できなかった場合は学名の後ろに「（注）」を追記しています。\n④DNAデータベースに登録する際に使用した生体サンプルに誤同定がある。\n(対応)→系統樹などを作成し、誤同定やサンプルの取り違えの可能性が高いものについては、手動で削除しています。\nただし、有針綱や小鎖状目については、生息情報が非常に少なかったことから一律で「（生息状況不明）」と表記しています。もし良い文献等があればご連絡ください。\n上記の調査結果は当センターで現状でできる限りの精度チェックは実施しているものの、必ずしもすべての結果が正しいことを保証するものではありません。結果を利用する際にはその点についてご注意いただき、もしお気づきの点がございましたら、お問い合わせいただければと思います。\n参考として、精査前のDNA配列のみから判断した種のリストをE列に記載してありますので、適宜ご参照ください。シュコンカイシュホウリョウシュハンダンシメコウキョウジョウホウワメイワアワメイカセンミズベコクセイチョウサセイブツレイワネンドバンニホンブンルイガッカイレンゴウケッカホカフクスウジョウジョウホウムシトウケンサクケッカソウゴウテキハンダンキサイアヤマトウレンラクワメイワアモチブンルイハンダンコトバアイモクガイトウメイショウヘンコウホセイオコナコンカイケッカカナラセイブツワメイワアバアイガクメイキサイワメイワアリユウカンガタトツギバアイカンガタイオウキサイニホンセイソクコクガイシンニュウシュワメイタイオウジョウジョウホウオヨカクニンコクナイセイソクキロクガクメイウシワメイツイキワメイワアシヨウアイダソゴショウタイオウジョウジョウホウソウゴウテキハンダンワメイヒモジッシニホンセイソクシュトウロクコクガイセイソクキンエンシュゴハンダンタイオウカクニンバアイチュウトウロクサイシヨウセイタイゴドウテイタイオウケイトウジュサクセイゴドウテイトチガカノウセイタカシュドウサクジョスクジョウキチョウサケッカトウゲンジョウカギセイドジッシカナラケッカタダホショウケッカリヨウサイテンチュウイキテントアオモサンコウセイサマエハイレツハンダンシュレツキサイテキギサンショウ",
+              1
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "",
+              489
+            ],
+            [
+              "絶滅危惧IB類（EN）",
+              3
+            ],
+            [
+              "準絶滅危惧（NT）",
+              2
+            ],
+            [
+              "情報不足（DD）",
+              1
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "source_key": "2024_prefecturewide_vertebrates_invertebrates",
+      "source_url": "https://www.pref.kanagawa.jp/documents/97797/r6_project_mtinsects-amphi.xlsx",
+      "survey_method": "environmental_DNA_detection_only_not_capture",
+      "capture_observations_added": 0,
+      "exact_sites_exported": false,
+      "download_ok": true,
+      "bytes": 1142014,
+      "sha256": "0655f626405ae5a883ae2dba1589277f381fee170a2a2bf6735a304ca58b1258",
+      "sheets": [
+        {
+          "sheet": "結果まとめ(種落ち)",
+          "dimension": "A1:BM834",
+          "physical_sheet_rows": 834,
+          "head_first_columns": [
+            {
+              "row": 1,
+              "first_columns": {
+                "H": "信頼度シンライド",
+                "I": "国RLクニ",
+                "J": "天然記念物テンネンキネンブツ",
+                "K": "種の保存法 希少種シュホゾンホウキショウモノダネ",
+                "L": "神奈川県RLカナガワケン",
+                "M": "調査IDチョウサ"
+              },
+              "populated_columns": 58
+            },
+            {
+              "row": 2,
+              "first_columns": {
+                "M": "水系スイケイ"
+              },
+              "populated_columns": 53
+            },
+            {
+              "row": 3,
+              "first_columns": {
+                "M": "支川名シセンメイ"
+              },
+              "populated_columns": 53
+            },
+            {
+              "row": 4,
+              "first_columns": {
+                "M": "調査日チョウサビ"
+              },
+              "populated_columns": 50
+            },
+            {
+              "row": 5,
+              "first_columns": {
+                "M": "調査時刻チョウサジコク"
+              },
+              "populated_columns": 53
+            },
+            {
+              "row": 6,
+              "first_columns": {
+                "A": "綱コウ",
+                "B": "目モク",
+                "C": "科カ",
+                "D": "属ゾク",
+                "E": "参考 種名(機械的な併記処理)サンコウシュメイキカイテキヘイキショリ",
+                "F": "種名(手動精査結果)シュメイシュドウセイサケッカ",
+                "G": "MAX(pident*qcovs)",
+                "M": "↓特定外来種↓トクテイガイライシュ"
+              },
+              "populated_columns": 60
+            },
+            {
+              "row": 7,
+              "first_columns": {
+                "A": "哺乳綱",
+                "B": "ウシ目（偶蹄目）",
+                "C": "ウシ科",
+                "D": "カモシカ属",
+                "E": "カモシカ",
+                "F": "カモシカ",
+                "G": "0.99587999999999999",
+                "H": "中",
+                "J": "特天"
+              },
+              "populated_columns": 61
+            },
+            {
+              "row": 8,
+              "first_columns": {
+                "A": "哺乳綱",
+                "B": "ウシ目（偶蹄目）",
+                "C": "シカ科",
+                "D": "シカ属",
+                "E": "ニホンジカ",
+                "F": "ニホンジカ",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 60
+            },
+            {
+              "row": 9,
+              "first_columns": {
+                "A": "哺乳綱",
+                "B": "ウシ目（偶蹄目）",
+                "C": "イノシシ科",
+                "D": "イノシシ属",
+                "E": "イノシシ",
+                "F": "イノシシ",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 60
+            },
+            {
+              "row": 10,
+              "first_columns": {
+                "A": "哺乳綱",
+                "B": "ネコ目（食肉目）",
+                "C": "イヌ科",
+                "D": "イヌ属",
+                "E": "ノイヌ/オオカミ",
+                "F": "ノイヌ/オオカミ",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 60
+            },
+            {
+              "row": 11,
+              "first_columns": {
+                "A": "哺乳綱",
+                "B": "ネコ目（食肉目）",
+                "C": "イヌ科",
+                "D": "タヌキ属",
+                "E": "タヌキ",
+                "F": "タヌキ",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 60
+            },
+            {
+              "row": 12,
+              "first_columns": {
+                "A": "哺乳綱",
+                "B": "ネコ目（食肉目）",
+                "C": "ネコ科",
+                "D": "ネコ属",
+                "E": "ノネコ",
+                "F": "ノネコ",
+                "G": "1",
+                "H": "高"
+              },
+              "populated_columns": 60
+            }
+          ],
+          "r3_r4_explicit_basin_tributary_pairs": [
+            [
+              "境川",
+              "和泉川"
+            ],
+            [
+              "多摩川",
+              "平瀬川"
+            ],
+            [
+              "帷子川",
+              "石崎川"
+            ],
+            [
+              "平作川",
+              "矢部川"
+            ],
+            [
+              "相模川",
+              "中津川"
+            ],
+            [
+              "相模川",
+              "串川"
+            ],
+            [
+              "相模川",
+              "八瀬川"
+            ],
+            [
+              "相模川",
+              "宮川"
+            ],
+            [
+              "相模川",
+              "小出川"
+            ],
+            [
+              "相模川",
+              "沢井川"
+            ],
+            [
+              "相模川",
+              "目久尻川"
+            ],
+            [
+              "相模川",
+              "道保川"
+            ],
+            [
+              "酒匂川",
+              "四十八瀬川"
+            ],
+            [
+              "酒匂川",
+              "狩川"
+            ],
+            [
+              "金目川",
+              "室川"
+            ],
+            [
+              "金目川",
+              "葛葉川"
+            ],
+            [
+              "鶴見川",
+              "奈良川"
+            ],
+            [
+              "鶴見川",
+              "早淵川"
+            ]
+          ],
+          "r3_r4_pair_count": 18,
+          "data_column_A_top_values": [
+            [
+              "昆虫綱",
+              628
+            ],
+            [
+              "硬骨魚綱",
+              81
+            ],
+            [
+              "鳥綱",
+              16
+            ],
+            [
+              "被喉綱",
+              12
+            ],
+            [
+              "哺乳綱",
+              11
+            ],
+            [
+              "軟甲綱",
+              10
+            ],
+            [
+              "二枚貝綱",
+              9
+            ],
+            [
+              "トビムシ目",
+              8
+            ],
+            [
+              "爬虫綱",
+              7
+            ],
+            [
+              "両生綱",
+              7
+            ],
+            [
+              "鰓脚綱",
+              6
+            ],
+            [
+              "ミミズ綱",
+              4
+            ]
+          ],
+          "data_column_J_top_values": [
+            [
+              "",
+              826
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "successful_original_workbooks": 5
+}
