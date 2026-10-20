@@ -85,6 +85,17 @@ jobs:
           print('HIROSHIMA_OTA',sorted(links))
           assert len(html.encode())<2_000_000
           PY
+      - name: Syntax-check embedded browser JavaScript without executing network access
+        run: |
+          python - <<'PY'
+          import re
+          from pathlib import Path
+          src=Path('river-fish/research-individual-v06/outputs/river_atlas_prefecture_preview_v06.html').read_text()
+          found=re.findall(r'<script>([\s\S]+?)</script>',src)
+          assert len(found)==1
+          Path('/tmp/atlas-pref-v06-ui.js').write_text(found[0])
+          PY
+          node --check /tmp/atlas-pref-v06-ui.js
       - name: Upload source-validated research files
         uses: actions/upload-artifact@v4
         with:
