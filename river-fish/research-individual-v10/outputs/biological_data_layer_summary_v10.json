@@ -1,0 +1,24 @@
+{
+  "original_verifiable_survey_river_names": 428,
+  "provisional_same_name_segment_ambiguous_labels": 40,
+  "new_official_prefectural_edna_only_river_names": 24,
+  "new_eDNA_method_overlays_to_existing_names": 2,
+  "combined_source_named_river_label_groups": 492,
+  "sum_of_historic_named_survey_contexts": 651435,
+  "of_which_original_428_contexts": 553351,
+  "of_which_held_name_scope_contexts": 98084,
+  "edna_2025_distinct_taxon_source_labels": 265,
+  "edna_2025_labels_in_new_24_rivers": 233,
+  "fish_capture_records_from_edna": 0,
+  "biological_methods_never_interchangeable": true,
+  "40_provisional_name_groups_are_not_40_verified_distinct_physical_rivers": true,
+  "source_names_with_no_geocoding_not_assigned_to_prefecture": true,
+  "exact_sample_sites_excluded": true,
+  "wordPress_and_production_database_unchanged": true,
+  "method_group_counts": {
+    "historical_national_river_survey": 428,
+    "historical_survey_river_name_multiple_code_candidates": 40,
+    "prefectural_environmental_DNA_only": 24
+  },
+  "notes": "492 is a count of distinct display-name EVIDENCE GROUPS from several source methods, not geocoded river bodies or a verified biological species count. The 40 ambiguous labels are shown as their source river NAME only. eDNA detections are kept distinct."
+}
