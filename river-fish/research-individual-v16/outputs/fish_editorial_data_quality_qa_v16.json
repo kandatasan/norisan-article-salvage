@@ -1,0 +1,20 @@
+{
+  "version": "v16",
+  "original_archive_v15_sha256": "d39f69cbcb97ac0f963e5fcb071cb1bb6c066ae0625825e9a9237c92959985bc",
+  "research_only": true,
+  "source_taxon_labels_before_cleanup": 639,
+  "source_nonfish_exact_names_excluded_from_visible_cards": 50,
+  "source_unresolved_taxon_labels_not_treated_as_confirmed_fish_species": 214,
+  "named_fish_recorded_labels_still_not_guaranteed_distinct_species": 375,
+  "provisional_unique_fish_name_labels_not_species_count": 589,
+  "individual_editorial_rarity_and_memo_drafts": 120,
+  "taste_draft_scores": 53,
+  "all_draft_star_scores_require_human_review": true,
+  "no_fabricated_source_species_identification": true,
+  "original_fish_data_and_nonfish_biology_retained_in_prior_archives": true,
+  "preview_archive": "river_fish_with_editorial_drafts_v16.zip",
+  "preview_bytes": 584881,
+  "preview_sha256": "5ecf9b67ec3c1aaede16f14889f5e2ff3681814ccdb37c20c96bef2798770765",
+  "no_WordPress_or_public_API_change": true,
+  "rights_review_before_commercial_publication": true
+}
