@@ -1,0 +1,116 @@
+name: Research v24 fish to river reverse search and QA
+on:
+  push:
+    branches:
+      - research/fish-to-river-reverse-v24-20261020
+    paths:
+      - 'river-fish/research-individual-v24/**'
+      - '.github/workflows/river-fish-reverse-v24.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  reverse_lookup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Rebuild SHA-verified v19 to v23 research source zips
+        run: |
+          python river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v20/build_general_stars_v20.py
+          python river-fish/research-individual-v21/build_47pref_directory_v21.py
+          python river-fish/research-individual-v22/build_same_name_navigation_v22.py
+          python river-fish/research-individual-v23/build_chugoku_watershed_reference_v23.py
+      - name: Generate v24 reverse fish index from actual historical and DNA records
+        run: |
+          python -m py_compile river-fish/research-individual-v24/build_reverse_fish_index_v24.py
+          python river-fish/research-individual-v24/build_reverse_fish_index_v24.py
+      - name: Independent reverse-evidence source and safety assertions
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          from collections import Counter
+          import hashlib,json,csv,io
+          d=Path('river-fish/research-individual-v24/outputs')
+          q=json.loads((d/'fish_to_river_reverse_qa_v24.json').read_text())
+          assert q['research_only'] and q['no_wordpress_or_live_api_changes']
+          assert q['previous_511_original_survey_groups_preserved']
+          assert q['previous_1057_official_name_only_groups_preserved']
+          assert q['previous_195_unverified_prefecture_groups_preserved']
+          assert q['official_name_only_rivers_with_fish_observations_added']==0
+          assert q['watershed_level_fish_records_transferred_to_river']==0
+          assert q['fish_editorial_candidate_names']==349
+          assert q['fish_names_with_river_survey_evidence']>100
+          zipfile=d/q['archive']
+          assert hashlib.sha256(zipfile.read_bytes()).hexdigest()==q['archive_sha256']
+          with ZipFile(zipfile) as z:
+            assert z.testzip() is None
+            a=json.loads(z.read('atlas.json'))
+            m=json.loads(z.read('fish_master.json'))
+            v=json.loads(z.read('fish_to_river_reverse_v24.json'))
+            assert len(a['entries'])==1568 and len(m['taxa'])==639
+            assert len(v['lookups'])==q['fish_names_with_river_survey_evidence']
+            assert v['not_geographic_or_current_presence_claim'] and v['watershed_wide_reference_not_attached']
+            assert v['environmental_DNA_separated_from_historical_fish_survey']
+            original={x['id']:x for x in a['entries'][:511]}
+            official={x['id'] for x in a['entries'][511:]}
+            assert len(official)==1057
+            pairs=[]
+            for x in v['lookups']:
+              name=x['recorded_fish_name']
+              assert m['taxa'][name]['classification_status']=='named_fish'
+              assert m['taxa'][name]['editorial_status']=='AI_DRAFT_UNVERIFIED'
+              assert len(x['river_survey_groups'])==x['reference_count']
+              for item in x['river_survey_groups']:
+                rid=item['river_id']
+                assert rid in original and rid not in official
+                assert item['original_navigation_paths']
+                assert item['physical_river_identification_approved'] is False
+                assert all(flag in ('HISTORICAL_SURVEY_SOURCE_NAME','ENVIRONMENTAL_DNA_DETECTED_NOT_CAPTURED')
+                     for flag in item['method_flags'])
+                assert item['historical_first_last_year_bound'] or item['edna_positive_years']
+                e=original[rid]
+                if 'HISTORICAL_SURVEY_SOURCE_NAME' in item['method_flags']:
+                   path=e['old'].get('fish')
+                   assert path
+                   contents=json.loads(z.read(path))
+                   rows=contents['labels'] if e['kind']=='historical_national_river_survey' else contents['records']
+                   assert any(x['recorded_name']==name for x in rows)
+                if 'ENVIRONMENTAL_DNA_DETECTED_NOT_CAPTURED' in item['method_flags']:
+                   assert e['edna']
+                   contents=json.loads(z.read(e['edna']))
+                   assert any(x['group']=='fish' and x['method']=='eDNA' and x['name']==name for x in contents['records'])
+                pairs.append((name,rid))
+            assert len(pairs)==len(set(pairs))==q['fish_name_x_original_survey_group_pairs']
+            rows=list(csv.DictReader(io.StringIO(z.read('fish_to_river_reverse_evidence_v24.csv').decode('utf-8-sig'))))
+            assert len(rows)==len(pairs)
+            assert all(r['source_verified_same_physical_river']=='NO' for r in rows)
+            assert 'アユ' in {x['recorded_fish_name'] for x in v['lookups']}
+            html=z.read('index.html').decode()
+            assert '魚の名前から川を探す' in html and 'reverseQueryV24' in html
+            assert html.count('<script>')==html.count('</script>')==1
+            Path('/tmp/fish_v24.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          print('FISH_TO_RIVER_V24_INDEPENDENT_QA_OK')
+          PY
+          node --check /tmp/fish_v24.js
+      - name: Render interaction with DOM mock
+        run: |
+          mkdir -p /tmp/tsurikue-v24
+          python - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('river-fish/research-individual-v24/outputs/river_fish_reverse_lookup_v24.zip') as z:
+            z.extractall('/tmp/tsurikue-v24')
+          PY
+          node river-fish/research-individual-v24/test_reverse_lookup_v24.cjs /tmp/tsurikue-v24
+          node river-fish/research-individual-v24/test_reference_v24.cjs /tmp/tsurikue-v24
+      - name: Upload researcher ZIP, source pair CSV and QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: fish-to-river-reverse-v24-research
+          path: river-fish/research-individual-v24/outputs/
+          retention-days: 30
