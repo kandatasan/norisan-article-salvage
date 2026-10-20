@@ -87,7 +87,7 @@ def read_workbook(data):
             head = []
             for i in range(1, 13):
                 row = rows.get(i, {})
-                head.append({"row": i, "first_columns": {c: clean(row[c]) for c in SAFE_COLS if c in row},
+                head.append({"row": i, "first_columns": {c: clean(row[c]) for c in SAFE_COLS if c in row and (i not in (1,2) or c in "ABCDEFG")},
                              "populated_columns": len(row)})
             # Only aggregate explicit watershed+tributary labels, never the station ID.
             labels = []
