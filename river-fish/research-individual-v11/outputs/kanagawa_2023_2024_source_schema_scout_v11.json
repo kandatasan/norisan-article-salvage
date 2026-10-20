@@ -18,6 +18,16 @@
         {
           "sheet": "R5魚類",
           "dimension": "A1:AA70",
+          "year_hints_by_header_row": {
+            "1": {
+              "literal_2023": 14
+            },
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 70,
           "head_first_columns": [
             {
@@ -296,6 +306,14 @@
         {
           "sheet": "国RL",
           "dimension": "A1:D2852",
+          "year_hints_by_header_row": {
+            "1": {},
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 2852,
           "head_first_columns": [
             {
@@ -465,6 +483,14 @@
         {
           "sheet": "地方自治体RL",
           "dimension": "A1:F49",
+          "year_hints_by_header_row": {
+            "1": {},
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 49,
           "head_first_columns": [
             {
@@ -686,6 +712,16 @@
         {
           "sheet": "結果まとめ(種落ち)",
           "dimension": "A1:BP637",
+          "year_hints_by_header_row": {
+            "1": {
+              "literal_2023": 19
+            },
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 637,
           "head_first_columns": [
             {
@@ -926,6 +962,16 @@
         {
           "sheet": "R5プロジェクト_魚類",
           "dimension": "A1:AN87",
+          "year_hints_by_header_row": {
+            "1": {
+              "literal_2023": 27
+            },
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 87,
           "head_first_columns": [
             {
@@ -1233,6 +1279,14 @@
         {
           "sheet": "国RL",
           "dimension": "A1:D2852",
+          "year_hints_by_header_row": {
+            "1": {},
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 2852,
           "head_first_columns": [
             {
@@ -1402,6 +1456,14 @@
         {
           "sheet": "地方自治体RL",
           "dimension": "A1:F49",
+          "year_hints_by_header_row": {
+            "1": {},
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 49,
           "head_first_columns": [
             {
@@ -1623,6 +1685,16 @@
         {
           "sheet": "結果まとめ(種落ち)",
           "dimension": "A1:AC503",
+          "year_hints_by_header_row": {
+            "1": {
+              "literal_2024": 12
+            },
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 503,
           "head_first_columns": [
             {
@@ -1858,6 +1930,16 @@
         {
           "sheet": "結果まとめ(種落ち)",
           "dimension": "A1:BM834",
+          "year_hints_by_header_row": {
+            "1": {
+              "literal_2024": 51
+            },
+            "2": {},
+            "3": {},
+            "4": {},
+            "5": {},
+            "6": {}
+          },
           "physical_sheet_rows": 834,
           "head_first_columns": [
             {
