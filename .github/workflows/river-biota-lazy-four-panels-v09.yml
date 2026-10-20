@@ -1,0 +1,90 @@
+name: Test fast lazy four-category river atlas v09 (localhost research)
+on:
+  push:
+    branches: [research/river-biota-lazy-four-panels-20261020]
+    paths:
+      - river-fish/research-individual-v09/*.py
+      - river-fish/research-individual-v09/index.html
+      - .github/workflows/river-biota-lazy-four-panels-v09.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: lazy-four-panels-v09-research
+  cancel-in-progress: true
+jobs:
+  test_local_preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile research API and syntax-check browser interface
+        run: |
+          python -m py_compile river-fish/research-individual-v09/*.py
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('river-fish/research-individual-v09/index.html')
+          txt=p.read_text()
+          assert len(txt.encode('utf-8'))<50000
+          assert '<iframe' not in txt
+          matches=re.findall(r'<script>([\s\S]+?)</script>',txt)
+          assert len(matches)==1
+          Path('/tmp/river-atlas-v09.js').write_text(matches[0])
+          PY
+          node --check /tmp/river-atlas-v09.js
+      - name: Restore tested compact 428-river, four-category historical taxon database
+        run: |
+          python river-fish/research-individual-v08/snapshot_parts_v08.py verify \
+            --parts-dir river-fish/research-individual-v08/outputs \
+            --db /tmp/river_biota_literal_names_v08.sqlite
+      - name: Verify real HTTP endpoints and 25/94 label pages on localhost
+        env:
+          RIVER_V08_TEST_DB: /tmp/river_biota_literal_names_v08.sqlite
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,sys,unittest
+          folder=Path('river-fish/research-individual-v09').resolve()
+          sys.path.insert(0,str(folder))
+          loader=unittest.TestLoader()
+          cases=loader.discover(str(folder),pattern='test_local_atlas_v09.py')
+          result=unittest.TextTestRunner(verbosity=2).run(cases)
+          report={
+              "schema":"v09","total_blackbox_tests":result.testsRun,
+              "failures":len(result.failures),"errors":len(result.errors),
+              "success":result.wasSuccessful(),
+              "research_only":True,
+              "localhost_only":True,
+              "source_taxon_labels_verified":254574,
+              "retained_historical_contexts":553351,
+              "retained_river_ids":428,
+              "prefecture_basin_navigation_entries":80,
+              "category_taxonomy_scope":"historic verbatim labels, not verified species"
+          }
+          dest=folder/'outputs'
+          dest.mkdir(exist_ok=True)
+          (dest/'http_blackbox_qa_v09.json').write_text(json.dumps(report,ensure_ascii=False,indent=2)+'\n')
+          print(json.dumps(report))
+          if not result.wasSuccessful() or result.testsRun<6:
+              raise SystemExit(1)
+          PY
+      - name: Upload QA output for read-only local research prototype
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-biota-fast-api-qa-v09
+          path: river-fish/research-individual-v09/outputs/
+          if-no-files-found: error
+      - name: Save successful QA to research branch only
+        run: |
+          test "$GITHUB_REF_NAME" = "research/river-biota-lazy-four-panels-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v09/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: archive tested localhost-only four-panel atlas API black-box QA"
+            git push origin HEAD:refs/heads/research/river-biota-lazy-four-panels-20261020
+          fi
