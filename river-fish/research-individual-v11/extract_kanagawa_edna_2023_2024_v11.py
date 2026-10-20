@@ -229,7 +229,9 @@ def main():
                 "source_dataset_key":source_key,"source_file_sha256":sha,
                 "source_url":BASE+filename,"source_page_url":PARENT,"usage_policy_url":LICENSE,
                 "existing_v10_display_name_group":bool(exists),
-                "record_status":"additional_eDNA_method_year_on_v10_display_name" if exists else "new_official_edna_named_river_candidate",
+                "record_status":("spelling_variant_identity_review_hold" if (water,river) in RIVER_NAME_VARIANT_HOLDS
+                                 else "additional_eDNA_method_year_on_v10_display_name" if exists
+                                 else "new_official_edna_named_river_candidate"),
                 "reliability_note":"DNA detected in water; no proof of live animals or benthic habitat at that site; source label may represent multiple species"
             }
             allrows.append(entry)
@@ -290,6 +292,7 @@ def main():
         "v10_2025_edna_counts_preserved_separately":265,
         "potential_combined_display_name_groups_excluding_held_spellings":492+len(newkeys),
         "method_outside_assay_target_taxa_are_not_promoted":True,
+        "spelling_variant_held_not_automatically_promoted":True,
         "new_direct_fish_capture_records":0,
         "eDNA_insects_or_invertebrates_not_assumed_confirmed_benthic_animals":True,
         "birds_from_eDNA_not_assumed_visual_or_specimen":True,
