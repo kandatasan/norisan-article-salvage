@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="ja"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>日本の河川魚類図鑑｜つりくえ！研究版 v0.15</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;color:#163a42;background:#f3f8f8}
+*{box-sizing:border-box}body{margin:0}
+header{background:linear-gradient(125deg,#075d70,#15899c);color:white;padding:32px max(18px,calc((100vw - 970px)/2))}
+header h1{font-size:clamp(25px,4.3vw,39px);margin:0 0 8px}
+header p{line-height:1.6;margin:0;opacity:.94}
+main{max-width:970px;margin:0 auto;padding:18px}
+section{background:white;border:1px solid #d4e3e5;border-radius:15px;padding:20px;margin:0 0 16px}
+h2{font-size:1.18rem;margin:0 0 15px}h3{font-size:1.06rem}
+p{line-height:1.7}.note{font-size:.8rem;color:#587077;line-height:1.7}
+label{display:block;font-size:.84rem;font-weight:700;margin-bottom:5px}
+select,input{width:100%;padding:12px;border:1px solid #bdd2d5;border-radius:9px;color:#163a42;background:#fff;font-size:16px}
+select:disabled{background:#f1f5f5;color:#77898d}
+select:focus-visible,input:focus-visible,button:focus-visible,a:focus-visible{outline:3px solid #f2b448;outline-offset:2px}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px}
+#heading{margin:0 0 10px;font-size:clamp(19px,4vw,25px)}
+#attribution{margin:0 0 14px}.filters{display:flex;gap:12px;align-items:end;justify-content:space-between}
+.filters>div{width:100%;max-width:370px}
+#count{font-size:.8rem;color:#547079}
+#fishlist{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:15px}
+.fish{padding:15px;border:1px solid #d6e5e7;border-radius:12px;background:#fbfdfd}
+.fish h3{margin:0 0 10px;overflow-wrap:anywhere}
+.stars{display:grid;grid-template-columns:1fr 1fr;gap:6px 11px;margin:9px 0}
+.stars label{color:#5f7379;font-size:.72rem;margin-bottom:1px}
+.stars .score{letter-spacing:1px;color:#c38d19;font-size:1.04rem;font-weight:700;white-space:nowrap}
+.stars .score.missing{font-size:.78rem;color:#6b8186;font-weight:400;letter-spacing:0}
+.memo{margin:9px 0 5px;font-size:.88rem;line-height:1.7}
+.chip{display:inline-block;margin:2px 6px 2px 0;border-radius:999px;background:#e8f4f5;color:#176073;font-size:.72rem;padding:3px 8px}
+.chip.dna{color:#6a5595;background:#f2eefb}
+details{margin-top:9px;font-size:.78rem;color:#526d74}
+summary{cursor:pointer}
+.source-links{padding-top:7px;display:flex;gap:8px;flex-wrap:wrap}
+.source-links a,#attribution a{color:#0c6880}
+button{border:1px solid #a6c7ca;background:#e7f4f5;border-radius:10px;padding:11px 16px;color:#075f70;cursor:pointer;font-weight:700}
+#more{margin:18px 0 0}
+.notice{padding:13px;border-radius:10px;background:#f1f7f7;font-size:.86rem}
+footer{text-align:center;padding:0 20px 25px;color:#638087;font-size:.74rem}
+@media(max-width:730px){header{padding:22px 16px}.controls,#fishlist{grid-template-columns:1fr}main{padding:12px}section{padding:15px}.filters{display:block}.filters>div{max-width:none}#count{margin-top:10px}}
+</style></head>
+<body>
+<header><h1>日本の河川魚類図鑑 <span aria-hidden="true">🐟</span></h1><p>都道府県 → 水系 → 河川。どんな魚が記録されているか、川から探そう。</p></header>
+<main>
+<section>
+<h2>川を選ぶ</h2>
+<div class="controls">
+<div><label for="pref">都道府県・資料</label><select id="pref"><option value="">選んでください</option></select></div>
+<div><label for="water">水系</label><select id="water" disabled><option value="">まず都道府県から</option></select></div>
+<div><label for="river">河川・支流</label><select id="river" disabled><option value="">まず水系から</option></select></div>
+</div>
+<p class="note">河川名は元資料の表記。所在県を確認できない河川名グループは「所在県未確定」に表示。掲載された河川名が法令上の河川区間と一致すると断定していません。</p>
+</section>
+<section id="details" hidden>
+<h2 id="heading"></h2>
+<p class="note" id="attribution"></p>
+<div class="filters"><div><label for="fishsearch">この川の魚を名前で探す</label><input id="fishsearch" type="search" placeholder="例：アユ" autocomplete="off"></div><span id="count"></span></div>
+<div id="fishlist" aria-live="polite"></div>
+<button id="more" type="button" hidden>さらに40件見る</button>
+</section>
+<section><h2>図鑑の読み方</h2>
+<p class="notice">魚の名前は過去の調査資料に記載された名称です。「DNA検出」は環境DNAによる陽性記録で、魚が捕獲・目視されたことを示しません。過去の記録は、今もその川に必ず生息している証拠ではありません。</p>
+<p class="note">レア度・味・一言メモは「つりくえ！」の独自評価欄。根拠を確認して編集した名前だけ表示し、未評価は未評価のままにします。味は一般的な評価で、食用の安全性や採捕の適法性を保証しません。保護種や希少種の具体的な採集地点は掲載しません。</p>
+<p class="note">研究用試作。511は元調査資料の河川名グループ数で、国内511本の個別河川や魚類記録がある511河川を意味しません。非魚類の資料はv0.12研究データ側に保持しています。公開サイトには反映していません。</p>
+</section></main><footer>つりくえ！｜魚類先行・研究プレビュー v0.15（本番未公開）</footer>
+<script>
+"use strict";
+const $=id=>document.getElementById(id);
+const FETCH_LIMIT=40;
+let atlas=null,master=null,current=null,fishGroups=[],displayed=40,epoch=0;
+const promises=new Map();
+function node(tag,text,cls){const e=document.createElement(tag);if(text!==undefined)e.textContent=String(text);if(cls)e.className=cls;return e}
+function empty(e){while(e.firstChild)e.removeChild(e.firstChild)}
+function opt(e,val,label){const o=document.createElement("option");o.value=val;o.textContent=label;e.appendChild(o)}
+function reset(e,label){empty(e);opt(e,"",label);e.disabled=true}
+function uniq(a){return [...new Set(a)].sort((x,y)=>x.localeCompare(y,"ja"))}
+function load(path){
+ if(!path)return Promise.resolve(null);
+ if(!promises.has(path))promises.set(path,fetch(path,{cache:"force-cache"}).then(r=>{if(!r.ok)throw Error("HTTP "+r.status);return r.json()}));
+ return promises.get(path)
+}
+async function setup(){
+ $("pref").addEventListener("change",choosePref);
+ $("water").addEventListener("change",chooseWater);
+ $("river").addEventListener("change",chooseRiver);
+ $("fishsearch").addEventListener("input",()=>{displayed=FETCH_LIMIT;render()});
+ $("more").addEventListener("click",()=>{displayed+=FETCH_LIMIT;render()});
+ try{
+  const result=await Promise.all([load("atlas.json"),load("fish_master.json")]);
+  atlas=result[0];master=result[1];
+  if(atlas.research_display_name_groups!==511||atlas.fish_only_mvp!==true||master.scope!=="SOURCE_RECORDED_FISH_LABELS_NOT_VALIDATED_TAXONOMIC_SPECIES")throw Error("研究用ファイルの版が一致しません");
+  opt($("pref"),atlas.unknown_prefecture_bucket,atlas.unknown_prefecture_bucket);
+  atlas.prefectures.forEach(p=>opt($("pref"),p,p));
+ }catch(err){$("pref").disabled=true;document.querySelector("main").prepend(node("p","魚類の研究データを読み込めません。ZIP展開後、ローカルHTTPサーバー経由で試してください。 "+String(err),"notice"))}
+}
+function choosePref(){
+ current=null;epoch++;$("details").hidden=true;reset($("water"),"水系を選ぶ");reset($("river"),"まず水系から");
+ if(!atlas||!$("pref").value)return;
+ const all=atlas.links.filter(x=>x.prefecture===$("pref").value);
+ for(const name of uniq(all.map(x=>x.water)))opt($("water"),name,name);
+ $("water").disabled=!all.length;
+ if(!all.length)opt($("water"),"","この県の記録はまだありません")
+}
+function chooseWater(){
+ current=null;epoch++;$("details").hidden=true;reset($("river"),"河川・支流を選ぶ");
+ if(!atlas||!$("water").value)return;
+ const ids=new Set(atlas.links.filter(x=>x.prefecture===$("pref").value&&x.water===$("water").value).map(x=>x.river_id));
+ for(const e of atlas.entries.filter(x=>ids.has(x.id)).sort((a,b)=>a.name.localeCompare(b.name,"ja")))
+   opt($("river"),e.id,e.name+(e.kind==="historical_survey_river_name_multiple_code_candidates"?"（区間未特定）":""));
+ $("river").disabled=!ids.size;
+}
+function sourceUrls(row){
+ if(!row)return [];
+ const sources=row.source_evidence||row.sources||[];
+ return uniq(sources.map(s=>typeof s==="string"?s:(s.source_url||s.url||"")).filter(s=>typeof s==="string"&&s.startsWith("https://")))
+}
+function addFish(map,name,rec){
+ if(!map.has(name))map.set(name,{name,methods:new Set(),dates:new Set(),sources:new Set()});
+ const x=map.get(name);x.methods.add(rec.method);
+ rec.years.filter(y=>y!==null&&y!==undefined&&y!=="").forEach(y=>x.dates.add(y));
+ rec.sources.forEach(u=>x.sources.add(u));
+}
+async function chooseRiver(){
+ const local=++epoch;
+ current=atlas?.entries.find(x=>x.id===$("river").value)||null;
+ $("details").hidden=!current;
+ if(!current)return;
+ const e=current;
+ $("heading").textContent=e.water+"水系｜"+e.name+"の魚";
+ $("attribution").textContent="";
+ $("fishsearch").value="";fishGroups=[];displayed=FETCH_LIMIT;
+ empty($("fishlist"));$("fishlist").appendChild(node("p","魚類の調査記録を読み込み中…","note"));
+ $("more").hidden=true;
+ try{
+  const files=await Promise.all([load(e.old?.fish),load(e.edna)]);
+  if(epoch!==local||current!==e)return;
+  const historical=files[0],dna=files[1],map=new Map();
+  if(historical){
+   if(e.kind==="historical_national_river_survey"){
+    if(historical.schema!=="river-category-historical-v09"||historical.category!=="fish"||historical.river_identity!==e.id)throw Error("過去資料の対応が一致しません");
+   }else{
+    if(historical.schema!=="v10_provisional_river_name_only"||historical.category!=="fish"||historical.river_label_group_key!==e.id)throw Error("保留資料の対応が一致しません");
+   }
+   const rows=e.kind==="historical_national_river_survey"?historical.labels:historical.records;
+   for(const row of rows){
+    const y1=row.year_min??row.first_year,y2=row.year_max??row.last_year;
+    addFish(map,row.recorded_name,{method:"過去の調査記録",years:[y1,y2],sources:sourceUrls(row)})
+   }
+  }
+  if(dna){
+   if(dna.id!==e.id||dna.water!==e.water||dna.name!==e.name||!dna.not_capture_or_visual_survey)throw Error("環境DNAの河川対応が一致しません");
+   for(const row of dna.records){
+    if(row.group!=="fish"||row.method!=="eDNA")throw Error("魚類以外のDNA記録が混入");
+    addFish(map,row.name,{method:"DNA検出",years:[row.year],sources:row.sources.filter(x=>typeof x==="string"&&x.startsWith("https://"))})
+   }
+  }
+  fishGroups=Array.from(map.values()).sort((a,b)=>a.name.localeCompare(b.name,"ja"));
+  render()
+ }catch(err){
+  if(epoch!==local)return;
+  empty($("fishlist"));$("fishlist").appendChild(node("p","読み込み中に検証エラーが発生しました。 "+String(err),"notice"))
+ }
+}
+function starView(score){
+ if(score===null||score===undefined)return node("div","未評価","score missing");
+ return node("div","★".repeat(score)+"☆".repeat(5-score),"score")
+}
+function fishCard(row){
+ const card=node("article",undefined,"fish");
+ card.appendChild(node("h3",row.name));
+ const editorial=master.taxa[row.name];
+ const metrics=node("div",undefined,"stars");
+ for(const [title,key] of [["レア度","rarity_stars"],["味","taste_stars"]]){
+  const box=node("div");box.appendChild(node("label",title));
+  box.appendChild(starView(editorial?.[key]??null));metrics.appendChild(box)
+ }
+ card.appendChild(metrics);
+ if(editorial?.memo)card.appendChild(node("p",editorial.memo,"memo"));
+ else card.appendChild(node("p","一言メモは編集中","note"));
+ for(const m of ["過去の調査記録","DNA検出"]){
+  if(row.methods.has(m))card.appendChild(node("span",m,m==="DNA検出"?"chip dna":"chip"))
+ }
+ const years=Array.from(row.dates).sort((a,b)=>a-b);
+ if(years.length)card.appendChild(node("p","資料の記録年："+(years[0]===years.at(-1)?years[0]:years[0]+"〜"+years.at(-1))+"年","note"));
+ const links=uniq(Array.from(row.sources));
+ if(links.length){
+  const details=node("details");const summary=node("summary","出典を確認（"+links.length+"件）");
+  details.appendChild(summary);const list=node("div",undefined,"source-links");
+  for(const [i,url] of links.entries()){const a=node("a","出典"+(i+1));a.href=url;a.target="_blank";a.rel="noopener noreferrer";list.appendChild(a)}
+  details.appendChild(list);card.appendChild(details);
+ }
+ return card
+}
+function render(){
+ if(!current)return;
+ empty($("fishlist"));$("more").hidden=true;
+ const key=$("fishsearch").value.trim().toLocaleLowerCase();
+ const selected=fishGroups.filter(x=>x.name.toLocaleLowerCase().includes(key));
+ $("count").textContent="掲載名 "+selected.length+"件（異なる生物種数ではありません）";
+ const sources=uniq(fishGroups.flatMap(x=>Array.from(x.sources)));
+ empty($("attribution"));
+ if(sources.length){
+  $("attribution").appendChild(node("span","参考："));
+  const main=node("a","原資料");main.href=sources[0];main.target="_blank";main.rel="noopener noreferrer";$("attribution").appendChild(main);
+  if(sources.length>1)$("attribution").appendChild(node("span"," ほか（魚ごとに出典を確認できます）"));
+ }else $("attribution").textContent="参考：元資料内にリンクが確認できない記録を含みます";
+ if(!selected.length){
+  $("fishlist").appendChild(node("p",key?"一致する記録名はありません。":"現在、この河川名について魚類の公開調査記録を収録していません。魚がいないという意味ではありません。","note"));
+  return
+ }
+ selected.slice(0,displayed).forEach(x=>$("fishlist").appendChild(fishCard(x)));
+ if(selected.length>displayed)$("more").hidden=false
+}
+setup();
+</script></body></html>
