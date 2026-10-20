@@ -214,16 +214,36 @@ function reverseRenderV24(){
   e.appendChild(node("strong",item.recorded_fish_name));
   const info=node("p","調査資料の河川名グループ "+item.reference_count+"件（異なる実在河川の本数ではありません）","note");
   e.appendChild(info);
-  for(const row of item.river_survey_groups){
-   const nav=row.original_navigation_paths[0];
-   if(!nav)continue;
-   const pref=nav.prefecture,methods=row.method_flags;
-   const method=methods.map(x=>x==="ENVIRONMENTAL_DNA_DETECTED_NOT_CAPTURED"?"DNA検出（捕獲記録ではない）":"過去の魚類調査").join("＋");
-   const button=node("button",(pref===atlas.unknown_prefecture_bucket?"所在県未確定":pref)+"｜"+row.watershed_name+"水系・"+row.river_name+"｜"+method);
-   button.type="button";
-   button.addEventListener("click",()=>reverseNavV24(nav,row.river_id));
-   e.appendChild(button);
+  const tax=master?.taxa?.[item.recorded_fish_name];
+  if(tax?.classification_status==="named_fish"){
+   const stars=tax?.draft_scores;
+   if(stars?.rarity_stars!=null)e.appendChild(node("p","一般レア度 "+"★".repeat(stars.rarity_stars)+"☆".repeat(5-stars.rarity_stars),"note"));
+   if(stars?.taste_stars!=null)e.appendChild(node("p","味の目安 "+"★".repeat(stars.taste_stars)+"☆".repeat(5-stars.taste_stars),"note"));
+   if(tax.draft_memo)e.appendChild(node("p",tax.draft_memo,"memo"));
   }
+  const links=node("div",undefined,"source-river-links");
+  e.appendChild(links);
+  const expand=node("button","さらに河川名の記録を見る");
+  expand.type="button";
+  let visible=0;
+  const appendRivers=()=>{
+   const selected=item.river_survey_groups.slice(visible,visible+14);
+   for(const row of selected){
+    const nav=row.original_navigation_paths[0];
+    if(!nav)continue;
+    const pref=nav.prefecture,methods=row.method_flags;
+    const method=methods.map(x=>x==="ENVIRONMENTAL_DNA_DETECTED_NOT_CAPTURED"?"DNA検出（捕獲記録ではない）":"過去の魚類調査").join("＋");
+    const button=node("button",(pref===atlas.unknown_prefecture_bucket?"所在県未確定":pref)+"｜"+row.watershed_name+"水系・"+row.river_name+"｜"+method);
+    button.type="button";
+    button.addEventListener("click",()=>reverseNavV24(nav,row.river_id));
+    links.appendChild(button);
+   }
+   visible+=selected.length;
+   expand.hidden=visible>=item.river_survey_groups.length;
+  };
+  expand.addEventListener("click",appendRivers);
+  e.appendChild(expand);
+  appendRivers();
   box.appendChild(e)
  }
  more.hidden=reverseHitsV24.length>reverseShownV24;
