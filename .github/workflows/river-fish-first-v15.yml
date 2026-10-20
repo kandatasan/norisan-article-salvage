@@ -1,0 +1,92 @@
+name: Fish-only river atlas research v15
+on:
+  push:
+    branches:
+      - research/river-fish-first-v15-20261020
+    paths:
+      - 'river-fish/research-individual-v15/**'
+      - '.github/workflows/river-fish-first-v15.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: river-fish-first-v15
+  cancel-in-progress: false
+jobs:
+  build-and-audit-fish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit code syntax, original archive SHA, fish-only records and missing ratings
+        run: |
+          set -o pipefail
+          {
+            python -m py_compile river-fish/research-individual-v15/build_fish_first_v15.py
+            node --version
+            python river-fish/research-individual-v15/build_fish_first_v15.py
+          } 2>&1 | tee /tmp/fish_v15_runlog.txt
+      - name: Check web JavaScript syntax
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('river-fish/research-individual-v15/viewer_fish_first_v15.html').read_text()
+          assert s.count('<script>')==s.count('</script>')==1
+          Path('/tmp/fish_v15_script.js').write_text(s.split('<script>',1)[1].split('</script>',1)[0])
+          PY
+          node --check /tmp/fish_v15_script.js
+      - name: Independently verify archive fish-only file manifest and editorial state
+        run: |
+          python - <<'PY'
+          import json,zipfile,pathlib,hashlib
+          root=pathlib.Path('river-fish/research-individual-v15/outputs')
+          qa=json.loads((root/'fish_first_integrity_v15.json').read_text())
+          path=root/qa['new_archive']
+          assert hashlib.sha256(path.read_bytes()).hexdigest()==qa['new_archive_sha256']
+          with zipfile.ZipFile(path) as z:
+            assert z.testzip() is None
+            a=json.loads(z.read('atlas.json'))
+            m=json.loads(z.read('fish_master.json'))
+            assert a['research_display_name_groups']==511 and a['fish_only_mvp']
+            assert len(a['entries'])==511
+            assert len(m['taxa'])==qa['distinct_verbatim_fish_name_labels_not_taxonomic_species_count']
+            assert qa['editorially_reviewed_species_labels']==0
+            assert all((x['rarity_stars'] is None and x['taste_stars'] is None) for x in m['taxa'].values())
+            assert all(not n.endswith('/birds.json') and not n.endswith('/plants.json') and not n.endswith('/benthic_animals.json') for n in z.namelist())
+            assert all(e['edna'] is None or all(rec['group']=='fish' for rec in json.loads(z.read(e['edna']))['records']) for e in a['entries'])
+          print('FISH_ONLY_RESEARCH_AUDIT_PASSED')
+          PY
+      - name: Persist failure diagnostic
+        if: failure()
+        run: |
+          mkdir -p river-fish/research-individual-v15/outputs
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('/tmp/fish_v15_runlog.txt')
+          raw=p.read_text(errors='replace') if p.exists() else 'No runlog'
+          Path('river-fish/research-individual-v15/outputs/fish_first_diagnostic_v15.json').write_text(
+           json.dumps({'status':'INCOMPLETE_NOT_VERIFIED','error_tail':raw[-5000:]},ensure_ascii=False,indent=2)+'\n')
+          PY
+      - name: Clear diagnostic after all validation passes
+        if: success()
+        run: rm -f river-fish/research-individual-v15/outputs/fish_first_diagnostic_v15.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: tsurikue-fish-only-river-atlas-research-v15
+          path: river-fish/research-individual-v15/outputs/
+      - name: Commit verified research archive and JSON on this isolated branch only
+        if: always()
+        run: |
+          test "$GITHUB_REF_NAME" = "research/river-fish-first-v15-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v15/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: persist independently audited fish-first static atlas v15"
+            git push origin HEAD:refs/heads/research/river-fish-first-v15-20261020
+          fi
