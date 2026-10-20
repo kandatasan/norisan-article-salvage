@@ -1,0 +1,36 @@
+name: Fish editorial evidence prep v16
+on:
+  push:
+    branches:
+      - research/fish-editorial-v16-20261020
+    paths:
+      - 'river-fish/research-individual-v16/**'
+      - '.github/workflows/river-fish-editorial-v16.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: fish-editorial-v16
+  cancel-in-progress: false
+jobs:
+  inventory:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify original fish names and create editorial worksheet
+        run: |
+          python -m py_compile river-fish/research-individual-v16/export_fish_names_v16.py
+          python river-fish/research-individual-v16/export_fish_names_v16.py
+      - name: Preserve inventory for editor review
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v16/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: record 639 literal fish names from research-only v15"
+            git push origin HEAD:refs/heads/research/fish-editorial-v16-20261020
+          fi
