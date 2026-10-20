@@ -38,6 +38,10 @@ jobs:
         run: |
           python river-fish/research-individual-v10/inspect_kanagawa_sheet_columns_v10.py \
             --out river-fish/research-individual-v10/outputs/kanagawa_sheet_layout_v10.json
+      - name: Measure read-positive eDNA records with explicit stream names
+        run: |
+          python river-fish/research-individual-v10/audit_kanagawa_edna_matrix_v10.py \
+            river-fish/research-individual-v10/outputs/kanagawa_named_tributary_edna_audit_v10.json
       - name: Check acquisition honesty
         run: |
           python - <<'PY'
