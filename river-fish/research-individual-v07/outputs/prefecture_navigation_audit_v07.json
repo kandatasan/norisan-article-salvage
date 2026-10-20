@@ -1,0 +1,213 @@
+{
+  "version": "v07",
+  "prev_v06_basin_entries": 56,
+  "prev_v06_river_links": 386,
+  "held_from_v06": 39,
+  "now_added_major_basin_documentary_entries": 24,
+  "still_held_after_major_basin_check": 15,
+  "new_prefecture_to_river_display_links": 103,
+  "total_navigation_entries": 80,
+  "total_prefecture_river_display_links": 489,
+  "prefectures_with_navigation": 28,
+  "full_47_prefecture_options": 47,
+  "underlying_river_name_identities_unchanged": 428,
+  "underlying_biota_contexts_unchanged": 553351,
+  "independently_verified_national_bureau_code": "81..89, administrative only, NOT prefecture",
+  "second_class_prefecture_code_means_river_mouth_not_entire_basin": true,
+  "national_source_spec_urls": {
+    "mlit_2014_code_spec": "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+    "mlit_current_6digit_registry": "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+  },
+  "no_site_or_mysql_changes": true,
+  "no_physical_river_prefecture_inference": true,
+  "biota_scope_only_individual_rivers": true,
+  "same_name_local_secondclass_collisions_remaining": 2,
+  "held_examples": [
+    {
+      "prefecture": "佐賀県",
+      "watershed": "那珂川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.saga.lg.jp/kiji00312081/index.html"
+      ]
+    },
+    {
+      "prefecture": "兵庫県",
+      "watershed": "宮川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://web.pref.hyogo.lg.jp/ks13/wd15_000000039.html"
+      ]
+    },
+    {
+      "prefecture": "和歌山県",
+      "watershed": "太田川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.wakayama.lg.jp/prefg/080400/hoshin/kihonhosin.html"
+      ]
+    },
+    {
+      "prefecture": "大阪府",
+      "watershed": "芦田川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.osaka.lg.jp/o130100/kasenseibi/keikaku/nikyukihonseibi.html"
+      ]
+    },
+    {
+      "prefecture": "山形県",
+      "watershed": "荒川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.yamagata.jp/180006/kurashi/kendo/kasen_dam/kasenseibi/kihonhousin-seibikeikaku.html"
+      ]
+    },
+    {
+      "prefecture": "愛媛県",
+      "watershed": "渡川",
+      "old_hold_reason": "multiple_national_watershed_codes_same_name",
+      "new_decision": "remain_held",
+      "review_reason": "local_second_class_same_name_possible_in_source_prefecture",
+      "mainstream_code_candidate": "880803",
+      "source_region": "shikoku",
+      "prefecture_official_urls": [
+        "https://www.pref.ehime.jp/page/8362.html"
+      ],
+      "local_name_code_collision": [
+        "380023"
+      ]
+    },
+    {
+      "prefecture": "熊本県",
+      "watershed": "大野川",
+      "old_hold_reason": "multiple_national_watershed_codes_same_name",
+      "new_decision": "remain_held",
+      "review_reason": "local_second_class_same_name_possible_in_source_prefecture",
+      "mainstream_code_candidate": "890918",
+      "source_region": "kyushu",
+      "prefecture_official_urls": [
+        "https://www.pref.kumamoto.jp/soshiki/105/5775.html"
+      ],
+      "local_name_code_collision": [
+        "430024"
+      ]
+    },
+    {
+      "prefecture": "石川県",
+      "watershed": "大野川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.ishikawa.lg.jp/kasen/kasenseibi/"
+      ]
+    },
+    {
+      "prefecture": "福島県",
+      "watershed": "久慈川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.fukushima.lg.jp/sec/41045a/housinnkeikaku20.html"
+      ]
+    },
+    {
+      "prefecture": "福島県",
+      "watershed": "阿賀野川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.fukushima.lg.jp/sec/41045a/housinnkeikaku20.html"
+      ]
+    },
+    {
+      "prefecture": "静岡県",
+      "watershed": "北川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
+      ]
+    },
+    {
+      "prefecture": "静岡県",
+      "watershed": "太田川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
+      ]
+    },
+    {
+      "prefecture": "静岡県",
+      "watershed": "那賀川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
+      ]
+    },
+    {
+      "prefecture": "香川県",
+      "watershed": "高瀬川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.kagawa.lg.jp/kasensabo/kasen/03_seibi.html"
+      ]
+    },
+    {
+      "prefecture": "鳥取県",
+      "watershed": "由良川",
+      "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "new_decision": "remain_held",
+      "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+      "mainstream_code_candidate": null,
+      "source_region": null,
+      "prefecture_official_urls": [
+        "https://www.pref.tottori.lg.jp/item/219859.htm"
+      ]
+    }
+  ]
+}

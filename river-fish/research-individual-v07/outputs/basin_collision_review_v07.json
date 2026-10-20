@@ -1,0 +1,596 @@
+[
+  {
+    "prefecture": "三重県",
+    "watershed": "宮川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "850513",
+    "source_region": "chubu",
+    "prefecture_official_urls": [
+      "https://www.pref.mie.lg.jp/KASEN/HP/84410046843.htm"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 3
+  },
+  {
+    "prefecture": "三重県",
+    "watershed": "淀川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860604",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.mie.lg.jp/KASEN/HP/84410046843.htm"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 12
+  },
+  {
+    "prefecture": "京都府",
+    "watershed": "淀川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860604",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.kyoto.jp/kasen/1297298822071.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 12
+  },
+  {
+    "prefecture": "京都府",
+    "watershed": "由良川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860609",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.kyoto.jp/kasen/1297298822071.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 1
+  },
+  {
+    "prefecture": "佐賀県",
+    "watershed": "松浦川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "890902",
+    "source_region": "kyushu",
+    "prefecture_official_urls": [
+      "https://www.pref.saga.lg.jp/kiji00312081/index.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "佐賀県",
+    "watershed": "那珂川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.saga.lg.jp/kiji00312081/index.html"
+    ]
+  },
+  {
+    "prefecture": "兵庫県",
+    "watershed": "宮川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://web.pref.hyogo.lg.jp/ks13/wd15_000000039.html"
+    ]
+  },
+  {
+    "prefecture": "和歌山県",
+    "watershed": "太田川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.wakayama.lg.jp/prefg/080400/hoshin/kihonhosin.html"
+    ]
+  },
+  {
+    "prefecture": "埼玉県",
+    "watershed": "荒川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "830304",
+    "source_region": "kanto",
+    "prefecture_official_urls": [
+      "https://www.pref.saitama.lg.jp/b0924/nc-tanbou/nc-tanbou2025.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 5
+  },
+  {
+    "prefecture": "大分県",
+    "watershed": "大野川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "890918",
+    "source_region": "kyushu",
+    "prefecture_official_urls": [
+      "https://www.pref.oita.jp/soshiki/17200/kihonhousin.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "大阪府",
+    "watershed": "芦田川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.osaka.lg.jp/o130100/kasenseibi/keikaku/nikyukihonseibi.html"
+    ]
+  },
+  {
+    "prefecture": "奈良県",
+    "watershed": "大和川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860603",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.nara.jp/17213.htm"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 4
+  },
+  {
+    "prefecture": "奈良県",
+    "watershed": "淀川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860604",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.nara.jp/17213.htm"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 12
+  },
+  {
+    "prefecture": "奈良県",
+    "watershed": "紀の川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860602",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.nara.jp/17213.htm"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 1
+  },
+  {
+    "prefecture": "宮崎県",
+    "watershed": "川内川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "890912",
+    "source_region": "kyushu",
+    "prefecture_official_urls": [
+      "https://www.pref.miyazaki.lg.jp/kasen/kurashi/shakaikiban/502.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 6
+  },
+  {
+    "prefecture": "山形県",
+    "watershed": "荒川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.yamagata.jp/180006/kurashi/kendo/kasen_dam/kasenseibi/kihonhousin-seibikeikaku.html"
+    ]
+  },
+  {
+    "prefecture": "山形県",
+    "watershed": "赤川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "820212",
+    "source_region": "tohoku",
+    "prefecture_official_urls": [
+      "https://www.pref.yamagata.jp/180006/kurashi/kendo/kasen_dam/kasenseibi/kihonhousin-seibikeikaku.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 3
+  },
+  {
+    "prefecture": "広島県",
+    "watershed": "芦田川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "870710",
+    "source_region": "chugoku",
+    "prefecture_official_urls": [
+      "https://www.pref.hiroshima.lg.jp/uploaded/attachment/429109.pdf"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "愛媛県",
+    "watershed": "吉野川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "880807",
+    "source_region": "shikoku",
+    "prefecture_official_urls": [
+      "https://www.pref.ehime.jp/page/8362.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "愛媛県",
+    "watershed": "渡川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "remain_held",
+    "review_reason": "local_second_class_same_name_possible_in_source_prefecture",
+    "mainstream_code_candidate": "880803",
+    "source_region": "shikoku",
+    "prefecture_official_urls": [
+      "https://www.pref.ehime.jp/page/8362.html"
+    ],
+    "local_name_code_collision": [
+      "380023"
+    ]
+  },
+  {
+    "prefecture": "栃木県",
+    "watershed": "久慈川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "830301",
+    "source_region": "kanto",
+    "prefecture_official_urls": [
+      "https://www.pref.tochigi.lg.jp/h06/town/kasen/kaishu/seibijoukyou.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "栃木県",
+    "watershed": "那珂川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "830302",
+    "source_region": "kanto",
+    "prefecture_official_urls": [
+      "https://www.pref.tochigi.lg.jp/h06/town/kasen/kaishu/seibijoukyou.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "滋賀県",
+    "watershed": "淀川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860604",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.shiga.lg.jp/ha04/1178.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 12
+  },
+  {
+    "prefecture": "熊本県",
+    "watershed": "大野川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "remain_held",
+    "review_reason": "local_second_class_same_name_possible_in_source_prefecture",
+    "mainstream_code_candidate": "890918",
+    "source_region": "kyushu",
+    "prefecture_official_urls": [
+      "https://www.pref.kumamoto.jp/soshiki/105/5775.html"
+    ],
+    "local_name_code_collision": [
+      "430024"
+    ]
+  },
+  {
+    "prefecture": "熊本県",
+    "watershed": "緑川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "890910",
+    "source_region": "kyushu",
+    "prefecture_official_urls": [
+      "https://www.pref.kumamoto.jp/soshiki/105/5775.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 3
+  },
+  {
+    "prefecture": "石川県",
+    "watershed": "大野川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.ishikawa.lg.jp/kasen/kasenseibi/"
+    ]
+  },
+  {
+    "prefecture": "福井県",
+    "watershed": "北川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "860608",
+    "source_region": "kinki",
+    "prefecture_official_urls": [
+      "https://www.pref.fukui.lg.jp/doc/kasen/kasenseibi.html"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 1
+  },
+  {
+    "prefecture": "福島県",
+    "watershed": "久慈川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.fukushima.lg.jp/sec/41045a/housinnkeikaku20.html"
+    ]
+  },
+  {
+    "prefecture": "福島県",
+    "watershed": "阿賀野川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.fukushima.lg.jp/sec/41045a/housinnkeikaku20.html"
+    ]
+  },
+  {
+    "prefecture": "長野県",
+    "watershed": "信濃川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "840403",
+    "source_region": "hokuriku",
+    "prefecture_official_urls": [
+      "https://www.pref.nagano.lg.jp/kasen/infra/kasen/keikaku/documents/r8naganokennokasen.pdf"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 6
+  },
+  {
+    "prefecture": "長野県",
+    "watershed": "天竜川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "850505",
+    "source_region": "chubu",
+    "prefecture_official_urls": [
+      "https://www.pref.nagano.lg.jp/kasen/infra/kasen/keikaku/documents/r8naganokennokasen.pdf"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 3
+  },
+  {
+    "prefecture": "長野県",
+    "watershed": "関川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "840404",
+    "source_region": "hokuriku",
+    "prefecture_official_urls": [
+      "https://www.pref.nagano.lg.jp/kasen/infra/kasen/keikaku/documents/r8naganokennokasen.pdf"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "静岡県",
+    "watershed": "北川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
+    ]
+  },
+  {
+    "prefecture": "静岡県",
+    "watershed": "太田川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
+    ]
+  },
+  {
+    "prefecture": "静岡県",
+    "watershed": "那賀川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.shizuoka.jp/machizukuri/kasensabo/river/1003550/index.html"
+    ]
+  },
+  {
+    "prefecture": "香川県",
+    "watershed": "高瀬川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.kagawa.lg.jp/kasensabo/kasen/03_seibi.html"
+    ]
+  },
+  {
+    "prefecture": "高知県",
+    "watershed": "吉野川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "880807",
+    "source_region": "shikoku",
+    "prefecture_official_urls": [
+      "https://www.pref.kochi.lg.jp/doc/kasen-keikaku-housinkeikaku/"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 2
+  },
+  {
+    "prefecture": "高知県",
+    "watershed": "渡川",
+    "old_hold_reason": "multiple_national_watershed_codes_same_name",
+    "new_decision": "added_as_documentary_navigation_only",
+    "review_reason": "unique_independent_major_basin_code_for_source_bureau_without_same_name_local_second_class",
+    "mainstream_code_candidate": "880803",
+    "source_region": "shikoku",
+    "prefecture_official_urls": [
+      "https://www.pref.kochi.lg.jp/doc/kasen-keikaku-housinkeikaku/"
+    ],
+    "basis_urls": [
+      "https://www.cgr.mlit.go.jp/kasen/code/pdf/01siyousyo201404.pdf",
+      "https://nlftp.mlit.go.jp/ksj/gml/codelist/WaterSystemCodeCd.html"
+    ],
+    "linked_river_name_ids": 3
+  },
+  {
+    "prefecture": "鳥取県",
+    "watershed": "由良川",
+    "old_hold_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "new_decision": "remain_held",
+    "review_reason": "prefecture_and_survey_source_bureau_region_conflict",
+    "mainstream_code_candidate": null,
+    "source_region": null,
+    "prefecture_official_urls": [
+      "https://www.pref.tottori.lg.jp/item/219859.htm"
+    ]
+  }
+]
