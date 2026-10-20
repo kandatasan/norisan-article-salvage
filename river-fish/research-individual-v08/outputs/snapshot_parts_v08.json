@@ -1,0 +1,20 @@
+{
+  "version": 8,
+  "db_name": "river_biota_literal_names_v08.sqlite",
+  "db_sha256": "a8098d63ab09ac8860811563cc7757ef011d9a784ebc48f8c4aef29979502c10",
+  "db_bytes": 74735616,
+  "gzip_sha256": "9d6f5fd20eed9a6b2e9440831c6851545312cf64ee9c97c6b0705de854a946ff",
+  "gzip_bytes": 14541308,
+  "parts": [
+    {
+      "name": "river_biota_literal_names_v08.sqlite.gz.part000",
+      "bytes": 7500000,
+      "sha256": "592a04c53db90ca2382c2ac9dd052307c6a4fe1382fcaac124c9445bf4c31423"
+    },
+    {
+      "name": "river_biota_literal_names_v08.sqlite.gz.part001",
+      "bytes": 7041308,
+      "sha256": "2ce5a12dd88912be79dd9821b7df6d9bb285b7a8b0841de230bfd27ee8f7e535"
+    }
+  ]
+}

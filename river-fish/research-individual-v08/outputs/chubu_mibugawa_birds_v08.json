@@ -1,0 +1,531 @@
+{
+  "status": "named_river_historical_labels",
+  "river_identity": "rn_4f4044ec352748fee6d97248",
+  "source_region": "chubu",
+  "source_authority": "中部地方整備局",
+  "watershed_name": "天竜川",
+  "river_name": "三峰川",
+  "river_code_optional": null,
+  "prefecture": null,
+  "prefecture_geographic_status": "not_inferred",
+  "four_categories": {
+    "benthic_animals": {
+      "category_label": "底生動物",
+      "historical_contexts": 205,
+      "literal_labels_not_species": 142,
+      "survey_year_min": 2002,
+      "survey_year_max": 2007
+    },
+    "birds": {
+      "category_label": "鳥類",
+      "historical_contexts": 51,
+      "literal_labels_not_species": 51,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015
+    },
+    "fish": {
+      "category_label": "魚類",
+      "historical_contexts": 32,
+      "literal_labels_not_species": 13,
+      "survey_year_min": 2007,
+      "survey_year_max": 2022
+    },
+    "plants": {
+      "category_label": "植物",
+      "historical_contexts": 905,
+      "literal_labels_not_species": 462,
+      "survey_year_min": 2001,
+      "survey_year_max": 2016
+    }
+  },
+  "selected_category": "birds",
+  "selected_category_label": "鳥類",
+  "offset": 0,
+  "page_size": 30,
+  "total_literal_names_not_species": 51,
+  "has_more": true,
+  "items": [
+    {
+      "literal_recorded_name": "アオサギ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "アカゲラ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "アトリ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "イカルチドリ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "イソシギ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "イワツバメ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "エナガ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "オオヨシキリ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カイツブリ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カケス",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カシラダカ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カッコウ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カルガモ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カワアイサ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カワウ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カワガラス",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カワセミ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ガビチョウ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "キジ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "キジバト",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "キセキレイ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コガモ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コゲラ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コサギ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ゴイサギ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "シジュウカラ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "シメ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "シロハラ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ジョウビタキ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "スズメ",
+      "historical_contexts": 1,
+      "survey_year_min": 2015,
+      "survey_year_max": 2015,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2015,
+          "year_max": 2015,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT85_B04.zip",
+          "source_sha256": "aa7f74f8e0a1fa908f6a80ded382fdbc07d266f112fc71ef162b8bd68d3d4dbf"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    }
+  ],
+  "source_scope": "individual_named_river_only",
+  "caution": "Not number of individuals, not verified taxonomic species counts, not current presence. 0 means no captured survey record, not absence. No watershed-level records assigned to an individual river."
+}

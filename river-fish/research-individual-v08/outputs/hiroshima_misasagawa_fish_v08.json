@@ -1,0 +1,451 @@
+{
+  "status": "named_river_historical_labels",
+  "river_identity": "rn_bbdfd93b839597c49a7e2c81",
+  "source_region": "chugoku",
+  "source_authority": "中国地方整備局",
+  "watershed_name": "太田川",
+  "river_name": "三篠川",
+  "river_code_optional": "8707090029",
+  "prefecture": null,
+  "prefecture_geographic_status": "not_inferred",
+  "four_categories": {
+    "benthic_animals": {
+      "category_label": "底生動物",
+      "historical_contexts": 464,
+      "literal_labels_not_species": 244,
+      "survey_year_min": 1995,
+      "survey_year_max": 2010
+    },
+    "birds": {
+      "category_label": "鳥類",
+      "historical_contexts": 214,
+      "literal_labels_not_species": 68,
+      "survey_year_min": 1991,
+      "survey_year_max": 2018
+    },
+    "fish": {
+      "category_label": "魚類",
+      "historical_contexts": 67,
+      "literal_labels_not_species": 25,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023
+    },
+    "plants": {
+      "category_label": "植物",
+      "historical_contexts": 1347,
+      "literal_labels_not_species": 589,
+      "survey_year_min": 1997,
+      "survey_year_max": 2016
+    }
+  },
+  "selected_category": "fish",
+  "selected_category_label": "魚類",
+  "offset": 0,
+  "page_size": 30,
+  "total_literal_names_not_species": 25,
+  "has_more": false,
+  "items": [
+    {
+      "literal_recorded_name": "アユ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "イトモロコ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "オイカワ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カワムツ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カワヨシノボリ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ギギ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コウライニゴイ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コウライモロコ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ズナガニゴイ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ナマズ",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ムギツク",
+      "historical_contexts": 4,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 4,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カマツカ",
+      "historical_contexts": 3,
+      "survey_year_min": 2009,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 2009,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ギンブナ",
+      "historical_contexts": 3,
+      "survey_year_min": 2009,
+      "survey_year_max": 2019,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 2009,
+          "year_max": 2019,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ドンコ",
+      "historical_contexts": 3,
+      "survey_year_min": 2009,
+      "survey_year_max": 2019,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 2009,
+          "year_max": 2019,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "オオシマドジョウ",
+      "historical_contexts": 2,
+      "survey_year_min": 2019,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 2019,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "カマツカ類",
+      "historical_contexts": 2,
+      "survey_year_min": 2019,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 2019,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "シマドジョウ",
+      "historical_contexts": 2,
+      "survey_year_min": 2009,
+      "survey_year_max": 2014,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 2009,
+          "year_max": 2014,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "オオクチバス",
+      "historical_contexts": 1,
+      "survey_year_min": 2014,
+      "survey_year_max": 2014,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2014,
+          "year_max": 2014,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "オオヨシノボリ",
+      "historical_contexts": 1,
+      "survey_year_min": 2014,
+      "survey_year_max": 2014,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2014,
+          "year_max": 2014,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コイ（ニシキゴイ）",
+      "historical_contexts": 1,
+      "survey_year_min": 2009,
+      "survey_year_max": 2009,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2009,
+          "year_max": 2009,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コイ（型不明）",
+      "historical_contexts": 1,
+      "survey_year_min": 2019,
+      "survey_year_max": 2019,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2019,
+          "year_max": 2019,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "スジシマドジョウ中型種",
+      "historical_contexts": 1,
+      "survey_year_min": 2009,
+      "survey_year_max": 2009,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2009,
+          "year_max": 2009,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ナガレカマツカ",
+      "historical_contexts": 1,
+      "survey_year_min": 2023,
+      "survey_year_max": 2023,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2023,
+          "year_max": 2023,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ナミスジシマドジョウ",
+      "historical_contexts": 1,
+      "survey_year_min": 2014,
+      "survey_year_max": 2014,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2014,
+          "year_max": 2014,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "旧トウヨシノボリ",
+      "historical_contexts": 1,
+      "survey_year_min": 2014,
+      "survey_year_max": 2014,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2014,
+          "year_max": 2014,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip",
+          "source_sha256": "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    }
+  ],
+  "source_scope": "individual_named_river_only",
+  "caution": "Not number of individuals, not verified taxonomic species counts, not current presence. 0 means no captured survey record, not absence. No watershed-level records assigned to an individual river."
+}

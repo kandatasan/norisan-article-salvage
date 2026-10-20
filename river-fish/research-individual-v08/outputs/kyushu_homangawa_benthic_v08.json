@@ -1,0 +1,531 @@
+{
+  "status": "named_river_historical_labels",
+  "river_identity": "rn_09dc08fa89c3bb69d324c217",
+  "source_region": "kyushu",
+  "source_authority": "九州地方整備局",
+  "watershed_name": "筑後川",
+  "river_name": "宝満川",
+  "river_code_optional": null,
+  "prefecture": null,
+  "prefecture_geographic_status": "not_inferred",
+  "four_categories": {
+    "benthic_animals": {
+      "category_label": "底生動物",
+      "historical_contexts": 124,
+      "literal_labels_not_species": 94,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003
+    },
+    "birds": {
+      "category_label": "鳥類",
+      "historical_contexts": 6,
+      "literal_labels_not_species": 5,
+      "survey_year_min": 2004,
+      "survey_year_max": 2015
+    },
+    "fish": {
+      "category_label": "魚類",
+      "historical_contexts": 0,
+      "literal_labels_not_species": 0,
+      "survey_year_min": null,
+      "survey_year_max": null
+    },
+    "plants": {
+      "category_label": "植物",
+      "historical_contexts": 492,
+      "literal_labels_not_species": 262,
+      "survey_year_min": 2001,
+      "survey_year_max": 2019
+    }
+  },
+  "selected_category": "benthic_animals",
+  "selected_category_label": "底生動物",
+  "offset": 0,
+  "page_size": 30,
+  "total_literal_names_not_species": 94,
+  "has_more": true,
+  "items": [
+    {
+      "literal_recorded_name": "Polypedilum属",
+      "historical_contexts": 3,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Stictochironomus属",
+      "historical_contexts": 3,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "イシビル科",
+      "historical_contexts": 3,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "イトミミズ科",
+      "historical_contexts": 3,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "グロシフォニ科",
+      "historical_contexts": 3,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ミズムシ",
+      "historical_contexts": 3,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ユスリカ科",
+      "historical_contexts": 3,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 3,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Cryptochironomus属",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Einfeldia属",
+      "historical_contexts": 2,
+      "survey_year_min": 1993,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1993,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Parachironomus属",
+      "historical_contexts": 2,
+      "survey_year_min": 1993,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1993,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Rheotanytarsus属",
+      "historical_contexts": 2,
+      "survey_year_min": 1993,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1993,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "イトトンボ科",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "エラミミズ",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "コガタシマトビケラ",
+      "historical_contexts": 2,
+      "survey_year_min": 1993,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1993,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "サホコカゲロウ",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "シマイシビル",
+      "historical_contexts": 2,
+      "survey_year_min": 1993,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1993,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "スジエビ",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ナミウズムシ",
+      "historical_contexts": 2,
+      "survey_year_min": 1993,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1993,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ヌマビル",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ヒメタニシ",
+      "historical_contexts": 2,
+      "survey_year_min": 1993,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1993,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ヒメドロムシ科",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ミズミミズ科",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "ミナミヌマエビ",
+      "historical_contexts": 2,
+      "survey_year_min": 1997,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 2,
+          "year_min": 1997,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Antocha",
+      "historical_contexts": 1,
+      "survey_year_min": 1997,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 1997,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Antocha属",
+      "historical_contexts": 1,
+      "survey_year_min": 2003,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2003,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Baetis",
+      "historical_contexts": 1,
+      "survey_year_min": 1997,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 1997,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Baetis属",
+      "historical_contexts": 1,
+      "survey_year_min": 1993,
+      "survey_year_max": 1993,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 1993,
+          "year_max": 1993,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Caenis属",
+      "historical_contexts": 1,
+      "survey_year_min": 2003,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2003,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Calopteryx属",
+      "historical_contexts": 1,
+      "survey_year_min": 2003,
+      "survey_year_max": 2003,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 2003,
+          "year_max": 2003,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    },
+    {
+      "literal_recorded_name": "Cardiocladius",
+      "historical_contexts": 1,
+      "survey_year_min": 1997,
+      "survey_year_max": 1997,
+      "sources": [
+        {
+          "historical_contexts": 1,
+          "year_min": 1997,
+          "year_max": 1997,
+          "source_url": "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT89_B02.zip",
+          "source_sha256": "44636a64964ecfab5a41cf3dff6647634f660a3be6132928626603886df209e1"
+        }
+      ],
+      "scientific_species_identity_verified": false
+    }
+  ],
+  "source_scope": "individual_named_river_only",
+  "caution": "Not number of individuals, not verified taxonomic species counts, not current presence. 0 means no captured survey record, not absence. No watershed-level records assigned to an individual river."
+}

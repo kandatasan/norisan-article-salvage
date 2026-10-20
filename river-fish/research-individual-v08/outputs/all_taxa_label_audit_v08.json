@@ -1,0 +1,43 @@
+{
+  "version": "v08",
+  "input_sha256": "dfa193bc882dfbc1dc3c30dc226bf81bc2e3754007069fed1b25e3007f4c1dd1",
+  "named_rivers": 428,
+  "historical_survey_contexts": 553351,
+  "category_windows": 1712,
+  "distinct_river_category_literal_label_rows": 254574,
+  "literal_taxon_source_evidence_rows": 254574,
+  "source_documents": 45,
+  "category_breakdown": [
+    {
+      "category": "benthic_animals",
+      "historic_contexts": 92576,
+      "distinct_river_category_name_pairs": 58351,
+      "source_proof_rows": 58351
+    },
+    {
+      "category": "birds",
+      "historic_contexts": 64691,
+      "distinct_river_category_name_pairs": 25233,
+      "source_proof_rows": 25233
+    },
+    {
+      "category": "fish",
+      "historic_contexts": 25843,
+      "distinct_river_category_name_pairs": 11772,
+      "source_proof_rows": 11772
+    },
+    {
+      "category": "plants",
+      "historic_contexts": 370241,
+      "distinct_river_category_name_pairs": 159218,
+      "source_proof_rows": 159218
+    }
+  ],
+  "zero_record_windows": 456,
+  "unit": "historical river x category x year x literal name research contexts, not individuals or number of biological species",
+  "taxonomic_synonyms_or_identification_not_normalized": true,
+  "prefecture_location_not_inferred": true,
+  "river_code_optional": true,
+  "no_watershed_biota_promoted": true,
+  "no_live_website_or_production_database_modified": true
+}
