@@ -101,7 +101,24 @@ def read_workbook(data):
                     labels.append([a, b])
             rclass = Counter(str(rows.get(i, {}).get("A", "")) for i in range(9, min(max(rows)+1,1500)))
             conf = Counter(str(rows.get(i, {}).get("J", "")) for i in range(9, min(max(rows)+1,1500)))
+            # Diagnose YEAR only, not station IDs/coordinates or precise dates.
+            year_hints={}
+            for h in range(1,7):
+                cnt=Counter()
+                for sc, raw in rows.get(h,{}).items():
+                    if sc in SAFE_COLS: continue
+                    v=str(raw)
+                    if re.search(r"2023",v):cnt["literal_2023"]+=1
+                    if re.search(r"2024",v):cnt["literal_2024"]+=1
+                    if re.fullmatch(r"\\d{5}(?:\\.0+)?",v):
+                        try:
+                            from datetime import datetime,timedelta
+                            y=(datetime(1899,12,30)+timedelta(days=float(v))).year
+                            if y in (2022,2023,2024,2025):cnt["excel_serial_"+str(y)]+=1
+                        except Exception: pass
+                year_hints[str(h)]=dict(cnt)
             sheets.append({"sheet": sn.get("name"), "dimension": dim.get("ref") if dim is not None else None,
+                           "year_hints_by_header_row":year_hints,
                            "physical_sheet_rows": len(rows), "head_first_columns": head,
                            "r3_r4_explicit_basin_tributary_pairs": sorted(set(tuple(x) for x in labels)),
                            "r3_r4_pair_count": len(set(tuple(x) for x in labels)),
