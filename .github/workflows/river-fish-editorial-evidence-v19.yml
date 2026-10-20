@@ -1,0 +1,60 @@
+name: Fish editorial evidence audit v19 (research only)
+on:
+  push:
+    branches:
+      - research/fish-editorial-evidence-v19-20261020
+    paths:
+      - 'river-fish/research-individual-v19/**'
+      - '.github/workflows/river-fish-editorial-evidence-v19.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate_research_fish_editorial:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate v19 review queue and research ZIP
+        run: |
+          python -m py_compile river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v19/build_evidence_v19.py
+      - name: Independent ZIP and content assertions
+        run: |
+          python - <<'PY'
+          import csv, hashlib, io, json, zipfile
+          from pathlib import Path
+          out=Path('river-fish/research-individual-v19/outputs')
+          q=json.loads((out/'fish_editorial_evidence_qa_v19.json').read_text())
+          assert q['research_only'] and q['human_approved_memos']==0
+          assert q['memo_primary_source_partial_cross_checks']==5
+          assert q['score_supporting_evidence_verified']==0
+          assert sum(q['priority_count'].values())==375
+          path=out/q['archive']
+          assert hashlib.sha256(path.read_bytes()).hexdigest()==q['archive_sha256']
+          with zipfile.ZipFile(path) as z:
+            assert z.testzip() is None
+            m=json.loads(z.read('fish_master.json'))
+            a=json.loads(z.read('atlas.json'))
+            rows=list(csv.DictReader(io.StringIO(z.read('fish_editorial_review_queue_v19.csv').decode('utf-8-sig'))))
+            assert len(m['taxa'])==639 and len(a['entries'])==511 and len(rows)==375
+            assert len(set(r['recorded_name'] for r in rows))==375
+            assert all(r['human_approved']=='NO' and r['rarity_evidence']=='NOT_ASSESSED' for r in rows)
+            assert m['taxa']['トラフグ']['draft_scores']['taste_stars'] is None
+            assert m['taxa']['オヤニラミ']['official_regulatory_review_v18'] is None
+            assert m['taxa']['コウライオヤニラミ']['official_regulatory_review_v18'] is not None
+            page=z.read('index.html').decode()
+            assert page.count('<script>')==page.count('</script>')==1
+            Path('/tmp/fish_v19.js').write_text(page.split('<script>',1)[1].split('</script>',1)[0])
+          print('FISH_EDITORIAL_V19_INDEPENDENT_QA_OK')
+          PY
+          node --check /tmp/fish_v19.js
+      - name: Upload research-only outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: fish-editorial-v19-research
+          path: river-fish/research-individual-v19/outputs/
+          retention-days: 30
