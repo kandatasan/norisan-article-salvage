@@ -1,0 +1,62 @@
+name: Verify East Hiroshima 2024 benthic survey v13 (research only)
+on:
+  push:
+    branches:
+      - research/higashihiroshima-benthos-v13-20261020
+    paths:
+      - 'river-fish/research-individual-v13/*.py'
+      - '.github/workflows/river-higashihiroshima-benthos-v13.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: east-hiroshima-benthos-v13
+  cancel-in-progress: false
+jobs:
+  official-original-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm PDF extraction tools
+        run: pdftotext -v
+      - name: Fetch only official original PDF transiently and cross-check each table row
+        run: |
+          python -m py_compile river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py
+          python river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py
+      - name: Check extracted benthic indicator evidence, privacy and blocked commercial publication
+        run: |
+          python - <<'PY'
+          import csv,json,pathlib
+          p=pathlib.Path('river-fish/research-individual-v13/outputs')
+          a=json.loads((p/'higashihiroshima_2024_benthic_qa_v13.json').read_text())
+          with (p/'higashihiroshima_2024_benthic_indicator_aggregated_v13.csv').open(encoding='utf-8',newline='') as f:
+              rows=list(csv.DictReader(f))
+          assert a['original_document_sites_with_field_collected_benthos']==23
+          assert a['source_river_name_groups']>=15
+          assert len(rows)==a['research_aggregated_river_taxon_indicator_facts']
+          assert len(a['official_pdf_sha256'])==64
+          assert all(r['biological_group']=='benthic_animals' and r['survey_year']=='2024' for r in rows)
+          assert all(r['publication_rights']=='RESEARCH_ONLY_DONT_PUBLISH_WITHOUT_CITY_PERMISSION' for r in rows)
+          assert not a['commercial_publication_rights_cleared']
+          assert not a['specific_sampling_sites_and_coordinates_in_export']
+          print('EAST_HIROSHIMA_ORIGINAL_PDF_AUDIT_SUCCESS',a['source_river_name_groups'])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: east-hiroshima-2024-benthos-v13-research
+          path: river-fish/research-individual-v13/outputs/
+      - name: Save ONLY sanitized research outputs to isolated branch
+        if: success()
+        run: |
+          test "$GITHUB_REF_NAME" = "research/higashihiroshima-benthos-v13-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v13/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: store official city benthos indicators without site locations"
+            git push origin HEAD:refs/heads/research/higashihiroshima-benthos-v13-20261020
+          fi
