@@ -1,0 +1,359 @@
+[
+  {
+    "watershed_name": "多摩川",
+    "river_name": "平瀬川",
+    "survey_years": [
+      2023,
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アブラハヤ/タカハヤ",
+      "アユ",
+      "ウキゴリ"
+    ],
+    "source_taxon_insect_examples": [
+      "Austrosciara insolita（注）",
+      "Bradysia peraffinis（注）",
+      "Coboldia fuscipes（注）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "大岡川",
+    "river_name": "堀割川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アカオビシマハゼ",
+      "アベハゼ",
+      "ウロハゼ",
+      "クロダイ"
+    ],
+    "source_taxon_insect_examples": [],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "帷子川",
+    "river_name": "石崎川",
+    "survey_years": [
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アベハゼ",
+      "アユ",
+      "ウキゴリ"
+    ],
+    "source_taxon_insect_examples": [
+      "Antocha bifida（和名なし）",
+      "Euhampsonia serratifera（注）",
+      "Plautia fimbriata（注）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "平作川",
+    "river_name": "矢部川",
+    "survey_years": [
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アシシロハゼ",
+      "クサフグ",
+      "クロダイ",
+      "クロヨシノボリ / シマヨシノボリ"
+    ],
+    "source_taxon_insect_examples": [
+      "アブラゼミ",
+      "ウデマガリコカゲロウ",
+      "オオズアリ"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "相模川",
+    "river_name": "八瀬川",
+    "survey_years": [
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アブラハヤ/タカハヤ",
+      "アユ",
+      "ウグイ"
+    ],
+    "source_taxon_insect_examples": [
+      "Aelia sibirica（注）",
+      "Macroscytus subaeneus（注）",
+      "Plautia fimbriata（注）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "相模川",
+    "river_name": "小出川",
+    "survey_years": [
+      2023,
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アユ",
+      "ウキゴリ",
+      "ウグイ",
+      "オイカワ"
+    ],
+    "source_taxon_insect_examples": [
+      "Agrypnus属の一種 UPOL RK0004",
+      "Hydrotaea aenescens（注）チュウ",
+      "Sympycnus turbidus（和名なし）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "相模川",
+    "river_name": "沢井川",
+    "survey_years": [
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アブラハヤ/タカハヤ",
+      "ウグイ",
+      "カジカ"
+    ],
+    "source_taxon_insect_examples": [
+      "Anomala luculenta（注）/Anomala aulax（注）",
+      "Anthocoris kerzhneri（注）",
+      "Antocha bifida（和名なし）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "相模川",
+    "river_name": "玉川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "ウグイ",
+      "オイカワ",
+      "カジカ"
+    ],
+    "source_taxon_insect_examples": [],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "相模川",
+    "river_name": "谷太郎川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "カジカ"
+    ],
+    "source_taxon_insect_examples": [
+      "Acyrthosiphon caraganae（注）",
+      "Antocha bifida（和名なし）",
+      "Plautia fimbriata（注）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "相模川",
+    "river_name": "道志川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アユ",
+      "ウグイ",
+      "オイカワ",
+      "カジカ"
+    ],
+    "source_taxon_insect_examples": [],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "相模川",
+    "river_name": "阿津川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "カジカ",
+      "カワムツ"
+    ],
+    "source_taxon_insect_examples": [
+      "Antocha bifida（和名なし）",
+      "Aulacorthum corydalicola（注）/Acyrthosiphon caraganae（注）",
+      "Simulium aeneifacies（注）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "酒匂川",
+    "river_name": "中津川",
+    "survey_years": [
+      2023,
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "カジカ",
+      "サクラマス類"
+    ],
+    "source_taxon_insect_examples": [
+      "Acyrthosiphon caraganae（注）",
+      "Anomala luculenta（注）/Anomala aulax（注）",
+      "Antocha bifida（和名なし）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "酒匂川",
+    "river_name": "四十八瀬川",
+    "survey_years": [
+      2023,
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アブラハヤ/タカハヤ",
+      "アユ",
+      "ウグイ"
+    ],
+    "source_taxon_insect_examples": [
+      "Antocha bifida（和名なし）",
+      "Jコカゲロウ",
+      "Macroscytus subaeneus（注）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "酒匂川",
+    "river_name": "河内川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アユ",
+      "ウグイ",
+      "オイカワ"
+    ],
+    "source_taxon_insect_examples": [],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "金目川",
+    "river_name": "室川",
+    "survey_years": [
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ/タカハヤ",
+      "オオヨシノボリ/ルリヨシノボリ",
+      "コイ（飼育型）",
+      "タカハヤ"
+    ],
+    "source_taxon_insect_examples": [
+      "Agrypnus属の一種 UPOL RK0004ゾク1シュ",
+      "Alulatettix yunnanensis（注）",
+      "Austrosciara insolita（注）"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "金目川",
+    "river_name": "歌川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アユ",
+      "ウキゴリ",
+      "オイカワ",
+      "カマツカ"
+    ],
+    "source_taxon_insect_examples": [],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "金目川",
+    "river_name": "葛葉川",
+    "survey_years": [
+      2023,
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アブラハヤ/タカハヤ",
+      "アユ",
+      "ウグイ"
+    ],
+    "source_taxon_insect_examples": [
+      "Agrypnus属の一種 UPOL RK0004ゾク1シュ",
+      "Antocha bifida（和名なし）",
+      "Jコカゲロウ"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "金目川",
+    "river_name": "鈴川",
+    "survey_years": [
+      2023
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "ウグイ",
+      "カジカ",
+      "キタドジョウ"
+    ],
+    "source_taxon_insect_examples": [],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  },
+  {
+    "watershed_name": "鶴見川",
+    "river_name": "奈良川",
+    "survey_years": [
+      2023,
+      2024
+    ],
+    "source_taxon_fish_examples": [
+      "アブラハヤ",
+      "アブラハヤ/タカハヤ",
+      "オイカワ",
+      "カマツカ"
+    ],
+    "source_taxon_insect_examples": [
+      "Antocha bifida（和名なし）",
+      "Protaetia himalyana（注）",
+      "アオオサムシ"
+    ],
+    "verbatim_labels_not_live_biota": true,
+    "sample_sites_not_exported": true
+  }
+]

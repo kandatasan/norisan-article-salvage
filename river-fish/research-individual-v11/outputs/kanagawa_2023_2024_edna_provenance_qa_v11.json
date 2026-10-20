@@ -226,6 +226,52 @@
       "river_name": "奈良川"
     }
   ],
+  "held_spelling_variants": [
+    {
+      "watershed_name": "鶴見川",
+      "river_name": "早淵川",
+      "known_baseline_spelling": "早渕川",
+      "official_general_river_listing": "https://www.city.yokohama.lg.jp/kurashi/machizukuri-kankyo/kasen-gesuido/kasen/shoukai/gaiyou.html",
+      "new_physical_river_claim": false
+    }
+  ],
+  "per_year_and_biological_method_source_record_counts": [
+    {
+      "year": 2023,
+      "group": "fish_edna",
+      "source_record_count": 351
+    },
+    {
+      "year": 2023,
+      "group": "insect_edna_not_proven_benthic",
+      "source_record_count": 924
+    },
+    {
+      "year": 2023,
+      "group": "other_invertebrate_edna_not_proven_benthic",
+      "source_record_count": 40
+    },
+    {
+      "year": 2024,
+      "group": "bird_edna_not_visual_observation",
+      "source_record_count": 33
+    },
+    {
+      "year": 2024,
+      "group": "fish_edna",
+      "source_record_count": 276
+    },
+    {
+      "year": 2024,
+      "group": "insect_edna_not_proven_benthic",
+      "source_record_count": 1937
+    },
+    {
+      "year": 2024,
+      "group": "other_invertebrate_edna_not_proven_benthic",
+      "source_record_count": 114
+    }
+  ],
   "v10_base_label_groups_preserved": 492,
   "v10_2025_edna_counts_preserved_separately": 265,
   "potential_combined_display_name_groups_excluding_held_spellings": 511,
