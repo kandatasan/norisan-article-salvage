@@ -1,0 +1,22 @@
+{
+  "version": "v18",
+  "source_v17_sha256": "0bb9640a85925894c4e134d2944094b2281b7950461cc57415cf671c7b11af33",
+  "research_only": true,
+  "site_fish_name_labels_not_verified_species": 639,
+  "draft_memos_unreviewed": 375,
+  "fish_source_exact_matches_to_official_invasive_species_list": 9,
+  "domestic_rare_exact_name_matches_current_source_names": 0,
+  "domestic_rare_absence_is_not_exhaustive_species_clearance": true,
+  "invasive_source": "https://www.env.go.jp/nature/intro/2outline/list.html",
+  "2026_new_invasive_source": "https://www.env.go.jp/press/press_05633.html",
+  "domestic_rare_source": "https://www.env.go.jp/nature/kisho/domestic/list.html",
+  "conservation_review_source": "https://www.env.go.jp/nature/kisho/hozen/redlist/index.html",
+  "source_name_aliases_held_for_regulatory_review": 2,
+  "other_conservation_priority_labels": 10,
+  "all_original_draft_scores_remain_provisional": true,
+  "no_conservation_status_assumed_from_rarity_stars": true,
+  "no_WordPress_or_live_API_mutation": true,
+  "zip": "river_fish_editorial_with_official_flags_v18.zip",
+  "zip_bytes": 596293,
+  "zip_sha256": "62c770baf1fc2b4df931fda4fa1ef5c38a5540499e062f1d112f8d8a79abb429"
+}
