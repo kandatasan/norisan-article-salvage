@@ -109,6 +109,27 @@ jobs:
                   assert info['physical_river_or_segment_identification']=='UNRESOLVED'
           print('NAMED_RIVER_UNRESOLVED_SEGMENT_BIOTA',40,98084)
           PY
+      - name: Construct provenance-preserving combined research index
+        run: |
+          python river-fish/research-individual-v10/merge_biological_evidence_layers_v10.py \
+            --out river-fish/research-individual-v10/outputs/research_biological_method_layers_v10.json
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          p=Path('river-fish/research-individual-v10/outputs')
+          x=json.loads((p/'research_biological_method_layers_v10.json').read_text())
+          d=x['audit']
+          assert len(x['entries'])==492
+          assert d['combined_source_named_river_label_groups']==492
+          assert d['provisional_same_name_segment_ambiguous_labels']==40
+          assert d['new_official_prefectural_edna_only_river_names']==24
+          assert d['sum_of_historic_named_survey_contexts']==651435
+          assert d['edna_2025_distinct_taxon_source_labels']==265
+          assert d['fish_capture_records_from_edna']==0
+          assert d['wordPress_and_production_database_unchanged'] is True
+          print('HISTORICAL_NAMED_RIVER_EVIDENCE',d['sum_of_historic_named_survey_contexts'])
+          print('NEW_EDNA_RIVERS',d['new_official_prefectural_edna_only_river_names'])
+          PY
       - name: Check acquisition honesty
         run: |
           python - <<'PY'
