@@ -11,7 +11,7 @@ permissions:
   contents: write
 concurrency:
   group: fish-editorial-v16
-  cancel-in-progress: false
+  cancel-in-progress: true
 jobs:
   inventory:
     runs-on: ubuntu-latest
