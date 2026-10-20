@@ -1,0 +1,96 @@
+name: Export 428 river biology categories as lazy static packs v09
+on:
+  push:
+    branches: [research/river-biota-lazy-packs-20261020]
+    paths:
+      - 'river-fish/research-individual-v09/*.py'
+      - '.github/workflows/river-biota-lazy-packs-v09.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: river-lazy-packs-v09
+  cancel-in-progress: true
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile export logic
+        run: python -m py_compile river-fish/research-individual-v09/*.py
+      - name: Restore exact v08 source with SHA256
+        run: |
+          python river-fish/research-individual-v08/snapshot_parts_v08.py verify \
+            --parts-dir river-fish/research-individual-v08/outputs \
+            --db /tmp/river_biota_literal_names_v08.sqlite
+      - name: Export all 428 rivers as 9 regional lazy-load archives
+        run: |
+          mkdir -p /tmp/river-bio-lazy-v09
+          python river-fish/research-individual-v09/export_category_lazy_packs_v09.py \
+            --source /tmp/river_biota_literal_names_v08.sqlite \
+            --out /tmp/river-bio-lazy-v09
+      - name: Validate conservation, strict source scope and examples
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          import json
+          out=Path('/tmp/river-bio-lazy-v09')
+          m=json.loads((out/'manifest_v09.json').read_text())
+          a=json.loads((out/'export_integrity_v09.json').read_text())
+          assert a['individual_named_rivers']==428
+          assert a['category_json_files']==1712
+          assert a['all_literal_label_rows']==254574
+          assert a['all_historical_contexts']==553351
+          assert a['region_archives']==9
+          assert a['production_wordpress_mysql_changed'] is False
+          assert m['no_network_no_site_deployment'] is True
+          assert m['no_prefecture_or_site_coordinates'] is True
+          r=next(x for x in m['rivers'] if x['source_region']=='chugoku' and
+              x['watershed']=='太田川' and x['river_name']=='三篠川')
+          with ZipFile(out/'chugoku.zip') as z:
+              fish=json.loads(z.read(r['categories']['fish']['file']))
+          assert fish['historical_contexts']==67
+          names={l['recorded_name'] for l in fish['labels']}
+          assert {'アユ','オイカワ','カワムツ'}.issubset(names)
+          assert all(l['source_evidence'] and
+                     all(x['source_url'].startswith('https://') for x in l['source_evidence'])
+                     for l in fish['labels'])
+          n=next(x for x in m['rivers'] if x['source_region']=='chugoku' and
+              x['watershed']=='太田川' and x['river_name']=='根谷川')
+          with ZipFile(out/'chugoku.zip') as z:
+              neya=json.loads(z.read(n['categories']['birds']['file']))
+          assert neya['historical_contexts']==0 and neya['labels']==[]
+          k=next(x for x in m['rivers'] if x['source_region']=='kyushu' and
+              x['watershed']=='筑後川' and x['river_name']=='宝満川')
+          assert k['river_code_optional'] is None
+          with ZipFile(out/'kyushu.zip') as z:
+              benthic=json.loads(z.read(k['categories']['benthic_animals']['file']))
+          assert benthic['historical_contexts']==124
+          assert len(benthic['labels'])==94
+          print('PASS_ALL_4_CATEGORY_STATIC_DATA',len(names),
+                benthic['historical_contexts'],a['all_historical_contexts'])
+          PY
+      - name: Upload complete research static category ZIPs and indexed manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-bio-428-lazy-category-data-v09
+          path: /tmp/river-bio-lazy-v09/
+          if-no-files-found: error
+      - name: Save compact packs to research branch only
+        run: |
+          test "$GITHUB_REF_NAME" = "research/river-biota-lazy-packs-20261020"
+          mkdir -p river-fish/research-individual-v09/outputs
+          cp /tmp/river-bio-lazy-v09/*.zip river-fish/research-individual-v09/outputs/
+          cp /tmp/river-bio-lazy-v09/*.json river-fish/research-individual-v09/outputs/
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v09/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: save 428 named-river four-category static packs with all historical biological name citations"
+            git push origin HEAD:refs/heads/research/river-biota-lazy-packs-20261020
+          fi
