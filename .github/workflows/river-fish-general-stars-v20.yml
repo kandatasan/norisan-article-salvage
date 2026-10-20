@@ -1,0 +1,70 @@
+name: Build fish general stars v20 (research only)
+on:
+  push:
+    branches:
+      - research/fish-general-stars-v20-20261020
+    paths:
+      - 'river-fish/research-individual-v20/**'
+      - '.github/workflows/river-fish-general-stars-v20.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build_and_audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build upstream SHA-audited v19 archive
+        run: |
+          python -m py_compile river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v19/build_evidence_v19.py
+      - name: Build v20 general editorial scores
+        run: |
+          python -m py_compile river-fish/research-individual-v20/build_general_stars_v20.py
+          python river-fish/research-individual-v20/build_general_stars_v20.py
+      - name: Independent research archive and browser QA
+        run: |
+          python - <<'PY'
+          import csv,hashlib,io,json,zipfile
+          from pathlib import Path
+          base=Path('river-fish/research-individual-v20/outputs')
+          q=json.loads((base/'fish_general_star_qa_v20.json').read_text())
+          assert q['research_only'] and q['human_approved_individual_entries']==0
+          assert q['rarity_general_stars']==349 and q['taste_general_stars']==160
+          assert q['new_taste_general_stars']==26 and q['taxon_hold_without_stars']==26
+          assert q['official_fish_flags_preserved']==9 and q['v19_partial_memo_source_checks_preserved']==12
+          zpath=base/q['zip']
+          assert hashlib.sha256(zpath.read_bytes()).hexdigest()==q['zip_sha256']
+          with zipfile.ZipFile(zpath) as z:
+            assert z.testzip() is None
+            m=json.loads(z.read('fish_master.json'))
+            a=json.loads(z.read('atlas.json'))
+            rows=list(csv.DictReader(io.StringIO(z.read('fish_general_star_coverage_v20.csv').decode('utf-8-sig'))))
+            assert len(m['taxa'])==639 and len(a['entries'])==511 and len(rows)==375
+            assert len(set(r['recorded_name'] for r in rows))==375
+            assert sum(r['rarity_stars']!='' for r in rows)==349
+            assert sum(r['taste_stars']!='' for r in rows)==160
+            assert all(r['human_approved']=='NO' for r in rows)
+            for name in ('トラフグ','クサフグ','キタマクラ','シマフグ'):
+              assert m['taxa'][name]['draft_scores']['taste_stars'] is None
+            assert m['taxa']['コウライオヤニラミ']['official_regulatory_review_v18'] is not None
+            assert m['taxa']['オヤニラミ']['official_regulatory_review_v18'] is None
+            assert m['taxa']['ニホンウナギ']['draft_scores']['taste_stars']==5
+            assert m['taxa']['アユ']['draft_scores']['taste_stars']==5
+            page=z.read('index.html').decode()
+            assert '★は一般的な目安' in page
+            assert page.count('<script>')==page.count('</script>')==1
+            Path('/tmp/fish_general_v20.js').write_text(page.split('<script>',1)[1].split('</script>',1)[0])
+          print('FISH_GENERAL_V20_INDEPENDENT_QA_OK')
+          PY
+          node --check /tmp/fish_general_v20.js
+      - name: Upload research outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: fish-general-stars-v20-research
+          path: river-fish/research-individual-v20/outputs/
+          retention-days: 30
