@@ -277,6 +277,18 @@ def main():
     with csvfile.open("w",encoding="utf-8",newline="") as fp:
         w=csv.DictWriter(fp,fieldnames=COLUMNS);w.writeheader();w.writerows(sorted(allrows,key=lambda r:(r["survey_year"],r["watershed_name"],r["river_name"],r["biological_group"],r["verbatim_source_taxon_label"],r["source_dataset_key"])))
     (OUT/"kanagawa_2023_2024_edna_river_groups_v11.json").write_text(json.dumps(groups,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    example_rows=[]
+    for water,river in newkeys:
+        subset=[r for r in allrows if r["watershed_name"]==water and r["river_name"]==river]
+        fish=sorted({r["verbatim_source_taxon_label"] for r in subset if r["biological_group"]=="fish_edna"})
+        insects=sorted({r["verbatim_source_taxon_label"] for r in subset if r["biological_group"]=="insect_edna_not_proven_benthic"})
+        example_rows.append({"watershed_name":water,"river_name":river,"survey_years":sorted(set(r["survey_year"] for r in subset)),
+             "source_taxon_fish_examples":fish[:4],
+             "source_taxon_insect_examples":insects[:3],
+             "verbatim_labels_not_live_biota":True,
+             "sample_sites_not_exported":True})
+    (OUT/"kanagawa_2023_2024_new_river_edna_examples_v11.json").write_text(json.dumps(example_rows,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    per_year_group=Counter((r["survey_year"],r["biological_group"]) for r in allrows)
     audit={
         "method":"eDNA positive sequencing read, never specimen capture/observation",
         "source_site":PARENT,"usage_policy":LICENSE,
@@ -288,6 +300,13 @@ def main():
         "2023_2024_named_river_groups_with_eDNA":len(groups),
         "new_candidate_name_groups_not_in_v10_492":len(newkeys),
         "new_candidate_name_pairs":[{"watershed_name":a,"river_name":b} for a,b in newkeys],
+        "held_spelling_variants":[{"watershed_name":a,"river_name":b,
+              "known_baseline_spelling":RIVER_NAME_VARIANT_HOLDS[(a,b)][1],
+              "official_general_river_listing":RIVER_NAMES_REFERENCE,
+              "new_physical_river_claim":False} for a,b in holds],
+        "per_year_and_biological_method_source_record_counts":[
+           {"year":year,"group":group,"source_record_count":n}
+           for (year,group),n in sorted(per_year_group.items())],
         "v10_base_label_groups_preserved":492,
         "v10_2025_edna_counts_preserved_separately":265,
         "potential_combined_display_name_groups_excluding_held_spellings":492+len(newkeys),
