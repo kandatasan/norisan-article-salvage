@@ -1,0 +1,20 @@
+{
+  "version": "v15",
+  "fish_only_research_preview": true,
+  "baseline_511_group_count_preserved_not_511_verified_physical_rivers": 511,
+  "source_v12_sha256": "b34bfb89cdfdad0937caf7f341b289c711463d013d17a41af15310ca9b112f94",
+  "new_archive": "river_fish_first_static_preview_v15.zip",
+  "new_archive_bytes": 578229,
+  "new_archive_sha256": "d39f69cbcb97ac0f963e5fcb071cb1bb6c066ae0625825e9a9237c92959985bc",
+  "fish_historical_category_packs": 468,
+  "fish_environmental_dna_packs": 45,
+  "eDNA_record_groups_before_fish_filter": 3835,
+  "eDNA_fish_label_record_groups_after_filter": 849,
+  "eDNA_nonfish_record_groups_excluded_not_reclassified": 2986,
+  "distinct_verbatim_fish_name_labels_not_taxonomic_species_count": 639,
+  "editorially_reviewed_species_labels": 0,
+  "non_reviewed_rarity_and_taste_never_invented": true,
+  "support_for_later_other_biology_categories_retained_in_v12": true,
+  "no_WordPress_or_live_API_change": true,
+  "site_reuse_rights_still_require_review": true
+}
