@@ -53,7 +53,7 @@ def package(viewer,pack_dir,out):
            "※河川別の生物記録は過去の調査資料の掲載名です。現在生息する種の証明ではありません。\n"
            "※WordPressやXserverには反映・公開していません。\n"
         ).encode("utf-8")
-        add(combined,"README_preview.txt",explanation)
+        add(combined,"readme_preview.txt",explanation)
         for region in manifest["regions"]:
             p=pack_dir/region["archive_file"]
             b=p.read_bytes()
