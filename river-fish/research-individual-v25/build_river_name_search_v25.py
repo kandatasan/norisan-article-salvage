@@ -93,7 +93,7 @@ def main():
                 "geographically_identified_individual_river":"NO",
             })
         assert counters["groups_with_any_fish_labels"]+counters["source_groups_without_fish_labels"]==511
-        assert counters["historical_distinct_labels_across_groups"]==previous["indexed_historical_original_label_mentions"]+sum(1 for _ in []) or counters["historical_distinct_labels_across_groups"]>0
+        assert counters["historical_distinct_labels_across_groups"]>=previous["indexed_historical_original_label_mentions"]
         status={"schema":"tsurikue-original-survey-fish-label-counts-v25",
                 "is_recorded_name_label_count_not_distinct_taxonomic_species":True,
                 "source_only_entries_have_no_fish_evidence_in_this_dataset":True,
