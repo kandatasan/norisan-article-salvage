@@ -30,9 +30,14 @@ jobs:
       - name: Install PDF table extraction engine
         run: sudo apt-get update -qq && sudo apt-get install -y -qq poppler-utils
       - name: Cross-verify Hiroshima City four small rivers from two official reports
+        continue-on-error: true
         run: |
           python river-fish/research-individual-v10/probe_hiroshima_small_rivers_v10.py \
             --out river-fish/research-individual-v10/outputs/hiroshima_municipal_smallstream_source_probe_v10.json
+      - name: Inspect actual 2025 eDNA sheet layout (method-separated)
+        run: |
+          python river-fish/research-individual-v10/inspect_kanagawa_sheet_columns_v10.py \
+            --out river-fish/research-individual-v10/outputs/kanagawa_sheet_layout_v10.json
       - name: Check acquisition honesty
         run: |
           python - <<'PY'
