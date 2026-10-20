@@ -1,0 +1,30 @@
+{
+  "version": "v17",
+  "scope": "RESEARCH_ONLY_ALL_AI_EDITORIAL_DRAFTS_UNVERIFIED",
+  "v16_archive_sha256": "5ecf9b67ec3c1aaede16f14889f5e2ff3681814ccdb37c20c96bef2798770765",
+  "source_names_total_not_distinct_fish_species": 639,
+  "nonfish_exact_names_suppressed": 50,
+  "initial_unresolved_or_nonspecies_names": 214,
+  "additional_manually_held_alias_variety_taxonomy_names": 26,
+  "named_fish_candidate_labels_before_manual_hold": 375,
+  "individual_one_line_memo_drafts_total": 375,
+  "initial_existing_memo_drafts": 120,
+  "new_memo_drafts_added": 255,
+  "new_additions_batches": {
+    "editorial_additions_01_v17.csv": 92,
+    "editorial_additions_02_v17.csv": 76,
+    "editorial_additions_03_v17.csv": 87
+  },
+  "draft_rarity_star_scores_total": 349,
+  "draft_taste_star_scores_total": 134,
+  "human_approved_editorial_count": 0,
+  "all_stars_marked_provisional": true,
+  "conservation_law_and_edibility_audit_incomplete": true,
+  "underlying_511_river_name_groups_unchanged": true,
+  "original_older_nonfish_data_unmodified": true,
+  "no_production_WordPress_or_API_change": true,
+  "rights_check_required_before_commercial_publication": true,
+  "zip_file": "river_fish_full_editorial_drafts_v17.zip",
+  "zip_bytes": 593811,
+  "zip_sha256": "0bb9640a85925894c4e134d2944094b2281b7950461cc57415cf671c7b11af33"
+}
