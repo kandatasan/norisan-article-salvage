@@ -65,6 +65,9 @@ jobs:
           (pathlib.Path('river-fish/research-individual-v14/outputs')/'diagnostic_v14.json').write_text(
               json.dumps({'status':'INCOMPLETE_NO_NEW_RIVERS_ADOPTED','error_tail':raw[-5000:]},ensure_ascii=False,indent=2)+'\n')
           PY
+      - name: Remove stale diagnostic when verification now passes
+        if: success()
+        run: rm -f river-fish/research-individual-v14/outputs/diagnostic_v14.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
