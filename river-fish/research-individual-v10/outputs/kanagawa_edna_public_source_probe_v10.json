@@ -1,0 +1,112 @@
+{
+  "source": "神奈川県環境科学センター：環境DNAのページ",
+  "source_url": "https://www.pref.kanagawa.jp/docs/b4f/suigen/edna.html",
+  "source_html_sha256": "adf7d94fdefb73efa6aa0134a5ad75387b037a085e82652ad078144ca91dc424",
+  "usage_policy_url": "https://www.pref.kanagawa.jp/documents/97797/riyo-kiyaku.pdf",
+  "license_interpretation": "commercial reuse with source attribution and modification notice; third-party rights must be checked; CC BY 4.0 compatible",
+  "survey_method": "environmental_DNA_detection_not_capture_or_visual_sighting",
+  "source_file_candidates": [
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r3_kenmin_gyorui.xlsx",
+      "description": "魚類確認種（エクセル：1,013KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r4_kenmin_gyorui.xlsx",
+      "description": "魚類確認種（エクセル：1,016KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r5_kenmin_gyorui.xlsx",
+      "description": "魚類確認種（エクセル：1,015KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r5_kenmin_mtinsects-16s.xlsx",
+      "description": "昆虫類等確認種（エクセル：994KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r5_project_gyorui.xlsx",
+      "description": "魚類確認種（エクセル：1,022KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r6_kenmin_mtinsects_amphi.xlsx",
+      "description": "脊椎動物+昆虫類等確認種（エクセル：967KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r6_project_mtinsects-amphi.xlsx",
+      "description": "脊椎動物+昆虫類等確認種（エクセル：1,116KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r7_kenmin_kekka.xlsx",
+      "description": "脊椎動物+昆虫類等確認種（エクセル：937KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/r7_project_kekka.xlsx",
+      "description": "脊椎動物+昆虫類等確認種（エクセル：1,212KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/insecta_v1_0.xlsx",
+      "description": "サンプル情報（エクセル：229KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/insecta_ver1_1.xlsx",
+      "description": "サンプル情報（エクセル：271KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/insecta_ver1_2.xlsx",
+      "description": "サンプル情報（エクセル：318KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/insecta_ver1_2_1.xlsx",
+      "description": "サンプル情報（エクセル：318KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/insecta_ver1_3.xlsx",
+      "description": "サンプル情報（エクセル：392KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/16s_28s_ver1_4.xlsx",
+      "description": "サンプル情報（エクセル：501KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/16s_28s_ver1_4_1.xlsx",
+      "description": "サンプル情報（エクセル：501KB）"
+    },
+    {
+      "url": "https://www.pref.kanagawa.jp/documents/97797/16s_28s_ver2_0.xlsx",
+      "description": "サンプル情報（エクセル：707KB）"
+    }
+  ],
+  "inspected_excel_url": "https://www.pref.kanagawa.jp/documents/97797/r7_project_kekka.xlsx",
+  "inspected_excel_sha256": "ca92efc511d26a02a48ca44d6660d8fbc0fa681b594b334003527b54ed159211",
+  "inspected_excel_bytes": 1240142,
+  "sheet_structure": {
+    "sheets": [
+      {
+        "name": "結果まとめ(再分析結果追加)",
+        "dimension": "A1:DB782",
+        "column_metadata_examples": [
+          {
+            "row": "1",
+            "metadata_labels": [
+              {
+                "col": "E",
+                "keyword_label": "種名(機械的な併記処理)シュメイキカイテキヘイキショリ"
+              },
+              {
+                "col": "F",
+                "keyword_label": "種名(手動精査結果)シュメイシュドウセイサケッカ"
+              },
+              {
+                "col": "G",
+                "keyword_label": "学名ガクメイ"
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "shared_string_count": 2750
+  },
+  "promoted_as_direct_fish_capture": false,
+  "new_rivers_approved": 0,
+  "precise_sampling_locations_collected": false
+}
