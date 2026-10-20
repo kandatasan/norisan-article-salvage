@@ -79,6 +79,36 @@ jobs:
           assert all(not x["current_physical_river_approval"] for x in j["items"])
           print("HELD_RIVER_NAME_REVIEW",j["classification"])
           PY
+      - name: Restore verified original v05 river-name research SQLite
+        run: |
+          python river-fish/research-individual-v05/snapshot_parts_v05.py verify \
+            --parts-dir river-fish/research-individual-v05/outputs \
+            --db /tmp/river_individual_research_v05.sqlite
+      - name: Export held historical biota as explicitly non-geocoded river NAME groups
+        run: |
+          python river-fish/research-individual-v10/export_held_name_group_biota_v10.py \
+            --db /tmp/river_individual_research_v05.sqlite \
+            --review river-fish/research-individual-v10/outputs/review_47_held_river_names_v10.json \
+            --out river-fish/research-individual-v10/outputs
+          python - <<'PY'
+          from pathlib import Path
+          import json,zipfile
+          p=Path('river-fish/research-individual-v10/outputs')
+          d=json.loads((p/'held_name_only_review_v10.json').read_text())
+          assert d['existing_428_river_identities_unchanged']
+          assert d['existing_553351_river_contexts_unchanged']
+          assert d['eligible_additional_river_label_groups']==40
+          assert d['new_qualified_name_group_historical_contexts']==98084
+          assert d['new_four_category_panels']==160
+          assert d['does_not_identify_legal_river_segment']
+          with zipfile.ZipFile(p/'held_river_name_biology_v10.zip') as z:
+              assert len(z.namelist())==160
+              for name in z.namelist():
+                  info=json.loads(z.read(name))
+                  assert info['ten_digit_river_code'] is None
+                  assert info['physical_river_or_segment_identification']=='UNRESOLVED'
+          print('NAMED_RIVER_UNRESOLVED_SEGMENT_BIOTA',40,98084)
+          PY
       - name: Check acquisition honesty
         run: |
           python - <<'PY'
