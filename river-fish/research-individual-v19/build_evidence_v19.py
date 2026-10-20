@@ -108,7 +108,7 @@ def main():
         assert z.testzip() is None
         check = json.loads(z.read("fish_master.json"))
         assert len(check["taxa"]) == 639
-        assert sum(bool(obj.get("memo_evidence_review_v19")) for obj in check["taxa"].values()) == 5
+        assert sum(bool(obj.get("memo_evidence_review_v19")) for obj in check["taxa"].values()) == 12
         assert 'memo_evidence_review_v19' in z.read("index.html").decode("utf-8")
     qa = {"version":"v19","research_only":True,
           "based_on_v18_zip_sha256":original_qa["zip_sha256"],
