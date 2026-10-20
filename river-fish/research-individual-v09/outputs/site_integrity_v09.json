@@ -1,0 +1,14 @@
+{
+  "version": "v09",
+  "research_preview_archive_file": "river_atlas_static_preview_v09.zip",
+  "sha256": "753cc48194f3f5678199d6e7a0fd7380b1d280f0f8377480923ac7f50b62c18b",
+  "archive_bytes": 4045226,
+  "entry_points": 47,
+  "sourced_prefecture_watershed_links": 80,
+  "river_category_files": 1712,
+  "plain_json_total_bytes": 89661428,
+  "individual_river_name_identities": 428,
+  "all_labels_initially_loaded": false,
+  "requires_http_server": true,
+  "no_wordpress_or_mysql_changes": true
+}
