@@ -25,9 +25,11 @@ jobs:
         run: pdftotext -v
       - name: Fetch only official original PDF transiently and cross-check each table row
         run: |
-          python -m py_compile river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py
-          python river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py 2>&1 | tee /tmp/higashihiroshima_v13_log.txt
-          exit ${PIPESTATUS[0]}
+          set -o pipefail
+          {
+            python -m py_compile river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py
+            python river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py
+          } 2>&1 | tee /tmp/higashihiroshima_v13_log.txt
       - name: Check extracted benthic indicator evidence, privacy and blocked commercial publication
         run: |
           python - <<'PY'
