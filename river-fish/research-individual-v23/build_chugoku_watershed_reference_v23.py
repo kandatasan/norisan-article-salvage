@@ -129,7 +129,7 @@ def main():
     for(const r of part){
      const c=node("article",undefined,"fish");
      c.appendChild(node("h3",r.recorded_name));
-     if(r.general_rarity!==null){c.appendChild(node("p","一般レア度 ★".repeat(0)+"★".repeat(r.general_rarity)+"☆".repeat(5-r.general_rarity),"note"))}
+     if(r.general_rarity!==null){c.appendChild(node("p","一般レア度 "+"★".repeat(r.general_rarity)+"☆".repeat(5-r.general_rarity),"note"))}
      if(r.general_taste!==null){c.appendChild(node("p","一般的な味 "+"★".repeat(r.general_taste)+"☆".repeat(5-r.general_taste),"note"))}
      if(r.general_memo)c.appendChild(node("p",r.general_memo,"memo"));
      c.appendChild(node("p","水系単位の記録年："+r.survey_years.join("・")+"年（個別河川の記録ではありません）","note"));
