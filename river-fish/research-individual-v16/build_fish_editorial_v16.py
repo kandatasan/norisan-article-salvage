@@ -32,7 +32,7 @@ def get_nonfish(names):
     seq=[line.strip() for line in NONFISH.read_text(encoding="utf-8").splitlines()
          if line.strip() and not line.startswith("#")]
     assert len(seq)==len(set(seq))==50
-    if set(seq)-names:raise ValueError("Non-fish exact-list label not found")
+    if set(seq)-set(names):raise ValueError("Non-fish exact-list label not found")
     # Avoid pattern errors like ビワヒガイ (fish) and ギンガメアジ (fish).
     assert not {"ビワヒガイ","ギンガメアジ","ズナガニゴイ","ヒガイ属"}&set(seq)
     return set(seq)
