@@ -1,5 +1,5 @@
 {
   "v13_status": "INCOMPLETE_NO_BENTHIC_RECORDS_ADOPTED",
-  "error_tail": "Original fetch not reached",
+  "error_tail": "Traceback (most recent call last):\n  File \"/home/runner/work/norisan-article-salvage/norisan-article-salvage/river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py\", line 174, in <module>\n    main()\n  File \"/home/runner/work/norisan-article-salvage/norisan-article-salvage/river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py\", line 125, in main\n    scanned=extract_per_site(pages)\n            ^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/runner/work/norisan-article-salvage/norisan-article-salvage/river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py\", line 116, in extract_per_site\n    raise ValueError(\"Representative indicator did not match site \"+str(number))\nValueError: Representative indicator did not match site 5\n",
   "original_pdf_not_exported": true
 }
