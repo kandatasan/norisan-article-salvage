@@ -98,7 +98,13 @@ def extract_per_site(pages):
         raise ValueError("Expected indicator summary table missing")
     # Bound every raw table row by its own enumerated site heading; this detects
     # unintended changes to the published PDF. No stations or positions export.
-    section=b.split("表3-2-1",1)[-1]
+    # Table heading contains (R3-R5) before numbered rows: an unanchored
+    # "5)" match in that header would silently shift site 5's evidence.
+    # Start only at the actual first river row verified in the original PDF.
+    anchor="1)黒瀬川下流"
+    if anchor not in b:
+        raise ValueError("Verified first indicator table row not found")
+    section=b[b.index(anchor):].split("※1:",1)[0]
     numbered=list(re.finditer(r"(?<![0-9])([1-9]|1[0-9]|2[0-3])\)",section))
     bynumber={}
     for k,m0 in enumerate(numbered):
