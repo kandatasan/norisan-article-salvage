@@ -27,7 +27,7 @@ def main():
     reviews = json.loads(EVIDENCE.read_text(encoding="utf-8"))
     assert reviews["editor_human_approved_count"] == 0
     edits = {x["recorded_name"]: x for x in reviews["memo_revisions"]}
-    assert len(edits) == len(reviews["memo_revisions"]) == 5
+    assert len(edits) == len(reviews["memo_revisions"]) == 12
     with ZipFile(V18, "r") as z:
         assert z.testzip() is None
         master = json.loads(z.read("fish_master.json"))
