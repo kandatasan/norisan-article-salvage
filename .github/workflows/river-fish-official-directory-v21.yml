@@ -1,0 +1,77 @@
+name: Build 47-pref river official-name fish directory v21 (research only)
+on:
+  push:
+    branches:
+      - research/river-directory-47pref-v21-20261020
+    paths:
+      - 'river-fish/research-individual-v21/**'
+      - '.github/workflows/river-fish-official-directory-v21.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  research_atlas:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate the verified source v19 and v20 archives
+        run: |
+          python river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v20/build_general_stars_v20.py
+      - name: Create research 47-pref river/name atlas
+        run: |
+          python -m py_compile river-fish/research-individual-v21/build_47pref_directory_v21.py
+          python river-fish/research-individual-v21/build_47pref_directory_v21.py
+      - name: Independent archive and source safeguards
+        run: |
+          python - <<'PY'
+          import csv,hashlib,io,json,zipfile
+          from pathlib import Path
+          p=Path('river-fish/research-individual-v21/outputs')
+          q=json.loads((p/'river_official_directory_qa_v21.json').read_text())
+          assert q['research_only'] and q['no_wp_or_live_api_changes']
+          assert q['navigable_official_source_prefectures']==47
+          assert q['original_fish_evidence_groups']==511
+          assert q['original_undetermined_prefecture_groups']==195
+          assert q['new_river_name_groups']>400 and q['new_watershed_name_groups']>400
+          assert q['new_fish_observations']==0 and q['old_fish_evidence_associations_unchanged']
+          with zipfile.ZipFile(p/q['zip']) as z:
+            assert z.testzip() is None
+            assert hashlib.sha256((p/q['zip']).read_bytes()).hexdigest()==q['zip_sha256']
+            a=json.loads(z.read('atlas.json'))
+            m=json.loads(z.read('fish_master.json'))
+            assert len(m['taxa'])==639
+            assert len(a['entries'])==511+q['new_source_only_navigation_groups']
+            assert a['research_display_name_groups']==511
+            assert a['fish_only_mvp'] is True
+            assert all(not row.get('source_only_name_evidence_v21') for row in a['entries'][:511])
+            src=a['entries'][511:]
+            assert all(x['source_only_name_evidence_v21'] and
+                  x['fish_occurrences_linked_from_this_source']==0 and
+                  x['river_code'] is None and x['edna'] is None and x['old']=={} for x in src)
+            assert len({x['id'] for x in a['entries']})==len(a['entries'])
+            rows=list(csv.DictReader(io.StringIO(z.read('river_official_source_evidence_v21.csv').decode('utf-8-sig'))))
+            assert len(rows)==q['new_source_evidence_rows']
+            assert all(row['source_url'].startswith('https://') for row in rows)
+            assert all(row['physical_identity_status']=='NOT_VERIFIED' for row in rows)
+            assert any(x['source_prefecture']=='広島県' for x in src)
+            assert any(x['source_prefecture']=='群馬県' for x in src)
+            assert any(x['name']=='十川' and x['water']=='岩木川' for x in src)
+            assert any(x['name']=='新田川' and x['water']=='佐波川' for x in src)
+            code=z.read('index.html').decode()
+            assert 'sourceOnlyDetail' in code and '魚の調査記録はまだ未接続' in code
+            assert code.count('<script>')==code.count('</script>')==1
+            Path('/tmp/river_fish_v21.js').write_text(code.split('<script>',1)[1].split('</script>',1)[0])
+          print('RIVER_SOURCE_DIRECTORY_V21_INDEPENDENT_QA_OK')
+          PY
+          node --check /tmp/river_fish_v21.js
+      - name: Upload research-only preview and evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-fish-47pref-v21-research
+          path: river-fish/research-individual-v21/outputs/
+          retention-days: 30
