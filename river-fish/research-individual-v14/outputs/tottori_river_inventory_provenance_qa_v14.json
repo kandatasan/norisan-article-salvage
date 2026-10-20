@@ -1,0 +1,64 @@
+{
+  "project": "national river atlas",
+  "research_version": "v14",
+  "source_prefecture": "鳥取県",
+  "official_source_page": "https://www.pref.tottori.lg.jp/307111.htm",
+  "copyright_page": "https://www.pref.tottori.lg.jp/9314.htm",
+  "as_of": "2023-04-01",
+  "source_region_pdf_sha256_audits": [
+    {
+      "region": "east",
+      "source_url": "https://www.pref.tottori.lg.jp/secure/1313532/toubu.pdf",
+      "sha256": "d04b8a4e89b9a41a20e415e0682848eef397bcee7bab182eaf3472ba077f47b4",
+      "pdf_bytes": 108376,
+      "parsed_river_list_rows": 141,
+      "by_administrative_class": {
+        "first_class": 87,
+        "second_class": 38,
+        "quasi_public": 16
+      },
+      "same_row_verified_watershed_pairs": 3,
+      "no_original_pdf_republished": true
+    },
+    {
+      "region": "central",
+      "source_url": "https://www.pref.tottori.lg.jp/secure/1313532/230401chubu.pdf",
+      "sha256": "92ad51661b8ceaca84d932251151ddb3fbeb3ca2c5705b4e4cdacba3ba539af4",
+      "pdf_bytes": 94757,
+      "parsed_river_list_rows": 112,
+      "by_administrative_class": {
+        "first_class": 32,
+        "second_class": 47,
+        "quasi_public": 33
+      },
+      "same_row_verified_watershed_pairs": 1,
+      "no_original_pdf_republished": true
+    },
+    {
+      "region": "west",
+      "source_url": "https://www.pref.tottori.lg.jp/secure/1313532/230401seibu.pdf",
+      "sha256": "a73c577608046a91aa54315f43246aa1e83190712e16831544e807ed04a3c6d5",
+      "pdf_bytes": 91296,
+      "parsed_river_list_rows": 121,
+      "by_administrative_class": {
+        "first_class": 63,
+        "second_class": 27,
+        "quasi_public": 31
+      },
+      "same_row_verified_watershed_pairs": 3,
+      "no_original_pdf_republished": true
+    }
+  ],
+  "source_rows_not_distinct_river_count": 374,
+  "unique_literal_river_name_spellings": 331,
+  "same_row_watershed_links": 7,
+  "confirmed_same_row_links_missing_from_baseline_511": 3,
+  "confirmed_same_row_links_already_in_baseline_511": 4,
+  "baseline_511_undisturbed": true,
+  "all_prefecture_level_sources_originals_verified": true,
+  "no_biological_species_claims": true,
+  "pdf_row_numbers_not_10_digit_river_codes": true,
+  "river_name_prefix_without_watershed_not_assigned_by_inference": true,
+  "reproduction_and_commercial_site_use_prohibited_until_review": true,
+  "no_wordpress_or_live_api_mutation": true
+}
