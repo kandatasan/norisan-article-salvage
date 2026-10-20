@@ -1,0 +1,104 @@
+name: Index all four biology categories by individual river v08 (research only)
+on:
+  push:
+    branches: [research/river-biota-full-name-index-20261020]
+    paths:
+      - river-fish/research-individual-v08/*.py
+      - .github/workflows/river-biota-literal-names-v08.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: all-river-literal-labels-v08
+  cancel-in-progress: true
+jobs:
+  offline_name_index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile source and validate data models
+        run: |
+          python -m py_compile river-fish/research-individual-v08/*.py
+      - name: Independently restore pinned immutable v05 research SQLite
+        run: |
+          python river-fish/research-individual-v05/snapshot_parts_v05.py verify \
+            --parts-dir river-fish/research-individual-v05/outputs \
+            --db /tmp/river_individual_research_v05.sqlite
+      - name: Aggregate every recorded survey taxon label for all 428 named rivers
+        run: |
+          python river-fish/research-individual-v08/build_full_literal_name_index_v08.py \
+            --source /tmp/river_individual_research_v05.sqlite \
+            --out /tmp/river_biota_literal_names_v08.sqlite \
+            --report-dir river-fish/research-individual-v08/outputs
+      - name: Query full name lists and source years; guard old historical data
+        run: |
+          python - <<'PY'
+          import sys,json,sqlite3
+          from pathlib import Path
+          sys.path.insert(0,str(Path('river-fish/research-individual-v08').resolve()))
+          from read_full_literal_name_index_v08 import connect,read
+          c=connect('/tmp/river_biota_literal_names_v08.sqlite')
+          out=Path('river-fish/research-individual-v08/outputs')
+          report=json.loads((out/'all_taxa_label_audit_v08.json').read_text())
+          assert report['historical_survey_contexts']==553351
+          assert report['named_rivers']==428
+          assert report['category_windows']==1712
+          assert report['distinct_river_category_literal_label_rows']>0
+          assert report['literal_taxon_source_evidence_rows']>=report['distinct_river_category_literal_label_rows']
+          assert sum(x['historic_contexts'] for x in report['category_breakdown'])==553351
+          assert report['no_watershed_biota_promoted']
+          assert report['no_live_website_or_production_database_modified']
+          examples=[
+              ('chugoku','太田川','三篠川','fish','hiroshima_misasagawa_fish_v08.json',67),
+              ('kyushu','筑後川','宝満川','benthic_animals','kyushu_homangawa_benthic_v08.json',124),
+              ('chubu','天竜川','三峰川','birds','chubu_mibugawa_birds_v08.json',51),
+          ]
+          for region,water,river,cat,file,expected in examples:
+              a=read(c,region=region,watershed=water,river=river,category=cat,limit=30)
+              assert a['status']=='named_river_historical_labels'
+              assert a['four_categories'][cat]['historical_contexts']==expected
+              assert a['items']
+              assert a['source_scope']=='individual_named_river_only'
+              assert all(n['sources'] and not n['scientific_species_identity_verified'] for n in a['items'])
+              (out/file).write_text(json.dumps(a,ensure_ascii=False,indent=2)+'\n')
+              print('LITERAL_NAMES',region,water,river,cat,len(a['items']),a['total_literal_names_not_species'])
+          neya=read(c,region='chugoku',watershed='太田川',river='根谷川',category='birds')
+          assert neya['four_categories']['birds']['historical_contexts']==0
+          assert neya['items']==[]
+          next_page=read(c,region='chugoku',watershed='太田川',river='三篠川',category='fish',limit=2,offset=2)
+          first_page=read(c,region='chugoku',watershed='太田川',river='三篠川',category='fish',limit=2,offset=0)
+          if first_page['has_more']:
+              assert {x['literal_recorded_name'] for x in next_page['items']}.isdisjoint(
+                  {x['literal_recorded_name'] for x in first_page['items']})
+          c.close()
+          PY
+      - name: Archive and SHA-restore compact index independently
+        run: |
+          rm -f river-fish/research-individual-v08/outputs/river_biota_literal_names_v08.sqlite.gz.part*
+          rm -f river-fish/research-individual-v08/outputs/snapshot_parts_v08.json
+          python river-fish/research-individual-v08/snapshot_parts_v08.py package \
+            --db /tmp/river_biota_literal_names_v08.sqlite \
+            --parts-dir river-fish/research-individual-v08/outputs
+          python river-fish/research-individual-v08/snapshot_parts_v08.py verify \
+            --db /tmp/river_biota_literal_names_v08_restored.sqlite \
+            --parts-dir river-fish/research-individual-v08/outputs
+      - name: Upload all four category research taxon indexes
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-literal-taxon-search-v08
+          path: river-fish/research-individual-v08/outputs/
+          if-no-files-found: error
+      - name: Preserve immutable research-only results in v08 branch
+        run: |
+          test "$GITHUB_REF_NAME" = "research/river-biota-full-name-index-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v08/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: archive all river/category original survey taxon labels with source years and checksum-verified SQLite"
+            git push origin HEAD:refs/heads/research/river-biota-full-name-index-20261020
+          fi
