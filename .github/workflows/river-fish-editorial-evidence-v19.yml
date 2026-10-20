@@ -3,6 +3,7 @@ on:
   push:
     branches:
       - research/fish-editorial-evidence-v19-20261020
+      - research/fish-editorial-p0-memos-v19b-20261020
     paths:
       - 'river-fish/research-individual-v19/**'
       - '.github/workflows/river-fish-editorial-evidence-v19.yml'
@@ -30,7 +31,7 @@ jobs:
           out=Path('river-fish/research-individual-v19/outputs')
           q=json.loads((out/'fish_editorial_evidence_qa_v19.json').read_text())
           assert q['research_only'] and q['human_approved_memos']==0
-          assert q['memo_primary_source_partial_cross_checks']==5
+          assert q['memo_primary_source_partial_cross_checks']==12
           assert q['score_supporting_evidence_verified']==0
           assert sum(q['priority_count'].values())==375
           path=out/q['archive']
@@ -40,7 +41,7 @@ jobs:
             m=json.loads(z.read('fish_master.json'))
             a=json.loads(z.read('atlas.json'))
             rows=list(csv.DictReader(io.StringIO(z.read('fish_editorial_review_queue_v19.csv').decode('utf-8-sig'))))
-            assert len(m['taxa'])==639 and len(a['entries'])==511 and len(rows)==375
+            assert len(m['taxa'])==639 and len(a['entries'])==1211 and len(rows)==375
             assert len(set(r['recorded_name'] for r in rows))==375
             assert all(r['human_approved']=='NO' and r['rarity_evidence']=='NOT_ASSESSED' for r in rows)
             assert m['taxa']['トラフグ']['draft_scores']['taste_stars'] is None
