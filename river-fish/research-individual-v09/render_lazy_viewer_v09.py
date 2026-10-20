@@ -89,7 +89,35 @@ def render(navigation,output):
     d=json.loads(Path(navigation).read_text(encoding="utf-8"))
     if len(d["prefectures"])!=47 or len(d["rivers"])!=428 or len(d["prefecture_watershed_entries"])!=80:
         raise ValueError("Unexpected previous validated navigation data")
-    js=json.dumps(d,ensure_ascii=False,separators=(",",":"))
+    # Retain only identifiers + summary counters in the INITIAL browser HTML.
+    # The full literal names, citations and raw source URLs are fetched only
+    # after an explicit river/category click, not preloaded for 428 rivers.
+    compact={
+        "prefectures":[{"prefecture":p["prefecture"],
+                        "available_watersheds":p["available_watersheds"]}
+                       for p in d["prefectures"]],
+        "prefecture_watershed_entries":[{
+            "prefecture":p["prefecture"],"watershed":p["watershed"],
+            "surveyed_river_name_ids":p["surveyed_river_name_ids"]
+        } for p in d["prefecture_watershed_entries"]],
+        "prefecture_river_links":[{
+            "prefecture":p["prefecture"],"watershed":p["watershed"],
+            "identity_key":p["identity_key"],"river_name":p["river_name"],
+            "individual_river_explicit_prefecture_mentions":p["individual_river_explicit_prefecture_mentions"]
+        } for p in d["prefecture_river_links"]],
+        "rivers":[{
+            "identity_key":r["identity_key"],"region":r["region"],
+            "watershed_name":r["watershed_name"],"river_name":r["river_name"],
+            "river_code":r["river_code"],
+            "survey_record_contexts":r["survey_record_contexts"],
+            "biota":{cat:{
+                "record_contexts":v["record_contexts"],
+                "literal_names_not_species":v["literal_names_not_species"],
+                "year_min":v["year_min"],"year_max":v["year_max"]
+            } for cat,v in r["biota"].items()}
+        } for r in d["rivers"]]
+    }
+    js=json.dumps(compact,ensure_ascii=False,separators=(",",":"))
     js=js.replace("<","\\u003c").replace(">","\\u003e").replace("&","\\u0026")
     html=html.replace("__DATA__",js)
     if "<iframe" in html or "fetch(path" not in html or "__DATA__" in html:
