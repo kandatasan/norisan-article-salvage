@@ -95,7 +95,7 @@ class RiverAtlasHTTPTests(unittest.TestCase):
 
     def test_malformed_or_unverified_inputs(self):
         for path in (
-            "/api/v1/watersheds?pref=架空県",
+            "/api/v1/watersheds?"+urlencode({"pref":"架空県"}),
             "/api/v1/rivers?"+urlencode({"pref":"佐賀県","watershed":"那珂川"}),
             "/api/v1/river/rn_fake?category=fish",
             "/api/v1/river/rn_123456789012345678901234?category=other",
