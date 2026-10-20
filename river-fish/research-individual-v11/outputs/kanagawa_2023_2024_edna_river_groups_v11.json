@@ -1,0 +1,742 @@
+[
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "境川",
+    "river_name": "和泉川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 88,
+    "distinct_year_taxon_group_labels": 88,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "多摩川",
+    "river_name": "平瀬川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 139,
+    "distinct_year_taxon_group_labels": 139,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "大岡川",
+    "river_name": "堀割川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 12,
+    "distinct_year_taxon_group_labels": 12,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "帷子川",
+    "river_name": "石崎川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 117,
+    "distinct_year_taxon_group_labels": 117,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "平作川",
+    "river_name": "矢部川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 30,
+    "distinct_year_taxon_group_labels": 30,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "中津川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2023_source_fish",
+      "2023_source_insects",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 535,
+    "distinct_year_taxon_group_labels": 512,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "串川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_source_fish",
+      "2023_source_insects",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 300,
+    "distinct_year_taxon_group_labels": 300,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "八瀬川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 129,
+    "distinct_year_taxon_group_labels": 129,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "姥川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 4,
+    "distinct_year_taxon_group_labels": 4,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "宮川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 53,
+    "distinct_year_taxon_group_labels": 53,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "小出川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_source_fish",
+      "2023_source_insects",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 239,
+    "distinct_year_taxon_group_labels": 235,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "恩曽川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 21,
+    "distinct_year_taxon_group_labels": 21,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "沢井川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 165,
+    "distinct_year_taxon_group_labels": 165,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "玉川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 14,
+    "distinct_year_taxon_group_labels": 14,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "目久尻川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_source_fish",
+      "2023_source_insects",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 119,
+    "distinct_year_taxon_group_labels": 118,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "谷太郎川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_source_fish",
+      "2023_source_insects"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 87,
+    "distinct_year_taxon_group_labels": 87,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "道保川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates",
+      "2024_source_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 330,
+    "distinct_year_taxon_group_labels": 256,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "道志川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 13,
+    "distinct_year_taxon_group_labels": 13,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "阿津川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_source_fish",
+      "2023_source_insects"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 85,
+    "distinct_year_taxon_group_labels": 85,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "相模川",
+    "river_name": "鳩川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2024_source_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 104,
+    "distinct_year_taxon_group_labels": 104,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "酒匂川",
+    "river_name": "中津川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_source_fish",
+      "2023_source_insects",
+      "2024_source_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 276,
+    "distinct_year_taxon_group_labels": 276,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "酒匂川",
+    "river_name": "仙了川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 16,
+    "distinct_year_taxon_group_labels": 16,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "酒匂川",
+    "river_name": "四十八瀬川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 168,
+    "distinct_year_taxon_group_labels": 168,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "酒匂川",
+    "river_name": "河内川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 11,
+    "distinct_year_taxon_group_labels": 11,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "酒匂川",
+    "river_name": "狩川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2023_source_fish",
+      "2023_source_insects",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 171,
+    "distinct_year_taxon_group_labels": 156,
+    "not_in_v10_display_groups": false,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "金目川",
+    "river_name": "室川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 123,
+    "distinct_year_taxon_group_labels": 123,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "金目川",
+    "river_name": "歌川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 22,
+    "distinct_year_taxon_group_labels": 22,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "金目川",
+    "river_name": "葛葉川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 155,
+    "distinct_year_taxon_group_labels": 155,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "金目川",
+    "river_name": "鈴川",
+    "river_code_optional": null,
+    "years": [
+      2023
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna"
+    ],
+    "eDNA_source_rows_not_unique_species": 14,
+    "distinct_year_taxon_group_labels": 14,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "鶴見川",
+    "river_name": "奈良川",
+    "river_code_optional": null,
+    "years": [
+      2023,
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2023_prefecturewide_fish",
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "bird_edna_not_visual_observation",
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 109,
+    "distinct_year_taxon_group_labels": 109,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  },
+  {
+    "prefecture": "神奈川県",
+    "watershed_name": "鶴見川",
+    "river_name": "早淵川",
+    "river_code_optional": null,
+    "years": [
+      2024
+    ],
+    "eDNA_only": true,
+    "source_dataset_keys": [
+      "2024_prefecturewide_vertebrates_invertebrates"
+    ],
+    "eDNA_category_keys": [
+      "fish_edna",
+      "insect_edna_not_proven_benthic",
+      "other_invertebrate_edna_not_proven_benthic"
+    ],
+    "eDNA_source_rows_not_unique_species": 41,
+    "distinct_year_taxon_group_labels": 41,
+    "not_in_v10_display_groups": true,
+    "legal_river_segment_verified": false,
+    "no_live_specimen_or_capture_claim": true
+  }
+]

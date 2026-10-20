@@ -1,0 +1,244 @@
+{
+  "method": "eDNA positive sequencing read, never specimen capture/observation",
+  "source_site": "https://www.pref.kanagawa.jp/docs/b4f/suigen/edna.html",
+  "usage_policy": "https://www.pref.kanagawa.jp/documents/97797/riyo-kiyaku.pdf",
+  "source_originals_verified_by_sha": 5,
+  "source_audits": [
+    {
+      "source_dataset_key": "2023_source_fish",
+      "survey_year": 2023,
+      "official_xlsx_url": "https://www.pref.kanagawa.jp/documents/97797/r5_kenmin_gyorui.xlsx",
+      "official_xlsx_sha256": "60c18a87a9522c5f8bd0ba90021d58a663a5b3696f5592a033ff85f8ed78d62a",
+      "sheet_name": "R5魚類",
+      "source_confidence_column": null,
+      "confidence_missing_in_original": true,
+      "source_name_column": "E",
+      "official_fiscal_year_or_sample_date_row": 6,
+      "calendar_sample_date_checked": true,
+      "validated_named_tributary_station_columns": 15,
+      "positive_dna_station_taxon_cells_aggregate": 157,
+      "distinct_source_taxon_river_labels": 99,
+      "named_rivers_with_dna": 8,
+      "biological_group_positive_cells": {
+        "fish_edna": 157
+      },
+      "held_taxon_rows_bad_or_missing_confidence": {},
+      "excluded_geographic_headers": {
+        "not_explicit_named_river_and_water_system": 2
+      },
+      "no_direct_capture_observation": true,
+      "no_precise_sites_exported": true
+    },
+    {
+      "source_dataset_key": "2023_source_insects",
+      "survey_year": 2023,
+      "official_xlsx_url": "https://www.pref.kanagawa.jp/documents/97797/r5_kenmin_mtinsects-16s.xlsx",
+      "official_xlsx_sha256": "50865de054e4ac12c097ca4ee8e880713f45b3947cd30364684854079e3957fc",
+      "sheet_name": "結果まとめ(種落ち)",
+      "source_confidence_column": "H",
+      "confidence_missing_in_original": false,
+      "source_name_column": "F",
+      "official_fiscal_year_or_sample_date_row": 1,
+      "calendar_sample_date_checked": false,
+      "validated_named_tributary_station_columns": 15,
+      "positive_dna_station_taxon_cells_aggregate": 1286,
+      "distinct_source_taxon_river_labels": 979,
+      "named_rivers_with_dna": 8,
+      "biological_group_positive_cells": {
+        "other_invertebrate_edna_not_proven_benthic": 49,
+        "insect_edna_not_proven_benthic": 1219,
+        "fish_edna": 18
+      },
+      "held_taxon_rows_bad_or_missing_confidence": {
+        "低": 30
+      },
+      "excluded_geographic_headers": {
+        "not_explicit_named_river_and_water_system": 2
+      },
+      "no_direct_capture_observation": true,
+      "no_precise_sites_exported": true
+    },
+    {
+      "source_dataset_key": "2023_prefecturewide_fish",
+      "survey_year": 2023,
+      "official_xlsx_url": "https://www.pref.kanagawa.jp/documents/97797/r5_project_gyorui.xlsx",
+      "official_xlsx_sha256": "6292c5829709c7677abf83c6e18437205ea3b3d3964c9bf67a4f2086bce7d48c",
+      "sheet_name": "R5プロジェクト_魚類",
+      "source_confidence_column": null,
+      "confidence_missing_in_original": true,
+      "source_name_column": "E",
+      "official_fiscal_year_or_sample_date_row": 6,
+      "calendar_sample_date_checked": true,
+      "validated_named_tributary_station_columns": 18,
+      "positive_dna_station_taxon_cells_aggregate": 259,
+      "distinct_source_taxon_river_labels": 252,
+      "named_rivers_with_dna": 17,
+      "biological_group_positive_cells": {
+        "fish_edna": 259
+      },
+      "held_taxon_rows_bad_or_missing_confidence": {},
+      "excluded_geographic_headers": {
+        "not_explicit_named_river_and_water_system": 4
+      },
+      "no_direct_capture_observation": true,
+      "no_precise_sites_exported": true
+    },
+    {
+      "source_dataset_key": "2024_source_vertebrates_invertebrates",
+      "survey_year": 2024,
+      "official_xlsx_url": "https://www.pref.kanagawa.jp/documents/97797/r6_kenmin_mtinsects_amphi.xlsx",
+      "official_xlsx_sha256": "fdfc28f2c470625429334e603d62d212b4f7bb5c4bb3bd521c91c500397ab11a",
+      "sheet_name": "結果まとめ(種落ち)",
+      "source_confidence_column": "I",
+      "confidence_missing_in_original": false,
+      "source_name_column": "G",
+      "official_fiscal_year_or_sample_date_row": 1,
+      "calendar_sample_date_checked": false,
+      "validated_named_tributary_station_columns": 8,
+      "positive_dna_station_taxon_cells_aggregate": 472,
+      "distinct_source_taxon_river_labels": 361,
+      "named_rivers_with_dna": 3,
+      "biological_group_positive_cells": {
+        "bird_edna_not_visual_observation": 11,
+        "fish_edna": 31,
+        "insect_edna_not_proven_benthic": 412,
+        "other_invertebrate_edna_not_proven_benthic": 18
+      },
+      "held_taxon_rows_bad_or_missing_confidence": {
+        "低": 21
+      },
+      "excluded_geographic_headers": {
+        "not_explicit_named_river_and_water_system": 1
+      },
+      "no_direct_capture_observation": true,
+      "no_precise_sites_exported": true
+    },
+    {
+      "source_dataset_key": "2024_prefecturewide_vertebrates_invertebrates",
+      "survey_year": 2024,
+      "official_xlsx_url": "https://www.pref.kanagawa.jp/documents/97797/r6_project_mtinsects-amphi.xlsx",
+      "official_xlsx_sha256": "0655f626405ae5a883ae2dba1589277f381fee170a2a2bf6735a304ca58b1258",
+      "sheet_name": "結果まとめ(種落ち)",
+      "source_confidence_column": "H",
+      "confidence_missing_in_original": false,
+      "source_name_column": "F",
+      "official_fiscal_year_or_sample_date_row": 1,
+      "calendar_sample_date_checked": false,
+      "validated_named_tributary_station_columns": 24,
+      "positive_dna_station_taxon_cells_aggregate": 2351,
+      "distinct_source_taxon_river_labels": 1999,
+      "named_rivers_with_dna": 18,
+      "biological_group_positive_cells": {
+        "bird_edna_not_visual_observation": 24,
+        "fish_edna": 304,
+        "insect_edna_not_proven_benthic": 1916,
+        "other_invertebrate_edna_not_proven_benthic": 107
+      },
+      "held_taxon_rows_bad_or_missing_confidence": {
+        "低": 27
+      },
+      "excluded_geographic_headers": {
+        "not_explicit_named_river_and_water_system": 15
+      },
+      "no_direct_capture_observation": true,
+      "no_precise_sites_exported": true
+    }
+  ],
+  "read_positive_source_rows": 3690,
+  "unique_year_river_category_taxon_labels_across_2023_2024": 3573,
+  "multiple_2023_source_rows_are_kept_but_not_double_counted": 117,
+  "2023_2024_named_river_groups_with_eDNA": 31,
+  "new_candidate_name_groups_not_in_v10_492": 20,
+  "new_candidate_name_pairs": [
+    {
+      "watershed_name": "多摩川",
+      "river_name": "平瀬川"
+    },
+    {
+      "watershed_name": "大岡川",
+      "river_name": "堀割川"
+    },
+    {
+      "watershed_name": "帷子川",
+      "river_name": "石崎川"
+    },
+    {
+      "watershed_name": "平作川",
+      "river_name": "矢部川"
+    },
+    {
+      "watershed_name": "相模川",
+      "river_name": "八瀬川"
+    },
+    {
+      "watershed_name": "相模川",
+      "river_name": "小出川"
+    },
+    {
+      "watershed_name": "相模川",
+      "river_name": "沢井川"
+    },
+    {
+      "watershed_name": "相模川",
+      "river_name": "玉川"
+    },
+    {
+      "watershed_name": "相模川",
+      "river_name": "谷太郎川"
+    },
+    {
+      "watershed_name": "相模川",
+      "river_name": "道志川"
+    },
+    {
+      "watershed_name": "相模川",
+      "river_name": "阿津川"
+    },
+    {
+      "watershed_name": "酒匂川",
+      "river_name": "中津川"
+    },
+    {
+      "watershed_name": "酒匂川",
+      "river_name": "四十八瀬川"
+    },
+    {
+      "watershed_name": "酒匂川",
+      "river_name": "河内川"
+    },
+    {
+      "watershed_name": "金目川",
+      "river_name": "室川"
+    },
+    {
+      "watershed_name": "金目川",
+      "river_name": "歌川"
+    },
+    {
+      "watershed_name": "金目川",
+      "river_name": "葛葉川"
+    },
+    {
+      "watershed_name": "金目川",
+      "river_name": "鈴川"
+    },
+    {
+      "watershed_name": "鶴見川",
+      "river_name": "奈良川"
+    },
+    {
+      "watershed_name": "鶴見川",
+      "river_name": "早淵川"
+    }
+  ],
+  "v10_base_label_groups_preserved": 492,
+  "v10_2025_edna_counts_preserved_separately": 265,
+  "new_combined_display_name_group_candidates_approx": 512,
+  "new_direct_fish_capture_records": 0,
+  "eDNA_insects_or_invertebrates_not_assumed_confirmed_benthic_animals": true,
+  "birds_from_eDNA_not_assumed_visual_or_specimen": true,
+  "source_has_no_confidence_scale_in_2023_fish_files": true,
+  "all_10_digit_river_codes_optional": true,
+  "all_precise_sampling_sites_and_personal_details_excluded": true,
+  "production_WordPress_API_MySQL_unchanged": true
+}
