@@ -75,6 +75,52 @@ jobs:
           print('PASS_ALL_4_CATEGORY_STATIC_DATA',len(names),
                 benthic['historical_contexts'],a['all_historical_contexts'])
           PY
+      - name: Build mobile no-iframe viewer and offline-safe preview ZIP
+        run: |
+          python river-fish/research-individual-v09/render_lazy_viewer_v09.py \
+            --out /tmp/river-bio-lazy-v09/river_atlas_lazy_viewer_v09.html
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          html=Path('/tmp/river-bio-lazy-v09/river_atlas_lazy_viewer_v09.html').read_text()
+          blocks=re.findall(r'<script>([\s\S]+?)</script>',html)
+          assert len(blocks)==1 and 'fetch(path' in blocks[0]
+          Path('/tmp/atlas-lazy-v09.js').write_text(blocks[0])
+          PY
+          node --check /tmp/atlas-lazy-v09.js
+          python river-fish/research-individual-v09/package_static_preview_v09.py \
+            --viewer /tmp/river-bio-lazy-v09/river_atlas_lazy_viewer_v09.html \
+            --packs /tmp/river-bio-lazy-v09 \
+            --out /tmp/river-bio-lazy-v09/river_atlas_static_preview_v09.zip
+      - name: Simulate static HTTP requests for actual category data
+        run: |
+          python - <<'PY'
+          import functools,http.server,json,threading,urllib.request,zipfile
+          from pathlib import Path
+          site=Path('/tmp/river-atlas-site-v09')
+          with zipfile.ZipFile('/tmp/river-bio-lazy-v09/river_atlas_static_preview_v09.zip') as z:
+              z.extractall(site)
+          manifest=json.loads((site/'manifest_v09.json').read_text())
+          river=next(x for x in manifest['rivers'] if x['source_region']=='chugoku' and
+                     x['watershed']=='太田川' and x['river_name']=='三篠川')
+          handler=functools.partial(http.server.SimpleHTTPRequestHandler,directory=str(site))
+          server=http.server.ThreadingHTTPServer(('127.0.0.1',0),handler)
+          thread=threading.Thread(target=server.serve_forever,daemon=True)
+          thread.start()
+          try:
+              base='http://127.0.0.1:'+str(server.server_port)+'/'
+              with urllib.request.urlopen(base+'index.html') as response:
+                  page=response.read().decode('utf-8')
+              assert '魚類' in page and '都道府県' in page and 'fetch(path' in page
+              with urllib.request.urlopen(base+river['categories']['fish']['file']) as response:
+                  fish=json.load(response)
+              assert fish['river_name']=='三篠川'
+              assert fish['historical_contexts']==67
+              assert any(x['recorded_name']=='アユ' for x in fish['labels'])
+              print('LOCAL_HTTP_UI_AND_LAZY_CATEGORY_PASS',base,fish['river_name'],len(fish['labels']))
+          finally:
+              server.shutdown();server.server_close();thread.join(timeout=3)
+          PY
       - name: Upload complete research static category ZIPs and indexed manifest
         uses: actions/upload-artifact@v4
         with:
