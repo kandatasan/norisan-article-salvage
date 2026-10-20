@@ -1,0 +1,90 @@
+name: River fish same-name navigation v22 (research only)
+on:
+  push:
+    branches:
+      - research/river-fish-same-name-navigation-v22-20261020
+    paths:
+      - 'river-fish/research-individual-v22/**'
+      - '.github/workflows/river-fish-navigation-v22.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test_navigation:
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build upstream source-verified research packages
+        run: |
+          python river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v20/build_general_stars_v20.py
+          python river-fish/research-individual-v21/build_47pref_directory_v21.py
+      - name: Generate v22 river/fish reference archive
+        run: |
+          python -m py_compile river-fish/research-individual-v22/build_same_name_navigation_v22.py
+          python river-fish/research-individual-v22/build_same_name_navigation_v22.py
+      - name: Independent unchanged-biology and reference checks
+        run: |
+          python - <<'PY'
+          import csv,hashlib,io,json,zipfile
+          from pathlib import Path
+          root=Path('river-fish/research-individual-v22/outputs')
+          q=json.loads((root/'same_name_navigation_qa_v22.json').read_text())
+          assert q['research_only'] and q['no_WordPress_or_production_changes']
+          assert q['old_fish_evidence_name_groups_unchanged']==511
+          assert q['official_source_name_groups_unchanged']==1057
+          assert q['old_unknown_prefecture_groups_unchanged']==195
+          assert q['fish_biology_joins_created']==0 and q['name_only_reference_not_verified_same_river']
+          assert q['single_candidate_groups']+q['multiple_candidate_groups']==q['source_name_reference_groups']
+          zpath=root/q['zip']
+          assert hashlib.sha256(zpath.read_bytes()).hexdigest()==q['zip_sha256']
+          with zipfile.ZipFile(zpath) as z:
+            assert z.testzip() is None
+            m=json.loads(z.read('fish_master.json'))
+            a=json.loads(z.read('atlas.json'))
+            assert len(m['taxa'])==639 and len(a['entries'])==1568
+            assert a['research_display_name_groups']==511 and len(a['prefectures'])==47
+            assert a['source_only_directory_v21']['display_name_groups']==1057
+            assert a['same_name_navigation_v22']['never_auto_merged_biota']
+            old={e['id']:e for e in a['entries'][:511]}
+            refs=list(csv.DictReader(io.StringIO(z.read('same_name_fish_record_references_v22.csv').decode('utf-8-sig'))))
+            assert len(refs)==q['source_name_reference_paths']
+            assert len({x['source_only_id'] for x in refs})==q['source_name_reference_groups']
+            for r in refs:
+              assert r['fish_transferred']=='NO'
+              assert r['separate_survey_group_id'] in old
+              assert r['review_status']=='SAME_NAME_SEARCH_HINT_ONLY_NOT_PHYSICAL_IDENTITY_VERIFIED'
+            for e in a['entries'][511:]:
+              assert not e['old'] and e['edna'] is None and e['river_code'] is None
+              assert e['fish_occurrences_linked_from_this_source']==0
+              link=e.get('same_name_survey_reference_v22')
+              if link:
+                assert not link['fish_data_copied_to_official_source_entry']
+                assert not link['survey_river_geographic_identity_approved']
+                assert all(i in old for i in link['candidate_ids'])
+            html=z.read('index.html').decode()
+            assert '【川名資料・魚未接続】' in html and '【水系資料・魚未接続】' in html
+            assert html.count('<script>')==html.count('</script>')==1
+            Path('/tmp/river_fish_v22.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          print('RIVER_FISH_V22_INDEPENDENT_QA_OK')
+          PY
+          node --check /tmp/river_fish_v22.js
+      - name: Click navigation with minimal DOM simulation
+        run: |
+          mkdir -p /tmp/fish_atlas_v22
+          python - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('river-fish/research-individual-v22/outputs/river_fish_navigation_and_review_v22.zip') as z:
+             z.extractall('/tmp/fish_atlas_v22')
+          PY
+          node river-fish/research-individual-v22/test_viewer_v22.cjs /tmp/fish_atlas_v22
+      - name: Upload research-only archive and QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-fish-navigation-v22-research
+          path: river-fish/research-individual-v22/outputs/
+          retention-days: 30
