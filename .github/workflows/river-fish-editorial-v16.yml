@@ -7,6 +7,12 @@ on:
       - 'river-fish/research-individual-v16/**'
       - '.github/workflows/river-fish-editorial-v16.yml'
   workflow_dispatch:
+  pull_request:
+    branches:
+      - research/river-biota-new-sources-20261020
+    paths:
+      - 'river-fish/research-individual-v16/**'
+      - '.github/workflows/river-fish-editorial-v16.yml'
 permissions:
   contents: write
 concurrency:
@@ -61,6 +67,7 @@ jobs:
           name: tsurikue-fish-draft-stars-v16-research-only
           path: river-fish/research-individual-v16/outputs/
       - name: Preserve inventory for editor review
+        if: github.event_name == 'push'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
