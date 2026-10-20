@@ -26,7 +26,8 @@ jobs:
       - name: Fetch only official original PDF transiently and cross-check each table row
         run: |
           python -m py_compile river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py
-          python river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py
+          python river-fish/research-individual-v13/extract_higashihiroshima_benthos_v13.py 2>&1 | tee /tmp/higashihiroshima_v13_log.txt
+          exit ${PIPESTATUS[0]}
       - name: Check extracted benthic indicator evidence, privacy and blocked commercial publication
         run: |
           python - <<'PY'
@@ -45,12 +46,25 @@ jobs:
           assert not a['specific_sampling_sites_and_coordinates_in_export']
           print('EAST_HIROSHIMA_ORIGINAL_PDF_AUDIT_SUCCESS',a['source_river_name_groups'])
           PY
+      - name: Preserve failure context for debugging on isolated branch
+        if: failure()
+        run: |
+          mkdir -p river-fish/research-individual-v13/outputs
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          log=Path('/tmp/higashihiroshima_v13_log.txt')
+          raw=log.read_text(errors='replace') if log.exists() else 'Original fetch not reached'
+          out={'v13_status':'INCOMPLETE_NO_BENTHIC_RECORDS_ADOPTED','error_tail':raw[-2500:],'original_pdf_not_exported':True}
+          Path('river-fish/research-individual-v13/outputs/diagnostic_v13.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
+          PY
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: east-hiroshima-2024-benthos-v13-research
           path: river-fish/research-individual-v13/outputs/
       - name: Save ONLY sanitized research outputs to isolated branch
-        if: success()
+        if: always()
         run: |
           test "$GITHUB_REF_NAME" = "research/higashihiroshima-benthos-v13-20261020"
           git config user.name "github-actions[bot]"
