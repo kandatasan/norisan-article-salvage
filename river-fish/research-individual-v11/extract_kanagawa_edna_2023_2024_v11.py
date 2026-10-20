@@ -39,13 +39,15 @@ PINS = {
 }
 # Fixed mapping based on observed, independently SHA-checked column headings.
 # In modern files row 3 contains water-system names, row 4 tributaries,
-# row 5 dates. The 2023 fish matrices instead put survey dates on row 6.
+# row 1 contains the official fiscal-year header (NOT a sample date).
+# The 2023 fish matrices additionally expose sample dates on row 6; require
+# year 2023 in that case, excluding carry-over 2022 sample dates.
 CONFIG = {
     "2023_source_fish": dict(year=2023,sheet="R5魚類",start=7,name="E",cl="A",conf=None,date=6),
     "2023_prefecturewide_fish": dict(year=2023,sheet="R5プロジェクト_魚類",start=7,name="E",cl="A",conf=None,date=6),
-    "2023_source_insects": dict(year=2023,sheet="結果まとめ(種落ち)",start=7,name="F",cl="A",conf="H",date=5),
-    "2024_source_vertebrates_invertebrates": dict(year=2024,sheet="結果まとめ(種落ち)",start=7,name="G",cl="B",conf="I",date=5),
-    "2024_prefecturewide_vertebrates_invertebrates": dict(year=2024,sheet="結果まとめ(種落ち)",start=7,name="F",cl="A",conf="H",date=5),
+    "2023_source_insects": dict(year=2023,sheet="結果まとめ(種落ち)",start=7,name="F",cl="A",conf="H",date=1),
+    "2024_source_vertebrates_invertebrates": dict(year=2024,sheet="結果まとめ(種落ち)",start=7,name="G",cl="B",conf="I",date=1),
+    "2024_prefecturewide_vertebrates_invertebrates": dict(year=2024,sheet="結果まとめ(種落ち)",start=7,name="F",cl="A",conf="H",date=1),
 }
 LICENSE = "https://www.pref.kanagawa.jp/documents/97797/riyo-kiyaku.pdf"
 PARENT = "https://www.pref.kanagawa.jp/docs/b4f/suigen/edna.html"
@@ -230,7 +232,8 @@ def main():
             "official_xlsx_url":BASE+filename,"official_xlsx_sha256":sha,
             "sheet_name":spec["sheet"],"source_confidence_column":spec["conf"],
             "confidence_missing_in_original":spec["conf"] is None,
-            "source_name_column":spec["name"],"survey_date_row":spec["date"],
+            "source_name_column":spec["name"],"official_fiscal_year_or_sample_date_row":spec["date"],
+            "calendar_sample_date_checked":spec["date"]==6,
             "validated_named_tributary_station_columns":len(cols),
             "positive_dna_station_taxon_cells_aggregate":raw_positive,
             "distinct_source_taxon_river_labels":len(source_evidence),
