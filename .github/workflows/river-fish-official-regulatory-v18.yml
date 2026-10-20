@@ -1,0 +1,89 @@
+name: Audit official fish restrictions overlay v18
+on:
+  push:
+    branches:
+      - research/fish-protection-flags-v18-20261020
+    paths:
+      - 'river-fish/research-individual-v18/**'
+      - '.github/workflows/river-fish-official-regulatory-v18.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: fish-official-flags-v18
+  cancel-in-progress: true
+jobs:
+  verify_official_source_overlay:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify v17 SHA and exact Ministry legal source-name flags
+        run: |
+          set -o pipefail
+          {
+            python -m py_compile river-fish/research-individual-v18/overlay_fish_law_flags_v18.py
+            python river-fish/research-individual-v18/overlay_fish_law_flags_v18.py
+          } 2>&1 | tee /tmp/fish_law_v18_log.txt
+      - name: Independently validate JSON and browser JS
+        run: |
+          python - <<'PY'
+          import pathlib,zipfile,json,hashlib
+          o=pathlib.Path('river-fish/research-individual-v18/outputs')
+          q=json.loads((o/'official_fish_law_scope_qa_v18.json').read_text())
+          zpath=o/q['zip']
+          assert hashlib.sha256(zpath.read_bytes()).hexdigest()==q['zip_sha256']
+          assert q['research_only']
+          assert q['fish_source_exact_matches_to_official_invasive_species_list']==9
+          assert q['domestic_rare_absence_is_not_exhaustive_species_clearance']
+          assert q['no_conservation_status_assumed_from_rarity_stars']
+          with zipfile.ZipFile(zpath) as z:
+            assert z.testzip() is None
+            m=json.loads(z.read('fish_master.json'))
+            a=json.loads(z.read('atlas.json'))
+            assert len(m['taxa'])==639 and len(a['entries'])==511
+            for name in ('オオクチバス','コウライオヤニラミ','アリゲーターガー','ブルーギル'):
+              assert m['taxa'][name]['official_regulatory_review_v18']['reference_url'].startswith('https://www.env.go.jp/')
+            assert m['taxa']['オヤニラミ']['official_regulatory_review_v18'] is None
+            assert m['taxa']['コウライオヤニラミ']['official_regulatory_review_v18'] is not None
+            assert m['taxa']['コウライオヤニラミ']['draft_scores']['rarity_stars'] is not None
+            page=z.read('index.html').decode()
+            assert page.count('<script>')==page.count('</script>')==1
+            pathlib.Path('/tmp/river_fish_law_v18.js').write_text(page.split('<script>',1)[1].split('</script>',1)[0])
+          print('INDEPENDENT_OFFICIAL_FISH_SOURCE_AUDIT_OK')
+          PY
+          node --check /tmp/river_fish_law_v18.js
+      - name: Persist diagnostic on failure
+        if: failure()
+        run: |
+          mkdir -p river-fish/research-individual-v18/outputs
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('/tmp/fish_law_v18_log.txt')
+          err=p.read_text(errors='replace') if p.exists() else 'No logfile'
+          Path('river-fish/research-individual-v18/outputs/official_fish_law_v18_failure.json').write_text(
+            json.dumps({'status':'INCOMPLETE_UNVERIFIED','log_tail':err[-5000:]},ensure_ascii=False,indent=2)+'\n')
+          PY
+      - name: Clear stale diagnostic after successful QA
+        if: success()
+        run: rm -f river-fish/research-individual-v18/outputs/official_fish_law_v18_failure.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fish-invasives-source-flags-research-v18
+          path: river-fish/research-individual-v18/outputs
+      - name: Save research-only ZIP and QA reports
+        if: always()
+        run: |
+          test "$GITHUB_REF_NAME" = "research/fish-protection-flags-v18-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v18/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: persist v18 source-verified fish regulations overlay"
+            git push origin HEAD:refs/heads/research/fish-protection-flags-v18-20261020
+          fi
