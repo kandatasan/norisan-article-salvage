@@ -127,11 +127,12 @@ def main():
                     js="""// v25 name search: exact provenance UI only, no new biological or physical river joins.
 let riverMetaV25=null,riverSearchEpochV25=0,riverSearchHitsV25=[],riverShownV25=25;
 function riverQuickNavigateV25(item){
- const nav=atlas.links.find(x=>x.river_id===item.id);
+ const id=item.entry.id;
+ const nav=atlas.links.find(x=>x.river_id===id);
  if(!nav)return;
  $("pref").value=nav.prefecture;choosePref();
  $("water").value=nav.water;chooseWater();
- $("river").value=item.id;chooseRiver();
+ $("river").value=id;chooseRiver();
 }
 function renderRiverSearchV25(){
  const box=$("riverSearchResultsV25"),more=$("riverSearchMoreV25");
