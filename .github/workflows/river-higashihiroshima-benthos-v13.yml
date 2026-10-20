@@ -64,6 +64,9 @@ jobs:
           out={'v13_status':'INCOMPLETE_NO_BENTHIC_RECORDS_ADOPTED','error_tail':raw[-2500:],'original_pdf_not_exported':True}
           Path('river-fish/research-individual-v13/outputs/diagnostic_v13.json').write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n')
           PY
+      - name: Remove stale diagnostic when verification now passes
+        if: success()
+        run: rm -f river-fish/research-individual-v13/outputs/diagnostic_v13.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
