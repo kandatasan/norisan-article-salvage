@@ -1,0 +1,14 @@
+{
+  "schema": "v09",
+  "total_blackbox_tests": 6,
+  "failures": 0,
+  "errors": 0,
+  "success": true,
+  "research_only": true,
+  "localhost_only": true,
+  "source_taxon_labels_verified": 254574,
+  "retained_historical_contexts": 553351,
+  "retained_river_ids": 428,
+  "prefecture_basin_navigation_entries": 80,
+  "category_taxonomy_scope": "historic verbatim labels, not verified species"
+}
