@@ -1,0 +1,95 @@
+name: Research v23 China watershed fish reference and lazy QA
+on:
+  push:
+    branches:
+      - research/chugoku-watershed-reference-v23-20261020
+    paths:
+      - 'river-fish/research-individual-v23/**'
+      - '.github/workflows/river-fish-watershed-reference-v23.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  validate_reference:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build source-verified v19-v22 research zips
+        run: |
+          python river-fish/research-individual-v19/build_evidence_v19.py
+          python river-fish/research-individual-v20/build_general_stars_v20.py
+          python river-fish/research-individual-v21/build_47pref_directory_v21.py
+          python river-fish/research-individual-v22/build_same_name_navigation_v22.py
+      - name: Build China watershed fish reference
+        run: |
+          python -m py_compile river-fish/research-individual-v23/build_chugoku_watershed_reference_v23.py
+          python river-fish/research-individual-v23/build_chugoku_watershed_reference_v23.py
+      - name: Independent data lineage and safety QA
+        run: |
+          python - <<'PY'
+          import csv,hashlib,json,zipfile,io
+          from pathlib import Path
+          o=Path('river-fish/research-individual-v23/outputs')
+          q=json.loads((o/'chugoku_watershed_fish_qa_v23.json').read_text())
+          assert q['research_only'] and q['no_wordpress_or_production_changes']
+          assert q['watersheds_as_distinct_reference_packs']==13
+          assert q['source_watershed_year_name_rows']==2285
+          assert q['unique_source_fish_names_not_distinct_species']==216
+          assert q['new_direct_river_fish_occurrences']==0
+          assert q['original_511_survey_groups_preserved']==511
+          assert q['original_1057_official_name_groups_preserved']==1057
+          assert q['original_195_unknown_prefecture_groups_preserved']==195
+          zpath=o/q['zip']
+          assert hashlib.sha256(zpath.read_bytes()).hexdigest()==q['zip_sha256']
+          with zipfile.ZipFile(zpath) as z:
+            assert z.testzip() is None
+            a=json.loads(z.read('atlas.json'))
+            m=json.loads(z.read('fish_master.json'))
+            assert len(a['entries'])==1568 and len(m['taxa'])==639
+            refs=[e for e in a['entries'] if e.get('watershed_fish_reference_v23')]
+            assert len(refs)==q['old_survey_entries_with_reference']+q['official_name_only_entries_with_reference']
+            assert len(refs)>0
+            for e in refs:
+               r=e['watershed_fish_reference_v23']
+               assert r['river_specific_fish_count_added']==0
+               assert not r['same_physical_watershed_identity_confirmed']
+               p=json.loads(z.read(r['pack']))
+               assert p['watershed_name_as_recorded']==e['water']
+               assert p['name_identity_not_approved']
+               assert p['source_is_edited_aggregate']
+               assert p['geographic_scope']=='WHOLE_WATERSHED_YEAR_NAME_RECORD_NOT_SPECIFIC_RIVER'
+            packs=[n for n in z.namelist() if n.startswith('watershed-reference/') and n.endswith('.json')]
+            assert len(packs)==13
+            for n in packs:
+               p=json.loads(z.read(n))
+               assert all(2006<=y<=2023 for x in p['name_groups'] for y in x['survey_years'])
+            source_rows=list(csv.DictReader(io.StringIO(z.read('chugoku_watershed_fish_source_rows_v23.csv').decode('utf-8-sig'))))
+            assert len(source_rows)==2285
+            assert len({(r['watershed'],r['survey_year'],r['recorded_name']) for r in source_rows})==2285
+            html=z.read('index.html').decode()
+            assert '個別河川の記録ではありません' in html and 'showWaterSystemReferenceV23' in html
+            assert html.count('<script>')==html.count('</script>')==1
+            Path('/tmp/river_fish_v23.js').write_text(html.split('<script>',1)[1].split('</script>',1)[0])
+          print('RIVER_FISH_V23_INDEPENDENT_QA_OK')
+          PY
+          node --check /tmp/river_fish_v23.js
+      - name: DOM click smoke and water-system lazy-loading click
+        run: |
+          mkdir -p /tmp/river_fish_v23
+          python - <<'PY'
+          from zipfile import ZipFile
+          with ZipFile('river-fish/research-individual-v23/outputs/river_fish_chugoku_watershed_reference_v23.zip') as z:
+            z.extractall('/tmp/river_fish_v23')
+          PY
+          node river-fish/research-individual-v22/test_viewer_v22.cjs /tmp/river_fish_v23
+          node river-fish/research-individual-v23/test_lazy_reference_v23.cjs /tmp/river_fish_v23
+      - name: Upload research-only ZIP and QA
+        uses: actions/upload-artifact@v4
+        with:
+          name: river-fish-watershed-v23-research
+          path: river-fish/research-individual-v23/outputs/
+          retention-days: 30
