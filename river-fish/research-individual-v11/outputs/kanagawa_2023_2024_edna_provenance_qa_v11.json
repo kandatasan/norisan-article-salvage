@@ -41,13 +41,12 @@
       "official_fiscal_year_or_sample_date_row": 1,
       "calendar_sample_date_checked": false,
       "validated_named_tributary_station_columns": 15,
-      "positive_dna_station_taxon_cells_aggregate": 1286,
-      "distinct_source_taxon_river_labels": 979,
+      "positive_dna_station_taxon_cells_aggregate": 1268,
+      "distinct_source_taxon_river_labels": 964,
       "named_rivers_with_dna": 8,
       "biological_group_positive_cells": {
         "other_invertebrate_edna_not_proven_benthic": 49,
-        "insect_edna_not_proven_benthic": 1219,
-        "fish_edna": 18
+        "insect_edna_not_proven_benthic": 1219
       },
       "held_taxon_rows_bad_or_missing_confidence": {
         "低": 30
@@ -144,11 +143,11 @@
       "no_precise_sites_exported": true
     }
   ],
-  "read_positive_source_rows": 3690,
-  "unique_year_river_category_taxon_labels_across_2023_2024": 3573,
-  "multiple_2023_source_rows_are_kept_but_not_double_counted": 117,
+  "read_positive_source_rows": 3675,
+  "unique_year_river_category_taxon_labels_across_2023_2024": 3570,
+  "multiple_2023_source_rows_are_kept_but_not_double_counted": 105,
   "2023_2024_named_river_groups_with_eDNA": 31,
-  "new_candidate_name_groups_not_in_v10_492": 20,
+  "new_candidate_name_groups_not_in_v10_492": 19,
   "new_candidate_name_pairs": [
     {
       "watershed_name": "多摩川",
@@ -225,15 +224,13 @@
     {
       "watershed_name": "鶴見川",
       "river_name": "奈良川"
-    },
-    {
-      "watershed_name": "鶴見川",
-      "river_name": "早淵川"
     }
   ],
   "v10_base_label_groups_preserved": 492,
   "v10_2025_edna_counts_preserved_separately": 265,
-  "new_combined_display_name_group_candidates_approx": 512,
+  "potential_combined_display_name_groups_excluding_held_spellings": 511,
+  "method_outside_assay_target_taxa_are_not_promoted": true,
+  "spelling_variant_held_not_automatically_promoted": true,
   "new_direct_fish_capture_records": 0,
   "eDNA_insects_or_invertebrates_not_assumed_confirmed_benthic_animals": true,
   "birds_from_eDNA_not_assumed_visual_or_specimen": true,

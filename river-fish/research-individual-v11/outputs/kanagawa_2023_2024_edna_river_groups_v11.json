@@ -8,7 +8,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2024_prefecturewide_vertebrates_invertebrates"
@@ -34,7 +35,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2024_prefecturewide_vertebrates_invertebrates"
@@ -59,7 +61,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -80,7 +83,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates"
     ],
@@ -104,7 +108,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates"
     ],
@@ -128,7 +133,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2023_source_fish",
@@ -141,8 +147,8 @@
       "insect_edna_not_proven_benthic",
       "other_invertebrate_edna_not_proven_benthic"
     ],
-    "eDNA_source_rows_not_unique_species": 535,
-    "distinct_year_taxon_group_labels": 512,
+    "eDNA_source_rows_not_unique_species": 529,
+    "distinct_year_taxon_group_labels": 511,
     "not_in_v10_display_groups": false,
     "legal_river_segment_verified": false,
     "no_live_specimen_or_capture_claim": true
@@ -156,7 +162,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_source_fish",
       "2023_source_insects",
@@ -181,7 +188,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates"
     ],
@@ -204,7 +212,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -225,7 +234,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates"
     ],
@@ -248,7 +258,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_source_fish",
       "2023_source_insects",
@@ -260,8 +271,8 @@
       "insect_edna_not_proven_benthic",
       "other_invertebrate_edna_not_proven_benthic"
     ],
-    "eDNA_source_rows_not_unique_species": 239,
-    "distinct_year_taxon_group_labels": 235,
+    "eDNA_source_rows_not_unique_species": 233,
+    "distinct_year_taxon_group_labels": 233,
     "not_in_v10_display_groups": true,
     "legal_river_segment_verified": false,
     "no_live_specimen_or_capture_claim": true
@@ -274,7 +285,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -295,7 +307,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates"
     ],
@@ -319,7 +332,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -341,7 +355,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_source_fish",
       "2023_source_insects",
@@ -353,7 +368,7 @@
       "insect_edna_not_proven_benthic",
       "other_invertebrate_edna_not_proven_benthic"
     ],
-    "eDNA_source_rows_not_unique_species": 119,
+    "eDNA_source_rows_not_unique_species": 118,
     "distinct_year_taxon_group_labels": 118,
     "not_in_v10_display_groups": false,
     "legal_river_segment_verified": false,
@@ -367,7 +382,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_source_fish",
       "2023_source_insects"
@@ -391,7 +407,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates",
       "2024_source_vertebrates_invertebrates"
@@ -416,7 +433,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -437,7 +455,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_source_fish",
       "2023_source_insects"
@@ -462,7 +481,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2024_source_vertebrates_invertebrates"
@@ -488,7 +508,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_source_fish",
       "2023_source_insects",
@@ -513,7 +534,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -535,7 +557,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2024_prefecturewide_vertebrates_invertebrates"
@@ -560,7 +583,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -582,7 +606,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2023_source_fish",
@@ -594,7 +619,7 @@
       "insect_edna_not_proven_benthic",
       "other_invertebrate_edna_not_proven_benthic"
     ],
-    "eDNA_source_rows_not_unique_species": 171,
+    "eDNA_source_rows_not_unique_species": 169,
     "distinct_year_taxon_group_labels": 156,
     "not_in_v10_display_groups": false,
     "legal_river_segment_verified": false,
@@ -608,7 +633,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates"
     ],
@@ -631,7 +657,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -653,7 +680,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2024_prefecturewide_vertebrates_invertebrates"
@@ -677,7 +705,8 @@
     "years": [
       2023
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish"
     ],
@@ -699,7 +728,8 @@
       2023,
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": false,
     "source_dataset_keys": [
       "2023_prefecturewide_fish",
       "2024_prefecturewide_vertebrates_invertebrates"
@@ -724,7 +754,8 @@
     "years": [
       2024
     ],
-    "eDNA_only": true,
+    "new_layer_method": "eDNA_only_no_capture",
+    "spelling_variant_identity_hold": true,
     "source_dataset_keys": [
       "2024_prefecturewide_vertebrates_invertebrates"
     ],
@@ -735,7 +766,7 @@
     ],
     "eDNA_source_rows_not_unique_species": 41,
     "distinct_year_taxon_group_labels": 41,
-    "not_in_v10_display_groups": true,
+    "not_in_v10_display_groups": false,
     "legal_river_segment_verified": false,
     "no_live_specimen_or_capture_claim": true
   }
