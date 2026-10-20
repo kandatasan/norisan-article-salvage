@@ -1,0 +1,95 @@
+name: Expand verified prefecture water-system navigation v07 (research only)
+on:
+  push:
+    branches: [research/river-biota-national-basin-20261020]
+    paths:
+      - river-fish/research-individual-v07/*.py
+      - .github/workflows/river-biota-prefecture-basin-v07.yml
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: region-coded-basin-v07-research
+  cancel-in-progress: true
+jobs:
+  research_basin:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify source Python
+        run: |
+          python -m py_compile river-fish/research-individual-v07/*.py
+          python -m unittest discover -s river-fish/research-individual-v07 -p 'test_*.py' -v
+      - name: Generate optional-code navigational crosswalk with held ambiguity
+        run: |
+          python river-fish/research-individual-v07/build_region_verified_watersheds_v07.py \
+            --out river-fish/research-individual-v07/outputs
+      - name: Check names, excluded wrong-river matches and biological conservation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json
+          d=Path('river-fish/research-individual-v07/outputs')
+          audit=json.loads((d/'prefecture_navigation_audit_v07.json').read_text())
+          raw=json.loads((d/'river_atlas_navigation_v07.json').read_text())
+          review=json.loads((d/'basin_collision_review_v07.json').read_text())
+          assert len(raw['prefectures'])==47 and len(raw['rivers'])==428
+          assert audit['underlying_biota_contexts_unchanged']==553351
+          assert audit['prev_v06_basin_entries']==56
+          assert audit['held_from_v06']==39
+          assert audit['now_added_major_basin_documentary_entries']>=15
+          assert audit['now_added_major_basin_documentary_entries']+audit['still_held_after_major_basin_check']==39
+          assert audit['no_site_or_mysql_changes']
+          assert audit['no_physical_river_prefecture_inference']
+          assert audit['same_name_local_secondclass_collisions_remaining']>=2
+          assert all(x['no_claim_all_watershed_rivers_within_prefecture'] for x in raw['prefecture_watershed_entries'])
+          assert all(r['biota'].keys()=={'fish','benthic_animals','birds','plants'} for r in raw['rivers'])
+          new={(x['prefecture'],x['watershed']) for x in raw['prefecture_watershed_entries']}
+          assert ('広島県','太田川') in new
+          assert ('京都府','淀川') in new
+          assert ('熊本県','大野川') not in new
+          assert ('愛媛県','渡川') not in new
+          assert ('佐賀県','那珂川') not in new
+          assert ('和歌山県','太田川') not in new
+          assert ('大阪府','芦田川') not in new
+          assert len(raw['prefecture_river_links'])==audit['total_prefecture_river_display_links']
+          print('APPROVED_AS_NAVIGATION',audit['now_added_major_basin_documentary_entries'])
+          print('HELD',audit['still_held_after_major_basin_check'])
+          print('NEW_DOCUMENTARY_PAIRS',[(r['prefecture'],r['watershed']) for r in review if r['new_decision']!='remain_held'])
+          PY
+      - name: Render and syntax-check new mobile demo
+        run: |
+          python river-fish/research-individual-v06/render_offline_navigation_v06.py \
+            --source river-fish/research-individual-v07/outputs/river_atlas_navigation_v07.json \
+            --out river-fish/research-individual-v07/outputs/river_atlas_prefecture_preview_v07.html
+          python - <<'PY'
+          from pathlib import Path
+          import re
+          t=Path('river-fish/research-individual-v07/outputs/river_atlas_prefecture_preview_v07.html').read_text()
+          assert len(t.encode())<2_000_000
+          assert '<iframe' not in t and 'fetch(' not in t
+          s=re.findall(r'<script>([\s\S]+?)</script>',t)
+          assert len(s)==1
+          Path('/tmp/river-v07-ui.js').write_text(s[0])
+          PY
+          node --check /tmp/river-v07-ui.js
+      - name: Upload research-only v07 outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: basin-crosswalk-v07-verified-preview
+          path: river-fish/research-individual-v07/outputs/
+          if-no-files-found: error
+      - name: Commit results ONLY to research branch
+        run: |
+          test "$GITHUB_REF_NAME" = "research/river-biota-national-basin-20261020"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add river-fish/research-individual-v07/outputs/
+          if ! git diff --cached --quiet; then
+            git commit -m "research: archive v07 strict watershed region and local name-conflict validation"
+            git push origin HEAD:refs/heads/research/river-biota-national-basin-20261020
+          fi
