@@ -18,7 +18,7 @@ import urllib.request
 from tempfile import TemporaryDirectory
 
 SOURCES={
-  "fish":"https://www.city.hiroshima.lg.jp/_res/projects/default_project/_page_/001/011/848/43924.pdf",
+  "fish":"https://www.city.hiroshima.lg.jp/uploaded/attachment/43905.pdf",
   "basin":"https://www.city.hiroshima.lg.jp/uploaded/attachment/43900.pdf",
 }
 STREAMS=["細坂川","椎原川","奥畑川","安川"]
