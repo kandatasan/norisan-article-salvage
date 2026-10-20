@@ -14,6 +14,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 OLD=ROOT/"research-individual-v05/outputs/name_first_held_for_review_v05.csv"
 CODES=ROOT/"national-codes-staged/river_codes_national_v07.csv"
+MAJOR_BY_REGION={"hokkaido":"81","tohoku":"82","kanto":"83","hokuriku":"84","chubu":"85","kinki":"86","chugoku":"87","shikoku":"88","kyushu":"89"}
 def rows(path):
     with Path(path).open(encoding="utf-8-sig",newline="") as f:return list(csv.DictReader(f))
 def audit(out):
@@ -37,8 +38,19 @@ def audit(out):
                 decision="river_name_only_multiple_segments_one_watershed"
                 sums["candidate_name_buckets"]+=1;sums["candidate_contexts"]+=contexts
             else:
-                decision="hold_multiple_official_watershed_code_roots"
-                sums["mixed_code_root_hold"]+=1;sums["mixed_code_root_contexts"]+=contexts
+                # National MLIT first-class watershed IDs 81..89 identify
+                # the managing bureau, NOT prefecture or exact river segment.
+                # The original species survey independently retains its
+                # source administering bureau in 'region'.
+                major=MAJOR_BY_REGION.get(r["region"])
+                roots=[stem for stem in stems if stem.startswith(major or "----")]
+                if len(roots)==1:
+                    decision="river_name_only_source_bureau_major_basin_unique"
+                    sums["candidate_name_buckets"]+=1;sums["candidate_contexts"]+=contexts
+                    sums["resolved_name_collision_by_bureau"]+=1
+                else:
+                    decision="hold_multiple_official_watershed_code_roots"
+                    sums["mixed_code_root_hold"]+=1;sums["mixed_code_root_contexts"]+=contexts
         else:
             decision="hold_nonriver_composite_or_survey_section"
             sums["nonriver_or_section_hold"]+=1;sums["nonriver_or_section_contexts"]+=contexts
@@ -48,6 +60,7 @@ def audit(out):
               "candidate_10digit_code_count":len(codes),
               "distinct_6digit_watershed_roots":len(stems),
               "candidate_parent_watershed_codes":sorted(stems),
+              "candidate_matching_source_bureau_basin_codes":sorted(c for c in stems if c.startswith(MAJOR_BY_REGION.get(r["region"],"----"))),
               "historical_contexts":contexts,"new_name_level_decision":decision,
               "claim_of_unique_physical_river":False,
               "future_ui_label":"同名・複数区間の資料掲載名。位置と河川コードは未確定"}
