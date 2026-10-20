@@ -53,8 +53,11 @@ jobs:
             assert a['research_display_name_groups']==511 and a['fish_only_mvp']
             assert len(a['entries'])==511
             assert len(m['taxa'])==qa['distinct_verbatim_fish_name_labels_not_taxonomic_species_count']
-            assert qa['editorially_reviewed_species_labels']==0
-            assert all((x['rarity_stars'] is None and x['taste_stars'] is None) for x in m['taxa'].values())
+            reviewed=[x for x in m['taxa'].values() if x['editorial_status']=='reviewed']
+            unreviewed=[x for x in m['taxa'].values() if x['editorial_status']=='unreviewed']
+            assert qa['editorially_reviewed_species_labels']==len(reviewed)
+            assert all((x['rarity_stars'] is None and x['taste_stars'] is None and not x['memo']) for x in unreviewed)
+            assert len(reviewed)+len(unreviewed)==len(m['taxa'])
             assert all(not n.endswith('/birds.json') and not n.endswith('/plants.json') and not n.endswith('/benthic_animals.json') for n in z.namelist())
             assert all(e['edna'] is None or all(rec['group']=='fish' for rec in json.loads(z.read(e['edna']))['records']) for e in a['entries'])
           print('FISH_ONLY_RESEARCH_AUDIT_PASSED')
