@@ -107,7 +107,7 @@ jobs:
             z.extractall('/tmp/tsurikue-v24')
           PY
           node river-fish/research-individual-v24/test_reverse_lookup_v24.cjs /tmp/tsurikue-v24
-          node river-fish/research-individual-v23/test_lazy_reference_v23.cjs /tmp/tsurikue-v24
+          node river-fish/research-individual-v24/test_reference_v24.cjs /tmp/tsurikue-v24
       - name: Upload researcher ZIP, source pair CSV and QA
         uses: actions/upload-artifact@v4
         with:
