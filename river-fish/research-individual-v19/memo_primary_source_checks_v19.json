@@ -1,0 +1,38 @@
+{
+  "version": "v19",
+  "scope": "editorial_sample_primary_source_checks_not_final_approval",
+  "checked_on": "2026-10-20",
+  "editor_human_approved_count": 0,
+  "memo_revisions": [
+    {
+      "recorded_name": "アユ",
+      "memo": "川の石についた藻を食べるアユ。体からスイカのような香りがすることも。",
+      "source": "https://www.env.go.jp/water/heisa/heisa_net/setouchiNet/seto/g1/g1chapter1/ikimono/ayu.html",
+      "check": "川で藻類を食べ、天然のアユはスイカに似た香りを持つ"
+    },
+    {
+      "recorded_name": "コウライオヤニラミ",
+      "memo": "在来のオヤニラミとは別物。2026年9月から規制対象になった魚。",
+      "source": "https://chubu.env.go.jp/topics_00312.html",
+      "check": "2026年9月から、オヤニラミ属のうち在来オヤニラミ以外を特定外来生物に指定"
+    },
+    {
+      "recorded_name": "オヤニラミ",
+      "memo": "こちらは日本在来のオヤニラミ。名前の似たコウライオヤニラミとは扱いが違う。",
+      "source": "https://chubu.env.go.jp/topics_00312.html",
+      "check": "日本在来のCoreoperca kawamebariは2026年の新規規制対象から除かれる"
+    },
+    {
+      "recorded_name": "トラフグ",
+      "memo": "高級魚でも毒は別問題。自分で釣ったフグを素人判断でさばくのは危険。",
+      "source": "https://www.mhlw.go.jp/stf/seisakunitsuite/bunya/0000094363.html",
+      "check": "食用可能な種類と部位が限定され、釣ったフグの素人調理は危険"
+    },
+    {
+      "recorded_name": "ブルーギル",
+      "memo": "2026年からはブルーギルだけでなく、同じ属のほかの種類も規制対象に。",
+      "source": "https://chubu.env.go.jp/topics_00312.html",
+      "check": "Lepomis属の全種と属内交雑個体が2026年9月に規制対象となる"
+    }
+  ]
+}
