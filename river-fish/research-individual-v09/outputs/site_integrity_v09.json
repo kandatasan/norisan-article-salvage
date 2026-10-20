@@ -1,8 +1,8 @@
 {
   "version": "v09",
   "research_preview_archive_file": "river_atlas_static_preview_v09.zip",
-  "sha256": "753cc48194f3f5678199d6e7a0fd7380b1d280f0f8377480923ac7f50b62c18b",
-  "archive_bytes": 4045226,
+  "sha256": "aa83c9c4151d841d03adf6113f034d8403d2c6826b19c5cafadc9eeeaea34020",
+  "archive_bytes": 4022809,
   "entry_points": 47,
   "sourced_prefecture_watershed_links": 80,
   "river_category_files": 1712,
