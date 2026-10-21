@@ -1,0 +1,54 @@
+name: River fish 3-way identity review queue v06 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/build_river_fish_identity_review_queue_v06.py'
+      - 'river-fish/research-20261021/test_river_fish_identity_review_queue_v06.py'
+      - '.github/workflows/river-fish-identity-review-queue-v06.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  river-identity-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Review queue fail-closed unit tests
+        run: python -m unittest discover -s river-fish/research-20261021 -p 'test_river_fish_identity_review_queue_v06.py' -v
+      - name: Re-extract pinned official regional river/fish source
+        run: python river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py --region "${{ matrix.region }}" --out "$RUNNER_TEMP/river-fish-identity-v06"
+      - name: Read-only national code candidates
+        run: python river-fish/research-20261021/build_official_river_code_candidates_v05.py --region "${{ matrix.region }}" --source-csv "$RUNNER_TEMP/river-fish-identity-v06/official_direct_river_fish_v04.csv" --out "$RUNNER_TEMP/river-fish-identity-v06/code_candidate_review_v05.json"
+      - name: Read-only live atlas navigation name candidates
+        run: python river-fish/research-20261021/build_national_atlas_overlay_v04.py --region "${{ matrix.region }}" --source-csv "$RUNNER_TEMP/river-fish-identity-v06/official_direct_river_fish_v04.csv" --out "$RUNNER_TEMP/river-fish-identity-v06/atlas_name_match_review_v04.json"
+      - name: Produce prioritised human identity review queue (not publishable)
+        run: python river-fish/research-20261021/build_river_fish_identity_review_queue_v06.py --code-review "$RUNNER_TEMP/river-fish-identity-v06/code_candidate_review_v05.json" --atlas-review "$RUNNER_TEMP/river-fish-identity-v06/atlas_name_match_review_v04.json" --out "$RUNNER_TEMP/river-fish-identity-v06/river_identity_review_queue_v06.json"
+      - name: Assert no public fish species or approved record in queue
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"river-fish-identity-v06"
+          d=json.loads((p/"river_identity_review_queue_v06.json").read_text())
+          assert d["status"]=="REVIEW_ONLY_DO_NOT_UPLOAD"
+          assert len(d["queue"])==d["river_groups"]
+          assert sum(d["priority_counts"].values())==d["river_groups"]
+          assert all(x["identity_verified"] is False and x["approved_for_publication"] is False
+                     and x["conservation_publication_review"]=="required" for x in d["queue"])
+          assert all("recorded_name" not in x and "survey_year" not in x for x in d["queue"])
+          print("RIVER_IDENTITY_V06_SAFE",d["region"],d["priority_counts"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: river-fish-identity-review-v06-${{ matrix.region }}
+          path: ${{ runner.temp }}/river-fish-identity-v06/river_identity_review_queue_v06.json
+          retention-days: 30
