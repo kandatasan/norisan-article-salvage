@@ -284,3 +284,17 @@ CIの独立した原本照合、既存124行QA、レビューJSONに魚名・位
 - 国総研の利用条件に従い、重要種の地点特定データを復元しない。斐伊川放水路の監視地点資料は神戸川・放水路が対象のため、斐伊川本川との照合から除外。
 - 日野川11k–17kの区間記述は検索OCR由来の確認候補で、PDF原本の図表未確認。調査区間として使わない。
 - 追加魚種の公開・本番データ変更なし。全行 `research_only` / `not_approved`。
+
+## 第16便：日野川・法勝寺川の魚類個体数表を二方向検索候補へ整形
+
+日野川河川事務所「日野川水系自然再生計画（本編）」の河川水辺の国勢調査表から、日野川本川と法勝寺川の別行に載る魚名・調査年・個体数を研究用に正規化する。本文の表は平成6・11・16・21・26年度、令和元・6年度（1994・1999・2004・2009・2014・2019・2024年度）を列に持つ。
+
+- 転記表: `hinogawa_diadr_fish_table_v01.csv`。公表テキストで個体数が読める8魚名だけを収録し、非公表セル・希少種情報を復元しない。
+- 生成データ: `hinogawa_diadr_fish_records_v01.csv`。正の掲載個体数57行。河川名は資料の「日野川」「法勝寺川」をそのまま保持し、河川コード・地点・座標は空のまま。
+- `build_hinogawa_adviser_fish_records_v01.py` は転記表から57行を再生成し、従来の河川別候補台帳と水系別集約データとの重なりを集計。
+- `search_hinogawa_records_v01.py` は `--river` / `--fish` の完全一致で双方から検索。結果に調査年・原資料・個体数・未承認状態を付ける。
+- `audit_hinogawa_live_atlas_v01.py` は現在のatlas.jsonを読み取り専用で照合する。完全一致名は河川IDの確定や公開承認と扱わない。
+- 監査票: `../review-staged/HINOGAWA_ADVISER_FISH_TABLE_AUDIT_V01.md`。既存河川候補との魚名一致2組、国交省水系別集約との同水系・調査年・魚名一致候補19組を記録。二重計上を避け、個体数をソース間で合算しない。
+- QA: `test_hinogawa_adviser_fish_records_v01.py`。`.github/workflows/hinogawa-adviser-fish-records-v01.yml` で研究用全テスト、再生成一致、二方向検索と現在のatlas名候補を検査。
+
+**ソース制限:** PDFの直接画像はこの監査でまだ目視していない。表の転記は国交省サイトのPDF検索索引テキストに基づくため `official_pdf_index_text_not_visually_verified` のまま。調査努力量・サンプル区間・現在の生息・種の保全公開可否も未審査。57行すべて `research_only` / `not_approved`。公開atlas、WordPress、検索JSONへは反映しない。

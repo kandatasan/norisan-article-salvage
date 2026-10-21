@@ -1,0 +1,22 @@
+{
+  "status": "RESEARCH_ONLY_OVERLAP_REVIEW_NOT_DEDUPLICATION",
+  "new_table_rows": 57,
+  "named_rivers": [
+    "日野川",
+    "法勝寺川"
+  ],
+  "source_taxon_labels": 8,
+  "same_river_name_and_taxon_matches_in_existing_candidate_ledger": 2,
+  "same_watershed_name_and_taxon_matches_in_curated_system_ledger": 0,
+  "same_watershed_year_and_taxon_matches_in_nilim_system_ledger": 19,
+  "nilim_overlap_years": [
+    "2009",
+    "2014",
+    "2019"
+  ],
+  "nilim_matches_are_watershed_level_not_river_level": true,
+  "possible_same_census_coverage": "Matching name/year labels indicate a possible overlap, not duplicate sample proof; never sum counts across sources.",
+  "all_records_research_only": true,
+  "approved_for_publication": false,
+  "site_updated": false
+}
