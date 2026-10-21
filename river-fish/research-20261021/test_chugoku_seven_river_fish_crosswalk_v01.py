@@ -4,7 +4,7 @@ from build_chugoku_seven_river_fish_crosswalk_v01 import build
 
 
 class SevenRiverFishCrosswalkTests(unittest.TestCase):
-    def test_only_seventy_nine_eligible_named_river_rows_are_enriched(self):
+    def test_only_seventy_nine_reviewed_source_rows_are_enriched(self):
         rows, fields = build()
         self.assertEqual(len(rows), 79)
         self.assertIn("river_code", fields)
