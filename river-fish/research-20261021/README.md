@@ -298,3 +298,23 @@ CIの独立した原本照合、既存124行QA、レビューJSONに魚名・位
 - QA: `test_hinogawa_adviser_fish_records_v01.py`。`.github/workflows/hinogawa-adviser-fish-records-v01.yml` で研究用全テスト、再生成一致、二方向検索と現在のatlas名候補を検査。
 
 **ソース制限:** PDFの直接画像はこの監査でまだ目視していない。表の転記は国交省サイトのPDF検索索引テキストに基づくため `official_pdf_index_text_not_visually_verified` のまま。調査努力量・サンプル区間・現在の生息・種の保全公開可否も未審査。57行すべて `research_only` / `not_approved`。公開atlas、WordPress、検索JSONへは反映しない。
+
+## 第17便：日野川・法勝寺川のコード同一性と研究用逆引き索引
+
+- 監査票: [`../review-staged/HINOGAWA_RIVER_IDENTITY_LINKED_SEARCH_V01.md`](../review-staged/HINOGAWA_RIVER_IDENTITY_LINKED_SEARCH_V01.md)
+- 国交省河川コード一覧と中国地方整備局の2011年日野川水系模式図を照合し、日野川 `8707030001` と法勝寺川 `8707030003` を別河川として確認。日野川河川事務所の維持管理計画は、法勝寺川を日野川合流点までの支川として記載する。
+- `hinogawa_river_identity_v01.csv` に確認根拠と管理区間を別に記録。国管理区間は日野川が河口から17.0km、法勝寺川が日野川合流点から上流10.9km。これらを魚類の調査区間とはみなさない。
+- `build_hinogawa_identity_index_v01.py` は県・水系・原資料河川名の完全一致でだけコードを結合し、57行の `hinogawa_identity_linked_records_v01.csv` を生成。原転記CSVは変更しない。名称が一致しない行や未知の水系名は失敗させる。
+- `search_hinogawa_identity_records_v01.py` で河川名・コードから魚を、魚から河川名・コードを完全一致検索できる。0件は不在を意味せず、過去の調査記録は現在の生息・釣果を保証しない。
+- 法勝寺川の洪水予報区間説明で南部町鴨部から日野川合流点までを確認。ただし、これは指定区間の所在で、全流路や魚類調査地点ではない。
+- PDF本編は32MB超のため、今回の環境ではページ画像を取得できず、魚類表の57行は引き続き `official_pdf_index_text_not_visually_verified`。コード同一性確認とは分けて記録する。
+- PR #731の公開atlas読み取り専用監査では、実行時点で両河川の「県＋水系＋川名」完全一致エントリは0件。別名一致は未否定。今回のActionsでもライブデータをGETのみで再照合する。
+- 全57行 `research_only` / `not_approved`。希少種・原文魚名の意味・公開範囲・転載条件は審査未了。サイト、WordPress、検索JSONの変更なし。
+
+```bash
+python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
+python river-fish/research-20261021/build_hinogawa_identity_index_v01.py \
+  --out /tmp/hinogawa_identity_linked_records_v01.csv
+python river-fish/research-20261021/search_hinogawa_identity_records_v01.py \
+  --river-code 8707030003 --fish アユ
+```
