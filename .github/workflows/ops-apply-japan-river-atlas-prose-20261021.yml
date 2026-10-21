@@ -16,6 +16,21 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.x'
+      - name: Read-only inspect current WP content and check for concurrent editor update
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,hashlib,json,base64,urllib.request,urllib.parse,re
+          u=os.environ['TSURIKUE_WP_USER'];p=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          a='Basic '+base64.b64encode((u+':'+p).encode()).decode()
+          q=urllib.parse.urlencode({'context':'edit','_fields':'id,slug,status,title,content,modified'})
+          rq=urllib.request.Request('https://tsurikue.com/wp-json/wp/v2/posts/4240?'+q,headers={'Authorization':a})
+          with urllib.request.urlopen(rq,timeout=90) as r:post=json.load(r)
+          body=post['content']['raw']
+          print('LATEST_ATLAS_WP_STATE',json.dumps({'id':post['id'],'status':post['status'],'modified':post['modified'],'sha256':hashlib.sha256(body.encode()).hexdigest(),'len':len(body),'new_first_p':body[0:1000],'story_extract':body[body.find('川好きの原点')-150:body.find('川好きの原点')+1500] if '川好きの原点' in body else body[body.find('僕が川好き')-200:body.find('僕が川好き')+1500]},ensure_ascii=False),flush=True)
+          PY
       - name: Revalidate the exact published atlas body and protected HTML
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
