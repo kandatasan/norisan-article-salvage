@@ -35,12 +35,18 @@ class SevenRiverPlanReachTests(unittest.TestCase):
                           else "pref.tottori.lg.jp", urlparse(r["source_url"]).hostname)
             if r["river"] in {"三刀屋川", "久野川", "深野川", "阿井川", "大川"}:
                 self.assertIn("合流支川", r["official_relation"])
+            if r["prefecture"] == "島根県" and r["river"] != "斐伊川":
+                self.assertIn("斐伊川合流点から河川管理区間上流端まで", r["plan_reach_description"])
+            self.assertNotIn("?", r["plan_reach_description"])
 
     def test_plan_length_never_becomes_fish_sampling_extent(self):
         with DATA.open(encoding="utf-8", newline="") as f:
             rows = list(csv.DictReader(f))
         for r in rows:
-            self.assertIn("採集地点", r["fish_scope_note"]) if r["prefecture"] == "島根県" else self.assertIn("転用しない", r["fish_scope_note"])
+            if r["prefecture"] == "島根県":
+                self.assertIn("採集地点", r["fish_scope_note"])
+            else:
+                self.assertIn("転用しない", r["fish_scope_note"])
             self.assertEqual(r["fish_publication_approval"], "not_approved")
             self.assertEqual(r["integration_status"], "research_only")
 
