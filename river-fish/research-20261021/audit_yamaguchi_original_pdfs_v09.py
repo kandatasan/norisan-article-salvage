@@ -17,11 +17,11 @@ from urllib.request import Request, urlopen
 PDFS = {
     "YA07": {
         "url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197780.pdf",
-        "tokens": ("ヌマムツ", "小島川", "長沢川", "2005", "2007"),
+        "tokens": {"fish_term": "ヌマムツ", "named_river_term": "小島川",\n                   "watershed_term": "長沢川", "year_2005": "2005", "year_2007": "2007"},
     },
     "YA04": {
         "url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197775.pdf",
-        "tokens": ("オオクチバス", "表3"),
+        "tokens": {"fish_term": "オオクチバス", "table_reference": "表3"},
     },
 }
 MAX_BYTES = 30_000_000
@@ -52,13 +52,13 @@ def download(url):
 
 def text_page_hits(text, tokens):
     if not isinstance(text, str) or not text:
-        return {t: [] for t in tokens}, 0
+        return {label: [] for label in tokens}, 0
     pages = text.split("\f")
     if pages and not pages[-1].strip():
         pages.pop()
     results = {}
-    for token in tokens:
-        results[token] = [i + 1 for i, page in enumerate(pages)
+    for label, token in tokens.items():
+        results[label] = [i + 1 for i, page in enumerate(pages)
                           if token in re.sub(r"\s+", "", page)]
     return results, sum(bool(x.strip()) for x in pages)
 
