@@ -135,3 +135,16 @@ python river-fish/research-20261021/build_atlas_overlay_v02.py --out /tmp/atlas-
 各地方のレビューCSVに対し、`build_national_atlas_overlay_v04.py` が公開中の `atlas.json` を**読み取り専用**で取得し、`水系＋原本に明記された河川名` で完全一致するナビゲーション候補を抽出。県名は国交省の元データから未確認のため、atlas側に県名があっても**出典の県として採用しない**。1件一致でも全国河川コードの確定・保全審査の承認・公開反映はしない。
 
 結果は各地方の `atlas_name_match_review_v04.json` に保存し、**一致候補が1件／複数／未収録**を区別。魚名一覧を公開図鑑へ勝手に貼り付ける処理は一切含まない。
+
+## 第6便：全国河川コードとの三点照合（v05）
+
+第5便の**国交省魚類調査原本の水系名＋個別河川名**と、別の国交省**全国河川コード表（35,449行）・水系コード表（5,475行）**を照合。照合対象は地方ごとに30,675件から集約された313河川名グループ。名前だけで河川コードや都道府県を「確定」せず、以下の4つの候補状態に分類する。
+
+- `SINGLE_CODE_NAME_CANDIDATE_NOT_VERIFIED`：コード表に水系名＋河川名が1件一致（**河川ID同定・生物接続の承認ではない**）
+- `MULTIPLE_CODE_NAME_CANDIDATES`：同じ水系名＋川名で複数コードが存在し、判別不可
+- `NO_RIVER_CODE_NAME_CANDIDATE`：水系名は存在するが該当する河川名コードがない
+- `WATERSHED_NOT_IN_CODE_LIST`：水系名も一致しない
+
+`build_official_river_code_candidates_v05.py` は固定出典・ヘッダー・行数・研究専用フラグを検証して、**魚名・採集地点・座標・都道府県を含まない候補JSON**を出力。9地方分を `.github/workflows/river-fish-national-code-join-v05.yml` で独立検証。元の公開 `atlas.json` やWordPress/Xserverには触れない。
+
+重要：コード表の先頭2桁は必ずしも川の所在地の都道府県ではない。**コードが一意でも保全審査・出典の同一河川確認を経ない限り、魚名をサイトへ出さない。**
