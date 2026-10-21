@@ -1,0 +1,28 @@
+name: Apply merged river atlas prose edit once
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/ops-apply-japan-river-atlas-prose-20261021.yml'
+permissions:
+  contents: read
+jobs:
+  one-time-update:
+    if: github.event.pull_request.head.ref == 'ops/apply-japan-river-atlas-prose-20261021'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Revalidate the exact published atlas body and protected HTML
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/rewrite_japan_river_atlas_prose_20261021.py check
+      - name: Update only the approved prose on the unchanged live published article
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/rewrite_japan_river_atlas_prose_20261021.py apply
