@@ -1,0 +1,84 @@
+{
+  "article_url": "https://tsurikue.com/japan-river-atlas/",
+  "target_slug": "japan-river-atlas",
+  "target_post_id": 4240,
+  "title_expected": "日本の河川図鑑｜全国の河川名・水系・生き物を都道府県から探す",
+  "status_expected": "publish",
+  "featured_media_expected": 4238,
+  "changes": [
+    {
+      "old": "<!-- wp:paragraph -->\n<p>近所の川、名前はいくつ知っていますか？</p>\n<!-- /wp:paragraph -->",
+      "new": "",
+      "note": "remove isolated first-sentence paragraph"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>いつも通る川にも、上流があって、支流があって、そこに暮らす魚がいます。<strong>日本の河川図鑑</strong>では、全国の河川名・水系と、公開資料に残る魚の調査記録を探せます。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>いつも通る川、名前はいくつ知っていますか？　上流や支流をたどると、知らない川がいくつも見つかります。<strong>日本の河川図鑑</strong>では、都道府県から河川名・水系を探し、公開資料に残る魚の調査記録も確認できます。</p>\n<!-- /wp:paragraph -->",
+      "note": "lead answer and tool usage"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>僕が川好きになったのは、子どものころ祖父と竹竿でヤマメやアマゴを釣ったのがきっかけ。まずは、あなたの地元の川から探してみてください。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>まずは地元の川を探してみてください。私が川好きになった話は、図鑑の下で少しだけ。</p>\n<!-- /wp:paragraph -->",
+      "note": "remove repeated backstory from intro"
+    },
+    {
+      "old": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">僕が川好きになったのは、祖父と釣ったヤマメとアマゴ</h2>\n<!-- /wp:heading -->",
+      "new": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">川好きの原点は、祖父と釣った「ヤマメ」</h2>\n<!-- /wp:heading -->",
+      "note": "correct yamame/amago overstatement in H2"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>子どものころ、広島・湯来町の渓流へ祖父と釣りに行きました。竿は竹。釣り糸と針、ガン玉を付けるだけ。エサは畑で掘ったミミズか、その辺で捕まえたクモです。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>私が4〜5歳のころ、田舎の祖父と川へ釣りに行っていました。竹に釣り糸と針、ガン玉を付けただけの竿。エサも買いません。畑でミミズを掘ったり、その辺のクモを捕まえたり。今思うと、ずいぶん野性味のある釣りです。</p>\n<!-- /wp:paragraph -->",
+      "note": "age and real improvised tackle"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>釣ったヤマメやアマゴは、庭で塩焼きにして食べていました。そりゃ美味しい。でも、覚えているのはそれだけじゃありません。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>釣った魚は、庭で塩焼きにして食べていました。当時「ヤマメ」と呼んでいた魚は、当然めちゃくちゃ美味しい。でも、あのころは<strong>「ドロバイ」</strong>と呼んでいたタカハヤまで喜んで食べていました。</p>\n<!-- /wp:paragraph -->",
+      "note": "taste and local fish name"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>地元で<strong>「ドロバイ」</strong>と呼んでいたタカハヤも食べていました。「爺ちゃん、ドロバイも美味しいね！」。そんなことを言った記憶があります。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>「爺ちゃん、ドロバイも美味しいね！」<br>そんなことを言った記憶まで残っています。ちなみに、今釣りに行くとアマゴが釣れるので、当時の「ヤマメ」は地元の呼び方だったのかもしれません。</p>\n<!-- /wp:paragraph -->",
+      "note": "actual quote and fish naming uncertainty"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>それからずっと、魚は釣るのも食べるのも好き。身近なものを味わう、ちょっとした野食も好きです。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>40代半ばになった今でも、4〜5歳のころの景色や味を覚えています。よほど楽しかったんでしょうね。あの体験から、魚を釣るのも食べるのも、身近なものを採って味わう軽い野食も好きになりました。</p>\n<!-- /wp:paragraph -->",
+      "note": "memory link to interest today"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>川の名前を調べると、知らなかった支流や魚が出てくる。あのころの釣りとは違うけれど、これも川の楽しみ方のひとつだと思っています。</p>\n<!-- /wp:paragraph -->",
+      "new": "",
+      "note": "remove redundant transition"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>例えば広島なら太田川、長野なら千曲川や犀川。知っている川から支流をたどるのも面白いですよ。<strong>同じ名前でも別の川がある</strong>ので、場所や水系も一緒に見てみてください。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>広島の太田川や長野の千曲川・犀川など、知っている名前からたどるのも面白い。同じ名前の川もあるので、どの地域・水系の川なのかも一緒に見てみてください。</p>\n<!-- /wp:paragraph -->",
+      "note": "tighten list lead"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>国土交通省などの公開河川資料と、生物の調査資料をもとに整理しています。検索結果に出典が付いている記録は、元の資料も確認できます。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>この図鑑は、国土交通省などの河川資料や生物の調査資料をもとに整理しています。出典が付いた記録は、元の資料も確認できます。</p>\n<!-- /wp:paragraph -->",
+      "note": "tighten source explanation"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>祖父と釣ったあの川にも、まだ知らない名前や生き物がいたのかもしれません。</p>\n<!-- /wp:paragraph -->",
+      "new": "",
+      "note": "remove redundant ending"
+    },
+    {
+      "old": "<!-- wp:paragraph -->\n<p>今度はあなたの地元の川を、ひとつ調べてみませんか。</p>\n<!-- /wp:paragraph -->",
+      "new": "<!-- wp:paragraph -->\n<p>子どものころ、祖父と釣ったあの川。今度は名前や支流を調べてみたい。<strong>あなたにも、気になる一本が見つかりますように。</strong></p>\n<!-- /wp:paragraph -->",
+      "note": "short personal ending"
+    }
+  ],
+  "guardrails": [
+    "Leave both 44KB custom HTML blocks including inline v0.26 atlas JS and 47 prefecture details BYTE IDENTICAL",
+    "No unverified locality: replace '湯来町' with user's provided '田舎'",
+    "No assert yamame versus amago identity; childhood local calling kept explicitly uncertain",
+    "Maintain current SEO definitions FAQ and sources, tables and media",
+    "Merge/remove unnatural isolated paragraphs rather than punctuation-forced line breaks",
+    "Maintain status publish (explicit user rewrite), slug post ID title featured media unchanged",
+    "No new ads or changes to atlas JS/API"
+  ]
+}
