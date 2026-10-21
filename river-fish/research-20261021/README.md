@@ -97,3 +97,23 @@ python river-fish/research-20261021/build_river_fish_layer_v02.py --out /tmp/riv
 python river-fish/research-20261021/build_river_fish_preview_v02.py --out /tmp/river-fish-preview-v02.html
 python river-fish/research-20261021/build_atlas_overlay_v02.py --out /tmp/atlas-overlay-v02.json
 ```
+
+## 第4便：国交省の調査原本から「水系＋個別河川名＋魚名」を直接取り出す（v03）
+
+従来の全国 `watershed_year_fish.csv` は水系単位に集約されており、**支流の魚としては表示できない**。しかし、中国地方の国交省公開原本 `RT87_B01.zip` のワークブックには、別列 `M=河川名` が存在することが既存の収録確認ツールで判明している。今回、その原本を固定SHAで再取得し、次の**5列だけ**を読み取る。
+
+- `C=生物項目`（`魚類` のみ採用、`魚介類` 混合区分は除外）
+- `F=水系`
+- `G=調査年度`
+- `J=種名`（原文表記のまま）
+- `M=河川名`（原本に明記された場合のみ）
+
+抽出した5列から、`水系×河川名×年度×魚名` を重複除去してレビュー専用CSVへ保存。**地点名、調査地点コード、座標、区間、個体数、日時などは最初から読み込まない。** 都道府県・全国河川コードを推定しない。同名別河川の識別、保全対象の公開可否、資料の原記載の検証を経るまではサイトに出さない。
+
+- コード：`extract_official_named_river_fish_v03.py`
+- テスト：`test_official_named_river_fish_v03.py`
+- CI：`.github/workflows/river-fish-official-named-river-v03.yml`
+- 成果物：Actionsの`official-direct-named-river-fish-v03-review-only`。本番サイトへの書き込みはゼロ。
+- 正式な「川→魚」接続に近づけるための、**水系一括付与ではない一次資料に基づく新しい候補層**。国交省の提供データに含まれない魚・河川は未確認であり、不在の証明ではない。
+
+注意：原本の「河川名」は全国一意のIDではない。水系＋同名の河川が複数ある場合は個別の河川への割り当てを禁止する。魚の名前が書いてあっても、最新の生息や釣果を保証しない。
