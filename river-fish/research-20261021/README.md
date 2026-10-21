@@ -69,3 +69,13 @@ python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
 python river-fish/research-20261021/build_source_river_fish_layer.py --out /tmp/river_fish_source_layer_v01.json
 python river-fish/research-20261021/audit_live_atlas_river_fish.py --out /tmp/river-fish-atlas-review
 ```
+
+### オフライン操作プレビュー
+
+Actionsの `river-fish-live-review` artifact に `river-fish-preview.html` を同梱。単体HTMLでネット接続なしでも、**県→川→資料掲載魚名**と、魚名ボタンを押して**魚→資料掲載河川**を逆引きできる。出典リンクを開くときだけネット接続が必要。
+
+研究用の安全境界：資料未通読、保全要審査、水系だけの記録はデモに含めない。**公開サイトの図鑑に反映したものではない。** 元データに川名があっても、同名別河川・全国河川コード・調査地点の同一性を確定していない。
+
+```bash
+python river-fish/research-20261021/build_river_fish_preview.py --out /tmp/river-fish-preview.html
+```
