@@ -73,7 +73,8 @@ class FishRiverCandidateQA(unittest.TestCase):
                              else "source_text_checked")
             self.assertEqual(row["conservation_review"],
                              "required" if row["recorded_name"] in
-                             ("アカザ", "スイゲンゼニタナゴ") else "not_flagged")
+                             ("アカザ", "スイゲンゼニタナゴ", "シロヒレタビラ",
+                              "ミナミメダカ", "ホンモロコ", "カネヒラ") else "not_flagged")
 
     def test_no_sensitive_location_columns(self):
         for field in self.fields:
