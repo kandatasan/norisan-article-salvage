@@ -1,0 +1,58 @@
+name: Verify Japan river atlas published prose rewrite
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/qa-japan-river-atlas-final-20261021.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: WordPress GET-only exact editorial revision and widget integrity
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,json,base64,hashlib,re,urllib.parse,urllib.request
+          auth='Basic '+base64.b64encode((os.environ['TSURIKUE_WP_USER']+':'+os.environ['TSURIKUE_WP_APP_PASSWORD']).encode()).decode()
+          q=urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,title,content,featured_media,categories,author,modified"})
+          request=urllib.request.Request('https://tsurikue.com/wp-json/wp/v2/posts/4240?'+q,headers={'Authorization':auth,'Accept':'application/json'})
+          with urllib.request.urlopen(request,timeout=90) as resp:post=json.load(resp)
+          raw=post['content']['raw']
+          rendered=post['content']['rendered']
+          sha=hashlib.sha256(raw.encode('utf-8')).hexdigest()
+          assert (post['id'],post['slug'],post['status'])==(4240,'japan-river-atlas','publish'),"wrong status or post"
+          assert post['title']['raw']=='日本の河川図鑑｜全国の河川名・水系・生き物を都道府県から探す'
+          assert post['featured_media']==4238
+          assert sha=='562b2874153b239ad7ce375388ab3bfaea03b162e0fbef49c961ab76adc2ebe2',"WordPress body differs from approved latest edit"
+          assert raw.count('<!-- wp:html -->')==2
+          assert raw.count('<!-- /wp:html -->')==2
+          assert raw.count('<!-- wp:table -->')==2
+          assert raw.count('<!-- wp:paragraph -->')==30
+          assert 'tsurikue-river-atlas-template-v26' in raw
+          assert 'tsurikue-river-atlas-inline-v26' in raw
+          assert 'regionSelectorV27' in raw and 'fishReverseFinderV24' in raw
+          assert raw.count('<details><summary>')==47, "Prefecture listings lost"
+          assert '爺ちゃん、ドロバイも美味しいね！' in raw and 'ドロバイ' in rendered
+          assert '竹に釣り糸と針、ガン玉' in raw
+          assert '今釣りに行くとアマゴが釣れる' in raw
+          assert '40代半ば' in raw and '4〜5歳' in raw
+          assert 'ヤマメやアマゴを釣った' not in raw
+          assert '広島・湯来町の渓流へ祖父' not in raw
+          assert '祖父と釣ったヤマメとアマゴ' not in raw
+          assert '僕が4〜5歳' in raw
+          print('FINAL_RIVER_ATLAS_LIVE_QA_OK',json.dumps({
+           'post_id':4240,'slug':post['slug'],'status':post['status'],
+           'title':post['title']['raw'],'featured_media':post['featured_media'],
+           'body_sha256':sha,'body_characters':len(raw),
+           'paragraph_blocks':raw.count('<!-- wp:paragraph -->'),
+           'embedded_HTML_blocks':2,'prefecture_entries':47,
+           'grandfather_firsthand_story':True,
+           'editor_url':'https://tsurikue.com/wp-admin/post.php?post=4240&action=edit'
+          },ensure_ascii=False),flush=True)
+          
+          PY
