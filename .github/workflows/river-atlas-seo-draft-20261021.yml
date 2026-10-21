@@ -1,0 +1,60 @@
+name: River atlas SEO WordPress draft 20261021
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/drafts/river-atlas-seo-20261021.html'
+      - 'scripts/apply_river_atlas_seo_draft_20261021.py'
+      - '.github/workflows/river-atlas-seo-draft-20261021.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'content/drafts/river-atlas-seo-20261021.html'
+      - 'scripts/apply_river_atlas_seo_draft_20261021.py'
+      - '.github/workflows/river-atlas-seo-draft-20261021.yml'
+permissions:
+  contents: read
+jobs:
+  article-static-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate article and draft script without WordPress credentials
+        run: |
+          python -m py_compile scripts/apply_river_atlas_seo_draft_20261021.py
+          python - <<'PY'
+          from pathlib import Path
+          import sys
+          sys.path.insert(0,'scripts')
+          import apply_river_atlas_seo_draft_20261021 as app
+          body=app.check_source()
+          assert body.count('<!-- wp:html -->')==2
+          assert 'https://tsurikue.com/wp-content/uploads/2026/10/9f5b9818-927a-40f1-838b-8d17735ffd7a.jpg' in body
+          assert app.SLUG=='japan-river-atlas'
+          assert 'status": "draft"' in Path('scripts/apply_river_atlas_seo_draft_20261021.py').read_text()
+          print('ARTICLE_STATIC_QA_OK',len(body))
+          PY
+  wp-draft-apply:
+    if: github.event_name == 'push'
+    needs: article-static-audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Inspect live WordPress for duplicate drafts and article identity
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_river_atlas_seo_draft_20261021.py check
+      - name: Apply to draft only, then verify saved WordPress body and status
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_river_atlas_seo_draft_20261021.py apply
