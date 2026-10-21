@@ -17,11 +17,15 @@ from urllib.request import Request, urlopen
 PDFS = {
     "YA07": {
         "url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197780.pdf",
+        "sha256": "41d78a5ebb002543667ac2b373ea7fbf275f0eb0748ab40fb64a67326ab8aef5",
+        "expected_pages": 87,
         "tokens": {"fish_term": "ヌマムツ", "named_river_term": "小島川",
                    "watershed_term": "長沢川", "year_2005": "2005", "year_2007": "2007"},
     },
     "YA04": {
         "url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197775.pdf",
+        "sha256": "fb395e4d98b92bc6f33c50c312b42a5bcb9e56a94a5ac1d8af6d0af52264f29d",
+        "expected_pages": 173,
         "tokens": {"fish_term": "オオクチバス", "table_reference": "表3"},
     },
 }
@@ -114,9 +118,14 @@ def main():
     with tempfile.TemporaryDirectory(prefix="yamaguchi-fish-original-") as tmp:
         for source_id in ("YA07", "YA04"):
             raw = download(PDFS[source_id]["url"])
+            if hashlib.sha256(raw).hexdigest() != PDFS[source_id]["sha256"]:
+                raise ValueError("Original prefecture PDF changed; stop for manual review")
             path = Path(tmp) / (source_id + ".pdf")
             path.write_bytes(raw)
-            result.append(scan(source_id, raw, extract_text(path), page_count(path)))
+            pages = page_count(path)
+            if pages != PDFS[source_id]["expected_pages"]:
+                raise ValueError("Original PDF page count changed; stop for manual review")
+            result.append(scan(source_id, raw, extract_text(path), pages))
             path.unlink()
     report = {
         "schema": SCHEMA,
