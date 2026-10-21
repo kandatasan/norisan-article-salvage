@@ -75,7 +75,7 @@ def workbook_records(zip_bytes, member=MEMBER):
             raise ValueError("Missing source header")
 
 
-def aggregate(records):
+def aggregate(records, min_source_rows=100):
     unique = set()
     counters = collections.Counter()
     years = set()
@@ -108,7 +108,7 @@ def aggregate(records):
         unique.add((water, river, year, fish))
         years.add(year)
         counters["valid_source_rows"] += 1
-    if counters["source_rows"] < 100:
+    if counters["source_rows"] < min_source_rows:
         raise ValueError("Source unexpectedly small")
     if not unique:
         raise ValueError("No named-river fish evidence in official source")
