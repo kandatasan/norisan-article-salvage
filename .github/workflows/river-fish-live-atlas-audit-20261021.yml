@@ -25,6 +25,12 @@ jobs:
         run: python river-fish/research-20261021/build_source_river_fish_layer.py --out "$RUNNER_TEMP/river-fish-live-review/river_fish_source_layer_v01.json"
       - name: Generate portable offline fish-to-river demo
         run: python river-fish/research-20261021/build_river_fish_preview.py --out "$RUNNER_TEMP/river-fish-live-review/river-fish-preview.html"
+      - name: Expand source-backed river/fish research links v02
+        run: python river-fish/research-20261021/build_river_fish_layer_v02.py --out "$RUNNER_TEMP/river-fish-live-review/river_fish_source_layer_v02.json"
+      - name: Create offline mobile preview v02
+        run: python river-fish/research-20261021/build_river_fish_preview_v02.py --out "$RUNNER_TEMP/river-fish-live-review/river-fish-preview-v02.html"
+      - name: Compare expanded source rivers against live atlas names without publishing
+        run: python river-fish/research-20261021/build_atlas_overlay_v02.py --out "$RUNNER_TEMP/river-fish-live-review/atlas_overlay_v02_review_only.json"
       - uses: actions/upload-artifact@v4
         with:
           name: river-fish-live-review
