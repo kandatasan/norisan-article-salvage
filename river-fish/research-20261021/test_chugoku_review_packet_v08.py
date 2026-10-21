@@ -1,7 +1,7 @@
 """Review packet is not a fish-publication payload."""
 import copy
 import unittest
-from build_chugoku_review_packet_v08 import render, SCHEMA as PACKET_SCHEMA
+from build_chugoku_review_packet_v08 import render
 from build_chugoku_source_crosscheck_v07 import SCHEMA as INPUT_SCHEMA
 
 
