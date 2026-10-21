@@ -50,6 +50,6 @@
 3. 河川コードは別の根拠で確定。**河川名が同じだけでは接続しない**。希少種の公開可否も別審査。
 4. 承認済みだけを別の公開候補CSVに移し、検索UIへの追加前後で47県・既存結果・JS/HTMLの回帰テストを行う。
 
-テスト：`python -m unittest river-fish/research-20261021/test_evidence_candidates.py -v`
+テスト：`python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v`
 
 **出典・加工表記案**：各行の出典URLとともに「各県の河川整備計画・研究報告を基に、つりくえ！が魚名・河川名の掲載情報を整理（現在の生息や釣果を保証するものではありません）」。
