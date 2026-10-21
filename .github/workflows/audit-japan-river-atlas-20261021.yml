@@ -1,0 +1,37 @@
+name: Read-only atlas WordPress article audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/audit-japan-river-atlas-20261021.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - name: Read actual atlas raw WP Gutenberg content and metadata
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: |
+          python - <<'PY'
+          import os,urllib.request,urllib.parse,json,base64,re,html
+          user=os.environ['TSURIKUE_WP_USER'];pw=os.environ['TSURIKUE_WP_APP_PASSWORD']
+          auth='Basic '+base64.b64encode((user+':'+pw).encode()).decode()
+          def get(path):
+           req=urllib.request.Request('https://tsurikue.com'+path,headers={'Authorization':auth,'Accept':'application/json','User-Agent':'tsurikue-editor-audit/1.0'})
+           with urllib.request.urlopen(req,timeout=80) as r:return json.load(r)
+          slug="japan-river-atlas"
+          for kind in ['pages','posts']:
+           q=urllib.parse.urlencode({'context':'edit','slug':slug,'status':'any','per_page':50,'_fields':'id,slug,status,title,content,excerpt,categories,featured_media,template,modified'})
+           rows=get('/wp-json/wp/v2/'+kind+'?'+q)
+           print('ATLAS_FOUND',kind,len(rows),flush=True)
+           for p in rows:
+            body=p.get('content',{}).get('raw','')
+            print('ATLAS_META',json.dumps({'kind':kind,'id':p['id'],'slug':p['slug'],'status':p['status'],'title':p['title'],'modified':p.get('modified'),'template':p.get('template'),'featured_media':p.get('featured_media'),'content_bytes':len(body),'paragraphs':body.count('<!-- wp:paragraph'),'headings':body.count('<!-- wp:heading'),'html_blocks':body.count('<!-- wp:html'),'shortcodes':re.findall(r'\[[a-zA-Z_][^\]]{0,120}\]',body)[:25],'iframes':re.findall(r'<iframe[^>]*>',body)[:4]},ensure_ascii=False),flush=True)
+            for i,line in enumerate(body.splitlines()):
+             print('ATLAS_RAW',f'{i:04}',line[:1100],flush=True)
+          
+          PY

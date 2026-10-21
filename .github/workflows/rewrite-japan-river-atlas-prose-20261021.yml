@@ -1,0 +1,36 @@
+name: Rewrite Japan river atlas prose only
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/revisions/japan-river-atlas-editorial-20261021.json'
+      - 'scripts/rewrite_japan_river_atlas_prose_20261021.py'
+      - '.github/workflows/rewrite-japan-river-atlas-prose-20261021.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'content/revisions/japan-river-atlas-editorial-20261021.json'
+      - 'scripts/rewrite_japan_river_atlas_prose_20261021.py'
+      - '.github/workflows/rewrite-japan-river-atlas-prose-20261021.yml'
+permissions:
+  contents: read
+jobs:
+  audit-and-update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Read-only compare live WP content with approved prose-only edit
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/rewrite_japan_river_atlas_prose_20261021.py check
+      - name: Apply only the audited Gutenberg prose substitutions
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/rewrite_japan_river_atlas_prose_20261021.py apply
