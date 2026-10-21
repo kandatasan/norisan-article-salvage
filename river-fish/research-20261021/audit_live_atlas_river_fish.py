@@ -115,6 +115,16 @@ def main():
         writer.writeheader()
         writer.writerows(out)
     by_status = dict(sorted(collections.Counter(x["join_review_status"] for x in out).items()))
+    grouped = collections.defaultdict(list)
+    for row in out:
+        if row["river"]:
+            grouped[(row["prefecture"], row["watershed"], row["river"])].append(row)
+    river_group_review = [
+        {"prefecture": key[0], "watershed": key[1], "river": key[2],
+         "candidate_rows": len(group), "statuses": dict(sorted(collections.Counter(
+             x["join_review_status"] for x in group).items()))}
+        for key, group in sorted(grouped.items())
+    ]
     summary = {
         "mode": "READ_ONLY_REVIEW_NOT_PUBLICATION",
         "source_candidate_rows": len(rows),
@@ -125,6 +135,7 @@ def main():
         "atlas_schema_keys": sorted(atlas.keys()),
         "fish_master_schema_keys": sorted(fish_master.keys()),
         "status_counts": by_status,
+        "river_group_review": river_group_review,
         "exact_unique_name_river_groups": len({
             (x["prefecture"], x["watershed"], x["river"], x["atlas_name_candidate_ids"])
             for x in out if x["join_review_status"] == "EXACT_SINGLE_NAME_CANDIDATE"
