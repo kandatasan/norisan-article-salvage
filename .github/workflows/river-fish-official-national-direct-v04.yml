@@ -5,6 +5,8 @@ on:
     paths:
       - 'river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py'
       - 'river-fish/research-20261021/test_official_named_river_fish_nationwide_v04.py'
+      - 'river-fish/research-20261021/build_national_atlas_overlay_v04.py'
+      - 'river-fish/research-20261021/test_national_atlas_overlay_v04.py'
       - '.github/workflows/river-fish-official-national-direct-v04.yml'
   workflow_dispatch:
 permissions:
@@ -24,7 +26,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Test nine-region pinned manifest and privacy boundary
-        run: python -m unittest discover -s river-fish/research-20261021 -p 'test_official_named_river_fish_nationwide_v04.py' -v
+        run: |
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_official_named_river_fish_nationwide_v04.py' -v
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_national_atlas_overlay_v04.py' -v
       - name: Download official region and extract source named river fish records
         run: python river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py --region "${{ matrix.region }}" --out "$RUNNER_TEMP/official-river-fish-v04"
       - name: Verify review-only output contract
@@ -48,6 +52,8 @@ jobs:
               "river_groups":m["river_name_groups"],
               "fish_year_records":len(rows),"published":False},ensure_ascii=False))
           PY
+      - name: Compare official named rivers against live atlas (GET only)
+        run: python river-fish/research-20261021/build_national_atlas_overlay_v04.py --region "${{ matrix.region }}" --source-csv "$RUNNER_TEMP/official-river-fish-v04/official_direct_river_fish_v04.csv" --out "$RUNNER_TEMP/official-river-fish-v04/atlas_name_match_review_v04.json"
       - uses: actions/upload-artifact@v4
         with:
           name: official-direct-river-fish-v04-${{ matrix.region }}-review-only
