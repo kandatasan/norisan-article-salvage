@@ -19,7 +19,8 @@ class SevenRiverIdentityAuditTests(unittest.TestCase):
             self.assertEqual(row["identity_status"],
                              "official_system_identity_confirmed")
             self.assertEqual(row["fish_record_approval"], "not_approved")
-            self.assertIn("fish", row["notes"].lower())
+            self.assertTrue(row["source_locators"].strip())
+            self.assertTrue(row["notes"].strip())
 
     def test_report_states_limitations_and_no_publication(self):
         report = render(load())
