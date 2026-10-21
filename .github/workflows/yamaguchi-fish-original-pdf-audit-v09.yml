@@ -1,0 +1,57 @@
+name: Yamaguchi original fish research PDF audit v09 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/audit_yamaguchi_original_pdfs_v09.py'
+      - 'river-fish/research-20261021/test_yamaguchi_original_pdfs_v09.py'
+      - '.github/workflows/yamaguchi-fish-original-pdf-audit-v09.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  audit-original-pdfs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF text inspection utilities on clean runner
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          command -v pdftotext
+          command -v pdfinfo
+      - name: Fail-closed source and PDF metadata tests
+        run: |
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_yamaguchi_original_pdfs_v09.py' -v
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_evidence_candidates.py' -v
+      - name: Download original Yamaguchi prefecture research PDFs and scan page hits only
+        run: |
+          python river-fish/research-20261021/audit_yamaguchi_original_pdfs_v09.py \
+            --out "$RUNNER_TEMP/yamaguchi_original_pdf_review_v09.json"
+      - name: Verify zero publication or source-status changes
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          d=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"yamaguchi_original_pdf_review_v09.json").read_text())
+          assert d["status"]=="MACHINE_PDF_TEXT_SCAN_ONLY_NOT_VERIFIED_NOT_PUBLISHED"
+          assert d["source_records_pending_manual_review"]==10
+          assert d["source_records_automatically_approved"]==0
+          assert d["site_updated"] is False
+          assert {x["source_id"] for x in d["files"]}=={"YA07","YA04"}
+          assert all(x["original_human_read_verified"] is False
+                     and x["approved_for_publication"] is False
+                     and x["staged_source_rows_promoted"]==0 for x in d["files"])
+          print("YAMAGUCHI_ORIGINAL_PDF_V09_SAFE",{
+              x["source_id"]:{"pages":x["pdf_pages"],"text_pages":x["machine_text_pages"],
+                              "status":x["text_extraction_status"]}
+              for x in d["files"]})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yamaguchi-original-pdf-machine-audit-v09
+          path: ${{ runner.temp }}/yamaguchi_original_pdf_review_v09.json
+          retention-days: 30
