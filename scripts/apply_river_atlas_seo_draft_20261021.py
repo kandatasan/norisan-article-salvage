@@ -42,7 +42,7 @@ def raw(row, key):
 def check_source():
     body = SOURCE.read_text(encoding="utf-8").strip()
     for token in (MARKER, BANNER, DATA_ROOT, "atlas.json", "fish_master.json",
-                  "都道府県", "水系", "河川", "魚", "川を探す"):
+                  "都道府県", "水系", "河川", "魚", "川名"):
         if token not in body:
             raise RuntimeError("Source missing expected token: " + token)
     if re.search(r"<h1\\b", body, re.I):
