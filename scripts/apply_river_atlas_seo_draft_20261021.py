@@ -105,7 +105,7 @@ def main():
     if target is None or int(target["id"]) != 4240 or target["slug"] != "" or target["status"] != "draft":
         raise RuntimeError("BLOCKED_EXPECTED_EXISTING_DRAFT_4240_NOT_FOUND")
     prior_hash = sha(raw(target, "content").strip())
-    if prior_hash not in ("ad68e5b46f66bac2f0d08c1f4f752ebb39ac4dbf8f8c04dada41c715d832b64c", sha(body)):
+    if prior_hash not in ("3c771577144177f3ac2ea22339ac23ab341433e491d130edc3353ec78c4b4042", sha(body)):
         raise RuntimeError("BLOCKED_WP_DRAFT_EDITED_SINCE_LAST_VERIFIED_UPDATE")
     print("PRECHECK", json.dumps({
         "matching_article": None if target is None else {"id": target["id"], "slug": target["slug"], "status": target["status"]},
