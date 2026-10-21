@@ -63,7 +63,7 @@ class OfficialNamedRiverTests(unittest.TestCase):
         rows = [{"C": "魚類", "F": "太田川", "G": "2021", "J": "アユ", "M": "諸木川"},
                 {"C": "魚類", "F": "太田川", "G": "2021", "J": "アユ", "M": "諸木川"},
                 {"C": "魚介類", "F": "太田川", "G": "2021", "J": "エビ", "M": "諸木川"}]
-        records, meta = aggregate(rows)
+        records, meta = aggregate(rows, min_source_rows=1)
         self.assertEqual(len(records), 1)
         self.assertEqual(meta["counts"]["valid_source_rows"], 2)
         self.assertEqual(meta["counts"]["excluded_not_explicit_fish_category"], 1)
@@ -74,11 +74,11 @@ class OfficialNamedRiverTests(unittest.TestCase):
     def test_no_watershed_inference(self):
         rows = [{"C": "魚類", "F": "太田川", "G": "2021", "J": "アユ", "M": ""},
                 {"C": "魚類", "F": "太田川", "G": "2021", "J": "アユ", "M": "諸木川"}]
-        data, _ = aggregate(rows)
+        data, _ = aggregate(rows, min_source_rows=1)
         self.assertEqual(data, [("太田川", "諸木川", "2021", "アユ")])
 
     def test_no_location_fields_in_csv_and_no_overwrite(self):
-        data, meta = aggregate([{"C": "魚類", "F": "太田川", "G": "2021", "J": "アユ", "M": "諸木川"}])
+        data, meta = aggregate([{"C": "魚類", "F": "太田川", "G": "2021", "J": "アユ", "M": "諸木川"}], min_source_rows=1)
         with tempfile.TemporaryDirectory() as td:
             out = Path(td) / "results"
             p = write_outputs(out, data, meta)
