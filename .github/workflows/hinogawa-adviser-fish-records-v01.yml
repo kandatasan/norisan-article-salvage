@@ -1,0 +1,77 @@
+name: Hino adviser fish table staging v01 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/hinogawa_diadr_fish_table_v01.csv'
+      - 'river-fish/research-20261021/hinogawa_diadr_fish_records_v01.csv'
+      - 'river-fish/research-20261021/hinogawa_diadr_overlap_review_v01.json'
+      - 'river-fish/research-20261021/build_hinogawa_adviser_fish_records_v01.py'
+      - 'river-fish/research-20261021/search_hinogawa_records_v01.py'
+      - 'river-fish/research-20261021/audit_hinogawa_live_atlas_v01.py'
+      - 'river-fish/research-20261021/test_hinogawa_adviser_fish_records_v01.py'
+      - 'river-fish/review-staged/HINOGAWA_ADVISER_FISH_TABLE_AUDIT_V01.md'
+      - 'river-fish/research-20261021/README.md'
+      - '.github/workflows/hinogawa-adviser-fish-records-v01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  stage-and-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run full research regression suite
+        run: python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -q
+      - name: Rebuild normalized river-year-fish research records
+        run: |
+          python river-fish/research-20261021/build_hinogawa_adviser_fish_records_v01.py \
+            --out "$RUNNER_TEMP/hinogawa-adviser-v01"
+          cmp "$RUNNER_TEMP/hinogawa-adviser-v01/hinogawa_diadr_fish_records_v01.csv" \
+            river-fish/research-20261021/hinogawa_diadr_fish_records_v01.csv
+          cmp "$RUNNER_TEMP/hinogawa-adviser-v01/hinogawa_diadr_overlap_review_v01.json" \
+            river-fish/research-20261021/hinogawa_diadr_overlap_review_v01.json
+      - name: Verify both search directions and historical-data notice
+        run: |
+          python river-fish/research-20261021/search_hinogawa_records_v01.py \
+            --river 日野川 --fish アユ > "$RUNNER_TEMP/hino-search.json"
+          python - <<'PY'
+          import json,os,pathlib
+          d=json.loads((pathlib.Path(os.environ['RUNNER_TEMP'])/'hino-search.json').read_text())
+          assert d['status']=='RESEARCH_ONLY_CANDIDATES_NOT_PUBLICATION'
+          assert d['record_count']==7 and d['zero_results_mean_absence'] is False
+          assert all(r['publication_approval']=='not_approved' for r in d['records'])
+          print('HINO_TWO_WAY_RESEARCH_SEARCH_SAFE',{'record_count':d['record_count'],'site_updated':False})
+          PY
+      - name: Compare exact river names with the current public atlas (read-only)
+        run: |
+          python river-fish/research-20261021/audit_hinogawa_live_atlas_v01.py \
+            --out "$RUNNER_TEMP/hinogawa-live-atlas-review-v01.json"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ['RUNNER_TEMP'])/'hinogawa-live-atlas-review-v01.json'
+          d=json.loads(p.read_text(encoding='utf-8'))
+          assert d['mode']=='READ_ONLY_CURRENT_ATLAS_REVIEW'
+          assert len(d['river_review'])==2
+          assert all(x['approved_for_publication'] is False and x['identity_verified'] is False
+                     for x in d['river_review'])
+          assert d['name_match_does_not_verify_river_identity'] is True
+          assert d['site_updated'] is False
+          print('HINO_LIVE_ATLAS_REVIEW_SAFE',{
+              'atlas_sha256':d['atlas_sha256'],
+              'river_review':[(x['river_as_published'],x['join_status'],len(x['atlas_candidate_ids']))
+                              for x in d['river_review']],
+              'site_updated':False})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hinogawa-adviser-fish-records-v01-review-only
+          path: |
+            ${{ runner.temp }}/hinogawa-adviser-v01/hinogawa_diadr_fish_records_v01.csv
+            ${{ runner.temp }}/hinogawa-adviser-v01/hinogawa_diadr_overlap_review_v01.json
+            ${{ runner.temp }}/hinogawa-live-atlas-review-v01.json
+          retention-days: 30
