@@ -28,7 +28,7 @@ class YamaguchiPdfAuditTests(unittest.TestCase):
 
     def test_text_line_wrap_does_not_prevent_keyword(self):
         hits, pages = text_page_hits("ヌマ\nムツ\f", {"fish_term": "ヌマムツ"})
-        self.assertEqual(hits["ヌマムツ"], [1])
+        self.assertEqual(hits["fish_term"], [1])
 
     def test_machine_scan_never_approves_or_exports_text(self):
         d = scan("YA07", b"%PDF-1.7 fake test", "ヌマムツ 小島川 2005\f長沢川 2007\f", 2)
