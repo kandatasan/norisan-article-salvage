@@ -1,0 +1,63 @@
+name: Chugoku provincial fish source crosscheck v07 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/build_chugoku_source_crosscheck_v07.py'
+      - 'river-fish/research-20261021/test_chugoku_source_crosscheck_v07.py'
+      - '.github/workflows/chugoku-fish-source-crosscheck-v07.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  provincial-crosscheck:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline unit tests and staged provincial inventory
+        run: |
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_chugoku_source_crosscheck_v07.py' -v
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_evidence_candidates.py' -v
+      - name: Re-extract official pinned Chugoku fish workbook (read-only)
+        run: python river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py --region chugoku --out "$RUNNER_TEMP/chugoku-v07-source"
+      - name: Crosscheck official river names and species counts against independent source
+        run: |
+          python river-fish/research-20261021/build_chugoku_source_crosscheck_v07.py \
+            --national-csv "$RUNNER_TEMP/chugoku-v07-source/official_direct_river_fish_v04.csv" \
+            --out "$RUNNER_TEMP/chugoku-v07-source/chugoku_source_crosscheck_v07.json"
+      - name: Fail if any species names or approval flags leak into review summary
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"chugoku-v07-source/chugoku_source_crosscheck_v07.json"
+          d=json.loads(p.read_text(encoding="utf-8"))
+          assert d["status"]=="REVIEW_ONLY_DO_NOT_UPLOAD"
+          assert d["provincial_candidate_rows"]==124
+          assert d["named_river_candidate_rows"]==115
+          assert d["watershed_only_rows_held"]==9
+          assert d["river_groups"]==13
+          assert sum(d["priority_counts"].values())==13
+          assert all(x["approved_for_publication"] is False
+                     and x["source_name_identity_verified"] is False
+                     and x["code_identity_verified"] is False
+                     and x["atlas_identity_verified"] is False
+                     and x["species_publication_review"]=="required" for x in d["rows"])
+          assert all("recorded_name" not in x and "survey_year" not in x
+                     and "sampling_site" not in x and "coordinates" not in x
+                     for x in d["rows"])
+          print("CHUGOKU_CROSSCHECK_V07_SAFE",json.dumps({
+              "priority_counts":d["priority_counts"],
+              "evidence_gate_counts":d["evidence_gate_counts"],
+              "independent_overlap_groups":d["river_groups_with_independent_literal_fish_overlap"],
+              "one_code_candidate_groups":d["river_groups_with_national_river_code_single_name_candidate"],
+              "published":False},ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chugoku-five-prefectures-source-crosscheck-v07-review-only
+          path: ${{ runner.temp }}/chugoku-v07-source/chugoku_source_crosscheck_v07.json
+          retention-days: 30
