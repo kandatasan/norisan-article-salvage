@@ -18,8 +18,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Validate PDF parsing commands are available
+      - name: Install PDF text inspection utilities on clean runner
         run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
           command -v pdftotext
           command -v pdfinfo
       - name: Fail-closed source and PDF metadata tests
