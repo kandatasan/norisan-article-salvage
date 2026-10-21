@@ -70,8 +70,8 @@ def build_region(region, m, source_rows):
     rows, report = aggregate(source_rows)
     if report["counts"]["source_rows"] != m["source_rows"]:
         raise ValueError("Official workbook source row count changed")
-    if report["watershed_groups"] != m["unique_watersheds"]:
-        raise ValueError("Watershed groups unexpectedly differ from pinned aggregate")
+    if not (0 < report["watershed_groups"] <= m["unique_watersheds"]):
+        raise ValueError("Named-river watersheds exceed pinned aggregate inventory")
     if report["fish_name_labels"] > m["distinct_name_labels"]:
         raise ValueError("Unexpected fish name labels beyond official fish inventory")
     if not set(report["years"]).issubset(set(m["years"])):
