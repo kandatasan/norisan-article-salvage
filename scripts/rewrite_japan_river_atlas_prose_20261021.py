@@ -14,7 +14,7 @@ SITE="https://tsurikue.com"
 POST_ID=4240
 SOURCE=Path("content/revisions/japan-river-atlas-editorial-20261021.json")
 # Filled after read-only PR preflight against the CURRENT WordPress article.
-EXPECTED_BEFORE_SHA=""
+EXPECTED_BEFORE_SHA="1c9c1ab963dcb66479e85172ecdf0e835ab777a1296db60dc1fc974876f08b3a"
 def sha(s):return hashlib.sha256(s.encode("utf-8")).hexdigest()
 def request(path,auth,payload=None):
     headers={"Authorization":auth,"Accept":"application/json","User-Agent":"tsurikue-river-atlas-editor/1.0"}
