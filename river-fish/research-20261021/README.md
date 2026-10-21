@@ -201,3 +201,13 @@ python river-fish/research-20261021/build_atlas_overlay_v02.py --out /tmp/atlas-
 6グループの主な保留理由は、保全フラグ2・文脈のみ3・原本未通読1。A（既存図鑑ID＋コード双方一意の資料条件クリア）は今回0。**Bの7も新規登録を許可したわけではない。** 河川コード・所在地・採集河川の同一性を確認してから公開版へ反映する。
 
 CIの独立した原本照合、既存124行QA、レビューJSONに魚名・位置情報を出さない検査はすべて成功。
+
+## 第9便：公開前の「7河川＋6保留」確認票を自動生成（v08）
+
+第8便の実データ照合JSONから、**人間が資料を読みながら判断できるMarkdown確認票** `CHUGOKU_7_RIVERS_HUMAN_REVIEW_V08.md` を生成。県資料への直接リンク、国交省の10桁河川コード**名前候補**、現在の図鑑名候補、県資料・国交省調査の記録数、保全・原本確認の保留理由、公開前チェックリストを載せる。
+
+- スクリプト：`build_chugoku_review_packet_v08.py`
+- QA：`test_chugoku_review_packet_v08.py`
+- Actions：`.github/workflows/chugoku-fish-human-review-packet-v08.yml`
+- 成果物：`chugoku-seven-river-human-review-packet-v08`（Markdown＋研究専用JSON、30日間）
+- **魚名・採集地点・座標を表示しない。** 7件は公開候補ではなく**河川同一性の優先確認対象**。6件は保全・資料範囲・原本未確認などで保留。**全13件公開承認ゼロ、WP/Xserver更新ゼロ。**
