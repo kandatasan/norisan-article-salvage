@@ -17,7 +17,8 @@ from urllib.request import Request, urlopen
 PDFS = {
     "YA07": {
         "url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197780.pdf",
-        "tokens": {"fish_term": "ヌマムツ", "named_river_term": "小島川",\n                   "watershed_term": "長沢川", "year_2005": "2005", "year_2007": "2007"},
+        "tokens": {"fish_term": "ヌマムツ", "named_river_term": "小島川",
+                   "watershed_term": "長沢川", "year_2005": "2005", "year_2007": "2007"},
     },
     "YA04": {
         "url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197775.pdf",
