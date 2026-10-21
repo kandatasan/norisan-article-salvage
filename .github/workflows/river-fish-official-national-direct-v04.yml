@@ -1,0 +1,89 @@
+name: National official direct river fish evidence v04 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py'
+      - 'river-fish/research-20261021/test_official_named_river_fish_nationwide_v04.py'
+      - 'river-fish/research-20261021/build_national_atlas_overlay_v04.py'
+      - 'river-fish/research-20261021/test_national_atlas_overlay_v04.py'
+      - 'river-fish/research-20261021/national_direct_river_fish_v04_review_summary.json'
+      - '.github/workflows/river-fish-official-national-direct-v04.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  direct-river-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test nine-region pinned manifest and privacy boundary
+        run: |
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_official_named_river_fish_nationwide_v04.py' -v
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_national_atlas_overlay_v04.py' -v
+      - name: Download official region and extract source named river fish records
+        run: python river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py --region "${{ matrix.region }}" --out "$RUNNER_TEMP/official-river-fish-v04"
+      - name: Verify review-only output contract
+        run: |
+          python - <<'PY'
+          import csv, json, os, pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"official-river-fish-v04"
+          m=json.loads((p/"manifest_review_only_v04.json").read_text())
+          with (p/"official_direct_river_fish_v04.csv").open(encoding="utf-8") as f:
+              reader=csv.DictReader(f)
+              assert reader.fieldnames==["region","watershed","river_name","survey_year","recorded_name","source_url","source_sha256","review_status"]
+              rows=list(reader)
+          assert len(rows)==m["source_fish_year_records"]>0
+          assert m["status"]=="STAGED_REVIEW_ONLY_NOT_FOR_PUBLICATION"
+          assert m["prefecture"] is None and m["national_river_code"] is None
+          assert m["sensitive_species_review"]=="required_before_publication"
+          assert all(x["review_status"]=="unapproved_requires_conservation_and_identity_review" for x in rows)
+          assert all(x["source_sha256"]==m["source_sha256"] for x in rows)
+          print("NATIONAL_DIRECT_RIVER_V04_VALIDATED",json.dumps({
+              "region":m["region"],"source_rows":m["source_rows"],
+              "river_groups":m["river_name_groups"],
+              "fish_year_records":len(rows),"published":False},ensure_ascii=False))
+          PY
+      - name: Compare official named rivers against live atlas (GET only)
+        run: python river-fish/research-20261021/build_national_atlas_overlay_v04.py --region "${{ matrix.region }}" --source-csv "$RUNNER_TEMP/official-river-fish-v04/official_direct_river_fish_v04.csv" --out "$RUNNER_TEMP/official-river-fish-v04/atlas_name_match_review_v04.json"
+      - name: Check reviewed nationwide totals against this region's source and live atlas
+        env:
+          REGION: ${{ matrix.region }}
+        run: |
+          python - <<'PY'
+          import json,os,pathlib,collections
+          summary=json.loads(pathlib.Path("river-fish/research-20261021/national_direct_river_fish_v04_review_summary.json").read_text())
+          assert summary["regional_river_name_groups"]==sum(x["groups"] for x in summary["region_counts"])==313
+          assert summary["river_fish_year_records"]==sum(x["records"] for x in summary["region_counts"])==30675
+          assert summary["atlas_name_matches"]["one_navigation_candidate_not_verified"]==sum(x["one"] for x in summary["region_counts"])==94
+          assert summary["atlas_name_matches"]["multiple_navigation_candidates"]==sum(x["multiple"] for x in summary["region_counts"])==98
+          assert summary["atlas_name_matches"]["no_name_match_in_live_atlas"]==sum(x["unmatched"] for x in summary["region_counts"])==121
+          assert summary["status"]=="REVIEW_ONLY_NOT_PUBLISHED"
+          expected=next(x for x in summary["region_counts"] if x["region"]==os.environ["REGION"])
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"official-river-fish-v04"
+          m=json.loads((p/"manifest_review_only_v04.json").read_text())
+          o=json.loads((p/"atlas_name_match_review_v04.json").read_text())
+          classes=collections.Counter(x["status"] for x in o["groups"])
+          assert m["river_name_groups"]==o["source_named_river_groups"]==expected["groups"]
+          assert m["source_fish_year_records"]==o["source_fish_year_records"]==expected["records"]
+          assert classes["ONE_NAVIGATION_NAME_CANDIDATE_NOT_VERIFIED"]==expected["one"]
+          assert classes["MULTIPLE_NAVIGATION_NAME_CANDIDATES"]==expected["multiple"]
+          assert classes["SOURCE_NAMED_RIVER_NOT_IN_LIVE_ATLAS"]==expected["unmatched"]
+          assert o["status"]=="REVIEW_ONLY_DO_NOT_UPLOAD"
+          assert all(not x["approved_for_publication"] for x in o["groups"])
+          print("NATIONAL_V04_AUDIT_SUMMARY_MATCH",os.environ["REGION"],expected)
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-direct-river-fish-v04-${{ matrix.region }}-review-only
+          path: ${{ runner.temp }}/official-river-fish-v04
+          retention-days: 30

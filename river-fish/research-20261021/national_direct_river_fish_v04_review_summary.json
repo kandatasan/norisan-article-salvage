@@ -1,0 +1,98 @@
+{
+  "schema": "tsurikue-official-national-river-fish-review-summary-v04",
+  "review_date": "2026-10-21",
+  "source": "国土交通省 河川水辺の国勢調査 地方別・河川版・魚類の原本（9地方、固定SHA256検証）",
+  "status": "REVIEW_ONLY_NOT_PUBLISHED",
+  "github_actions_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/39609616698",
+  "atlas_json_sha256": "0816715449455560dcf1e1c22e834108f415d28fec99aa008c024fbe03bd8e05",
+  "total_source_rows": 447144,
+  "regional_river_name_groups": 313,
+  "river_fish_year_records": 30675,
+  "atlas_name_matches": {
+    "one_navigation_candidate_not_verified": 94,
+    "multiple_navigation_candidates": 98,
+    "no_name_match_in_live_atlas": 121
+  },
+  "region_counts": [
+    {
+      "region": "hokkaido",
+      "groups": 33,
+      "records": 1640,
+      "one": 0,
+      "multiple": 0,
+      "unmatched": 33
+    },
+    {
+      "region": "tohoku",
+      "groups": 33,
+      "records": 2627,
+      "one": 23,
+      "multiple": 8,
+      "unmatched": 2
+    },
+    {
+      "region": "kanto",
+      "groups": 40,
+      "records": 3394,
+      "one": 9,
+      "multiple": 29,
+      "unmatched": 2
+    },
+    {
+      "region": "hokuriku",
+      "groups": 29,
+      "records": 2310,
+      "one": 11,
+      "multiple": 4,
+      "unmatched": 14
+    },
+    {
+      "region": "chubu",
+      "groups": 34,
+      "records": 3938,
+      "one": 7,
+      "multiple": 10,
+      "unmatched": 17
+    },
+    {
+      "region": "kinki",
+      "groups": 33,
+      "records": 4252,
+      "one": 9,
+      "multiple": 15,
+      "unmatched": 9
+    },
+    {
+      "region": "chugoku",
+      "groups": 35,
+      "records": 3592,
+      "one": 5,
+      "multiple": 8,
+      "unmatched": 22
+    },
+    {
+      "region": "shikoku",
+      "groups": 12,
+      "records": 2215,
+      "one": 4,
+      "multiple": 6,
+      "unmatched": 2
+    },
+    {
+      "region": "kyushu",
+      "groups": 64,
+      "records": 6707,
+      "one": 26,
+      "multiple": 18,
+      "unmatched": 20
+    }
+  ],
+  "publication_gate": {
+    "prefecture_verified": false,
+    "national_river_code_verified": false,
+    "sensitive_species_review_complete": false,
+    "current_habitat_verified": false,
+    "fish_catchability_verified": false
+  },
+  "notice": "313は地方×水系×河川名のグループ数で、全国の固有河川数ではない。30,675は魚名×年度の重複統合レコードで、種数・釣れる魚数ではない。名前が一意に一致しても実河川コード・採集地点・保全公開の承認ではない。"
+}
