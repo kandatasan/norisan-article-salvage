@@ -39,7 +39,8 @@ class HinoIdentityIndexTests(unittest.TestCase):
                              "official_code_and_system_identity_confirmed")
             self.assertEqual(row["fish_sampling_scope_confirmed"], "false")
             self.assertEqual(row["verification_status"],
-                             "official_pdf_index_text_not_visually_verified")
+                             "official_pdf_table_image_checked")
+            self.assertEqual(row["source_document_date"], "2025-09")
             self.assertEqual(row["fish_publication_approval"], "not_approved")
             self.assertEqual(row["integration_status"], "research_only")
 

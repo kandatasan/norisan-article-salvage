@@ -37,13 +37,48 @@ class HinoRiverTableTests(unittest.TestCase):
         self.assertEqual(indexed[("法勝寺川", 2024, "アユ")], 35)
         self.assertEqual(indexed[("法勝寺川", 2014, "シマヨシノボリ")], 16)
 
+    def test_all_visible_table_cells_match_the_official_pdf_page_image(self):
+        columns = [f"{river}_{label}" for river in builder.RIVERS
+                   for label in builder.YEAR_LABELS]
+        expected = {
+            "アユ": ["501", "269", "404", "469", "130", "54", "310",
+                    "-", "-", "-", "2", "1", "-", "35"],
+            "サケ": ["-", "1", "1", "1", "1", "3", "-",
+                    "-", "-", "-", "-", "-", "-", "-"],
+            "ヌマチチブ": ["6", "64", "327", "34", "107", "68", "108",
+                         "-", "-", "-", "-", "-", "-", "-"],
+            "チチブ": ["-", "-", "-", "90", "-", "9", "-",
+                     "-", "-", "-", "-", "-", "-", "-"],
+            "シマヨシノボリ": ["13", "53", "129", "59", "86", "80", "174",
+                           "-", "-", "-", "-", "16", "6", "110"],
+            "ゴクラクハゼ": ["29", "308", "207", "138", "171", "542", "815",
+                          "-", "-", "-", "-", "-", "-", "1"],
+            "スミウキゴリ": ["-", "-", "46", "12", "11", "13", "23",
+                          "-", "-", "-", "-", "-", "-", "3"],
+            "ウキゴリ": ["6", "18", "40", "15", "67", "16", "57",
+                       "-", "-", "-", "1", "-", "-", "4"],
+        }
+        actual = {
+            row["fish_name_as_published"]: [row[column].strip() for column in columns]
+            for row in self.source_rows
+        }
+        self.assertEqual(actual, expected)
+
+    def test_document_date_is_not_used_as_a_survey_year(self):
+        self.assertEqual(builder.SOURCE_DOCUMENT_DATE, "2025-09")
+        self.assertEqual(builder.SOURCE_TITLE, "日野川水系自然再生計画（案）")
+        self.assertTrue(all(int(row["survey_year"]) <= 2024 for row in self.records))
+        self.assertTrue(all(row["source_document_date"] == "2025-09"
+                            for row in self.records))
+        self.assertTrue(all(row["survey_year"] != "2025" for row in self.records))
+
     def test_no_river_code_station_or_coordinate_is_invented(self):
         self.assertTrue(all(not r["river_code"] for r in self.records))
         prohibited_fields = {"station", "site", "latitude", "longitude", "coordinate", "reach"}
         self.assertFalse(prohibited_fields.intersection(builder.OUT_FIELDS))
 
     def test_every_record_is_held_for_conservation_and_source_review(self):
-        self.assertTrue(all(r["verification_status"] == "official_pdf_index_text_not_visually_verified"
+        self.assertTrue(all(r["verification_status"] == "official_pdf_table_image_checked"
                             for r in self.records))
         self.assertTrue(all(r["conservation_review"] == "pending" for r in self.records))
         self.assertTrue(all(r["fish_publication_approval"] == "not_approved"

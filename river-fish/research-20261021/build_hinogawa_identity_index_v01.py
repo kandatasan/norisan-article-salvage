@@ -57,8 +57,8 @@ def load_identities(path: Path = IDENTITIES) -> dict[tuple[str, str, str], dict[
         if (row["river_name_code_status"] != "confirmed"
                 or row["system_scheme_status"] != "confirmed"
                 or row["fish_record_approval"] != "not_approved"
-                or row["fish_table_visual_verification"] != "false"):
-            raise ValueError("identity evidence or publication boundary changed")
+                or row["fish_table_visual_verification"] != "true"):
+            raise ValueError("identity/source verification or publication boundary changed")
         if not row["fish_source_site_scope"] or not row["official_management_scope"]:
             raise ValueError("missing reach or fish sampling scope qualification")
         urls = row["source_urls"].split(";")
