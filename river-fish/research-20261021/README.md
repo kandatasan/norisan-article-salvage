@@ -148,3 +148,15 @@ python river-fish/research-20261021/build_atlas_overlay_v02.py --out /tmp/atlas-
 `build_official_river_code_candidates_v05.py` は固定出典・ヘッダー・行数・研究専用フラグを検証して、**魚名・採集地点・座標・都道府県を含まない候補JSON**を出力。9地方分を `.github/workflows/river-fish-national-code-join-v05.yml` で独立検証。元の公開 `atlas.json` やWordPress/Xserverには触れない。
 
 重要：コード表の先頭2桁は必ずしも川の所在地の都道府県ではない。**コードが一意でも保全審査・出典の同一河川確認を経ない限り、魚名をサイトへ出さない。**
+
+## 第7便：個別河川の公開前・三点照合レビュー待ち行列（v06）
+
+国交省の魚類調査原本の河川名、国交省の10桁河川コード表、現在の公開 `atlas.json` の3つを**水系名＋河川名**で照合し、審査順を決める。
+
+- `A_EXISTING_ATLAS_IDENTITY_REVIEW`：河川コード名候補1件＋公開図鑑のナビ候補1件。既存図鑑への接続を優先審査。
+- `B_NEW_ATLAS_RIVER_IDENTITY_REVIEW`：河川コード名候補1件＋公開図鑑に同名候補なし。新しい川の追加を優先審査。
+- `C_AMBIGUITY_OR_MISSING_CODE_REVIEW`：それ以外。同名別河川・コードなし・水系の表記差を先に解消。
+
+出力は**魚名・調査地点・座標を含まない研究用JSON**で、すべて `identity_verified=false`, `approved_for_publication=false`。AもBも「候補」であって**自動公開は禁止**。コード表の県名推定も行わない。
+
+スクリプト：`build_river_fish_identity_review_queue_v06.py`、Actions：`river-fish-identity-review-queue-v06.yml`。地方別レビュー成果物をGitHub Actionsに保存。WordPress・Xserverへの変更なし。
