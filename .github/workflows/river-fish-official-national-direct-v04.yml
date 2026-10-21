@@ -1,0 +1,55 @@
+name: National official direct river fish evidence v04 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py'
+      - 'river-fish/research-20261021/test_official_named_river_fish_nationwide_v04.py'
+      - '.github/workflows/river-fish-official-national-direct-v04.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  direct-river-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    strategy:
+      fail-fast: false
+      max-parallel: 3
+      matrix:
+        region: [hokkaido, tohoku, kanto, hokuriku, chubu, kinki, chugoku, shikoku, kyushu]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test nine-region pinned manifest and privacy boundary
+        run: python -m unittest discover -s river-fish/research-20261021 -p 'test_official_named_river_fish_nationwide_v04.py' -v
+      - name: Download official region and extract source named river fish records
+        run: python river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py --region "${{ matrix.region }}" --out "$RUNNER_TEMP/official-river-fish-v04"
+      - name: Verify review-only output contract
+        run: |
+          python - <<'PY'
+          import csv, json, os, pathlib
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"official-river-fish-v04"
+          m=json.loads((p/"manifest_review_only_v04.json").read_text())
+          with (p/"official_direct_river_fish_v04.csv").open(encoding="utf-8") as f:
+              reader=csv.DictReader(f)
+              assert reader.fieldnames==["region","watershed","river_name","survey_year","recorded_name","source_url","source_sha256","review_status"]
+              rows=list(reader)
+          assert len(rows)==m["source_fish_year_records"]>0
+          assert m["status"]=="STAGED_REVIEW_ONLY_NOT_FOR_PUBLICATION"
+          assert m["prefecture"] is None and m["national_river_code"] is None
+          assert m["sensitive_species_review"]=="required_before_publication"
+          assert all(x["review_status"]=="unapproved_requires_conservation_and_identity_review" for x in rows)
+          assert all(x["source_sha256"]==m["source_sha256"] for x in rows)
+          print("NATIONAL_DIRECT_RIVER_V04_VALIDATED",json.dumps({
+              "region":m["region"],"source_rows":m["source_rows"],
+              "river_groups":m["river_name_groups"],
+              "fish_year_records":len(rows),"published":False},ensure_ascii=False))
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: official-direct-river-fish-v04-${{ matrix.region }}-review-only
+          path: ${{ runner.temp }}/official-river-fish-v04
+          retention-days: 30
