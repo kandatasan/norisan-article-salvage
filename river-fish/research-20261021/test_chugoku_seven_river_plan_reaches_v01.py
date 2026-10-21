@@ -50,6 +50,14 @@ class SevenRiverPlanReachTests(unittest.TestCase):
             self.assertEqual(r["fish_publication_approval"], "not_approved")
             self.assertEqual(r["integration_status"], "research_only")
 
+    def test_mainstem_plan_reaches_remain_distinct_from_fish_evidence(self):
+        with DATA.open(encoding="utf-8", newline="") as f:
+            mainstems = {r["river"]: r for r in csv.DictReader(f)
+                         if r["river"] in {"斐伊川", "日野川"}}
+        self.assertIn("斐伊川放水路〜尾原ダム", mainstems["斐伊川"]["fish_scope_note"])
+        self.assertIn("管理区間16.85kmと同一ではない", mainstems["斐伊川"]["fish_scope_note"])
+        self.assertIn("国管理区間との調査地点の重なりは未確認", mainstems["日野川"]["fish_scope_note"])
+
 
 if __name__ == "__main__":
     unittest.main()
