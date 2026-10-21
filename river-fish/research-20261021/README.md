@@ -20,7 +20,7 @@
 - `survey_year`: 原資料に**その魚の調査年が明記**される場合だけ。島根県資料の「平成22年」「令和2年」は参考報告書の年であり、個々の魚の確認年とはみなさない。
 - `source_locator`: ページ/表/節への手がかり。PDFの「資料p20」と「PDF p21」を区別。
 - `verification_status`: `source_text_checked` または `search_excerpt_only`。
-- `conservation_review=required`: アカザ・スイゲンゼニタナゴ等は公開粒度・保全上のリスクを追加審査。位置・座標・採集地点は保存しない。
+- `conservation_review=required`: アカザ・スイゲンゼニタナゴ・シロヒレタビラ・ミナミメダカ・ホンモロコ・カネヒラ等は公開粒度・保全上のリスクを追加審査。位置・座標・採集地点は保存しない。
 - `integration_status=staged_only`: **公開DBには一切取り込まない**。
 
 ## 今回確認した公式資料
