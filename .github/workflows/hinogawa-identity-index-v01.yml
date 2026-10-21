@@ -1,0 +1,85 @@
+name: Hino river identity-linked fish search v01 (research only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/hinogawa_river_identity_v01.csv'
+      - 'river-fish/research-20261021/hinogawa_diadr_fish_records_v01.csv'
+      - 'river-fish/research-20261021/hinogawa_identity_linked_records_v01.csv'
+      - 'river-fish/research-20261021/build_hinogawa_identity_index_v01.py'
+      - 'river-fish/research-20261021/search_hinogawa_identity_records_v01.py'
+      - 'river-fish/research-20261021/audit_hinogawa_live_atlas_v01.py'
+      - 'river-fish/research-20261021/test_hinogawa_identity_index_v01.py'
+      - 'river-fish/research-20261021/test_*.py'
+      - 'river-fish/review-staged/HINOGAWA_RIVER_IDENTITY_LINKED_SEARCH_V01.md'
+      - 'river-fish/research-20261021/README.md'
+      - '.github/workflows/hinogawa-identity-index-v01.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  identity-linked-research-index:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run full research regression suite
+        run: python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -q
+      - name: Rebuild exact-name identity-linked research index
+        run: |
+          python river-fish/research-20261021/build_hinogawa_identity_index_v01.py \
+            --out "$RUNNER_TEMP/hinogawa_identity_linked_records_v01.csv"
+          cmp "$RUNNER_TEMP/hinogawa_identity_linked_records_v01.csv" \
+            river-fish/research-20261021/hinogawa_identity_linked_records_v01.csv
+      - name: Check code and fish reverse searches
+        run: |
+          python river-fish/research-20261021/search_hinogawa_identity_records_v01.py \
+            --river-code 8707030003 --fish アユ > "$RUNNER_TEMP/hoshoji-ayu.json"
+          python river-fish/research-20261021/search_hinogawa_identity_records_v01.py \
+            --fish アユ > "$RUNNER_TEMP/ayu-rivers.json"
+          python - <<'PY'
+          import json, os, pathlib
+          root = pathlib.Path(os.environ['RUNNER_TEMP'])
+          hoshoji = json.loads((root / 'hoshoji-ayu.json').read_text(encoding='utf-8'))
+          reverse = json.loads((root / 'ayu-rivers.json').read_text(encoding='utf-8'))
+          assert hoshoji['record_count'] == 3
+          assert {r['river_as_published'] for r in hoshoji['records']} == {'法勝寺川'}
+          assert {r['river_code'] for r in reverse['records']} == {'8707030001', '8707030003'}
+          assert all(r['fish_publication_approval'] == 'not_approved' for r in reverse['records'])
+          assert reverse['site_updated'] is False
+          print('HINOGAWA_CODE_AND_FISH_SEARCH_SAFE', {
+            'hoshoji_ayu_records': hoshoji['record_count'],
+            'ayu_river_codes': sorted({r['river_code'] for r in reverse['records']}),
+            'site_updated': False,
+          })
+          PY
+      - name: Compare river names against the live public atlas (read-only)
+        run: |
+          python river-fish/research-20261021/audit_hinogawa_live_atlas_v01.py \
+            --out "$RUNNER_TEMP/hinogawa-live-atlas-review-v01.json"
+          python - <<'PY'
+          import json, os, pathlib
+          data = json.loads((pathlib.Path(os.environ['RUNNER_TEMP']) /
+                             'hinogawa-live-atlas-review-v01.json').read_text(encoding='utf-8'))
+          assert data['mode'] == 'READ_ONLY_CURRENT_ATLAS_REVIEW'
+          assert len(data['river_review']) == 2
+          assert all(not row['identity_verified'] and not row['approved_for_publication']
+                     for row in data['river_review'])
+          assert data['site_updated'] is False
+          print('HINOGAWA_LIVE_ATLAS_REVIEW_SAFE', {
+            'atlas_sha256': data['atlas_sha256'],
+            'exact_name_results': [(r['river_as_published'], r['join_status'])
+                                   for r in data['river_review']],
+            'site_updated': False,
+          })
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hinogawa-identity-linked-fish-search-v01-review-only
+          path: |
+            river-fish/research-20261021/hinogawa_identity_linked_records_v01.csv
+            ${{ runner.temp }}/hinogawa-live-atlas-review-v01.json
+          retention-days: 30
