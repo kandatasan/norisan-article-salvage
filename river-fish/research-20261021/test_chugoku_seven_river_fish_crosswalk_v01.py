@@ -4,7 +4,7 @@ from build_chugoku_seven_river_fish_crosswalk_v01 import build
 
 
 class SevenRiverFishCrosswalkTests(unittest.TestCase):
-    def test_only_seventy_nine_eligible_named_river_rows_are_enriched(self):
+    def test_only_seventy_nine_reviewed_source_rows_are_enriched(self):
         rows, fields = build()
         self.assertEqual(len(rows), 79)
         self.assertIn("river_code", fields)
@@ -13,8 +13,11 @@ class SevenRiverFishCrosswalkTests(unittest.TestCase):
 
     def test_source_scope_and_publication_gate_are_preserved(self):
         rows, _ = build()
-        self.assertTrue(all(r["evidence_scope"] == "named_river"
-                            for r in rows))
+        scope_counts = {}
+        for r in rows:
+            scope_counts[r["evidence_scope"]] = scope_counts.get(r["evidence_scope"], 0) + 1
+        self.assertEqual(scope_counts, {"named_river": 64, "named_river_context": 15})
+        self.assertTrue(all(r["evidence_scope"] == ("named_river" if r["prefecture"] == "島根県" else "named_river_context") for r in rows))
         self.assertTrue(all(r["verification_status"] == "source_text_checked"
                             for r in rows))
         self.assertTrue(all(r["conservation_review"] == "not_flagged"

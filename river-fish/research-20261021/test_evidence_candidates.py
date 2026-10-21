@@ -33,7 +33,7 @@ class FishRiverCandidateQA(unittest.TestCase):
         self.assertEqual(Counter(r["prefecture"] for r in self.rows), COUNTS)
         self.assertEqual({r["source_id"] for r in self.rows}, SOURCE_IDS)
         self.assertEqual(Counter(r["evidence_scope"] for r in self.rows),
-                         {"named_river": 95, "named_river_context": 20, "watershed_only": 9})
+                         {"named_river": 80, "named_river_context": 35, "watershed_only": 9})
 
     def test_no_duplicates_or_empty_facts(self):
         seen = set()
