@@ -5,6 +5,8 @@ on:
     paths:
       - 'river-fish/research-20261021/extract_official_named_river_fish_v03.py'
       - 'river-fish/research-20261021/test_official_named_river_fish_v03.py'
+      - 'river-fish/research-20261021/build_official_atlas_candidates_v03.py'
+      - 'river-fish/research-20261021/test_official_atlas_candidates_v03.py'
       - '.github/workflows/river-fish-official-named-river-v03.yml'
   workflow_dispatch:
 permissions:
@@ -19,7 +21,9 @@ jobs:
         with:
           python-version: '3.12'
       - name: Run offline fail-closed source extraction tests
-        run: python -m unittest discover -s river-fish/research-20261021 -p 'test_official_named_river_fish_v03.py' -v
+        run: |
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_official_named_river_fish_v03.py' -v
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_official_atlas_candidates_v03.py' -v
       - name: Extract pinned original China-region river/fish source (no site writes)
         run: python river-fish/research-20261021/extract_official_named_river_fish_v03.py --out "$RUNNER_TEMP/direct-named-river-fish-v03"
       - name: Compare with known official source inventory and forbid site-ready output
@@ -48,6 +52,8 @@ jobs:
               "fish_labels":m["fish_name_labels"],
               "site_updated":False},ensure_ascii=False))
           PY
+      - name: Compare direct river names against current atlas (GET only)
+        run: python river-fish/research-20261021/build_official_atlas_candidates_v03.py --source-csv "$RUNNER_TEMP/direct-named-river-fish-v03/direct_named_river_fish_review_v03.csv" --out "$RUNNER_TEMP/direct-named-river-fish-v03/atlas_direct_river_review_v03.json"
       - uses: actions/upload-artifact@v4
         with:
           name: official-direct-named-river-fish-v03-review-only
