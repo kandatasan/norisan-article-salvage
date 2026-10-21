@@ -79,3 +79,21 @@ Actionsの `river-fish-live-review` artifact に `river-fish-preview.html` を�
 ```bash
 python river-fish/research-20261021/build_river_fish_preview.py --out /tmp/river-fish-preview.html
 ```
+
+## 第3便：広島・黒瀬川を追加して川⇔魚を増やす（研究用v02）
+
+既存の `river-fish/hiroshima_river_fish_narratives_v08.csv` にある、広島県公式「黒瀬川の河川環境概説」の**9魚名記録**を追加調査対象とする。このうち保全上の確認が必要な**2件は自動除外**し、7件だけを出典つきの研究用索引に接続。資料掲載日は観測年として扱わない。
+
+- `build_river_fish_layer_v02.py`：前便の107件＋黒瀬川7件＝**114研究用魚名記録／12河川名グループ**の川→魚・魚→川索引を構築。全国河川コード・現在の生息・釣果は未確認。
+- `build_river_fish_preview_v02.py`：スマホでも動く単体HTML。川の名前で探す・魚名ボタンから逆引き。保全要審査・未通読・水系だけの記録は含めない。
+- `build_atlas_overlay_v02.py`：本番公開 `atlas.json` をGETで読み、**県＋水系＋川名**の完全一致で既存グループ候補を抽出。見つからない資料由来河川名も、追加候補として独立表示。完全一致でも**コード同一性・地点同一性・公開承認はしない**。
+- Actions artifact `river-fish-live-review` にv02 JSON・オフラインプレビュー・公開図鑑との照合結果を保存。本番WordPress/Xserverへの書き込みは**ゼロ**。
+
+重要：黒瀬川の資料は**特定採集地点や調査年を確定できない河川環境の説明**。実際にその川で現在釣れる魚の一覧として公開しない。元資料の魚名は分類学的な同定・生息確定と同義ではない。
+
+```bash
+python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
+python river-fish/research-20261021/build_river_fish_layer_v02.py --out /tmp/river-fish-layer-v02.json
+python river-fish/research-20261021/build_river_fish_preview_v02.py --out /tmp/river-fish-preview-v02.html
+python river-fish/research-20261021/build_atlas_overlay_v02.py --out /tmp/atlas-overlay-v02.json
+```
