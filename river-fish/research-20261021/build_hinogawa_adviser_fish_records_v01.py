@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Expand the publicly visible Hino River adviser table into research-only records.
+"""Expand the visually checked Hino River adviser table into research-only records.
 
 This does not approve records for publication, assign a river code, or infer
-absence from a dash. The source table is transcribed from official PDF-index
-text and still needs visual verification against the PDF.
+absence from a dash. The eight visible fish rows were checked against the
+official PDF page image; redacted conservation-sensitive rows remain excluded.
 """
 from __future__ import annotations
 
@@ -18,7 +18,8 @@ OUT_FIELDS = [
     "record_id", "source_id", "prefecture", "water_system",
     "river_as_published", "river_code", "survey_year", "survey_year_label",
     "fish_name_as_published", "reported_individual_count", "source_title",
-    "source_url", "source_locator", "survey_basis", "verification_status",
+    "source_document_date", "source_url", "source_locator", "survey_basis",
+    "verification_status",
     "conservation_review", "fish_publication_approval", "integration_status",
 ]
 YEAR_LABELS = {"H6": 1994, "H11": 1999, "H16": 2004, "H21": 2009,
@@ -29,9 +30,10 @@ ALLOWED_FISH = {
     "ゴクラクハゼ", "スミウキゴリ", "ウキゴリ",
 }
 SOURCE_ID = "HINO_ADVISER_2025_MAIN_TABLE"
-SOURCE_TITLE = "日野川水系自然再生計画（本編）"
+SOURCE_TITLE = "日野川水系自然再生計画（案）"
+SOURCE_DOCUMENT_DATE = "2025-09"
 SOURCE_URL = "https://www.cgr.mlit.go.jp/hinogawa/keikaku/09_adviser/pdf/250929_04_honpen.pdf"
-SOURCE_LOCATOR = "第2章2.2(2)・通し回遊性の魚類の確認状況（PDF索引テキスト表示p.18、PDF画像未照合）"
+SOURCE_LOCATOR = "第2章2.2(2)・通し回遊性の魚類の確認状況（PDF p.20/43、紙面p.18、画像目視照合済み）"
 
 
 def read_transcription(path: Path = TABLE) -> list[dict[str, str]]:
@@ -81,10 +83,11 @@ def expand_records(rows: list[dict[str, str]]) -> list[dict[str, str]]:
                     "fish_name_as_published": fish,
                     "reported_individual_count": cell,
                     "source_title": SOURCE_TITLE,
+                    "source_document_date": SOURCE_DOCUMENT_DATE,
                     "source_url": SOURCE_URL,
                     "source_locator": SOURCE_LOCATOR,
                     "survey_basis": "河川水辺の国勢調査",
-                    "verification_status": "official_pdf_index_text_not_visually_verified",
+                    "verification_status": "official_pdf_table_image_checked",
                     "conservation_review": "pending",
                     "fish_publication_approval": "not_approved",
                     "integration_status": "research_only",
