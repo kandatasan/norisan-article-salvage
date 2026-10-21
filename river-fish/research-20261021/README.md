@@ -220,3 +220,14 @@ CIの独立した原本照合、既存124行QA、レビューJSONに魚名・位
 - `test_yamaguchi_original_pdfs_v09.py`：URL・ページ番号・保留状態のテスト。
 - `.github/workflows/yamaguchi-fish-original-pdf-audit-v09.yml`：原本検査の成果物 `yamaguchi-original-pdf-machine-audit-v09` を30日間保存。
 - **機械検索でキーワードが見つかっても、表・河川名・観測年を人間が確認したことにはならない。** 山口の10行は引き続き `search_excerpt_only`、公開承認0、サイト更新0。
+
+### v09 原本取得・機械検査の実測結果
+
+[山口県PDF原本監査 GitHub Actions](https://github.com/kandatasan/norisan-article-salvage/actions/runs/39615962425)
+
+| 原本 | PDFページ数 | テキスト抽出できたページ | 検索語の検出 |
+| --- | ---: | ---: | --- |
+| YA07 第07号 | 87 | 81 | 指定語すべて検出 |
+| YA04 第04号 | 173 | 166 | 指定語すべて検出 |
+
+**両原本のSHA256を固定**して再取得時の変化を検出する。検索語が存在することは確認できたが、原文表の魚名・個別河川への所属・観測年の正確性は**未確認**。山口10記載の `search_excerpt_only` は変更していない。
