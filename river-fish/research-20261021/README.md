@@ -53,3 +53,29 @@
 テスト：`python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v`
 
 **出典・加工表記案**：各行の出典URLとともに「各県の河川整備計画・研究報告を基に、つりくえ！が魚名・河川名の掲載情報を整理（現在の生息や釣果を保証するものではありません）」。
+
+## 第2便：本番の川名と魚の資料を照合する（読み取り専用）
+
+- `audit_live_atlas_river_fish.py`：公開 `/river-fish-atlas/data/atlas.json` と `fish_master.json` を**GETのみ**で読み、124候補を「県＋水系＋川名」完全一致で比較。全国10桁河川コードを確定しない。候補IDが1件でも公開承認にはしない。
+- `build_source_river_fish_layer.py`：個別河川名がある資料だけを使い、**川→魚**と**魚→川**の研究用双方向索引を生成。水系単位のみ・PDF未通読・保全要審査を自動除外。残った魚名も**資料掲載の事実**であり、現在の生息・釣果を保証しない。
+- `.github/workflows/river-fish-live-atlas-audit-20261021.yml`：PR時に読み取り専用の実データ突合、ユニットテスト、研究用JSONと照合レポートをActions artifactに保存。**本番サイトへの書き込みなし**。
+
+公開済み図鑑の初回照合（2026-10-21）では、124候補のうち15行が既存の名前に一意一致、92行は同一の県・水系・川名が見つからず、7行が保全要審査、残り10行が資料確認待ち・水系単位だった。一意一致15行は**2つの川名グループ**であり、15本の河川ではない。出典の川を図鑑側へ新規登録するための**資料由来の名称層**が必要。最新の集計はActionsの`summary.json`を優先する。
+
+次は、未登録の資料由来河川名を、県・水系・出典・同名別河川の識別ができる独立索引に取り込む。公開atlasの511既存調査グループや1,057名称のみグループを**無断で書き換えない**。新規の川名は出典上の河川名であって全国河川コードが確定したものではない。
+
+```bash
+python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
+python river-fish/research-20261021/build_source_river_fish_layer.py --out /tmp/river_fish_source_layer_v01.json
+python river-fish/research-20261021/audit_live_atlas_river_fish.py --out /tmp/river-fish-atlas-review
+```
+
+### オフライン操作プレビュー
+
+Actionsの `river-fish-live-review` artifact に `river-fish-preview.html` を同梱。単体HTMLでネット接続なしでも、**県→川→資料掲載魚名**と、魚名ボタンを押して**魚→資料掲載河川**を逆引きできる。出典リンクを開くときだけネット接続が必要。
+
+研究用の安全境界：資料未通読、保全要審査、水系だけの記録はデモに含めない。**公開サイトの図鑑に反映したものではない。** 元データに川名があっても、同名別河川・全国河川コード・調査地点の同一性を確定していない。
+
+```bash
+python river-fish/research-20261021/build_river_fish_preview.py --out /tmp/river-fish-preview.html
+```

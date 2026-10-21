@@ -1,0 +1,32 @@
+name: Live atlas fish-link read-only audit
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/**'
+      - '.github/workflows/river-fish-live-atlas-audit-20261021.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline source and join safety regression
+        run: python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
+      - name: Read public atlas JSON and compare staged fish records (no server writes)
+        run: python river-fish/research-20261021/audit_live_atlas_river_fish.py --out "$RUNNER_TEMP/river-fish-live-review"
+      - name: Build versioned research-only river to fish and fish to river index
+        run: python river-fish/research-20261021/build_source_river_fish_layer.py --out "$RUNNER_TEMP/river-fish-live-review/river_fish_source_layer_v01.json"
+      - name: Generate portable offline fish-to-river demo
+        run: python river-fish/research-20261021/build_river_fish_preview.py --out "$RUNNER_TEMP/river-fish-live-review/river-fish-preview.html"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: river-fish-live-review
+          path: ${{ runner.temp }}/river-fish-live-review
+          retention-days: 30
