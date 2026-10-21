@@ -7,6 +7,7 @@ on:
       - 'river-fish/research-20261021/test_official_named_river_fish_nationwide_v04.py'
       - 'river-fish/research-20261021/build_national_atlas_overlay_v04.py'
       - 'river-fish/research-20261021/test_national_atlas_overlay_v04.py'
+      - 'river-fish/research-20261021/national_direct_river_fish_v04_review_summary.json'
       - '.github/workflows/river-fish-official-national-direct-v04.yml'
   workflow_dispatch:
 permissions:
@@ -54,6 +55,33 @@ jobs:
           PY
       - name: Compare official named rivers against live atlas (GET only)
         run: python river-fish/research-20261021/build_national_atlas_overlay_v04.py --region "${{ matrix.region }}" --source-csv "$RUNNER_TEMP/official-river-fish-v04/official_direct_river_fish_v04.csv" --out "$RUNNER_TEMP/official-river-fish-v04/atlas_name_match_review_v04.json"
+      - name: Check reviewed nationwide totals against this region's source and live atlas
+        env:
+          REGION: ${{ matrix.region }}
+        run: |
+          python - <<'PY'
+          import json,os,pathlib,collections
+          summary=json.loads(pathlib.Path("river-fish/research-20261021/national_direct_river_fish_v04_review_summary.json").read_text())
+          assert summary["regional_river_name_groups"]==sum(x["groups"] for x in summary["region_counts"])==313
+          assert summary["river_fish_year_records"]==sum(x["records"] for x in summary["region_counts"])==30675
+          assert summary["atlas_name_matches"]["one_navigation_candidate_not_verified"]==sum(x["one"] for x in summary["region_counts"])==94
+          assert summary["atlas_name_matches"]["multiple_navigation_candidates"]==sum(x["multiple"] for x in summary["region_counts"])==98
+          assert summary["atlas_name_matches"]["no_name_match_in_live_atlas"]==sum(x["unmatched"] for x in summary["region_counts"])==121
+          assert summary["status"]=="REVIEW_ONLY_NOT_PUBLISHED"
+          expected=next(x for x in summary["region_counts"] if x["region"]==os.environ["REGION"])
+          p=pathlib.Path(os.environ["RUNNER_TEMP"])/"official-river-fish-v04"
+          m=json.loads((p/"manifest_review_only_v04.json").read_text())
+          o=json.loads((p/"atlas_name_match_review_v04.json").read_text())
+          classes=collections.Counter(x["status"] for x in o["groups"])
+          assert m["river_name_groups"]==o["source_named_river_groups"]==expected["groups"]
+          assert m["source_fish_year_records"]==o["source_fish_year_records"]==expected["records"]
+          assert classes["ONE_NAVIGATION_NAME_CANDIDATE_NOT_VERIFIED"]==expected["one"]
+          assert classes["MULTIPLE_NAVIGATION_NAME_CANDIDATES"]==expected["multiple"]
+          assert classes["SOURCE_NAMED_RIVER_NOT_IN_LIVE_ATLAS"]==expected["unmatched"]
+          assert o["status"]=="REVIEW_ONLY_DO_NOT_UPLOAD"
+          assert all(not x["approved_for_publication"] for x in o["groups"])
+          print("NATIONAL_V04_AUDIT_SUMMARY_MATCH",os.environ["REGION"],expected)
+          PY
       - uses: actions/upload-artifact@v4
         with:
           name: official-direct-river-fish-v04-${{ matrix.region }}-review-only
