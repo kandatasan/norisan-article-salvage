@@ -241,4 +241,5 @@ CIの独立した原本照合、既存124行QA、レビューJSONに魚名・位
 
 - QA: `test_evidence_candidates.py` と `test_chugoku_seven_river_fish_crosswalk_v01.py` が河川文脈の15行を独立河川調査表の記録と混同しないことを検査。
 - 79行は研究専用。うち島根県64行は河川別表記、鳥取県15行は河川文脈として区別。全件 `staged_only` / `fish_publication_approval=not_approved`。
+- PR #726の読み取り専用図鑑監査では、優先7河川の県＋水系＋川名完全一致候補は各0件。別表記や別名の重複有無、魚記録の公開可否を決めるものではない。
 - サイト・WordPress・検索JSONの変更はない。希少種は引き続き公開候補から除外。
