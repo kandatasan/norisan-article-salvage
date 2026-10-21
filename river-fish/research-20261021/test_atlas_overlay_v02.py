@@ -26,7 +26,7 @@ class OverlayTests(unittest.TestCase):
     def test_no_auto_approval_and_exact_name_only(self):
         data = overlay(self.layer, self.atlas())
         self.assertEqual(data["publication_status"], "REVIEW_ONLY_DO_NOT_UPLOAD")
-        self.assertEqual(data["source_fish_records"], 114)
+        self.assertEqual(data["source_fish_records"], 111)
         self.assertEqual(data["source_river_groups"], 12)
         for row in data["river_links"]:
             self.assertFalse(row["national_river_code_verified"])

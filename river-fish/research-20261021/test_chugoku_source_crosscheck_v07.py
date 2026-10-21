@@ -123,6 +123,12 @@ class ChugokuSourceCrosscheckTests(unittest.TestCase):
         self.assertEqual(len(provincial_rows), 124)
         d = run(prov=provincial_rows)
         self.assertEqual(d["river_groups"], 13)
+        for river in ("三刀屋川", "久野川", "阿井川"):
+            row = next(x for x in d["rows"] if x["river"] == river)
+            self.assertEqual(row["source_conservation_flag_rows"], 1)
+            self.assertEqual(row["evidence_gate"], "CONSERVATION_REVIEW_REQUIRED")
+            self.assertEqual(row["review_priority"],
+                             "C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW")
         self.assertEqual(d["named_river_candidate_rows"], 115)
         self.assertEqual(d["watershed_only_rows_held"], 9)
         self.assertTrue(all(x["approved_for_publication"] is False for x in d["rows"]))

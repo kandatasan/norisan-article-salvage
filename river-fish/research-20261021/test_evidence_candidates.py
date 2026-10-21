@@ -74,7 +74,19 @@ class FishRiverCandidateQA(unittest.TestCase):
             self.assertEqual(row["conservation_review"],
                              "required" if row["recorded_name"] in
                              ("アカザ", "スイゲンゼニタナゴ", "シロヒレタビラ",
-                              "ミナミメダカ", "ホンモロコ", "カネヒラ") else "not_flagged")
+                              "ミナミメダカ", "ホンモロコ", "カネヒラ",
+                              "ヤマメ") else "not_flagged")
+
+    def test_environment_nt_yamame_rows_are_held_for_conservation_review(self):
+        rows = [r for r in self.rows if r["recorded_name"] == "ヤマメ"]
+        self.assertEqual({(r["prefecture"], r["river"], r["source_id"])
+                          for r in rows}, {
+            ("島根県", "三刀屋川", "SH22"),
+            ("島根県", "久野川", "SH22"),
+            ("島根県", "阿井川", "SH22"),
+        })
+        self.assertTrue(all(r["conservation_review"] == "required"
+                            and "環NT" in r["notes"] for r in rows))
 
     def test_no_sensitive_location_columns(self):
         for field in self.fields:

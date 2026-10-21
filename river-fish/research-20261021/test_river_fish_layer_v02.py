@@ -16,8 +16,8 @@ class ExpandedRiverFishTests(unittest.TestCase):
         d = self.layer
         self.assertEqual(d["schema"], SCHEMA)
         self.assertEqual(len(d["river_groups"]), 12)
-        self.assertEqual(sum(x["source_record_count"] for x in d["river_groups"]), 114)
-        self.assertEqual(sum(d["excluded_counts"].values()), 19)
+        self.assertEqual(sum(x["source_record_count"] for x in d["river_groups"]), 111)
+        self.assertEqual(sum(d["excluded_counts"].values()), 22)
         self.assertEqual(d["source_inventories"]["narratives_added_research_only"], 7)
 
     def test_no_sensitive_hiroshima_records(self):
@@ -29,6 +29,13 @@ class ExpandedRiverFishTests(unittest.TestCase):
         self.assertIn("オイカワ", names)
         self.assertIn("アユ", names)
         self.assertTrue(all(x["survey_year"] is None for x in river["fish_labels"]))
+
+    def test_conservation_flagged_records_are_excluded_from_both_indexes(self):
+        self.assertEqual(self.layer["excluded_counts"]["conservation_review_required"], 12)
+        labels = {fish["recorded_name"] for river in self.layer["river_groups"]
+                  for fish in river["fish_labels"]}
+        self.assertNotIn("ヤマメ", labels)
+        self.assertNotIn("ヤマメ", self.layer["fish_reverse_index"])
 
     def test_bidirectional_references(self):
         for river in self.layer["river_groups"]:
