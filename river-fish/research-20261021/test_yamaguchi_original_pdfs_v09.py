@@ -11,6 +11,8 @@ class YamaguchiPdfAuditTests(unittest.TestCase):
         self.assertEqual(set(PDFS), {"YA07", "YA04"})
         for source in PDFS.values():
             validate_url(source["url"])
+            self.assertEqual(len(source["sha256"]), 64)
+            self.assertGreater(source["expected_pages"], 50)
         with self.assertRaises(ValueError):
             validate_url("https://evil.example/attachment/197780.pdf")
         with self.assertRaises(ValueError):
