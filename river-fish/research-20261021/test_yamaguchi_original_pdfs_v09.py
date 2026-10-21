@@ -19,15 +19,15 @@ class YamaguchiPdfAuditTests(unittest.TestCase):
     def test_pdf_page_number_is_not_sampling_site(self):
         hits, text_pages = text_page_hits(
             "ヌマムツが記載。小島川 2005\f長沢川 2007\f", PDFS["YA07"]["tokens"])
-        self.assertEqual(hits["ヌマムツ"], [1])
-        self.assertEqual(hits["小島川"], [1])
-        self.assertEqual(hits["長沢川"], [2])
-        self.assertEqual(hits["2005"], [1])
-        self.assertEqual(hits["2007"], [2])
+        self.assertEqual(hits["fish_term"], [1])
+        self.assertEqual(hits["named_river_term"], [1])
+        self.assertEqual(hits["watershed_term"], [2])
+        self.assertEqual(hits["year_2005"], [1])
+        self.assertEqual(hits["year_2007"], [2])
         self.assertEqual(text_pages, 2)
 
     def test_text_line_wrap_does_not_prevent_keyword(self):
-        hits, pages = text_page_hits("ヌマ\nムツ\f", ("ヌマムツ",))
+        hits, pages = text_page_hits("ヌマ\nムツ\f", {"fish_term": "ヌマムツ"})
         self.assertEqual(hits["ヌマムツ"], [1])
 
     def test_machine_scan_never_approves_or_exports_text(self):
