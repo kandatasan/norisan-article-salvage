@@ -57,7 +57,8 @@ def build(source_path: Path = SOURCE) -> tuple[list[dict[str, str]], tuple[str, 
         key = (row["prefecture"], row["watershed"], row["river"])
         if key not in identity_by_key:
             continue
-        if (row["evidence_scope"] != "named_river"
+        expected_scope = "named_river" if row["prefecture"] == "島根県" else "named_river_context"
+        if (row["evidence_scope"] != expected_scope
                 or row["verification_status"] != "source_text_checked"
                 or row["conservation_review"] != "not_flagged"
                 or row["integration_status"] != "staged_only"
