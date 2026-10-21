@@ -10,6 +10,7 @@ SLUG = "japan-river-atlas"
 SOURCE = Path("content/drafts/river-atlas-seo-20261021.html")
 MARKER = "tsurikue-river-atlas-card"
 BANNER = "9f5b9818-927a-40f1-838b-8d17735ffd7a.jpg"
+BANNER_URL = "https://tsurikue.com/wp-content/uploads/2026/10/" + BANNER
 DATA_ROOT = "/river-fish-atlas/data/"
 UA = "tsurikue-river-atlas-seo-draft-20261021/1.0"
 
@@ -89,6 +90,17 @@ def find_target(rows):
         raise RuntimeError(f"BLOCKED_EXISTING_ARTICLE_NOT_OUR_WIDGET: {row['id']} {title}")
     return row
 
+def find_banner_media():
+    """Select only the already uploaded, exact image used by this article."""
+    rows = query("media", context="edit", search="9f5b9818", per_page=100,
+                 _fields="id,source_url,media_type,mime_type,alt_text")
+    matches = [r for r in rows if r.get("source_url", "").lower() == BANNER_URL.lower()
+               and r.get("media_type") == "image"]
+    if len(matches) != 1:
+        raise RuntimeError("BLOCKED_BANNER_MEDIA_NOT_UNIQUELY_FOUND: " +
+                           json.dumps({"found": len(matches), "search_results": len(rows)}))
+    return matches[0]
+
 def public_count():
     total = 0
     for endpoint in ("posts", "pages"):
@@ -102,45 +114,46 @@ def main():
     target = find_target(rows)
     # This editorial revision may ONLY update the already verified river atlas draft.
     # Never create a duplicate or overwrite a human's intervening edit.
-    if target is None or int(target["id"]) != 4240 or target["slug"] != "" or target["status"] != "draft":
+    if target is None or int(target["id"]) != 4240 or target["slug"] not in ("", SLUG) or target["status"] != "draft":
         raise RuntimeError("BLOCKED_EXPECTED_EXISTING_DRAFT_4240_NOT_FOUND")
     prior_hash = sha(raw(target, "content").strip())
     if prior_hash not in ("3c771577144177f3ac2ea22339ac23ab341433e491d130edc3353ec78c4b4042", sha(body)):
         raise RuntimeError("BLOCKED_WP_DRAFT_EDITED_SINCE_LAST_VERIFIED_UPDATE")
+    banner = find_banner_media()
+    desired_media_id = int(banner["id"])
+    if int(target.get("featured_media") or 0) not in (0, desired_media_id):
+        raise RuntimeError("BLOCKED_UNEXPECTED_EXISTING_FEATURED_MEDIA")
     print("PRECHECK", json.dumps({
         "matching_article": None if target is None else {"id": target["id"], "slug": target["slug"], "status": target["status"]},
         "source_chars": len(body), "sha256": sha(body),
-        "candidate_count": len(rows), "desired_status": "draft"
+        "candidate_count": len(rows), "desired_status": "draft",
+        "desired_slug": SLUG, "desired_featured_media": desired_media_id,
+        "banner_source": banner["source_url"]
     }, ensure_ascii=False))
     if len(sys.argv) > 1 and sys.argv[1] == "check":
         return
     before = public_count()
-    if target is None:
-        # Double-check immediately before creation to avoid duplicate posts.
-        if find_target(candidates()) is not None:
-            raise RuntimeError("BLOCKED_CONCURRENT_DUPLICATE")
-        created, _ = req("/wp-json/wp/v2/posts", "POST",
-                         {"title": TITLE, "slug": SLUG, "status": "draft", "content": body,
-                          "excerpt": "全国の河川名・水系・支流・魚の調査記録を都道府県から検索。川名や魚名からも探せる日本の河川図鑑です。"})
-        post_id, action = created["id"], "CREATED_DRAFT"
-        expected_slug = SLUG
-        expected_featured = 0
+    # Metadata update is restricted to the previously verified existing draft.
+    post_id, expected_slug, expected_featured = target["id"], SLUG, desired_media_id
+    current = query(f"posts/{post_id}", context="edit",
+                    _fields="id,slug,status,title,content,modified_gmt,featured_media")
+    if (current["slug"], current["status"], current["modified_gmt"]) != (
+            target["slug"], target["status"], target["modified_gmt"]):
+        raise RuntimeError("BLOCKED_CONCURRENT_WP_EDIT")
+    if raw(current, "content") != raw(target, "content"):
+        raise RuntimeError("BLOCKED_CONCURRENT_WP_BODY_EDIT")
+    if int(current.get("featured_media") or 0) != int(target.get("featured_media") or 0):
+        raise RuntimeError("BLOCKED_CONCURRENT_WP_FEATURED_MEDIA_EDIT")
+    if (sha(raw(current, "content").strip()) == sha(body)
+            and current["slug"] == SLUG
+            and int(current.get("featured_media") or 0) == desired_media_id):
+        action = "ALREADY_CURRENT"
     else:
-        post_id, expected_slug = target["id"], target["slug"]
-        expected_featured = int(target.get("featured_media") or 0)
-        current = query(f"posts/{post_id}", context="edit",
-                        _fields="id,slug,status,title,content,modified_gmt,featured_media")
-        if (current["slug"], current["status"], current["modified_gmt"]) != (
-                target["slug"], target["status"], target["modified_gmt"]):
-            raise RuntimeError("BLOCKED_CONCURRENT_WP_EDIT")
-        if raw(current, "content") != raw(target, "content"):
-            raise RuntimeError("BLOCKED_CONCURRENT_WP_BODY_EDIT")
-        if sha(raw(current, "content").strip()) == sha(body):
-            action = "ALREADY_CURRENT"
-        else:
-            req(f"/wp-json/wp/v2/posts/{post_id}", "POST",
-                {"title": TITLE, "content": body, "status": "draft"})
-            action = "UPDATED_EXISTING_DRAFT"
+        payload = {"slug": SLUG, "featured_media": desired_media_id, "status": "draft"}
+        if sha(raw(current, "content").strip()) != sha(body):
+            payload.update({"title": TITLE, "content": body})
+        req(f"/wp-json/wp/v2/posts/{post_id}", "POST", payload)
+        action = "UPDATED_EXISTING_DRAFT_METADATA"
     saved = query(f"posts/{post_id}", context="edit",
                   _fields="id,slug,status,title,content,featured_media,link")
     if (saved["id"], saved["slug"], saved["status"]) != (post_id, expected_slug, "draft"):
