@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Extract a bounded fish-record passage from one pinned Yamaguchi PDF page.
 
-The output is a source-review aid, not an approval. It stores only the short
-sentence span connecting the species to the two named rivers and years; it
+The output is a source-review aid, not an approval. It stores one short
+record sentence and confirms the species term is on the same PDF page; it
 never stores the full PDF, full page, coordinates, or sampling-site codes.
 """
 from __future__ import annotations
@@ -19,7 +19,8 @@ from audit_yamaguchi_original_pdfs_v09 import PDFS, download, page_count
 
 SOURCE_ID = "YA07"
 SOURCE_PDF_PAGE = 50
-REQUIRED_TERMS = ("ヌマムツ", "2005", "佐波川", "小島川", "2007", "山口湾", "長沢川")
+REQUIRED_RECORD_TERMS = ("2005", "佐波川", "小島川", "2007", "山口湾", "長沢川")
+SPECIES_TERM = "ヌマムツ"
 SCHEMA = "tsurikue-yamaguchi-fish-page-review-v10"
 STATUS = "SOURCE_TEXT_EXCERPT_FOR_MANUAL_SCOPE_REVIEW"
 
@@ -39,24 +40,25 @@ def extract_pdf_page_text(pdf_path: Path, page: int) -> str:
 
 def extract_target_excerpt(page_text: str) -> str:
     normalized = re.sub(r"\s+", "", page_text or "")
-    if not normalized:
-        raise ValueError("Target PDF page has no extractable text")
-    for match in re.finditer("ヌマムツ", normalized):
-        start = normalized.rfind("。", 0, match.start()) + 1
-        river_end = normalized.find("長沢川", match.start())
-        if river_end < 0:
-            continue
-        end = normalized.find("。", river_end)
-        if end < 0:
-            end = len(normalized) - 1
-        excerpt = normalized[start:end + 1]
-        if all(term in excerpt for term in REQUIRED_TERMS):
-            if len(excerpt) > 700:
-                raise ValueError("Target evidence span unexpectedly long")
-            if re.search(r"(北緯|東経|座標|[0-9]{2,3}°)", excerpt):
-                raise ValueError("Target evidence span contains coordinate-like detail")
-            return excerpt
-    raise ValueError("Could not isolate the target fish/rivers/years in one short span")
+    if not normalized or SPECIES_TERM not in normalized:
+        raise ValueError("Target species is absent from the pinned PDF page")
+    record_start = normalized.find("本調査では")
+    if record_start < 0:
+        raise ValueError("Target survey statement is absent from the pinned PDF page")
+    river_end = normalized.find("長沢川", record_start)
+    if river_end < 0:
+        raise ValueError("Target river is absent from the survey statement")
+    end = normalized.find("。", river_end)
+    if end < 0:
+        raise ValueError("Could not isolate the end of the survey statement")
+    excerpt = normalized[record_start:end + 1]
+    if not all(term in excerpt for term in REQUIRED_RECORD_TERMS):
+        raise ValueError("Target years and named rivers do not share the same statement")
+    if len(excerpt) > 500:
+        raise ValueError("Target evidence statement unexpectedly long")
+    if re.search(r"(北緯|東経|座標|[0-9]{2,3}°)", excerpt):
+        raise ValueError("Target evidence statement contains coordinate-like detail")
+    return excerpt
 
 
 def build_review(raw_pdf: bytes, extracted_page_text: str, pages: int) -> dict:
@@ -73,10 +75,11 @@ def build_review(raw_pdf: bytes, extracted_page_text: str, pages: int) -> dict:
         "source_url": expected["url"],
         "source_sha256": expected["sha256"],
         "pdf_page_number": SOURCE_PDF_PAGE,
-        "excerpt_kind": "short_species_record_sentence_span",
+        "species_term_on_same_page": SPECIES_TERM,
+        "excerpt_kind": "short_survey_statement",
         "excerpt": excerpt,
-        "source_claims_visible_in_excerpt": {
-            "species": "ヌマムツ",
+        "source_claims_visible_on_page": {
+            "species": SPECIES_TERM,
             "2005_record_wording": "佐波川水系小島川",
             "2007_record_wording": "山口湾に流入する長沢川",
         },
