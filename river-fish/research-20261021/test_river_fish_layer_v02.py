@@ -15,10 +15,19 @@ class ExpandedRiverFishTests(unittest.TestCase):
     def test_counts_and_provenance(self):
         d = self.layer
         self.assertEqual(d["schema"], SCHEMA)
-        self.assertEqual(len(d["river_groups"]), 12)
-        self.assertEqual(sum(x["source_record_count"] for x in d["river_groups"]), 111)
-        self.assertEqual(sum(d["excluded_counts"].values()), 22)
+        self.assertEqual(len(d["river_groups"]), 13)
+        self.assertEqual(sum(x["source_record_count"] for x in d["river_groups"]), 112)
+        self.assertEqual(sum(d["excluded_counts"].values()), 21)
         self.assertEqual(d["source_inventories"]["narratives_added_research_only"], 7)
+
+    def test_verified_yamaguchi_kijima_record_is_bidirectionally_searchable(self):
+        river = next(x for x in self.layer["river_groups"]
+                     if x["source_river_key"] == "山口県|佐波川|小島川")
+        label = next(x for x in river["fish_labels"] if x["recorded_name"] == "ヌマムツ")
+        self.assertEqual(label["survey_year"], "2005")
+        self.assertEqual(label["source_locator"], "山口県水産研究センター研究報告第07号 PDF p.50")
+        self.assertIn(river["source_river_key"], self.layer["fish_reverse_index"]["ヌマムツ"])
+        self.assertNotIn("山口県|長沢川|", {x["source_river_key"] for x in self.layer["river_groups"]})
 
     def test_no_sensitive_hiroshima_records(self):
         river = next(x for x in self.layer["river_groups"] if x["source_river_key"] == "広島県|黒瀬川|黒瀬川")
