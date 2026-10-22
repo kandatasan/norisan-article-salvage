@@ -1,0 +1,26 @@
+つりくえ！河川図鑑 Xserver用 最新版 v0.27（2026年10月22日）
+
+1. ZIPをパソコン上で展開します。
+2. Xserverの「tsurikue.com/public_html/」を開きます。
+3. ZIP内の「river-fish-atlas」フォルダを、その場所へアップロードします。
+   同名ファイルは上書きし、既存ファイルの削除は不要です。
+
+配置が正しいと、次のファイルになります。
+tsurikue.com/public_html/river-fish-atlas/index.html
+tsurikue.com/public_html/river-fish-atlas/data/atlas.json
+tsurikue.com/public_html/river-fish-atlas/data/fish_source_connections_v01.json
+
+「river-fish-atlas/river-fish-atlas/」の二重フォルダにしないでください。
+UPLOAD.txtは説明用なので、サーバーへのアップロードは不要です。
+
+アップロード後の確認ページ：
+https://tsurikue.com/river-fish-atlas/index.html
+
+追加の31河川名グループ・261件を外部JSONファイルにまとめています。
+川名検索、魚名検索、既存の調査データを一緒に使える構成です。
+今回のデータを含めた暫定集計：魚類情報あり349/1,143表示名グループ（30.5%）。
+実在河川数の割合ではありません。資料の記録は現在の生息を保証しません。
+
+WordPress記事の切り替えは、アップロードされたファイルを確認してから行います。
+このZIPを置くだけで、記事内の追加データが自動で削除されることはありません。
+記事本文の貼り替えやWordPress管理画面での作業は、いまは不要です。
