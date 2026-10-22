@@ -103,9 +103,9 @@ def build(base_rows, narratives):
         "source_locator": "広島県の河川環境概説（調査年未確定）",
     })
     layer["sources"].sort(key=lambda x: x["source_id"])
-    if sum(r["source_record_count"] for r in rivers) != 111 or sum(excluded.values()) != 22:
+    if sum(r["source_record_count"] for r in rivers) != 112 or sum(excluded.values()) != 21:
         raise ValueError("Unexpected totals: fail closed")
-    if len(rivers) != 12:
+    if len(rivers) != 13:
         raise ValueError("Unexpected river group count")
     return layer
 
