@@ -1,9 +1,11 @@
 """Tests for bounded, non-approving Yamaguchi fish-source page review."""
+import hashlib
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from audit_yamaguchi_fish_pages_v10 import (
-    REQUIRED_TERMS, SCHEMA, SOURCE_PDF_PAGE, STATUS,
+    PDFS, REQUIRED_TERMS, SCHEMA, SOURCE_PDF_PAGE, STATUS,
     build_review, extract_pdf_page_text, extract_target_excerpt,
 )
 
@@ -36,7 +38,9 @@ class YamaguchiFishPageReviewTests(unittest.TestCase):
         self.assertNotIn("東経", result)
 
     def test_review_never_approves_or_changes_rows(self):
-        result = build_review(b"%PDF-test", self.excerpt, 87)
+        raw = b"%PDF-test"
+        with patch.dict(PDFS["YA07"], {"sha256": hashlib.sha256(raw).hexdigest()}):
+            result = build_review(raw, self.excerpt, 87)
         self.assertEqual(result["schema"], SCHEMA)
         self.assertEqual(result["status"], STATUS)
         self.assertEqual(result["pdf_page_number"], SOURCE_PDF_PAGE)
