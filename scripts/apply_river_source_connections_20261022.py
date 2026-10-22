@@ -8,6 +8,7 @@ from patch_widget import BASE_SCRIPT_SHA256,extension,patch_script,sha
 from build_source_connections import build,validate_targets
 SITE='https://tsurikue.com';POST_ID=4240
 TITLE='日本の河川図鑑｜全国の河川名・水系・生き物を都道府県から探す'
+APPROVED_PREVIOUS_WIDGET_SHA256='337a4d8615e4cc58418bdb22404bebe9d94963ca63b3c84f77e1b625e1224c08'
 PROTECTED=('id','slug','status','title','excerpt','featured_media','categories','author','template')
 def request(path,auth,body=None):
  headers={'Authorization':auth,'Accept':'application/json','User-Agent':'tsurikue-source-connections/1.0'}
@@ -27,7 +28,7 @@ def edit_body(body):
  original=get_script(candidate).group(1)
  expected=patch_script(original)
  if script==expected:return body,'ALREADY_CURRENT'
- if sha(script)!=BASE_SCRIPT_SHA256:raise ValueError('Pinned widget script has changed; no write')
+ if sha(script) not in {BASE_SCRIPT_SHA256,APPROVED_PREVIOUS_WIDGET_SHA256}:raise ValueError('Pinned widget script has changed; no write')
  after=body[:m.start(1)]+expected+body[m.end(1):]
  if body[:m.start(1)]!=after[:m.start(1)] or body[m.end(1):]!=after[m.start(1)+len(expected):]:raise ValueError('Non-script body changed')
  return after,'UPDATED_WIDGET_SCRIPT_ONLY'
