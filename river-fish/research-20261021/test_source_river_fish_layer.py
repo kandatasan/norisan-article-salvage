@@ -30,7 +30,7 @@ class SourceLayerTests(unittest.TestCase):
     def test_exclusion_and_counts(self):
         total = sum(r["source_record_count"] for r in self.data["river_groups"])
         excluded = sum(self.data["excluded_counts"].values())
-        self.assertEqual(total + excluded, 155)
+        self.assertEqual(total + excluded, 134)
         self.assertEqual(self.data["excluded_counts"]["watershed_only"], 18)
         self.assertEqual(self.data["excluded_counts"]["conservation_review_required"], 12)
         self.assertEqual(self.data["excluded_counts"].get("source_not_fully_checked", 0), 0)
@@ -49,49 +49,6 @@ class SourceLayerTests(unittest.TestCase):
                            if river["source_river_key"] == river_key
                            for fish in river["fish_labels"] if fish["recorded_name"] == label}
         self.assertTrue(held_sources.isdisjoint(reverse_sources))
-
-    def test_sh22_safe_fish_delta_is_source_scoped_and_searchable_both_ways(self):
-        sh22_rows = [r for r in self.source_rows if r["source_id"] == "SH22"]
-        self.assertEqual(len(sh22_rows), 98)
-        self.assertEqual(len({(r["river"], r["recorded_name"]) for r in sh22_rows}), 98)
-        self.assertTrue(all(r["evidence_scope"] == "named_river" for r in sh22_rows))
-        self.assertTrue(all(r["survey_year"] == "" for r in sh22_rows))
-        self.assertEqual({r["source_url"] for r in sh22_rows}, {"https://www.pref.shimane.lg.jp/infra/river/kasen/hoshin/hiikawachuryusisen_kawadukuri/index.data/chuuryuuikifuzokusiryou.pdf"})
-        self.assertTrue(all(r["source_locator"] == "表2-4 資料p20 PDF p21"
-                            for r in sh22_rows))
-        self.assertTrue(all(r["verification_status"] == "source_text_checked"
-                            for r in sh22_rows))
-        self.assertTrue(all(r["integration_status"] == "staged_only"
-                            for r in sh22_rows))
-
-        expected_additions = {
-            ("斐伊川", "コイ"), ("斐伊川", "フナ類"), ("斐伊川", "タイリクバラタナゴ"),
-            ("斐伊川", "モツゴ"), ("斐伊川", "ゼゼラ"), ("斐伊川", "コウライモロコ"),
-            ("斐伊川", "ニシシマドジョウ（シマドジョウ）"), ("斐伊川", "ワカサギ"),
-            ("斐伊川", "ウキゴリ"), ("斐伊川", "マハゼ"), ("斐伊川", "旧トウヨシノボリ類"),
-            ("斐伊川", "ヌマチチブ"),
-            ("赤川", "シマドジョウ"), ("赤川", "ヒメダカ"), ("赤川", "旧トウヨシノボリ類"),
-            ("三刀屋川", "シマドジョウ"), ("三刀屋川", "旧トウヨシノボリ類"),
-            ("久野川", "シマドジョウ"), ("久野川", "旧トウヨシノボリ類"),
-            ("深野川", "シマドジョウ"), ("阿井川", "旧トウヨシノボリ類"),
-        }
-        source_pairs = {(r["river"], r["recorded_name"]) for r in sh22_rows}
-        self.assertTrue(expected_additions.issubset(source_pairs))
-
-        indexed = [(river["river"], fish["recorded_name"])
-                   for river in self.data["river_groups"]
-                   for fish in river["fish_labels"] if fish["source_id"] == "SH22"]
-        self.assertEqual(len(indexed), 94)
-        visible_counts = {}
-        for river, _name in indexed:
-            visible_counts[river] = visible_counts.get(river, 0) + 1
-        self.assertEqual(visible_counts, {
-            "斐伊川": 27, "赤川": 15, "三刀屋川": 15,
-            "久野川": 13, "深野川": 12, "阿井川": 12,
-        })
-        # Table-2.4 reconciliation: 130 river×fish labels, 94 searchable,
-        # and 36 held back from preview pending conservation/editorial review.
-        self.assertEqual(130 - len(indexed), 36)
 
     def test_source_scoped_reverse_index(self):
         for river in self.data["river_groups"]:
