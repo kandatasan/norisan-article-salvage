@@ -19,7 +19,7 @@ from audit_yamaguchi_original_pdfs_v09 import PDFS, download, page_count
 
 SOURCE_ID = "YA07"
 SOURCE_PDF_PAGE = 50
-REQUIRED_RECORD_TERMS = ("2005", "佐波川", "小島川", "2007", "山口湾", "長沢川")
+REQUIRED_RECORD_TERMS = ("2005", "佐波川", "小島川", "2007", "山口湾", "長沢川水系")
 SPECIES_TERM = "ヌマムツ"
 SCHEMA = "tsurikue-yamaguchi-fish-page-review-v10"
 STATUS = "SOURCE_TEXT_EXCERPT_FOR_MANUAL_SCOPE_REVIEW"
@@ -29,7 +29,7 @@ def extract_pdf_page_text(pdf_path: Path, page: int) -> str:
     if page < 1 or page > 500:
         raise ValueError("Unexpected PDF page number")
     result = subprocess.run(
-        ["pdftotext", "-f", str(page), "-l", str(page), "-layout",
+        ["pdftotext", "-f", str(page), "-l", str(page), "-raw",
          "-enc", "UTF-8", str(pdf_path), "-"],
         capture_output=True, timeout=60, check=True,
     )
@@ -87,7 +87,7 @@ def build_review(raw_pdf: bytes, extracted_page_text: str, pages: int) -> dict:
         "source_claims_visible_on_page": {
             "species": SPECIES_TERM,
             "2005_record_wording": "佐波川水系小島川",
-            "2007_record_wording": "山口湾に流入する長沢川",
+            "2007_record_wording": "山口湾に流入する長沢川水系",
         },
         "human_review_required": True,
         "source_rows_changed": 0,
