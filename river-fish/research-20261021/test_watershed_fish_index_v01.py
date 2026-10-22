@@ -15,7 +15,9 @@ class WatershedFishIndexTests(unittest.TestCase):
     def test_watershed_only_records_support_two_way_search_without_rivers(self):
         layer = self.layer
         self.assertEqual(layer["schema"], SCHEMA)
-        self.assertEqual(len(layer["watershed_groups"]), 19)
+        self.assertEqual(len(layer["watershed_groups"]), 18)
+        self.assertEqual(layer["source_watershed_rows"], 19)
+        self.assertEqual(layer["excluded_counts"], {"conservation_review_required": 1})
         self.assertEqual(set(layer["fish_to_watershed_index"]["オオクチバス"]), {
             "山口県|YA04|錦川", "山口県|YA04|島田川", "山口県|YA04|佐波川",
             "山口県|YA04|椹野川", "山口県|YA04|厚東川", "山口県|YA04|厚狭川",
@@ -24,9 +26,13 @@ class WatershedFishIndexTests(unittest.TestCase):
             "山口県|YA04|井関川", "山口県|YA04|真締川", "山口県|YA04|有帆川",
             "山口県|YA04|西田川", "山口県|YA04|栗野川", "山口県|YA04|深川川",
         })
-        self.assertEqual(layer["fish_to_watershed_index"]["ヌマムツ"],
-                         ["山口県|YA07|長沢川"])
         self.assertEqual(layer["individual_river_links"], 0)
+        self.assertNotIn("ヌマムツ", layer["fish_to_watershed_index"])
+        protected_names = {row["recorded_name"] for row in self._source_rows()
+                           if row["conservation_review"] == "required"}
+        indexed_names = {fish["recorded_name"] for watershed in layer["watershed_groups"]
+                         for fish in watershed["fish_labels"]}
+        self.assertTrue(protected_names.isdisjoint(indexed_names))
         for row in layer["watershed_groups"]:
             self.assertFalse(row["individual_river_linked"])
             self.assertEqual(row["publication_review"], "not_approved")
@@ -41,8 +47,13 @@ class WatershedFishIndexTests(unittest.TestCase):
         self.assertIn("水系単位の過去資料", page)
         self.assertIn("個別河川には未接続", page)
         self.assertIn("オオクチバス", page)
-        self.assertIn("ヌマムツ", page)
+        self.assertNotIn("ヌマムツ", page)
         self.assertNotIn("__DATA__", page)
+
+    @staticmethod
+    def _source_rows():
+        with INPUT.open(encoding="utf-8-sig", newline="") as handle:
+            return list(csv.DictReader(handle))
 
     def test_changed_source_scope_fails_closed(self):
         with INPUT.open(encoding="utf-8-sig", newline="") as handle:

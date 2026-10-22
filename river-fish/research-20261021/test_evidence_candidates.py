@@ -73,7 +73,7 @@ class FishRiverCandidateQA(unittest.TestCase):
                              "required" if row["recorded_name"] in
                              ("アカザ", "スイゲンゼニタナゴ", "シロヒレタビラ",
                               "ミナミメダカ", "ホンモロコ", "カネヒラ",
-                              "ヤマメ") else "not_flagged")
+                              "ヤマメ", "ヌマムツ") else "not_flagged")
 
     def test_yamaguchi_report_page_50_verifies_text_without_expanding_scope(self):
         kojima = next(r for r in self.rows if r["source_id"] == "YA07" and r["river"] == "小島川")
@@ -81,14 +81,17 @@ class FishRiverCandidateQA(unittest.TestCase):
         self.assertEqual(kojima["verification_status"], "source_text_checked")
         self.assertEqual(kojima["source_locator"], "山口県水産研究センター研究報告第07号 PDF p.50")
         self.assertEqual((kojima["evidence_scope"], kojima["survey_year"]), ("named_river", "2005"))
-        self.assertIn("佐波川水系小島川", kojima["notes"])
+        self.assertIn("PDF p.50", kojima["notes"])
         self.assertEqual(longsawa["verification_status"], "source_text_checked")
         self.assertEqual(longsawa["source_locator"], kojima["source_locator"])
         self.assertEqual((longsawa["river"], longsawa["evidence_scope"], longsawa["survey_year"]),
                          ("", "watershed_only", "2007"))
-        self.assertIn("長沢川水系", longsawa["notes"])
         self.assertEqual(kojima["integration_status"], "staged_only")
         self.assertEqual(longsawa["integration_status"], "staged_only")
+        self.assertEqual(kojima["conservation_review"], "required")
+        self.assertEqual(longsawa["conservation_review"], "required")
+        self.assertIn("絶滅危惧IA類（CR）", kojima["notes"])
+        self.assertIn("派生検索索引から除外", longsawa["notes"])
 
     def test_ya04_table_3_is_checked_but_never_expanded_to_named_rivers(self):
         rows = [r for r in self.rows if r["source_id"] == "YA04"]
@@ -136,8 +139,6 @@ class FishRiverCandidateQA(unittest.TestCase):
             ("広島県", "八幡川", "八幡川", "アマゴ"),
             ("岡山県", "笹ヶ瀬川", "笹ヶ瀬川", "ギギ"),
             ("鳥取県", "日野川", "大川", "ドンコ"),
-            ("山口県", "佐波川", "小島川", "ヌマムツ"),
-            ("山口県", "長沢川", "", "ヌマムツ"),
         ]:
             self.assertIn(case, records)
         self.assertNotIn(("広島県", "八幡川", "八幡川", "アユ"), records)

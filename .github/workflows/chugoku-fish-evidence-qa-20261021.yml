@@ -32,7 +32,7 @@ jobs:
           page=(pathlib.Path(os.environ["RUNNER_TEMP"])/"chugoku-watershed-fish-preview-v01.html").read_text(encoding="utf-8")
           assert 'name="robots" content="noindex,nofollow"' in page
           assert "個別河川には未接続" in page
-          assert "オオクチバス" in page and "ヌマムツ" in page
+          assert "オオクチバス" in page and "ヌマムツ" not in page
           print("WATERSHED_ONLY_FISH_PREVIEW_SAFE", {"noindex": True, "published": False})
           PY
       - uses: actions/upload-artifact@v4

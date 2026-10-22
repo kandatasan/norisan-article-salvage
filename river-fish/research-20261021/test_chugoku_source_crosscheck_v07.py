@@ -129,6 +129,13 @@ class ChugokuSourceCrosscheckTests(unittest.TestCase):
             self.assertEqual(row["evidence_gate"], "CONSERVATION_REVIEW_REQUIRED")
             self.assertEqual(row["review_priority"],
                              "C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW")
+        held = next(x for x in d["rows"] if "YA07" in x["source_ids"])
+        self.assertEqual(held["source_conservation_flag_rows"], 1)
+        self.assertEqual(held["evidence_gate"], "CONSERVATION_REVIEW_REQUIRED")
+        self.assertEqual(held["review_priority"],
+                         "C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW")
+        self.assertEqual(d["priority_counts"].get(
+            "C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW"), 11)
         self.assertEqual(d["named_river_candidate_rows"], 115)
         self.assertEqual(d["watershed_only_rows_held"], 19)
         self.assertTrue(all(x["approved_for_publication"] is False for x in d["rows"]))

@@ -44,7 +44,7 @@ jobs:
           md=(p/"CHUGOKU_7_RIVERS_HUMAN_REVIEW_V08.md").read_text(encoding="utf-8")
           assert d["status"]=="REVIEW_ONLY_DO_NOT_UPLOAD"
           assert d["priority_counts"]=={
-            "B_NEW_RIVER_REVIEW":3,"C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW":10}
+            "B_NEW_RIVER_REVIEW":2,"C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW":11}
           assert "公開承認は0" in md and "採集地点" in md
           assert all(x["approved_for_publication"] is False for x in d["rows"])
           assert all("recorded_name" not in x for x in d["rows"])
