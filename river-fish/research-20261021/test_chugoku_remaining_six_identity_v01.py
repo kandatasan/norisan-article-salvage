@@ -32,7 +32,7 @@ class ChugokuRemainingSixIdentityTests(unittest.TestCase):
         self.assertIn("斐伊川合流点", akagawa["identity_basis"])
         self.assertIn("次数2・1・4", akagawa["identity_basis"])
 
-    def test_yamaguchi_code_identity_is_separate_from_excerpt_only_fish_evidence(self):
+    def test_yamaguchi_code_identity_is_separate_from_page_checked_fish_evidence(self):
         rows = load()
         kojima = next(r for r in rows if r["river"] == "小島川")
         self.assertEqual(kojima["river_code_candidates"], "8707070003")
@@ -40,7 +40,17 @@ class ChugokuRemainingSixIdentityTests(unittest.TestCase):
         self.assertEqual(kojima["identity_status"], "official_system_identity_confirmed")
         self.assertIn("次数2", kojima["identity_basis"])
         self.assertIn("模式図", kojima["topology_source_locator"])
-        self.assertEqual(kojima["fish_source_verification"], "search_excerpt_only")
+        self.assertEqual(kojima["fish_source_verification"], "source_text_checked")
+        self.assertEqual(kojima["fish_publication_approval"], "not_approved")
+
+    def test_yamaguchi_report_locator_records_page_and_station_limit(self):
+        rows = load()
+        kojima = next(r for r in rows if r["river"] == "小島川")
+        self.assertIn("PDF p.50", kojima["local_source_locator"])
+        self.assertIn("採集地点・調査範囲は未確認", kojima["local_source_locator"])
+        self.assertIn("p.50", kojima["identity_basis"])
+        self.assertEqual(kojima["survey_year_status"],
+                         "reported_2005_explicit_in_pdf_p50_station_extent_unverified")
         self.assertEqual(kojima["fish_publication_approval"], "not_approved")
 
     def test_all_topology_sources_are_primary_and_fish_scope_stays_unapproved(self):
