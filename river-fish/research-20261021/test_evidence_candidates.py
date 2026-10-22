@@ -68,9 +68,7 @@ class FishRiverCandidateQA(unittest.TestCase):
     def test_publication_and_provenance_gates(self):
         for row in self.rows:
             self.assertEqual(row["integration_status"], "staged_only")
-            self.assertEqual(row["verification_status"],
-                             "search_excerpt_only" if row["source_id"] == "YA04"
-                             else "source_text_checked")
+            self.assertEqual(row["verification_status"], "source_text_checked")
             self.assertEqual(row["conservation_review"],
                              "required" if row["recorded_name"] in
                              ("アカザ", "スイゲンゼニタナゴ", "シロヒレタビラ",
@@ -91,6 +89,24 @@ class FishRiverCandidateQA(unittest.TestCase):
         self.assertIn("長沢川水系", longsawa["notes"])
         self.assertEqual(kojima["integration_status"], "staged_only")
         self.assertEqual(longsawa["integration_status"], "staged_only")
+
+    def test_ya04_table_3_is_checked_but_never_expanded_to_named_rivers(self):
+        rows = [r for r in self.rows if r["source_id"] == "YA04"]
+        self.assertEqual(len(rows), 8)
+        self.assertEqual({r["watershed"] for r in rows},
+                         {"錦川", "島田川", "佐波川", "椹野川",
+                          "厚東川", "厚狭川", "木屋川", "阿武川"})
+        self.assertTrue(all(
+            r["recorded_name"] == "オオクチバス"
+            and r["river"] == ""
+            and r["evidence_scope"] == "watershed_only"
+            and r["verification_status"] == "source_text_checked"
+            and r["survey_year"] == ""
+            and "PDF p.126" in r["source_locator"]
+            and "水系単位" in r["notes"]
+            and r["integration_status"] == "staged_only"
+            for r in rows
+        ))
 
     def test_environment_nt_yamame_rows_are_held_for_conservation_review(self):
         rows = [r for r in self.rows if r["recorded_name"] == "ヤマメ"]
