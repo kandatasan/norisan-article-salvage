@@ -30,8 +30,8 @@ class SourceLayerTests(unittest.TestCase):
     def test_exclusion_and_counts(self):
         total = sum(r["source_record_count"] for r in self.data["river_groups"])
         excluded = sum(self.data["excluded_counts"].values())
-        self.assertEqual(total + excluded, 124)
-        self.assertEqual(self.data["excluded_counts"]["watershed_only"], 9)
+        self.assertEqual(total + excluded, 134)
+        self.assertEqual(self.data["excluded_counts"]["watershed_only"], 19)
         self.assertEqual(self.data["excluded_counts"].get("source_not_fully_checked", 0), 0)
         self.assertGreater(self.data["excluded_counts"]["conservation_review_required"], 0)
 

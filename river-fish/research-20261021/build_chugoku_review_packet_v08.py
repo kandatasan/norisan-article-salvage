@@ -49,9 +49,9 @@ def source_links(row):
 
 def render(data):
     if (data.get("schema") != INPUT_SCHEMA or data.get("status") != "REVIEW_ONLY_DO_NOT_UPLOAD"
-            or data.get("provincial_candidate_rows") != 124
+            or data.get("provincial_candidate_rows") != 134
             or data.get("named_river_candidate_rows") != 115
-            or data.get("watershed_only_rows_held") != 9
+            or data.get("watershed_only_rows_held") != 19
             or data.get("river_groups") != 13
             or data.get("national_chugoku_fish_year_records") != 3592
             or len(data.get("rows", [])) != 13):
@@ -88,7 +88,7 @@ def render(data):
         "",
         "## 今回の実測",
         "",
-        "- 県資料124記載のうち個別河川名あり115記載、13河川名グループ。水系だけの9記載は接続禁止。",
+        "- 県資料134記載のうち個別河川名あり115記載、13河川名グループ。水系だけの19記載は接続禁止。",
         "- 国交省中国地方の魚類調査原本3,592件と河川名・魚の**原文表記**を照合。",
         "- 国交省の河川コード名候補が1件の河川名グループ：" +
           str(data["river_groups_with_national_river_code_single_name_candidate"]) + "。",

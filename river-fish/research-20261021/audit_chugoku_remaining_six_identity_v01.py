@@ -136,7 +136,7 @@ def load(path: Path = INPUT, provincial_path: Path = PROVINCIAL) -> list[dict[st
     source_group_keys = set(source_index)
     if source_group_keys != priority_keys | set(EXPECTED):
         raise ValueError("13 named-river source groups do not match the reviewed ledgers")
-    if watershed_only_rows != 9:
+    if watershed_only_rows != 19:
         raise ValueError("Watershed-only inventory changed; do not attach it to a river")
     if seen != set(EXPECTED):
         raise ValueError("Expected all six non-priority river groups")

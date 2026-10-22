@@ -2,7 +2,7 @@
 import unittest
 from build_chugoku_source_crosscheck_v07 import read_rows, INPUT, PROVINCIAL_FIELDS
 from audit_yamaguchi_original_pdfs_v09 import (
-    PDFS, scan, text_page_hits, validate_url, SCHEMA,
+    PDFS, scan, text_page_hits, validate_url, SCHEMA, candidate_review_counts,
 )
 
 
@@ -50,12 +50,19 @@ class YamaguchiPdfAuditTests(unittest.TestCase):
         rows = read_rows(INPUT, PROVINCIAL_FIELDS)
         ya07 = [x for x in rows if x["source_id"] == "YA07"]
         ya04 = [x for x in rows if x["source_id"] == "YA04"]
-        self.assertEqual((len(ya07), len(ya04)), (2, 8))
+        self.assertEqual((len(ya07), len(ya04)), (2, 18))
         self.assertTrue(all(x["verification_status"] == "source_text_checked"
                             and x["integration_status"] == "staged_only" for x in ya07))
         self.assertTrue(all(x["verification_status"] == "source_text_checked"
                             and "PDF p.126" in x["source_locator"]
                             and x["integration_status"] == "staged_only" for x in ya04))
+
+    def test_all_twenty_yamaguchi_rows_are_page_checked_but_unapproved(self):
+        self.assertEqual(candidate_review_counts(), {
+            "source_records_pending_manual_review": 0,
+            "source_records_source_text_checked_not_approved": 20,
+            "source_records_automatically_approved": 0,
+        })
 
 
 if __name__ == "__main__":

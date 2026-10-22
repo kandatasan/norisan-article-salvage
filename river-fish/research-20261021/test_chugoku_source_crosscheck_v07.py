@@ -118,9 +118,9 @@ class ChugokuSourceCrosscheckTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             run(fish=[n])
 
-    def test_real_124_staged_rows_are_grouped_safely(self):
+    def test_real_134_staged_rows_are_grouped_safely(self):
         provincial_rows = read_rows(INPUT, PROVINCIAL_FIELDS)
-        self.assertEqual(len(provincial_rows), 124)
+        self.assertEqual(len(provincial_rows), 134)
         d = run(prov=provincial_rows)
         self.assertEqual(d["river_groups"], 13)
         for river in ("三刀屋川", "久野川", "阿井川"):
@@ -130,7 +130,7 @@ class ChugokuSourceCrosscheckTests(unittest.TestCase):
             self.assertEqual(row["review_priority"],
                              "C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW")
         self.assertEqual(d["named_river_candidate_rows"], 115)
-        self.assertEqual(d["watershed_only_rows_held"], 9)
+        self.assertEqual(d["watershed_only_rows_held"], 19)
         self.assertTrue(all(x["approved_for_publication"] is False for x in d["rows"]))
 
     def test_live_atlas_schema_drift_stops(self):

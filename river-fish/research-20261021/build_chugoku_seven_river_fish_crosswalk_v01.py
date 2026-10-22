@@ -69,7 +69,7 @@ def build(source_path: Path = SOURCE) -> tuple[list[dict[str, str]], tuple[str, 
         if tuple(reader.fieldnames or ()) != SOURCE_FIELDS:
             raise ValueError("source evidence CSV header drift")
         source_rows = list(reader)
-    if len(source_rows) != 124:
+    if len(source_rows) != 134:
         raise ValueError("source evidence row count changed; manual review required")
 
     enriched = []

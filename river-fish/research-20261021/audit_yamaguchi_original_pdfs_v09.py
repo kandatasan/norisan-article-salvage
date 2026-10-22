@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only machine text scan for the two Yamaguchi reports covering 10 staged rows.
+"""Read-only machine text scan for the two Yamaguchi reports covering 20 staged rows.
 
 Machine text inspection only; NO automatic source_text_checked promotion.
 Only PDF metadata, SHA256 and token PAGE NUMBERS are saved (no survey sites,
@@ -7,8 +7,10 @@ coordinates, full text, fish-to-river publication records or PDF copies).
 """
 from __future__ import annotations
 import argparse
+import csv
 import hashlib
 import json
+from pathlib import Path
 import re
 import subprocess
 from urllib.parse import urlsplit
@@ -32,6 +34,26 @@ PDFS = {
 MAX_BYTES = 30_000_000
 MAX_TEXT_BYTES = 12_000_000
 SCHEMA = "tsurikue-yamaguchi-original-research-pdf-machine-audit-v09"
+CANDIDATES = Path(__file__).with_name("fish_river_evidence_candidates_20261021.csv")
+
+
+def candidate_review_counts(path=CANDIDATES):
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        rows = [row for row in csv.DictReader(handle)
+                if row.get("source_id") in {"YA07", "YA04"}]
+    counts = {source_id: sum(row["source_id"] == source_id for row in rows)
+              for source_id in ("YA07", "YA04")}
+    if len(rows) != 20 or counts != {"YA07": 2, "YA04": 18}:
+        raise ValueError("Yamaguchi staged inventory changed; manual review required")
+    if any(row["integration_status"] != "staged_only" for row in rows):
+        raise ValueError("Yamaguchi rows must remain research-only")
+    return {
+        "source_records_pending_manual_review": sum(
+            row["verification_status"] != "source_text_checked" for row in rows),
+        "source_records_source_text_checked_not_approved": sum(
+            row["verification_status"] == "source_text_checked" for row in rows),
+        "source_records_automatically_approved": 0,
+    }
 
 
 def validate_url(url):
@@ -115,6 +137,7 @@ def main():
     if args.out.exists():
         raise FileExistsError("Refuse to overwrite original PDF review")
     result = []
+    review_counts = candidate_review_counts()
     with tempfile.TemporaryDirectory(prefix="yamaguchi-fish-original-") as tmp:
         for source_id in ("YA07", "YA04"):
             raw = download(PDFS[source_id]["url"])
@@ -130,10 +153,9 @@ def main():
     report = {
         "schema": SCHEMA,
         "status": "MACHINE_PDF_TEXT_SCAN_ONLY_NOT_VERIFIED_NOT_PUBLISHED",
-        "source_records_pending_manual_review": 10,
-        "source_records_automatically_approved": 0,
+        **review_counts,
         "files": result,
-        "notice": "キーワード検出だけでは表・対象河川・調査範囲を確認したことにはならない。v09は行状態を変更しない。YA07の2行はv10がPDF p.50の記載本文を別途確認済みで、YA04の8行はv11がPDF p.126の表3画像を別途照合済み。全10行は研究専用・公開未承認。",
+        "notice": "キーワード検出だけでは表・対象河川・調査範囲を確認したことにはならない。v09は行状態を変更しない。YA07の2行はv10がPDF p.50の記載本文を別途確認済みで、YA04の18行はv11がPDF p.126の表3画像を別途照合済み。全20行は研究専用・公開未承認。",
         "site_updated": False,
     }
     args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")

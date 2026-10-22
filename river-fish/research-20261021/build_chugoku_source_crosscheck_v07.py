@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only crosscheck: 5 prefectures' 124 staged fish records vs official MLIT
+"""Read-only crosscheck: 5 prefectures' 134 staged fish records vs official MLIT
 Chugoku fish survey, national river code lists and live atlas navigation.
 
 Every identity is a NAME CANDIDATE only. This deliberately emits NO fish names,
@@ -177,14 +177,14 @@ def main():
     p.add_argument("--out", type=Path, required=True)
     args = p.parse_args()
     provincial = read_rows(INPUT, PROVINCIAL_FIELDS)
-    if len(provincial) != 124:
+    if len(provincial) != 134:
         raise ValueError("Provincial staged source count changed; stop for audit")
     national = read_rows(args.national_csv, SOURCE_FIELDS)
     rivers, waters = load_codes()
     atlas, atlas_sha = load_live("atlas.json")
     data = analyze(provincial, national, atlas, rivers, waters, manifest_for("chugoku"))
     if (data["river_groups"] != 13 or data["named_river_candidate_rows"] != 115
-            or data["watershed_only_rows_held"] != 9
+            or data["watershed_only_rows_held"] != 19
             or data["national_chugoku_fish_year_records"] != 3592):
         raise ValueError("Source inventory drift: manual review needed")
     data["live_atlas_json_sha256"] = atlas_sha

@@ -17,7 +17,7 @@ class ExpandedRiverFishTests(unittest.TestCase):
         self.assertEqual(d["schema"], SCHEMA)
         self.assertEqual(len(d["river_groups"]), 13)
         self.assertEqual(sum(x["source_record_count"] for x in d["river_groups"]), 112)
-        self.assertEqual(sum(d["excluded_counts"].values()), 21)
+        self.assertEqual(sum(d["excluded_counts"].values()), 31)
         self.assertEqual(d["source_inventories"]["narratives_added_research_only"], 7)
 
     def test_verified_yamaguchi_kijima_record_is_bidirectionally_searchable(self):

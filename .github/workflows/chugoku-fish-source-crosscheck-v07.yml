@@ -36,9 +36,9 @@ jobs:
           p=pathlib.Path(os.environ["RUNNER_TEMP"])/"chugoku-v07-source/chugoku_source_crosscheck_v07.json"
           d=json.loads(p.read_text(encoding="utf-8"))
           assert d["status"]=="REVIEW_ONLY_DO_NOT_UPLOAD"
-          assert d["provincial_candidate_rows"]==124
+          assert d["provincial_candidate_rows"]==134
           assert d["named_river_candidate_rows"]==115
-          assert d["watershed_only_rows_held"]==9
+          assert d["watershed_only_rows_held"]==19
           assert d["river_groups"]==13
           assert sum(d["priority_counts"].values())==13
           assert all(x["approved_for_publication"] is False

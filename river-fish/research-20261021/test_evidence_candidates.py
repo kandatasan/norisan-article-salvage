@@ -15,7 +15,7 @@ FIELDS = {
     "integration_status", "notes",
 }
 SOURCE_IDS = {"SH22", "HIY", "HIN", "OK19", "TO16", "YA07", "YA04"}
-COUNTS = {"島根県": 77, "広島県": 7, "岡山県": 15, "鳥取県": 15, "山口県": 10}
+COUNTS = {"島根県": 77, "広島県": 7, "岡山県": 15, "鳥取県": 15, "山口県": 20}
 SCOPES = {"named_river", "named_river_context", "watershed_only"}
 
 
@@ -29,11 +29,11 @@ class FishRiverCandidateQA(unittest.TestCase):
 
     def test_schema_and_counts(self):
         self.assertEqual(self.fields, FIELDS)
-        self.assertEqual(len(self.rows), 124)
+        self.assertEqual(len(self.rows), 134)
         self.assertEqual(Counter(r["prefecture"] for r in self.rows), COUNTS)
         self.assertEqual({r["source_id"] for r in self.rows}, SOURCE_IDS)
         self.assertEqual(Counter(r["evidence_scope"] for r in self.rows),
-                         {"named_river": 80, "named_river_context": 35, "watershed_only": 9})
+                         {"named_river": 80, "named_river_context": 35, "watershed_only": 19})
 
     def test_no_duplicates_or_empty_facts(self):
         seen = set()
@@ -92,10 +92,12 @@ class FishRiverCandidateQA(unittest.TestCase):
 
     def test_ya04_table_3_is_checked_but_never_expanded_to_named_rivers(self):
         rows = [r for r in self.rows if r["source_id"] == "YA04"]
-        self.assertEqual(len(rows), 8)
+        self.assertEqual(len(rows), 18)
         self.assertEqual({r["watershed"] for r in rows},
                          {"錦川", "島田川", "佐波川", "椹野川",
-                          "厚東川", "厚狭川", "木屋川", "阿武川"})
+                          "厚東川", "厚狭川", "木屋川", "阿武川",
+                          "小瀬川", "長沢川", "南若川", "土路石川", "井関川",
+                          "真締川", "有帆川", "西田川", "栗野川", "深川川"})
         self.assertTrue(all(
             r["recorded_name"] == "オオクチバス"
             and r["river"] == ""

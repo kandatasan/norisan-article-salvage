@@ -36,9 +36,9 @@ def fixture():
         })
     return {
         "schema": INPUT_SCHEMA, "status": "REVIEW_ONLY_DO_NOT_UPLOAD",
-        "provincial_candidate_rows": 124,
+        "provincial_candidate_rows": 134,
         "named_river_candidate_rows": 115,
-        "watershed_only_rows_held": 9,
+        "watershed_only_rows_held": 19,
         "river_groups": 13,
         "national_chugoku_fish_year_records": 3592,
         "priority_counts": {"B_NEW_RIVER_REVIEW": 7,
