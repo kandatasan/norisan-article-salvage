@@ -1,0 +1,89 @@
+{
+  "version": "0.1",
+  "scope": "太田川水系",
+  "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+  "edges": [
+    {
+      "fromName": "柴木川",
+      "toName": "太田川",
+      "relation": "tributary_confluence",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "筒賀川",
+      "toName": "太田川",
+      "relation": "tributary_confluence",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "滝山川",
+      "toName": "太田川",
+      "relation": "tributary_confluence",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "水内川",
+      "toName": "太田川",
+      "relation": "tributary_confluence",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "根谷川",
+      "toName": "太田川",
+      "relation": "tributary_confluence",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "三篠川",
+      "toName": "太田川",
+      "relation": "tributary_confluence",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "太田川",
+      "toName": "旧太田川",
+      "relation": "distributary_branch",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "旧太田川",
+      "toName": "京橋川",
+      "relation": "distributary_branch",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "旧太田川",
+      "toName": "猿猴川",
+      "relation": "distributary_branch",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "旧太田川",
+      "toName": "天満川",
+      "relation": "distributary_branch",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    },
+    {
+      "fromName": "旧太田川",
+      "toName": "元安川",
+      "relation": "distributary_branch",
+      "sourceUrl": "https://www.mlit.go.jp/river/toukei_chousa/kasen/jiten/nihon_kawa/0710_ootagawa/0710_ootagawa_00.html",
+      "riverCodeMapping": "unverified"
+    }
+  ],
+  "notes": [
+    "Official national river overview describes named confluences and branches.",
+    "Names are not joined to 10-digit code records without identity verification.",
+    "A distributary is not a tributary."
+  ]
+}
