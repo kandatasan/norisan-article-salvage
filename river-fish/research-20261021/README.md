@@ -323,6 +323,23 @@ CIの独立した原本照合、既存124行QA、レビューJSONに魚名・位
 - クロスウォーク76行はすべて `research_only` / `not_approved` のまま。河川記録は採集地点を示さず、過去記録を現在の生息・釣果保証として扱わない。
 - 新しい検索公開、本番サイト、WordPress、公開JSONの変更なし。
 
+## 第19便：中国地方の残る6河川群のコード同一性を追加監査
+
+優先7群の外にあった6群を国交省の河川コード台帳・模式図と県の河川整備資料で照合。5群のコード同一性を確認し、山口県・小島川は候補コードのまま保留する。
+
+- 台帳: `chugoku_remaining_six_identity_review_v01.csv`
+- 監査スクリプト: `audit_chugoku_remaining_six_identity_v01.py`
+- QA: `test_chugoku_remaining_six_identity_v01.py`
+- 確認票: [`../review-staged/CHUGOKU_REMAINING_SIX_IDENTITY_AUDIT_V01.md`](../review-staged/CHUGOKU_REMAINING_SIX_IDENTITY_AUDIT_V01.md)
+- 赤川は同じ斐伊川水系に同名のコードが3件ある。県計画表の「斐伊川合流点から19.31km」と国交省コード台帳の次数（2・1・4）を合わせ、直接合流の一次支川 `8707040161` を照合対象に選定。河川名だけでは選んでいない。
+- 岡山県の笹ヶ瀬川 `3300090001`・足守川 `3300090002`、広島県の八幡川 `3400290001`・長瀬川 `8707050140` は、県計画の合流・流下説明と公式コード台帳／模式図を組み合わせて確認。
+- 山口県の小島川は台帳の `8707070003` が唯一のコード候補だが、現地河道・合流点の独立照合とPDF原本の該当ページ確認が未了のため、確定コード欄を空欄のまま保持。
+- 優先7群と合わせて13群中12群にコード同一性確認がある。これは魚類の採集地点・調査区間・現在の生息確認を意味しない。すべての魚記録は未承認。
+- 2026-10-22の公開atlas読み取り専用スナップショットでは、笹ヶ瀬川と八幡川に県＋水系＋河川名の完全一致候補が各1件あった。候補IDはそれぞれ `official21_a4a33364f0dbe2f68dc2e9af` と `official21_71f8799928486abbf6523517`。この照合は別名や表記揺れを否定せず、河川追加ではなく将来の既存ID再利用候補を示す。魚記録はまだリンクしていない。
+- [公開atlas読み取り専用監査 Actions](https://github.com/kandatasan/norisan-article-salvage/actions/runs/39717104736) の成果物にスナップショット・ハッシュと照合CSVを保存。
+- QA: `python -m unittest discover -s river-fish/research-20261021 -p 'test_chugoku_remaining_six_identity_v01.py' -v`。河川コード候補、保留状態、水系だけの9記録との分離、魚記録の未承認を検査。
+- サイト、WordPress、検索JSONは変更なし。
+
 ```bash
 python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
 python river-fish/research-20261021/build_hinogawa_identity_index_v01.py \
