@@ -22,8 +22,9 @@ jobs:
         run: |
           python -m unittest discover -s river-fish/research-20261021 -p 'test_chugoku_source_crosscheck_v07.py' -v
           python -m unittest discover -s river-fish/research-20261021 -p 'test_evidence_candidates.py' -v
-      - name: Re-extract official pinned Chugoku fish workbook (read-only)
-        run: python river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py --region chugoku --out "$RUNNER_TEMP/chugoku-v07-source"
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_chugoku_national_snapshot_v01.py' -v
+      - name: Materialize checksum-verified Chugoku fish snapshot (offline)
+        run: python river-fish/research-20261021/validate_chugoku_national_snapshot_v01.py --out-dir "$RUNNER_TEMP/chugoku-v07-source"
       - name: Crosscheck official river names and species counts against independent source
         run: |
           python river-fish/research-20261021/build_chugoku_source_crosscheck_v07.py \
