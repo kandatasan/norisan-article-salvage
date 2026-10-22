@@ -28,7 +28,13 @@
     "source_csv_member": "official_direct_river_fish_v04.csv",
     "source_csv_sha256": "26ff8edebc92e152b2b19fc34ba51f963a0a197ef706cebd8fd347f8cd7f82a8",
     "source_csv_rows": 3592,
-    "source_manifest_member": "manifest_review_only_v04.json"
+    "source_manifest_member": "manifest_review_only_v04.json",
+    "original_artifact_zip_sha256": "289d7aba74c6042048c49e4a8bf70cbed0a54372322db44cc792954ea87267da",
+    "original_artifact_members": [
+      "atlas_name_match_review_v04.json",
+      "manifest_review_only_v04.json",
+      "official_direct_river_fish_v04.csv"
+    ]
   },
   "stored_snapshot": {
     "path": "river-fish/nationwide-staged/chugoku/official_direct_river_fish_v04_snapshot.zip.b64",
@@ -66,5 +72,15 @@
     "live_source_url_checked_at_utc": "2026-10-22",
     "live_source_url_result": "HTTP 404 in current read-only checks",
     "snapshot_means": "the checksum-verified artifact captured on 2026-10-21; no newer source freshness is implied"
+  },
+  "normalized_snapshot": {
+    "path": "river-fish/nationwide-staged/chugoku/official_direct_river_fish_v04_snapshot.zip.b64",
+    "encoding": "base64 text for compact storage; not encryption or access control",
+    "archive_sha256": "27675043f1cc24e5f173a481a70d68c2238c4189106a4c02fcc4cecf8dd28543",
+    "members": [
+      "manifest_review_only_v04.json",
+      "official_direct_river_fish_v04.csv"
+    ],
+    "normalization": "Retains only the pinned fish CSV and its source manifest; omits the separate atlas-name review JSON."
   }
 }

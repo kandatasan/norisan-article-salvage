@@ -32,7 +32,7 @@ BLOCKED_FIELD_PARTS = (
 )
 EXPECTED_SOURCE_URL = "https://www.nilim.go.jp/lab/fbg/ksnkankyo/download/slist/RT87_B01.zip"
 EXPECTED_SOURCE_SHA256 = "1fd6a7201f3100164bc9921002b2723c04a9b6d1f55e0e773b957f6d97205f4e"
-EXPECTED_ARCHIVE_SHA256 = "289d7aba74c6042048c49e4a8bf70cbed0a54372322db44cc792954ea87267da"
+EXPECTED_ARCHIVE_SHA256 = "27675043f1cc24e5f173a481a70d68c2238c4189106a4c02fcc4cecf8dd28543"
 EXPECTED_CSV_SHA256 = "26ff8edebc92e152b2b19fc34ba51f963a0a197ef706cebd8fd347f8cd7f82a8"
 EXPECTED_ROWS = 3592
 EXPECTED_RIVER_GROUPS = 35
@@ -58,8 +58,8 @@ def validate_snapshot(encoded: str, meta: dict) -> dict:
             or source.get("prefecture") is not None
             or source.get("national_river_code") is not None):
         _fail("Official source pin or conservative identity bounds changed")
-    captured = meta.get("captured_artifact", {})
-    if (captured.get("artifact_zip_sha256") != EXPECTED_ARCHIVE_SHA256
+    captured = meta.get("normalized_snapshot", {})
+    if (captured.get("archive_sha256") != EXPECTED_ARCHIVE_SHA256
             or captured.get("source_csv_sha256") != EXPECTED_CSV_SHA256
             or captured.get("source_csv_rows") != EXPECTED_ROWS):
         _fail("Captured artifact pin changed")

@@ -1,10 +1,11 @@
 """Regression tests for the pinned, source-hash-verified Chugoku fish snapshot."""
 import json
 import unittest
+import tempfile
 from pathlib import Path
 
 from validate_chugoku_national_snapshot_v01 import (
-    MANIFEST_PATH, SNAPSHOT_PATH, load_snapshot, validate_snapshot,
+    MANIFEST_PATH, SNAPSHOT_PATH, load_snapshot, materialize, validate_snapshot,
 )
 
 
@@ -49,8 +50,11 @@ class ChugokuNationalSnapshotTests(unittest.TestCase):
             validate_snapshot(self.encoded, changed)
 
     def test_materialization_refuses_overwrite(self):
-        self.assertTrue(SNAPSHOT_PATH.exists())
-        self.assertTrue(MANIFEST_PATH.exists())
+        with tempfile.TemporaryDirectory() as tmp:
+            out = Path(tmp) / "existing"
+            out.mkdir()
+            with self.assertRaises(FileExistsError):
+                materialize(out)
 
 
 if __name__ == "__main__":
