@@ -81,6 +81,8 @@
       "manifest_review_only_v04.json",
       "official_direct_river_fish_v04.csv"
     ],
-    "normalization": "Retains only the pinned fish CSV and its source manifest; omits the separate atlas-name review JSON."
+    "normalization": "Retains only the pinned fish CSV and its source manifest; omits the separate atlas-name review JSON.",
+    "source_csv_sha256": "26ff8edebc92e152b2b19fc34ba51f963a0a197ef706cebd8fd347f8cd7f82a8",
+    "source_csv_rows": 3592
   }
 }
