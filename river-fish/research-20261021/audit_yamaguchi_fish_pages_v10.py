@@ -42,24 +42,30 @@ def extract_target_excerpt(page_text: str) -> str:
     normalized = re.sub(r"\s+", "", page_text or "")
     if not normalized or SPECIES_TERM not in normalized:
         raise ValueError("Target species is absent from the pinned PDF page")
-    record_start = normalized.find("本調査では")
-    if record_start < 0:
-        raise ValueError("Target survey statement is absent from the pinned PDF page")
-    river_end = normalized.find("長沢川", record_start)
+    year_start = normalized.find("2005")
+    if year_start < 0:
+        raise ValueError("Target survey year is absent from the pinned PDF page")
+    river_end = normalized.find("長沢川", year_start)
     if river_end < 0:
         raise ValueError("Target river is absent from the survey statement")
+    start = normalized.rfind("。", 0, year_start) + 1
     end = normalized.find("。", river_end)
     if end < 0:
-        raise ValueError("Could not isolate the end of the survey statement")
-    excerpt = normalized[record_start:end + 1]
+        end = len(normalized)
+    excerpt = normalized[start:end + 1]
     if not all(term in excerpt for term in REQUIRED_RECORD_TERMS):
         raise ValueError("Target years and named rivers do not share the same statement")
     if len(excerpt) > 500:
-        raise ValueError("Target evidence statement unexpectedly long")
+        # Bound the saved excerpt around the relevant phrase if the PDF omits
+        # sentence punctuation or combines adjacent table text.
+        start = max(0, year_start - 100)
+        end = min(len(normalized), river_end + 100)
+        excerpt = "…" + normalized[start:end] + "…"
+    if len(excerpt) > 500 or not all(term in excerpt for term in REQUIRED_RECORD_TERMS):
+        raise ValueError("Could not isolate a short target evidence span")
     if re.search(r"(北緯|東経|座標|[0-9]{2,3}°)", excerpt):
         raise ValueError("Target evidence statement contains coordinate-like detail")
     return excerpt
-
 
 def build_review(raw_pdf: bytes, extracted_page_text: str, pages: int) -> dict:
     expected = PDFS[SOURCE_ID]
