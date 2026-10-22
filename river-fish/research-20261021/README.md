@@ -375,3 +375,12 @@ python river-fish/research-20261021/build_hinogawa_identity_index_v01.py \
 python river-fish/research-20261021/search_hinogawa_identity_records_v01.py \
   --river-code 8707030003 --fish アユ
 ```
+
+
+## 第23便：中国地方魚類スナップショット再検証と確認票の再集計
+
+- 2026-10-22の読み取り専用クロスチェック（[Actions run #39748356340](https://github.com/kandatasan/norisan-article-salvage/actions/runs/39748356340)）で、固定スナップショットの魚類CSV 3,592行、35組の水系名×原本記載河川名、原文魚名216種、調査年範囲2006–2023を再確認した。全行は未承認のまま。
+- 同じ再集計で13河川名グループの確認順分類は「河川同定レビュー対象」3、「資料範囲・保全等で保留」10。これはレビューの優先順であり、河川同一性の確定や公開承認ではない。
+- 以前の第18便にある4/9は当時の分類記録として保持する。最新のv08確認票ワークフローは、再集計結果3/10を期待するよう修正した。
+- 原本ZIPの再取得先はHTTP 404のままのため、固定スナップショットを検証・再利用する。現在版への更新を意味しない。
+- 本番サイト、WordPress、公開atlas、検索JSONへの変更なし。
