@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Read-only primary PDF audit for the 10 Yamaguchi research-excerpt rows.
+"""Read-only machine text scan for the two Yamaguchi reports covering 10 staged rows.
 
 Machine text inspection only; NO automatic source_text_checked promotion.
 Only PDF metadata, SHA256 and token PAGE NUMBERS are saved (no survey sites,
@@ -133,7 +133,7 @@ def main():
         "source_records_pending_manual_review": 10,
         "source_records_automatically_approved": 0,
         "files": result,
-        "notice": "キーワード検出だけでは資料の表・図・対象河川・観測年を確認したことにはならない。元の10行はsearch_excerpt_onlyのまま。",
+        "notice": "キーワード検出だけでは表・対象河川・調査範囲を確認したことにはならない。v09は行状態を変更しない。YA07の2行はv10がPDF p.50の記載本文を別途確認済みで、YA04の8行はsearch_excerpt_onlyのまま。",
         "site_updated": False,
     }
     args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
