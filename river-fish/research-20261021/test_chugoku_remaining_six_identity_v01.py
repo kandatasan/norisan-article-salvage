@@ -70,7 +70,7 @@ class ChugokuRemainingSixIdentityTests(unittest.TestCase):
         self.assertIn("魚記録は全件未承認", report)
         self.assertIn("照合判断（推定）", report)
         self.assertIn("13群のうち13群", report)
-        self.assertIn("個体の採集地点・魚種別調査年は確認できていない", report)
+        self.assertIn("個体の採集地点・調査区間は確認できていない", report)
         self.assertNotIn("カワムツ", report)
         self.assertNotIn("アカザ", report)
 
