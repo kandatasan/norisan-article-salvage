@@ -31,18 +31,24 @@ class SourceLayerTests(unittest.TestCase):
         total = sum(r["source_record_count"] for r in self.data["river_groups"])
         excluded = sum(self.data["excluded_counts"].values())
         self.assertEqual(total + excluded, 134)
-        self.assertEqual(self.data["excluded_counts"]["watershed_only"], 19)
+        self.assertEqual(self.data["excluded_counts"]["watershed_only"], 18)
+        self.assertEqual(self.data["excluded_counts"]["conservation_review_required"], 12)
         self.assertEqual(self.data["excluded_counts"].get("source_not_fully_checked", 0), 0)
         self.assertGreater(self.data["excluded_counts"]["conservation_review_required"], 0)
 
-    def test_yamaguchi_kijima_record_enters_research_index_and_water_system_does_not(self):
-        keys = {river["source_river_key"] for river in self.data["river_groups"]}
-        kojima_key = "山口県|佐波川|小島川"
-        self.assertIn(kojima_key, keys)
-        kojima = next(r for r in self.data["river_groups"] if r["source_river_key"] == kojima_key)
-        self.assertIn("ヌマムツ", {fish["recorded_name"] for fish in kojima["fish_labels"]})
-        self.assertIn(kojima_key, self.data["fish_reverse_index"]["ヌマムツ"])
-        self.assertNotIn("山口県|長沢川|", keys)
+    def test_conservation_held_source_is_absent_from_both_search_directions(self):
+        held_sources = {r["source_id"] for r in self.source_rows
+                        if r["source_id"] == "YA07" and r["conservation_review"] == "required"}
+        indexed_sources = {fish["source_id"] for river in self.data["river_groups"]
+                           for fish in river["fish_labels"]}
+        self.assertTrue(held_sources)
+        self.assertTrue(held_sources.isdisjoint(indexed_sources))
+        reverse_sources = {fish["source_id"] for label in self.data["fish_reverse_index"]
+                           for river_key in self.data["fish_reverse_index"][label]
+                           for river in self.data["river_groups"]
+                           if river["source_river_key"] == river_key
+                           for fish in river["fish_labels"] if fish["recorded_name"] == label}
+        self.assertTrue(held_sources.isdisjoint(reverse_sources))
 
     def test_source_scoped_reverse_index(self):
         for river in self.data["river_groups"]:

@@ -26,6 +26,7 @@ EXPECTED_YA04_WATERSHEDS = {
 def build(rows: list[dict[str, str]]) -> dict:
     grouped: dict[tuple[str, str, str], list[dict]] = collections.defaultdict(list)
     fish_reverse: dict[str, set[str]] = collections.defaultdict(set)
+    excluded = collections.Counter()
     seen = set()
     for row in rows:
         if row.get("evidence_scope") != "watershed_only":
@@ -36,13 +37,16 @@ def build(rows: list[dict[str, str]]) -> dict:
         seen.add(identity)
         if (row["river"] or row["integration_status"] != "staged_only"
                 or row["verification_status"] != "source_text_checked"
-                or row["conservation_review"] != "not_flagged"):
+                or row["conservation_review"] not in {"not_flagged", "required"}):
             raise ValueError("Watershed record violates source or publication boundary")
         if row["source_id"] not in {"YA04", "YA07"} or row["prefecture"] != "山口県":
             raise ValueError("Unexpected watershed-only source in this index")
         parsed = urlsplit(row["source_url"])
         if parsed.scheme != "https" or parsed.hostname != "www.pref.yamaguchi.lg.jp":
             raise ValueError("Unexpected source domain")
+        if row["conservation_review"] == "required":
+            excluded["conservation_review_required"] += 1
+            continue
         key = (row["prefecture"], row["source_id"], row["watershed"])
         fish = {
             "recorded_name": row["recorded_name"],
@@ -61,11 +65,10 @@ def build(rows: list[dict[str, str]]) -> dict:
     ya04 = {key[2] for key in grouped if key[1] == "YA04"}
     if ya04 != EXPECTED_YA04_WATERSHEDS:
         raise ValueError("YA04 Table 3 watershed list changed; manual review required")
-    ya07 = [row for key, fish_rows in grouped.items() if key[1] == "YA07"
-            for row in fish_rows]
-    if (len(ya07) != 1 or ya07[0]["recorded_name"] != "ヌマムツ"
-            or ya07[0]["survey_year"] != "2007"):
-        raise ValueError("YA07 watershed record changed; manual review required")
+    if excluded != {"conservation_review_required": 1}:
+        raise ValueError("Conservation-held watershed inventory changed; manual review required")
+    if len(grouped) != 18:
+        raise ValueError("Searchable watershed inventory changed; manual review required")
 
     watersheds = []
     for (prefecture, source_id, watershed), fish_rows in sorted(grouped.items()):
@@ -92,6 +95,8 @@ def build(rows: list[dict[str, str]]) -> dict:
         "current_distribution_verified": False,
         "catchability_verified": False,
         "watershed_groups": watersheds,
+        "source_watershed_rows": len(seen),
+        "excluded_counts": dict(sorted(excluded.items())),
         "fish_to_watershed_index": {
             name: sorted(keys) for name, keys in sorted(fish_reverse.items())
         },

@@ -34,20 +34,22 @@ def build(rows):
         if identity in seen:
             raise ValueError("Duplicate source record")
         seen.add(identity)
-        if row["evidence_scope"] == "watershed_only":
-            if row["river"]:
-                raise ValueError("Watershed-only evidence has river name")
-            excluded["watershed_only"] += 1
-            continue
-        if not all(key):
-            raise ValueError("Named-river record missing prefecture, watershed or river")
-        if row["evidence_scope"] not in ("named_river", "named_river_context"):
+        if row["evidence_scope"] not in ("named_river", "named_river_context", "watershed_only"):
             raise ValueError("Unrecognized evidence granularity")
+        if not row["prefecture"] or not row["watershed"]:
+            raise ValueError("Source record missing prefecture or watershed")
+        if row["evidence_scope"] == "watershed_only" and row["river"]:
+            raise ValueError("Watershed-only evidence has river name")
+        if row["evidence_scope"] != "watershed_only" and not row["river"]:
+            raise ValueError("Named-river record missing river name")
         if row["verification_status"] != "source_text_checked":
             excluded["source_not_fully_checked"] += 1
             continue
         if row["conservation_review"] == "required":
             excluded["conservation_review_required"] += 1
+            continue
+        if row["evidence_scope"] == "watershed_only":
+            excluded["watershed_only"] += 1
             continue
         source_id = row["source_id"]
         src = sources.setdefault(source_id, {
