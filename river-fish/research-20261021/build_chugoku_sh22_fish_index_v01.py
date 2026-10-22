@@ -14,7 +14,7 @@ BASE_INPUT = ROOT / "fish_river_evidence_candidates_20261021.csv"
 ADDITIONS_INPUT = ROOT / "chugoku_sh22_fish_safe_additions_v01.csv"
 SCHEMA = "tsurikue-shimane-sh22-fish-table-v01"
 SOURCE_ID = "SH22"
-SOURCE_URL = "https://www.pref.shimane.lg.jp/infra/river/kasen/hoshin/index.data/chuuryuuikifuzokusiryou1.pdf"
+SOURCE_URL = "https://www.pref.shimane.lg.jp/infra/river/kasen/hoshin/hiikawachuryusisen_kawadukuri/index.data/chuuryuuikifuzokusiryou.pdf"
 SOURCE_LOCATOR = "表-2.4 資料p20 PDF p21"
 RIVERS = {
     "斐伊川": 38,
