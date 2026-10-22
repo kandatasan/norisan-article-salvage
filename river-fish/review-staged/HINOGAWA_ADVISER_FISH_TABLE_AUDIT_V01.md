@@ -33,7 +33,7 @@
 
 ## 推定・未確認
 
-- **索引テキストの転記であり、PDF原画像の目視監査は未完了。** 参照位置「本文p.18」は検索索引のページ表示に基づく。CSVの `verification_status` はその制限を明記している。
+- PDF原画像で表（PDF p.20/43、紙面p.18）を確認し、表示8魚名×14河川・年度欄を転記表と照合済み。非公表の重要種行は復元していない。
 - PDFに示す個体数の集計範囲、調査努力量、採集地点、日野川本川・法勝寺川それぞれの実際のサンプル区間は未確認。河川名行より細かい位置情報を推定していない。
 - 今回の8表記について、現行の分類・鳥取県の保全指定・公開適切性を独立審査していない。すべて `conservation_review=pending`、`fish_publication_approval=not_approved`。
 - 既存国交省集約データと同一調査の重複範囲は未確定。照合結果を加算・独立確認数の計算に使わない。
@@ -47,6 +47,8 @@
 - 重複候補集計: `hinogawa_diadr_overlap_review_v01.json`
 - 公開atlas読み取り監査: `audit_hinogawa_live_atlas_v01.py`
 - 回帰テスト: `test_hinogawa_adviser_fish_records_v01.py`
+- 川名・魚名のブラウザー双方向検索: `build_hinogawa_adviser_preview_v01.py`（CI artifactにnoindex単体HTMLを出力）
+- プレビュー回帰テスト: `test_hinogawa_adviser_preview_v01.py`（57件・8魚名・2河川、年度・逆引き・非公表行除外を確認）
 - Actions成果物: `hinogawa-adviser-fish-records-v01-review-only`（30日保存）
 
-全57件を研究用に保持し、本番サイト・WordPress・公開検索JSONへは反映しない。過去の調査結果であり、現在の生息や釣果を保証しない。
+全57件を研究用に保持し、本番サイト・WordPress・公開検索JSONへは反映しない。プレビューは `noindex,nofollow`、記録はすべて未承認で、過去の調査結果は現在の生息や釣果を保証しない。

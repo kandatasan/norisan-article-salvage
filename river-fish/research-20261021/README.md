@@ -27,6 +27,7 @@
 
 | ID | 発行主体・資料 | 掲載対象・制約 |
 | --- | --- | --- |
+| HINO25 | [国交省日野川河川事務所・日野川水系自然再生計画（案）（令和7年9月）](https://www.cgr.mlit.go.jp/hinogawa/keikaku/09_adviser/pdf/250929_04_honpen.pdf) | 資料p18（PDF p20）の通し回遊性魚類・個体数表。日野川と法勝寺川を別列で掲載。非公表欄は記録化せず、数値がある欄のみを扱う |
 | SH22 | [島根県・斐伊川水系中流支川域河川整備計画 付属資料（令和4年3月）](https://www.pref.shimane.lg.jp/infra/river/kasen/hoshin/hiikawachuryusisen_kawadukuri/index.data/chuuryuuikifuzokusiryou.pdf) | 表2-4、資料p20（PDF p21）。斐伊川の指定区間・赤川・三刀屋川・久野川・深野川・阿井川の魚類確認種一覧。元報告書の実施年を各種の調査年へ流用しない |
 | HIY | [広島県・八幡川水系流域の現状](https://www.pref.hiroshima.lg.jp/soshiki/99/1172477579468.html) | 上中流と河口部の魚類説明。**アユは稚魚放流の記載のみなので生息確認としては未採録**。木末川・石内川へ魚名を割り振らない |
 | HIN | [広島県・江の川本川ブロック](https://www.pref.hiroshima.lg.jp/soshiki/99/1172196461943.html) | 支川の長瀬川にアカザ・カジカとの記述。保全配慮が必要 |
@@ -305,8 +306,9 @@ CIの独立した原本照合、既存124行QA、レビューJSONに魚名・位
 - `build_hinogawa_adviser_fish_records_v01.py` は転記表から57行を再生成し、従来の河川別候補台帳と水系別集約データとの重なりを集計。
 - `search_hinogawa_records_v01.py` は `--river` / `--fish` の完全一致で双方から検索。結果に調査年・原資料・個体数・未承認状態を付ける。
 - `audit_hinogawa_live_atlas_v01.py` は現在のatlas.jsonを読み取り専用で照合する。完全一致名は河川IDの確定や公開承認と扱わない。
+- `build_hinogawa_adviser_preview_v01.py` は同じ57行の研究候補から、川名・魚名の双方向検索ができる `noindex,nofollow` 単体HTMLをActions artifactへ生成する。新しい魚記録は複製せず、記録・プレビューとも本番未反映。
 - 監査票: `../review-staged/HINOGAWA_ADVISER_FISH_TABLE_AUDIT_V01.md`。既存河川候補との魚名一致2組、国交省水系別集約との同水系・調査年・魚名一致候補19組を記録。二重計上を避け、個体数をソース間で合算しない。
-- QA: `test_hinogawa_adviser_fish_records_v01.py`。`.github/workflows/hinogawa-adviser-fish-records-v01.yml` で研究用全テスト、再生成一致、二方向検索と現在のatlas名候補を検査。
+- QA: `test_hinogawa_adviser_fish_records_v01.py` / `test_hinogawa_adviser_preview_v01.py`。`.github/workflows/hinogawa-adviser-fish-records-v01.yml` で研究用全テスト、再生成一致、双方向検索、プレビューJavaScript構文、現在のatlas名候補を検査。Actions artifactにnoindex HTMLを同梱。
 
 **ソース制限:** 魚類個体数表の表示8魚名・57件の正数セルは、公式PDFの画像（PDF p.20/43、紙面p.18）と照合済み。赤枠の重要種は非公表のため転記していない。調査努力量・サンプル区間・現在の生息・種の保全公開可否は未審査。57行すべて `research_only` / `not_approved`。公開atlas、WordPress、検索JSONへは反映しない。
 
