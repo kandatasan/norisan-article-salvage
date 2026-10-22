@@ -14,7 +14,7 @@ class YamaguchiFishPageReviewTests(unittest.TestCase):
     def setUp(self):
         self.excerpt = (
             "ヌマムツは山口県では既往文献に記録がある。本調査では"
-            "2005年佐波川水系小島川と2007年に山口湾に流入する長沢川で採捕された。"
+            "2005年佐波川水系小島川と2007年に山口湾に流入する長沢川水系で確認した。"
         )
 
     def test_exact_target_scope_and_years_are_isolated(self):
