@@ -1,0 +1,40 @@
+name: Chugoku SH22 fish index v01
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/chugoku-sh22-fish-index-v01.yml"
+      - "river-fish/research-20261021/build_chugoku_sh22_fish_index_v01.py"
+      - "river-fish/research-20261021/build_chugoku_sh22_fish_preview_v01.py"
+      - "river-fish/research-20261021/chugoku_sh22_fish_safe_additions_v01.csv"
+      - "river-fish/research-20261021/fish_river_evidence_candidates_20261021.csv"
+      - "river-fish/research-20261021/test_chugoku_sh22_fish_index_v01.py"
+      - "river-fish/review-staged/SHIMANE_SH22_FISH_TABLE_COMPLETION_V01.md"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.x"
+      - name: Run SH22 fish index tests
+        working-directory: river-fish/research-20261021
+        run: python -m unittest -v test_chugoku_sh22_fish_index_v01.py
+      - name: Build research layer and offline preview
+        working-directory: river-fish/research-20261021
+        run: |
+          python build_chugoku_sh22_fish_index_v01.py --out "$RUNNER_TEMP/sh22-fish-layer.json"
+          python build_chugoku_sh22_fish_preview_v01.py --out "$RUNNER_TEMP/sh22-fish-preview.html"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chugoku-sh22-fish-index-v01
+          path: |
+            ${{ runner.temp }}/sh22-fish-layer.json
+            ${{ runner.temp }}/sh22-fish-preview.html
+          retention-days: 30
