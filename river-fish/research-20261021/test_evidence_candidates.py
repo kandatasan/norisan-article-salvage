@@ -69,13 +69,28 @@ class FishRiverCandidateQA(unittest.TestCase):
         for row in self.rows:
             self.assertEqual(row["integration_status"], "staged_only")
             self.assertEqual(row["verification_status"],
-                             "search_excerpt_only" if row["source_id"] in ("YA04", "YA07")
+                             "search_excerpt_only" if row["source_id"] == "YA04"
                              else "source_text_checked")
             self.assertEqual(row["conservation_review"],
                              "required" if row["recorded_name"] in
                              ("アカザ", "スイゲンゼニタナゴ", "シロヒレタビラ",
                               "ミナミメダカ", "ホンモロコ", "カネヒラ",
                               "ヤマメ") else "not_flagged")
+
+    def test_yamaguchi_report_page_50_verifies_text_without_expanding_scope(self):
+        kojima = next(r for r in self.rows if r["source_id"] == "YA07" and r["river"] == "小島川")
+        longsawa = next(r for r in self.rows if r["source_id"] == "YA07" and r["watershed"] == "長沢川")
+        self.assertEqual(kojima["verification_status"], "source_text_checked")
+        self.assertEqual(kojima["source_locator"], "山口県水産研究センター研究報告第07号 PDF p.50")
+        self.assertEqual((kojima["evidence_scope"], kojima["survey_year"]), ("named_river", "2005"))
+        self.assertIn("佐波川水系小島川", kojima["notes"])
+        self.assertEqual(longsawa["verification_status"], "source_text_checked")
+        self.assertEqual(longsawa["source_locator"], kojima["source_locator"])
+        self.assertEqual((longsawa["river"], longsawa["evidence_scope"], longsawa["survey_year"]),
+                         ("", "watershed_only", "2007"))
+        self.assertIn("長沢川水系", longsawa["notes"])
+        self.assertEqual(kojima["integration_status"], "staged_only")
+        self.assertEqual(longsawa["integration_status"], "staged_only")
 
     def test_environment_nt_yamame_rows_are_held_for_conservation_review(self):
         rows = [r for r in self.rows if r["recorded_name"] == "ヤマメ"]
