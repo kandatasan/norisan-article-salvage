@@ -1,0 +1,77 @@
+name: Source-scoped river fish connections v01
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/source-connections-v01/**'
+      - 'scripts/apply_river_source_connections_20261022.py'
+      - '.github/workflows/river-source-connections-v01.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/source-connections-v01/**'
+      - 'scripts/apply_river_source_connections_20261022.py'
+      - '.github/workflows/river-source-connections-v01.yml'
+permissions:
+  contents: read
+concurrency:
+  group: river-source-connections-v01-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  qa-and-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Source-layer, coverage and surgical patch regression
+        run: |
+          python -m unittest discover -s river-fish/source-connections-v01 -p 'test_*.py' -v
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -q
+          python river-fish/source-connections-v01/build_source_connections.py --out "$RUNNER_TEMP/source-fish.json"
+          cmp "$RUNNER_TEMP/source-fish.json" river-fish/source-connections-v01/fish_source_connections_v01.json
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check the generated executable JavaScript
+        run: |
+          python - <<'PYCODE'
+          import sys,pathlib
+          sys.path.insert(0,'river-fish/source-connections-v01')
+          import patch_widget
+          sys.path.insert(0,'scripts')
+          import apply_river_source_connections_20261022 as wp
+          raw=pathlib.Path('content/drafts/river-atlas-seo-20261021.html').read_text()
+          script=patch_widget.patch_script(wp.get_script(raw).group(1))
+          pathlib.Path('/tmp/source-widget-v01.js').write_text(script)
+          PYCODE
+          node --check /tmp/source-widget-v01.js
+      - name: Inspect current WordPress widget without changing it
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_river_source_connections_20261022.py check
+  apply-and-verify:
+    if: github.event_name == 'push'
+    needs: qa-and-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply only the pinned executable widget script, preserving article metadata and prose
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_river_source_connections_20261022.py apply
+      - name: Verify public article layer and combined live coverage
+        run: python river-fish/source-connections-v01/audit_connections.py --out "$RUNNER_TEMP/source-fish-coverage.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: source-fish-public-coverage-v01
+          path: ${{ runner.temp }}/source-fish-coverage.json
+          retention-days: 30
