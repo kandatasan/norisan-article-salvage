@@ -1,0 +1,55 @@
+name: Yamaguchi fish source page review v10 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/audit_yamaguchi_fish_pages_v10.py'
+      - 'river-fish/research-20261021/test_yamaguchi_fish_pages_v10.py'
+      - '.github/workflows/yamaguchi-fish-page-review-v10.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review-page:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF text extractor
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          command -v pdftotext
+      - name: Run fail-closed page extraction tests
+        run: |
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_yamaguchi_fish_pages_v10.py' -v
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_evidence_candidates.py' -v
+      - name: Read only the pinned official PDF page and isolate the fish record sentence
+        run: |
+          python river-fish/research-20261021/audit_yamaguchi_fish_pages_v10.py \
+            --out "$RUNNER_TEMP/yamaguchi_fish_page_review_v10.json"
+      - name: Verify review output remains non-publishing
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p = pathlib.Path(os.environ["RUNNER_TEMP"]) / "yamaguchi_fish_page_review_v10.json"
+          d = json.loads(p.read_text(encoding="utf-8"))
+          assert d["status"] == "SOURCE_TEXT_EXCERPT_FOR_MANUAL_SCOPE_REVIEW"
+          assert d["pdf_page_number"] == 50
+          assert d["species_term_on_same_page"] == "ヌマムツ"
+          assert all(x in d["excerpt"] for x in ("2005", "佐波川", "小島川", "2007", "山口湾", "長沢川水系"))
+          assert d["source_rows_changed"] == 0
+          assert d["approved_for_publication"] is False and d["site_updated"] is False
+          assert not any(x in d["excerpt"] for x in ("北緯", "東経", "座標"))
+          print("YAMAGUCHI_FISH_PAGE_REVIEW_V10_SAFE", {
+              "source": d["source_id"], "pdf_page": d["pdf_page_number"],
+              "status": d["status"], "approval": d["approved_for_publication"]})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yamaguchi-fish-page-review-v10
+          path: ${{ runner.temp }}/yamaguchi_fish_page_review_v10.json
+          retention-days: 30

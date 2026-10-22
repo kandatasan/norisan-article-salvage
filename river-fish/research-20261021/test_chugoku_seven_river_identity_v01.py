@@ -25,7 +25,9 @@ class SevenRiverIdentityAuditTests(unittest.TestCase):
     def test_report_states_limitations_and_no_publication(self):
         report = render(load())
         self.assertIn("公開承認は0件", report)
-        self.assertIn("GIS交差照合は未実施", report)
+        self.assertIn("GIS形状のダウンロードや市町境界との交差照合は実施していない", report)
+        self.assertIn("利用条件は非商用", report)
+        self.assertIn("公開データには使用していない", report)
         self.assertIn("現在の生息", report)
         self.assertIn("8707040211", report)
         self.assertIn("8707030012", report)

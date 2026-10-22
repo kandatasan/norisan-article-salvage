@@ -19,8 +19,8 @@ PUBLISHABLE = False
 
 
 def build(rows):
-    if len(rows) != 124:
-        raise ValueError("Expected 124 source observations, not a new or changed source file")
+    if len(rows) != 134:
+        raise ValueError("Expected 134 source observations, not a new or changed source file")
     by_river = collections.defaultdict(list)
     excluded = collections.Counter()
     reverse = collections.defaultdict(set)

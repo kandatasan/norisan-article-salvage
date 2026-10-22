@@ -101,7 +101,7 @@ def main():
     args = parser.parse_args()
     with INPUT.open(encoding="utf-8-sig", newline="") as f:
         rows = list(csv.DictReader(f))
-    if len(rows) != 124:
+    if len(rows) != 134:
         raise ValueError("Source count changed; review first")
     atlas, sha = load_live("atlas.json")
     fish_master, fish_sha = load_live("fish_master.json")

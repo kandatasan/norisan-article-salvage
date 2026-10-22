@@ -1,4 +1,5 @@
 """Review packet is not a fish-publication payload."""
+import collections
 import copy
 import unittest
 from build_chugoku_review_packet_v08 import render
@@ -35,9 +36,9 @@ def fixture():
         })
     return {
         "schema": INPUT_SCHEMA, "status": "REVIEW_ONLY_DO_NOT_UPLOAD",
-        "provincial_candidate_rows": 124,
+        "provincial_candidate_rows": 134,
         "named_river_candidate_rows": 115,
-        "watershed_only_rows_held": 9,
+        "watershed_only_rows_held": 19,
         "river_groups": 13,
         "national_chugoku_fish_year_records": 3592,
         "priority_counts": {"B_NEW_RIVER_REVIEW": 7,
@@ -77,6 +78,20 @@ class PacketTests(unittest.TestCase):
         d["named_river_candidate_rows"] = 116
         with self.assertRaises(ValueError):
             render(d)
+
+    def test_review_queue_counts_follow_the_evidence_classification(self):
+        d = fixture()
+        for row in d["rows"][4:7]:
+            row["review_priority"] = "C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW"
+            row["evidence_gate"] = "CONSERVATION_REVIEW_REQUIRED"
+            row["source_conservation_flag_rows"] = 1
+        d["priority_counts"] = dict(sorted(collections.Counter(
+            row["review_priority"] for row in d["rows"]
+        ).items()))
+        md = render(d)
+        self.assertIn("次の河川同定レビュー対象4、資料・保全等で保留9", md)
+        self.assertIn("先に同一河川を確認する4グループ", md)
+        self.assertIn("まだ個別河川へつなげない9グループ", md)
 
     def test_fish_name_field_injected_rejected(self):
         d = fixture()

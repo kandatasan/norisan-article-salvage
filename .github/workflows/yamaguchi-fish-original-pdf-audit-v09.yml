@@ -38,7 +38,8 @@ jobs:
           import json,os,pathlib
           d=json.loads((pathlib.Path(os.environ["RUNNER_TEMP"])/"yamaguchi_original_pdf_review_v09.json").read_text())
           assert d["status"]=="MACHINE_PDF_TEXT_SCAN_ONLY_NOT_VERIFIED_NOT_PUBLISHED"
-          assert d["source_records_pending_manual_review"]==10
+          assert d["source_records_pending_manual_review"]==0
+          assert d["source_records_source_text_checked_not_approved"]==20
           assert d["source_records_automatically_approved"]==0
           assert d["site_updated"] is False
           assert {x["source_id"] for x in d["files"]}=={"YA07","YA04"}

@@ -1,0 +1,55 @@
+name: Yamaguchi black bass table scope review v11 (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/research-20261021/audit_yamaguchi_bass_pages_v11.py'
+      - 'river-fish/research-20261021/test_yamaguchi_bass_pages_v11.py'
+      - '.github/workflows/yamaguchi-bass-table-review-v11.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  review-table-pages:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF page renderer
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq poppler-utils
+          command -v pdftoppm
+      - name: Run fail-closed pinned source tests
+        run: |
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_yamaguchi_bass_pages_v11.py' -v
+      - name: Render only official PDF pages 125-126
+        run: |
+          python river-fish/research-20261021/audit_yamaguchi_bass_pages_v11.py \
+            --out-dir "$RUNNER_TEMP/yamaguchi_bass_table_review_v11"
+      - name: Verify output remains non-publishing
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          droot = pathlib.Path(os.environ["RUNNER_TEMP"]) / "yamaguchi_bass_table_review_v11"
+          d = json.loads((droot / "review.json").read_text(encoding="utf-8"))
+          assert d["status"] == "PINNED_SOURCE_PAGE_IMAGES_FOR_MANUAL_SCOPE_REVIEW"
+          assert d["reviewed_pdf_pages"] == [125, 126]
+          assert d["expected_table_reference"] == "表3"
+          assert d["expected_species_label"] == "オオクチバス"
+          assert all((droot / name).is_file() for name in d["page_image_files"])
+          assert d["source_rows_changed"] == 0
+          assert d["approved_for_publication"] is False and d["site_updated"] is False
+          print("YAMAGUCHI_BASS_TABLE_REVIEW_V11_SAFE", {
+              "source": d["source_id"], "pages": d["reviewed_pdf_pages"],
+              "page_images": len(d["page_image_files"]),
+              "approval": d["approved_for_publication"]})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: yamaguchi-bass-table-review-v11
+          path: ${{ runner.temp }}/yamaguchi_bass_table_review_v11
+          retention-days: 30

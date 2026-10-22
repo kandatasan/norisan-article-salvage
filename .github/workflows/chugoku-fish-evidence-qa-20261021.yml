@@ -23,3 +23,20 @@ jobs:
           python-version: '3.12'
       - name: Validate staged source claims and release gates (no WP writes)
         run: python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
+      - name: Build a separate watershed-only fish search preview
+        run: |
+          python river-fish/research-20261021/build_watershed_fish_preview_v01.py \
+            --out "$RUNNER_TEMP/chugoku-watershed-fish-preview-v01.html"
+          python - <<'PY'
+          import os, pathlib
+          page=(pathlib.Path(os.environ["RUNNER_TEMP"])/"chugoku-watershed-fish-preview-v01.html").read_text(encoding="utf-8")
+          assert 'name="robots" content="noindex,nofollow"' in page
+          assert "個別河川には未接続" in page
+          assert "オオクチバス" in page and "ヌマムツ" in page
+          print("WATERSHED_ONLY_FISH_PREVIEW_SAFE", {"noindex": True, "published": False})
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: chugoku-watershed-fish-preview-v01
+          path: ${{ runner.temp }}/chugoku-watershed-fish-preview-v01.html
+          retention-days: 30

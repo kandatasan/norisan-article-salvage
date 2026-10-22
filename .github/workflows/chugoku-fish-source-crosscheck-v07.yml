@@ -22,8 +22,9 @@ jobs:
         run: |
           python -m unittest discover -s river-fish/research-20261021 -p 'test_chugoku_source_crosscheck_v07.py' -v
           python -m unittest discover -s river-fish/research-20261021 -p 'test_evidence_candidates.py' -v
-      - name: Re-extract official pinned Chugoku fish workbook (read-only)
-        run: python river-fish/research-20261021/extract_official_named_river_fish_nationwide_v04.py --region chugoku --out "$RUNNER_TEMP/chugoku-v07-source"
+          python -m unittest discover -s river-fish/research-20261021 -p 'test_chugoku_national_snapshot_v01.py' -v
+      - name: Materialize checksum-verified Chugoku fish snapshot (offline)
+        run: python river-fish/research-20261021/validate_chugoku_national_snapshot_v01.py --out-dir "$RUNNER_TEMP/chugoku-v07-source"
       - name: Crosscheck official river names and species counts against independent source
         run: |
           python river-fish/research-20261021/build_chugoku_source_crosscheck_v07.py \
@@ -36,9 +37,9 @@ jobs:
           p=pathlib.Path(os.environ["RUNNER_TEMP"])/"chugoku-v07-source/chugoku_source_crosscheck_v07.json"
           d=json.loads(p.read_text(encoding="utf-8"))
           assert d["status"]=="REVIEW_ONLY_DO_NOT_UPLOAD"
-          assert d["provincial_candidate_rows"]==124
+          assert d["provincial_candidate_rows"]==134
           assert d["named_river_candidate_rows"]==115
-          assert d["watershed_only_rows_held"]==9
+          assert d["watershed_only_rows_held"]==19
           assert d["river_groups"]==13
           assert sum(d["priority_counts"].values())==13
           assert all(x["approved_for_publication"] is False

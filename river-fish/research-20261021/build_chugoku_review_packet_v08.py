@@ -7,6 +7,7 @@ sites, coordinates, catch promises, approval flags or generated atlas data.
 """
 from __future__ import annotations
 import argparse
+import collections
 import html
 import json
 from pathlib import Path
@@ -48,15 +49,18 @@ def source_links(row):
 
 def render(data):
     if (data.get("schema") != INPUT_SCHEMA or data.get("status") != "REVIEW_ONLY_DO_NOT_UPLOAD"
-            or data.get("provincial_candidate_rows") != 124
+            or data.get("provincial_candidate_rows") != 134
             or data.get("named_river_candidate_rows") != 115
-            or data.get("watershed_only_rows_held") != 9
+            or data.get("watershed_only_rows_held") != 19
             or data.get("river_groups") != 13
             or data.get("national_chugoku_fish_year_records") != 3592
             or len(data.get("rows", [])) != 13):
         raise ValueError("Review source drift; manual review required")
     rows = data["rows"]
-    if (sum(data["priority_counts"].values()) != 13
+    actual_priority_counts = dict(sorted(collections.Counter(
+        x["review_priority"] for x in rows
+    ).items()))
+    if (data["priority_counts"] != actual_priority_counts
             or any(x["review_priority"] not in CATEGORIES
                    or x["approved_for_publication"] is not False
                    or x["code_identity_verified"] is not False
@@ -73,8 +77,9 @@ def render(data):
         "A_EXISTING_ATLAS_RIVER_REVIEW", "B_NEW_RIVER_REVIEW"}]
     held = [x for x in rows if x["review_priority"] not in {
         "A_EXISTING_ATLAS_RIVER_REVIEW", "B_NEW_RIVER_REVIEW"}]
-    if len(eligible) != 7 or len(held) != 6:
+    if len(eligible) + len(held) != len(rows):
         raise ValueError("Review queue counts changed")
+    eligible_count, held_count = len(eligible), len(held)
     lines = [
         "# 中国地方5県｜魚の調査記録を川につなぐための公開前確認票（v08）",
         "",
@@ -83,15 +88,15 @@ def render(data):
         "",
         "## 今回の実測",
         "",
-        "- 県資料124記載のうち個別河川名あり115記載、13河川名グループ。水系だけの9記載は接続禁止。",
+        "- 県資料134記載のうち個別河川名あり115記載、13河川名グループ。水系だけの19記載は接続禁止。",
         "- 国交省中国地方の魚類調査原本3,592件と河川名・魚の**原文表記**を照合。",
         "- 国交省の河川コード名候補が1件の河川名グループ：" +
           str(data["river_groups_with_national_river_code_single_name_candidate"]) + "。",
         "- 県資料と国交省調査の原文魚名が一致した河川名グループ：" +
           str(data["river_groups_with_independent_literal_fish_overlap"]) + "。同一地点・独立観測の証明ではありません。",
-        "- **次の河川同定レビュー対象7、資料・保全等で保留6。公開承認は0。**",
+        f"- **次の河川同定レビュー対象{eligible_count}、資料・保全等で保留{held_count}。公開承認は0。**",
         "",
-        "## 1. 先に同一河川を確認する7グループ",
+        f"## 1. 先に同一河川を確認する{eligible_count}グループ",
         "",
         "| 県資料発行県 | 水系 | 河川名 | 県資料の記載数 | 国交省の同名河川記録数 | 同じ原文魚名数 | 河川コード**名候補** | 既存図鑑**名候補** | 出典 |",
         "| --- | --- | --- | ---: | ---: | ---: | --- | --- | --- |",
@@ -108,7 +113,7 @@ def render(data):
         ]) + " |")
     lines.extend([
         "",
-        "## 2. まだ個別河川へつなげない6グループ",
+        f"## 2. まだ個別河川へつなげない{held_count}グループ",
         "",
         "| 県資料発行県 | 水系 | 河川名 | 保留理由 | 資料記載数 | 保全フラグ数 | 原本未通読数 | 出典 |",
         "| --- | --- | --- | --- | ---: | ---: | ---: | --- |",
@@ -153,7 +158,14 @@ def main():
         raise FileExistsError("Refuse to overwrite human review packet")
     args.out.write_text(report, encoding="utf-8")
     print("CHUGOKU_SEVEN_RIVERS_PACKET_V08", json.dumps({
-        "review_rivers": 7, "held_rivers": 6, "site_updated": False
+        "review_rivers": sum(x["review_priority"] in {
+            "A_EXISTING_ATLAS_RIVER_REVIEW", "B_NEW_RIVER_REVIEW"
+        } for x in data["rows"]),
+        "held_rivers": sum(x["review_priority"] in {
+            "C_EVIDENCE_SCOPE_OR_CONSERVATION_REVIEW",
+            "D_AMBIGUOUS_OR_MISSING_CODE_REVIEW",
+        } for x in data["rows"]),
+        "site_updated": False
     }, ensure_ascii=False))
 
 

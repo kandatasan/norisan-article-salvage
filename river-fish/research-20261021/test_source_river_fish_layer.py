@@ -30,10 +30,19 @@ class SourceLayerTests(unittest.TestCase):
     def test_exclusion_and_counts(self):
         total = sum(r["source_record_count"] for r in self.data["river_groups"])
         excluded = sum(self.data["excluded_counts"].values())
-        self.assertEqual(total + excluded, 124)
-        self.assertEqual(self.data["excluded_counts"]["watershed_only"], 9)
-        self.assertEqual(self.data["excluded_counts"]["source_not_fully_checked"], 1)
+        self.assertEqual(total + excluded, 134)
+        self.assertEqual(self.data["excluded_counts"]["watershed_only"], 19)
+        self.assertEqual(self.data["excluded_counts"].get("source_not_fully_checked", 0), 0)
         self.assertGreater(self.data["excluded_counts"]["conservation_review_required"], 0)
+
+    def test_yamaguchi_kijima_record_enters_research_index_and_water_system_does_not(self):
+        keys = {river["source_river_key"] for river in self.data["river_groups"]}
+        kojima_key = "山口県|佐波川|小島川"
+        self.assertIn(kojima_key, keys)
+        kojima = next(r for r in self.data["river_groups"] if r["source_river_key"] == kojima_key)
+        self.assertIn("ヌマムツ", {fish["recorded_name"] for fish in kojima["fish_labels"]})
+        self.assertIn(kojima_key, self.data["fish_reverse_index"]["ヌマムツ"])
+        self.assertNotIn("山口県|長沢川|", keys)
 
     def test_source_scoped_reverse_index(self):
         for river in self.data["river_groups"]:
