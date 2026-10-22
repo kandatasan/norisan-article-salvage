@@ -40,7 +40,7 @@ jobs:
           assert d["status"] == "SOURCE_TEXT_EXCERPT_FOR_MANUAL_SCOPE_REVIEW"
           assert d["pdf_page_number"] == 50
           assert d["species_term_on_same_page"] == "ヌマムツ"
-          assert all(x in d["excerpt"] for x in ("2005", "佐波川", "小島川", "2007", "山口湾", "長沢川"))
+          assert all(x in d["excerpt"] for x in ("2005", "佐波川", "小島川", "2007", "山口湾", "長沢川水系"))
           assert d["source_rows_changed"] == 0
           assert d["approved_for_publication"] is False and d["site_updated"] is False
           assert not any(x in d["excerpt"] for x in ("北緯", "東経", "座標"))
