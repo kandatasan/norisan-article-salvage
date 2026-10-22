@@ -5,7 +5,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from audit_yamaguchi_fish_pages_v10 import (
-    PDFS, REQUIRED_TERMS, SCHEMA, SOURCE_PDF_PAGE, STATUS,
+    PDFS, REQUIRED_RECORD_TERMS, SCHEMA, SOURCE_PDF_PAGE, SPECIES_TERM, STATUS,
     build_review, extract_pdf_page_text, extract_target_excerpt,
 )
 
@@ -19,9 +19,9 @@ class YamaguchiFishPageReviewTests(unittest.TestCase):
 
     def test_exact_target_scope_and_years_are_isolated(self):
         result = extract_target_excerpt("前の説明。\n" + self.excerpt + "\n別の種の説明。")
-        self.assertTrue(all(term in result for term in REQUIRED_TERMS))
+        self.assertTrue(all(term in result for term in REQUIRED_RECORD_TERMS))
         self.assertNotIn("別の種", result)
-        self.assertLessEqual(len(result), 700)
+        self.assertLessEqual(len(result), 500)
 
     def test_missing_required_scope_fails_closed(self):
         with self.assertRaises(ValueError):
@@ -29,9 +29,8 @@ class YamaguchiFishPageReviewTests(unittest.TestCase):
 
     def test_coordinates_are_not_emitted(self):
         text = (
-            "ヌマムツは山口県では既往文献に記録がある。本調査では"
-            "2005年佐波川水系小島川と2007年に山口湾に流入する長沢川で採捕された。"
-            "北緯34°00′東経131°00′"
+            self.excerpt
+            + " 北緯34°00′東経131°00′"
         )
         result = extract_target_excerpt(text)
         self.assertNotIn("北緯", result)
@@ -44,6 +43,7 @@ class YamaguchiFishPageReviewTests(unittest.TestCase):
         self.assertEqual(result["schema"], SCHEMA)
         self.assertEqual(result["status"], STATUS)
         self.assertEqual(result["pdf_page_number"], SOURCE_PDF_PAGE)
+        self.assertEqual(result["species_term_on_same_page"], SPECIES_TERM)
         self.assertTrue(result["human_review_required"])
         self.assertEqual(result["source_rows_changed"], 0)
         self.assertFalse(result["approved_for_publication"])
