@@ -7,9 +7,11 @@ on:
       - 'river-fish/research-20261021/hinogawa_diadr_fish_records_v01.csv'
       - 'river-fish/research-20261021/hinogawa_diadr_overlap_review_v01.json'
       - 'river-fish/research-20261021/build_hinogawa_adviser_fish_records_v01.py'
+      - 'river-fish/research-20261021/build_hinogawa_adviser_preview_v01.py'
       - 'river-fish/research-20261021/search_hinogawa_records_v01.py'
       - 'river-fish/research-20261021/audit_hinogawa_live_atlas_v01.py'
       - 'river-fish/research-20261021/test_hinogawa_adviser_fish_records_v01.py'
+      - 'river-fish/research-20261021/test_hinogawa_adviser_preview_v01.py'
       - 'river-fish/review-staged/HINOGAWA_ADVISER_FISH_TABLE_AUDIT_V01.md'
       - 'river-fish/research-20261021/README.md'
       - '.github/workflows/hinogawa-adviser-fish-records-v01.yml'
@@ -35,6 +37,21 @@ jobs:
             river-fish/research-20261021/hinogawa_diadr_fish_records_v01.csv
           cmp "$RUNNER_TEMP/hinogawa-adviser-v01/hinogawa_diadr_overlap_review_v01.json" \
             river-fish/research-20261021/hinogawa_diadr_overlap_review_v01.json
+      - name: Build noindex offline two-way preview and check JavaScript syntax
+        run: |
+          python river-fish/research-20261021/build_hinogawa_adviser_preview_v01.py \
+            --records "$RUNNER_TEMP/hinogawa-adviser-v01/hinogawa_diadr_fish_records_v01.csv" \
+            --out "$RUNNER_TEMP/hinogawa-adviser-v01/hinogawa-fish-preview-v01.html"
+          python - "$RUNNER_TEMP/hinogawa-adviser-v01/hinogawa-fish-preview-v01.html" \
+            "$RUNNER_TEMP/hinogawa-fish-preview-v01.js" <<'PY'
+          import pathlib, re, sys
+          html = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8")
+          scripts = re.findall(r"<script>([\s\S]*?)</script>", html)
+          if len(scripts) != 1:
+              raise SystemExit("Expected exactly one executable preview script")
+          pathlib.Path(sys.argv[2]).write_text(scripts[0], encoding="utf-8")
+          PY
+          node --check "$RUNNER_TEMP/hinogawa-fish-preview-v01.js"
       - name: Verify both search directions and historical-data notice
         run: |
           python river-fish/research-20261021/search_hinogawa_records_v01.py \
@@ -73,5 +90,6 @@ jobs:
           path: |
             ${{ runner.temp }}/hinogawa-adviser-v01/hinogawa_diadr_fish_records_v01.csv
             ${{ runner.temp }}/hinogawa-adviser-v01/hinogawa_diadr_overlap_review_v01.json
+            ${{ runner.temp }}/hinogawa-adviser-v01/hinogawa-fish-preview-v01.html
             ${{ runner.temp }}/hinogawa-live-atlas-review-v01.json
           retention-days: 30
