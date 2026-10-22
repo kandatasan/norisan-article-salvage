@@ -1,0 +1,39 @@
+name: River Xserver external data consumer QA
+on:
+  pull_request:
+    branches: [main]
+    paths: ['river-fish/xserver-release-v027/**', '.github/workflows/river-xserver-v027.yml']
+  push:
+    branches: [main]
+    paths: ['river-fish/xserver-release-v027/**', '.github/workflows/river-xserver-v027.yml']
+permissions:
+  contents: read
+jobs:
+  external-consumer-qa:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Reviewed source layer and external consumer syntax
+        run: |
+          python -m unittest discover -s river-fish/source-connections-v01 -p 'test_*.py' -q
+          python - <<'PYCODE'
+          import pathlib,sys
+          sys.path.insert(0,'river-fish/xserver-release-v027')
+          import build_release
+          out=pathlib.Path('/tmp/river-xserver-v027')
+          out.mkdir()
+          (out/'external-widget.js').write_text(build_release.external_script())
+          (out/'index.html').write_text(build_release.standalone_html())
+          PYCODE
+          node --check /tmp/river-xserver-v027/external-widget.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: river-xserver-external-consumer-v027
+          path: /tmp/river-xserver-v027/
+          retention-days: 30
