@@ -46,14 +46,15 @@ class YamaguchiPdfAuditTests(unittest.TestCase):
         self.assertEqual(d["text_extraction_status"], "no_extractable_text")
         self.assertFalse(d["original_human_read_verified"])
 
-    def test_ya07_rows_checked_and_ya04_rows_remain_search_excerpt_only(self):
+    def test_ya04_and_ya07_rows_are_source_checked_but_staged(self):
         rows = read_rows(INPUT, PROVINCIAL_FIELDS)
         ya07 = [x for x in rows if x["source_id"] == "YA07"]
         ya04 = [x for x in rows if x["source_id"] == "YA04"]
         self.assertEqual((len(ya07), len(ya04)), (2, 8))
         self.assertTrue(all(x["verification_status"] == "source_text_checked"
                             and x["integration_status"] == "staged_only" for x in ya07))
-        self.assertTrue(all(x["verification_status"] == "search_excerpt_only"
+        self.assertTrue(all(x["verification_status"] == "source_text_checked"
+                            and "PDF p.126" in x["source_locator"]
                             and x["integration_status"] == "staged_only" for x in ya04))
 
 
