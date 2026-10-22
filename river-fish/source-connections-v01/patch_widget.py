@@ -21,7 +21,7 @@ def patch_script(script):
  ('if(current.source_only_name_evidence_v21){sourceOnlyDetail(current);return;}','if(current.source_only_name_evidence_v21&&!current.sourceFishV01){sourceOnlyDetail(current);return;}'),
  ('for(const m of ["過去の調査記録","DNA検出"])','for(const m of ["過去の調査記録","DNA検出","資料の確認種表","河川環境の説明","底生生物調査での魚類記録"])'),
  ('const years=Array.from(row.dates).sort','if(row.sourceNotesV01){const notes=node("details");notes.appendChild(node("summary","資料の記録区分・調査年"));for(const text of row.sourceNotesV01)notes.appendChild(node("p",text,"note"));card.appendChild(notes);}\n const years=Array.from(row.dates).sort'),
- ('selected.slice(0,displayed).forEach','if(current.sourceFishV01)for(const text of current.sourceFishV01.scope_notes)$("fishlist").appendChild(node("p",text,"note"));\n selected.slice(0,displayed).forEach'),
+ ('selected.slice(0,displayed).forEach','if(current.sourceFishV01)for(const text of current.sourceFishV01.scope_notes){const note=node("p",text,"note");note.style.gridColumn="1 / -1";$("fishlist").appendChild(note);}\n selected.slice(0,displayed).forEach'),
  ('if(!e||e.source_only_name_evidence_v21)return;','if(!e||(e.source_only_name_evidence_v21&&!e.sourceFishV01))return;'),
  ('if(!reverseIndexV24)reverseIndexV24=await load("fish_to_river_reverse_v24.json");','if(!reverseIndexV24)reverseIndexV24=mergeSourceReverseV01(await load("fish_to_river_reverse_v24.json"));'),
  ('?"DNA検出（捕獲記録ではない）":"過去の魚類調査"','?"DNA検出（捕獲記録ではない）":x==="PUBLISHED_SOURCE_FISH_REFERENCE"?"県・市の公開資料に記録":"過去の魚類調査"'),

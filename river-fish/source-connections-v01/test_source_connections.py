@@ -67,5 +67,6 @@ class ConnectionsTest(unittest.TestCase):
   self.assertEqual(body[:before.start(1)],edited[:after.start(1)])
   self.assertEqual(body[before.end(1):],edited[after.end(1):])
   self.assertEqual(wp.edit_body(edited),(edited,'ALREADY_CURRENT'))
+  self.assertIn('note.style.gridColumn="1 / -1"',after.group(1))
   with self.assertRaises(ValueError):wp.edit_body(body.replace('const FETCH_LIMIT=40;','const FETCH_LIMIT=41;'))
 if __name__=='__main__':unittest.main()
