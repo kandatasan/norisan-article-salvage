@@ -21,6 +21,8 @@ jobs:
         run: python -m unittest discover -s river-fish/research-20261021 -p 'test_*.py' -v
       - name: Read public atlas JSON and compare staged fish records (no server writes)
         run: python river-fish/research-20261021/audit_live_atlas_river_fish.py --out "$RUNNER_TEMP/river-fish-live-review"
+      - name: Measure fish-evidence coverage by river-name display group (research only)
+        run: python river-fish/research-20261021/audit_live_atlas_fish_coverage_v01.py --out "$RUNNER_TEMP/river-fish-live-review/fish_coverage_summary.json"
       - name: Build versioned research-only river to fish and fish to river index
         run: python river-fish/research-20261021/build_source_river_fish_layer.py --out "$RUNNER_TEMP/river-fish-live-review/river_fish_source_layer_v01.json"
       - name: Generate portable offline fish-to-river demo
