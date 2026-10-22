@@ -18,40 +18,38 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Install PDF text tools
+      - name: Install PDF page renderer
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y -qq poppler-utils
-          command -v pdftotext
-      - name: Run fail-closed table-scope tests
+          command -v pdftoppm
+      - name: Run fail-closed pinned source tests
         run: |
           python -m unittest discover -s river-fish/research-20261021 -p 'test_yamaguchi_bass_pages_v11.py' -v
-      - name: Read only pinned official PDF pages 125-126
+      - name: Render only official PDF pages 125-126
         run: |
           python river-fish/research-20261021/audit_yamaguchi_bass_pages_v11.py \
-            --out "$RUNNER_TEMP/yamaguchi_bass_table_review_v11.json"
-      - name: Verify research-only scope and output safety
+            --out-dir "$RUNNER_TEMP/yamaguchi_bass_table_review_v11"
+      - name: Verify output remains non-publishing
         run: |
           python - <<'PY'
           import json, os, pathlib
-          p = pathlib.Path(os.environ["RUNNER_TEMP"]) / "yamaguchi_bass_table_review_v11.json"
-          d = json.loads(p.read_text(encoding="utf-8"))
-          assert d["status"] == "SOURCE_TABLE_EXCERPT_FOR_MANUAL_SCOPE_REVIEW"
+          droot = pathlib.Path(os.environ["RUNNER_TEMP"]) / "yamaguchi_bass_table_review_v11"
+          d = json.loads((droot / "review.json").read_text(encoding="utf-8"))
+          assert d["status"] == "PINNED_SOURCE_PAGE_IMAGES_FOR_MANUAL_SCOPE_REVIEW"
           assert d["reviewed_pdf_pages"] == [125, 126]
-          assert d["table_reference"] == "表3"
-          assert d["species_term"] == "オオクチバス"
-          assert len(d["candidate_watershed_terms_present"]) == 8
-          assert all(x in d["excerpt"] for x in d["candidate_watershed_terms_present"])
+          assert d["expected_table_reference"] == "表3"
+          assert d["expected_species_label"] == "オオクチバス"
+          assert all((droot / name).is_file() for name in d["page_image_files"])
           assert d["source_rows_changed"] == 0
           assert d["approved_for_publication"] is False and d["site_updated"] is False
-          assert not any(x in d["excerpt"] for x in ("北緯", "東経", "座標", "採集地点"))
           print("YAMAGUCHI_BASS_TABLE_REVIEW_V11_SAFE", {
               "source": d["source_id"], "pages": d["reviewed_pdf_pages"],
-              "watersheds": len(d["candidate_watershed_terms_present"]),
+              "page_images": len(d["page_image_files"]),
               "approval": d["approved_for_publication"]})
           PY
       - uses: actions/upload-artifact@v4
         with:
           name: yamaguchi-bass-table-review-v11
-          path: ${{ runner.temp }}/yamaguchi_bass_table_review_v11.json
+          path: ${{ runner.temp }}/yamaguchi_bass_table_review_v11
           retention-days: 30
