@@ -133,7 +133,7 @@ def main():
         "source_records_pending_manual_review": 10,
         "source_records_automatically_approved": 0,
         "files": result,
-        "notice": "キーワード検出だけでは表・対象河川・調査範囲を確認したことにはならない。v09は行状態を変更しない。YA07の2行はv10がPDF p.50の記載本文を別途確認済みで、YA04の8行はsearch_excerpt_onlyのまま。",
+        "notice": "キーワード検出だけでは表・対象河川・調査範囲を確認したことにはならない。v09は行状態を変更しない。YA07の2行はv10がPDF p.50の記載本文を別途確認済みで、YA04の8行はv11がPDF p.126の表3画像を別途照合済み。全10行は研究専用・公開未承認。",
         "site_updated": False,
     }
     args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
