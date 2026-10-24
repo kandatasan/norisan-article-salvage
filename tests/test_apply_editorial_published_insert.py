@@ -11,7 +11,7 @@ CONFIG = json.loads((ROOT / "editorial/ux-resale-early-cta-20261025/config.json"
 FRAGMENT = (ROOT / "editorial/ux-resale-early-cta-20261025/insertion.html").read_text(encoding="utf-8").strip()
 OLD = (
     '<!-- wp:heading -->\n<h2 class="wp-block-heading">同じ頃、別の一括査定では500万円前後だった</h2>\n<!-- /wp:heading -->\n\n'
-    '<!-- wp:paragraph -->\n<p>500万円前後で、150万円もの差。UXは納得納得。</p>\n<!-- /wp:paragraph -->\n\n'
+    '<!-- wp:paragraph -->\n<p>350万円と500万円前後で、150万円もの差。UXは納得納得。</p>\n<!-- /wp:paragraph -->\n\n'
     '<!-- wp:image -->\n<figure><img src="https://tsurikue.com/sample.jpg"/></figure>\n<!-- /wp:image -->\n\n'
     + CONFIG["anchor_before"] + '\n\n'
     '<!-- wp:paragraph -->\n<p>CTNで査定。</p>\n<!-- /wp:paragraph -->\n\n'
@@ -47,8 +47,8 @@ class PublishedInsertTests(unittest.TestCase):
                     build_published_insertion(old, CONFIG, FRAGMENT)
 
     def test_refuses_existing_ctn_in_target_section(self):
-        changed = OLD.replace("<p>500万円前後で、150万円もの差。UXは納得納得。</p>",
-                              '<p>500万円前後で、150万円もの差。UXは納得納得。[blog_parts id="2184"]</p>')
+        changed = OLD.replace("<p>350万円と500万円前後で、150万円もの差。UXは納得納得。</p>",
+                              '<p>350万円と500万円前後で、150万円もの差。UXは納得納得。[blog_parts id="2184"]</p>')
         with self.assertRaises(RuntimeError):
             build_published_insertion(changed, CONFIG, FRAGMENT)
 
