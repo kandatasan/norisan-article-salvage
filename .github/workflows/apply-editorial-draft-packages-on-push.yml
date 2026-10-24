@@ -1,6 +1,12 @@
 name: Apply editorial draft packages on push
 
 on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'editorial/**'
+      - 'scripts/apply_editorial_draft_once.py'
+      - 'tests/test_apply_editorial_published_insert.py'
   push:
     branches: [main]
     paths:
@@ -28,7 +34,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Run generic safety tests
-        run: python -m unittest tests/test_apply_editorial_draft_once.py tests/test_apply_editorial_draft_create.py -v
+        run: python -m unittest tests/test_apply_editorial_draft_once.py tests/test_apply_editorial_draft_create.py tests/test_apply_editorial_published_insert.py -v
       - name: Resolve configs
         shell: bash
         run: |
@@ -56,7 +62,8 @@ jobs:
           else
             echo 'No generic editorial configs to apply.'
           fi
-      - name: Apply only guarded draft packages
+      - name: Apply guarded editorial packages
+        if: github.event_name != 'pull_request'
         env:
           TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
           TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
@@ -68,7 +75,7 @@ jobs:
             python scripts/apply_editorial_draft_once.py --config "$config"
           done < /tmp/configs.txt
       - name: Record results on salvage audit issue
-        if: success()
+        if: github.event_name != 'pull_request' && success()
         env:
           GH_TOKEN: ${{ github.token }}
         shell: bash
