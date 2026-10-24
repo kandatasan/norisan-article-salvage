@@ -6,12 +6,12 @@
   "expected_featured_media": 2223,
   "insertion_file": "insertion.html",
   "marker": "tsq-ux-resale-early-20261025",
-  "anchor_before": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">納車から約1年後の実車査定は435万円だった</h2>\n<!-- /wp:heading -->",
-  "section_heading": "別の実車査定では500万円前後が提示された",
+  "anchor_before": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">納車約1年・1万2,000kmで435万円だった</h2>\n<!-- /wp:heading -->",
+  "section_heading": "同じ頃、別の一括査定では500万円前後だった",
   "required_section_text": [
+    "350万円",
     "500万円前後",
-    "150万円",
-    "納得納得"
+    "150万円"
   ],
   "existing_shortcode": "[blog_parts id=\"2184\"]",
   "rendered_phrase": "下取りだけで決める前に、",
@@ -19,5 +19,5 @@
     "レクサスUXはいくらで売れた？616万円で購入し427万円で売却した記録",
     "レクサスUXのリセールは？616万円で購入し427万円で売却した記録"
   ],
-  "inspect_revision": "20261025-live-cta-by-section"
+  "anchor_heading_text": "納車約1年・1万2,000kmで435万円だった"
 }
