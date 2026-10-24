@@ -10,7 +10,7 @@ from apply_editorial_draft_once import build_published_insertion
 CONFIG = json.loads((ROOT / "editorial/ux-resale-early-cta-20261025/config.json").read_text(encoding="utf-8"))
 FRAGMENT = (ROOT / "editorial/ux-resale-early-cta-20261025/insertion.html").read_text(encoding="utf-8").strip()
 OLD = (
-    '<!-- wp:heading -->\n<h2 class="wp-block-heading">別の実車査定では500万円前後が提示された</h2>\n<!-- /wp:heading -->\n\n'
+    '<!-- wp:heading -->\n<h2 class="wp-block-heading">同じ頃、別の一括査定では500万円前後だった</h2>\n<!-- /wp:heading -->\n\n'
     '<!-- wp:paragraph -->\n<p>500万円前後で、150万円もの差。UXは納得納得。</p>\n<!-- /wp:paragraph -->\n\n'
     '<!-- wp:image -->\n<figure><img src="https://tsurikue.com/sample.jpg"/></figure>\n<!-- /wp:image -->\n\n'
     + CONFIG["anchor_before"] + '\n\n'
