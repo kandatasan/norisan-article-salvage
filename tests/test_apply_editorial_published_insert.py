@@ -27,6 +27,14 @@ class PublishedInsertTests(unittest.TestCase):
         self.assertEqual(new.count(marker), 1)
         self.assertLess(new.index(marker), new.index(CONFIG["anchor_before"]))
 
+    def test_gutenberg_heading_attribute_variation(self):
+        altered = OLD.replace('<!-- wp:heading -->',
+                              '<!-- wp:heading {"className":"additional"} -->')
+        altered = altered.replace('<h2 class="wp-block-heading">納車約1年・1万2,000kmで435万円だった</h2>',
+                                  '<h2 class="wp-block-heading additional">納車約1年・1万2,000kmで435万円だった</h2>')
+        modified, _ = build_published_insertion(altered, CONFIG, FRAGMENT)
+        self.assertEqual(modified.replace(FRAGMENT + "\n\n", "", 1), altered)
+
     def test_refuses_repeat(self):
         new, _ = build_published_insertion(OLD, CONFIG, FRAGMENT)
         with self.assertRaises(RuntimeError):
