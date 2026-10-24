@@ -160,7 +160,16 @@ def build_published_insertion(current: str, cfg: dict[str, Any], fragment: str) 
         raise RuntimeError("published insertion config incomplete")
     if current.count(anchor) != 1 or current.count(section_heading) != 1:
         found_h2 = [re.sub(r"<[^>]*>", "", h).strip() for h in re.findall(r"<h2[^>]*>.*?</h2>", current, re.S)]
-        raise RuntimeError(f"published insertion headings drifted; anchor={current.count(anchor)}, section={current.count(section_heading)}, live_h2={found_h2[:30]!r}")
+        heading_matches = list(re.finditer(r"<h2[^>]*>.*?</h2>", current, re.S))
+        section_ctas = []
+        for i, m in enumerate(heading_matches):
+            section_body = current[m.end():(heading_matches[i+1].start() if i+1 < len(heading_matches) else len(current))]
+            section_ctas.append({
+                "h2": re.sub(r"<[^>]*>", "", m.group(0)).strip(),
+                "blog_parts": re.findall(r'\[blog_parts id=["\x27](\d+)["\x27]\]', section_body),
+                "direct_a8_links": len(re.findall(r"px\.a8\.net/svt/ejp", section_body)),
+            })
+        raise RuntimeError(f"published insertion headings drifted; anchor={current.count(anchor)}, section={current.count(section_heading)}, live_sections={section_ctas[:20]!r}")
     n = current.count(shortcode)
     if not 1 <= n <= 3:
         raise RuntimeError(f"existing CTA shortcodes unexpected: {n}")
