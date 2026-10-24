@@ -156,6 +156,14 @@ def build_published_insertion(current: str, cfg: dict[str, Any], fragment: str) 
     anchor = str(cfg["anchor_before"])
     shortcode = str(cfg["existing_shortcode"])
     section_heading = str(cfg["section_heading"])
+    if current.count(anchor) != 1 and cfg.get("anchor_heading_text"):
+        # Accept Gutenberg's harmless heading attributes without changing text or blocks.
+        heading = str(cfg["anchor_heading_text"])
+        pattern = re.compile(r"<!-- wp:heading(?: [^\n]*)? -->\s*<h2[^>]*>\s*" +
+                             re.escape(heading) + r"\s*</h2>\s*<!-- /wp:heading -->", re.S)
+        heading_matches = list(pattern.finditer(current))
+        if len(heading_matches) == 1:
+            anchor = heading_matches[0].group(0)
     if not marker or not anchor or not shortcode or not section_heading:
         raise RuntimeError("published insertion config incomplete")
     if current.count(anchor) != 1 or current.count(section_heading) != 1:
