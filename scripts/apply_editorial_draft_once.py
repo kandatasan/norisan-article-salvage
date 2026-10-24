@@ -202,8 +202,9 @@ def apply_published_insertion(config_path: Path, cfg: dict[str, Any], auth: str)
     keys = ("id", "slug", "status", "featured_media", "categories", "author")
     if (original.get("id"), original.get("slug"), original.get("status")) != (pid, cfg["slug"], "publish"):
         raise RuntimeError("post id, slug or publish status mismatch")
-    if before_title != cfg["title"]:
-        raise RuntimeError("live title mismatch; refusing published edit")
+    accepted_titles = cfg.get("accepted_titles") or [cfg["title"]]
+    if before_title not in accepted_titles:
+        raise RuntimeError(f"live title mismatch; refusing published edit: {before_title!r}")
     expected_media = cfg.get("expected_featured_media")
     if expected_media is not None and int(original.get("featured_media") or 0) != int(expected_media):
         raise RuntimeError("featured media mismatch")
