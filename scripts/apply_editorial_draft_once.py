@@ -39,7 +39,7 @@ def fetch_post(cfg, authorization):
     return row
 
 def fetch_post_by_id(post_id: int, authorization):
-    q = urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,link,title,content,featured_media,categories"})
+    q = urllib.parse.urlencode({"context":"edit","_fields":"id,slug,status,link,title,content,featured_media,categories,author"})
     row, _ = get_json(f"{SITE_URL}/wp-json/wp/v2/posts/{post_id}?{q}", authorization)
     return row
 
@@ -149,10 +149,149 @@ def apply_create(cfg, full, auth):
         if actual_categories != sorted(cfg["categories"]): raise RuntimeError("post-create categories mismatch")
     return write_report(cfg, after, before_counts, after_counts, "CREATE", checked, 1, "draft-create")
 
+
+def build_published_insertion(current: str, cfg: dict[str, Any], fragment: str) -> tuple[str, str]:
+    """Only insert a new block before the uniquely specified existing heading."""
+    marker = str(cfg["marker"])
+    anchor = str(cfg["anchor_before"])
+    shortcode = str(cfg["existing_shortcode"])
+    section_heading = str(cfg["section_heading"])
+    if not marker or not anchor or not shortcode or not section_heading:
+        raise RuntimeError("published insertion config incomplete")
+    if current.count(anchor) != 1 or current.count(section_heading) != 1:
+        raise RuntimeError("published insertion headings drifted")
+    n = current.count(shortcode)
+    if not 1 <= n <= 3:
+        raise RuntimeError(f"existing CTA shortcodes unexpected: {n}")
+    if fragment.count(marker) != 1 or fragment.count(shortcode) != 1:
+        raise RuntimeError("insertion must contain one unique marker and one original CTA shortcode")
+    if "<!-- wp:" not in fragment or "<!-- /wp:" not in fragment:
+        raise RuntimeError("insertion must be Gutenberg blocks")
+    section_begin = current.find(section_heading)
+    anchor_pos = current.find(anchor)
+    if section_begin >= anchor_pos:
+        raise RuntimeError("destination is not after the expected appraisal section")
+    section_text = current[section_begin:anchor_pos]
+    if any(t not in section_text for t in cfg.get("required_section_text", [])):
+        raise RuntimeError("appraisal section no longer matches verified copy")
+    if shortcode in section_text:
+        raise RuntimeError("appraisal section already contains CTN advertising")
+    if marker in current:
+        raise RuntimeError("unique CTA marker already present; refusing duplicate")
+    rendered_fragment = fragment.strip() + "\n\n"
+    new = current[:anchor_pos] + rendered_fragment + current[anchor_pos:]
+    if new.replace(rendered_fragment, "", 1) != current:
+        raise RuntimeError("not a pure insertion")
+    if new.count(shortcode) != n + 1:
+        raise RuntimeError("CTA count did not increase by exactly one")
+    if new.count("<!-- wp:") != current.count("<!-- wp:") + fragment.count("<!-- wp:"):
+        raise RuntimeError("Gutenberg block count unexpected")
+    return new, marker
+
+def apply_published_insertion(config_path: Path, cfg: dict[str, Any], auth: str):
+    """Opt-in guarded update of a published article; all other editorial operations unchanged."""
+    pid = int(cfg["post_id"])
+    if pid <= 0 or not cfg.get("slug") or not cfg.get("title"):
+        raise RuntimeError("post identity is incomplete")
+    fragment = (config_path.parent / cfg["insertion_file"]).read_text(encoding="utf-8").strip()
+    if not fragment or not fragment.startswith("<!-- wp:") or not fragment.endswith("-->"):
+        raise RuntimeError("invalid published insertion fragment")
+    before_counts = public_counts(auth)
+    original = fetch_post_by_id(pid, auth)
+    before_title = html.unescape(raw_field(original, "title"))
+    keys = ("id", "slug", "status", "featured_media", "categories", "author")
+    if (original.get("id"), original.get("slug"), original.get("status")) != (pid, cfg["slug"], "publish"):
+        raise RuntimeError("post id, slug or publish status mismatch")
+    if before_title != cfg["title"]:
+        raise RuntimeError("live title mismatch; refusing published edit")
+    expected_media = cfg.get("expected_featured_media")
+    if expected_media is not None and int(original.get("featured_media") or 0) != int(expected_media):
+        raise RuntimeError("featured media mismatch")
+    current = raw_field(original, "content")
+    marker = str(cfg["marker"])
+    if marker in current:
+        if current.count(marker) == 1 and fragment in current:
+            print("PUBLISHED_INSERT_ALREADY_PRESENT", pid, cfg["slug"])
+            return {"action": "ALREADY_PRESENT", "post_id": pid, "status": "publish"}
+        raise RuntimeError("duplicate marker or edited insertion; refusing update")
+    new, marker = build_published_insertion(current, cfg, fragment)
+    old_sha = hashlib.sha256(current.encode()).hexdigest()
+    new_sha = hashlib.sha256(new.encode()).hexdigest()
+    report_dir = Path("reports") / f"{cfg['slug']}-published-insertion"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    (report_dir / "preflight.json").write_text(json.dumps({
+        "post_id": pid, "slug": cfg["slug"], "source_sha256": old_sha, "target_sha256": new_sha,
+        "published_before": before_counts, "existing_ctn_count": current.count(cfg["existing_shortcode"]),
+        "target_ctn_count": new.count(cfg["existing_shortcode"]),
+        "insertion_marker": marker
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    print("PUBLISHED_INSERT_PREFLIGHT_OK", pid, old_sha, flush=True)
+    # A second live fetch prevents overwriting a human edit between reading and applying.
+    latest = fetch_post_by_id(pid, auth)
+    if any(latest.get(k) != original.get(k) for k in keys) or (
+        html.unescape(raw_field(latest, "title")) != before_title or raw_field(latest, "content") != current
+    ):
+        raise RuntimeError("concurrent WordPress edit; refusing update")
+    wrote = False
+    try:
+        response = post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{pid}", auth, {"content": new})
+        wrote = True
+        if response.get("id") != pid or response.get("status") != "publish":
+            raise RuntimeError("WordPress update response identity mismatch")
+        after = fetch_post_by_id(pid, auth)
+        after_counts = public_counts(auth)
+        if any(after.get(k) != original.get(k) for k in keys):
+            raise RuntimeError("post metadata changed during insertion")
+        if html.unescape(raw_field(after, "title")) != before_title:
+            raise RuntimeError("published title changed")
+        if raw_field(after, "content") != new:
+            raise RuntimeError("saved content differs from pure insertion")
+        if after_counts != before_counts:
+            raise RuntimeError("published post/page counts changed")
+        if marker not in raw_field(after, "content") or new.count(cfg["existing_shortcode"]) != current.count(cfg["existing_shortcode"]) + 1:
+            raise RuntimeError("insertion or CTA verification failed")
+        # Also confirm that the microcopy is present in WordPress's rendered output.
+        if cfg["rendered_phrase"] not in (after.get("content") or {}).get("rendered", ""):
+            raise RuntimeError("inserted copy absent from WordPress rendered content")
+        result = {"action":"SUCCESS", "post_id":pid, "slug":cfg["slug"], "status":"publish",
+                  "title":before_title, "featured_media":after.get("featured_media"),
+                  "old_sha256":old_sha, "new_sha256":new_sha,
+                  "existing_ctn_count":current.count(cfg["existing_shortcode"]),
+                  "after_ctn_count":new.count(cfg["existing_shortcode"]),
+                  "published_before":before_counts, "published_after":after_counts,
+                  "wordpress_write_count":1}
+        (report_dir / "result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        (report_dir / "summary.md").write_text(
+            f"# Published insertion {cfg['slug']}\n\n- result: SUCCESS\n- post_id: {pid}\n"
+            f"- slug: {cfg['slug']}\n- status: publish\n- title: {before_title}\n"
+            f"- CTA shortcodes: {result['existing_ctn_count']} → {result['after_ctn_count']}\n"
+            f"- before: {old_sha}\n- after: {new_sha}\n- WordPress write count: 1\n",
+            encoding="utf-8")
+        print("PUBLISHED_INSERT_VERIFIED", pid, cfg["slug"], flush=True)
+        return result
+    except Exception:
+        if wrote:
+            try:
+                now = fetch_post_by_id(pid, auth)
+                if raw_field(now, "content") == new and all(
+                    now.get(k) == original.get(k) for k in keys
+                ):
+                    post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{pid}", auth, {"content": current})
+                    print("PUBLISHED_INSERT_ROLLBACK", pid, flush=True)
+                else:
+                    print("PUBLISHED_INSERT_ROLLBACK_SKIPPED_DRIFT", pid, flush=True)
+            except Exception as rollback_error:
+                print("PUBLISHED_INSERT_ROLLBACK_FAILED", repr(rollback_error), flush=True)
+        raise
+
 def apply(config_path: Path):
     user = os.environ.get("TSURIKUE_WP_USER"); password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
     if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
-    cfg, full = load_package(config_path); auth = auth_header(user, password)
+    auth = auth_header(user, password)
+    raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
+    if raw_cfg.get("operation") == "insert_published_block":
+        return apply_published_insertion(config_path, raw_cfg, auth)
+    cfg, full = load_package(config_path)
     if cfg.get("operation") == "create": return apply_create(cfg, full, auth)
     return apply_update(cfg, full, auth)
 
