@@ -159,7 +159,7 @@ def build_published_insertion(current: str, cfg: dict[str, Any], fragment: str) 
     if not marker or not anchor or not shortcode or not section_heading:
         raise RuntimeError("published insertion config incomplete")
     if current.count(anchor) != 1 or current.count(section_heading) != 1:
-        found_h2 = [re.sub(r"<[^>]*>", "", h).strip() for h in re.findall(r"<h2\\b[^>]*>.*?</h2>", current, re.S)]
+        found_h2 = [re.sub(r"<[^>]*>", "", h).strip() for h in re.findall(r"<h2[^>]*>.*?</h2>", current, re.S)]
         raise RuntimeError(f"published insertion headings drifted; anchor={current.count(anchor)}, section={current.count(section_heading)}, live_h2={found_h2[:30]!r}")
     n = current.count(shortcode)
     if not 1 <= n <= 3:
