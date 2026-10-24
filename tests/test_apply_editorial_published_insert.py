@@ -41,7 +41,7 @@ class PublishedInsertTests(unittest.TestCase):
             build_published_insertion(new, CONFIG, FRAGMENT)
 
     def test_refuses_missing_or_duplicated_section(self):
-        for old in (OLD.replace("納得納得", "違う"), OLD + CONFIG["anchor_before"]):
+        for old in (OLD.replace("150万円", "違う"), OLD + CONFIG["anchor_before"]):
             with self.subTest(length=len(old)):
                 with self.assertRaises(RuntimeError):
                     build_published_insertion(old, CONFIG, FRAGMENT)
