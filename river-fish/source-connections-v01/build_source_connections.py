@@ -34,6 +34,16 @@ TARGETS={
  ('広島県','黒瀬川','竹保川'):'official21_fc013da33bc0f865e31771ba',
  ('広島県','黒瀬川','笹野川'):'official21_a56562accddd301ca5560368',
  ('広島県','黒瀬川','黒瀬川'):'official21_f35c812ea8d17a1da83d7457',
+ ('東京都','水系未確認（公式資料の川名）','野川'):'official21_6f21b37a130345d34fd46a17',
+ ('東京都','水系未確認（公式資料の川名）','仙川'):'official21_8a52418ed671068b6fa26d22',
+ ('東京都','水系未確認（公式資料の川名）','丸子川'):'official21_5beed8a792c27bd767ac9df5',
+ ('東京都','水系未確認（公式資料の川名）','綾瀬川'):'official21_18442bdcc7ce35b481a27480',
+ ('東京都','水系未確認（公式資料の川名）','垳川'):'official21_f8deac434543e911be78160b',
+ ('東京都','水系未確認（公式資料の川名）','毛長川'):'official21_5330303249352c868c15bef2',
+ ('東京都','水系未確認（公式資料の川名）','神田川'):'official21_e9dbd95373222277aa2df785',
+ ('東京都','水系未確認（公式資料の川名）','日本橋川'):'official21_5a7f643aa338fd0116ffd908',
+ ('東京都','水系未確認（公式資料の川名）','亀島川'):'official21_ee3c10a42b849ec49806cfcf',
+ ('東京都','水系未確認（公式資料の川名）','築地川'):'official21_b11d8c96dc3ed066b2ff6abb',
 }
 METHODS={
  'official_survey_summary':'資料の確認種表',
@@ -41,6 +51,17 @@ METHODS={
  'prefectural_environment_narrative':'河川環境の説明',
  'official_positive_count_table':'資料の確認種表',
  'municipal_benthic_survey_fish_observation':'底生生物調査での魚類記録',
+ 'municipal_fish_survey':'区の魚類調査',
+}
+TOKYO_SOURCES={
+ 'SETAGAYA25':('https://www.city.setagaya.lg.jp/documents/4835/r7gyorui.pdf','1bc435cb869134b3deb1b0f9db344fbd16b7a7add17e0c910056dcb42ec8b566','2025'),
+ 'ADACHI23':('https://www.city.adachi.tokyo.jp/documents/51477/r5gaiyou.pdf','e3819175c15183ca567b08936a6183cbdbdf8f58afceab8a4994e3949c43ebfd','2023'),
+ 'CHUO23':('https://www.city.chuo.lg.jp/documents/15719/gyorui.pdf','547292cc7f806f2c90c0123c2e2d49fd1cf55e64ff15994021abf6d9bb7cdf95','2023'),
+}
+TOKYO_LABELS={
+ '野川':('モツゴ','SETAGAYA25'),'仙川':('モツゴ','SETAGAYA25'),'丸子川':('カワムツ','SETAGAYA25'),
+ '綾瀬川':('ボラ','ADACHI23'),'垳川':('モツゴ','ADACHI23'),'毛長川':('ボラ','ADACHI23'),
+ '神田川':('マハゼ','CHUO23'),'日本橋川':('マハゼ','CHUO23'),'亀島川':('マハゼ','CHUO23'),'築地川':('マハゼ','CHUO23'),
 }
 def read_csv(path):
  with path.open(encoding='utf-8-sig',newline='') as f:return list(csv.DictReader(f))
@@ -85,6 +106,22 @@ def build():
    raise ValueError('HH23 source metadata changed')
   add(r['prefecture'],r['watershed'],r['river'],[r],
       '2023年度の底生生物調査で、その他の水生生物の魚類欄に記録されたものです。魚類専用の網羅調査ではありません。')
+ tokyo=read_csv(ROOT/'tokyo_municipal_2023_2025_fish.csv')
+ if len(tokyo)!=len(TOKYO_LABELS) or {r['river'] for r in tokyo}!=set(TOKYO_LABELS):
+  raise ValueError('Tokyo reviewed river inventory changed')
+ for r in tokyo:
+  if (r['prefecture']!='東京都' or r['watershed']!='水系未確認（公式資料の川名）'
+      or r['source_id'] not in TOKYO_SOURCES
+      or (r['source_url'],r['source_sha256'],r['survey_year'])!=TOKYO_SOURCES[r['source_id']]
+      or (r['recorded_name'],r['source_id'])!=TOKYO_LABELS[r['river']]
+      or r['source_literal_label']!=r['recorded_name']
+      or r['evidence_kind']!='municipal_fish_survey'
+      or r['conservation_review']!='screened_common_label_only'
+      or r['publication_scope']!='source_reference_only'
+      or not r['source_locator'].endswith('p.1')):
+   raise ValueError('Tokyo source scope or reviewed label changed')
+  add(r['prefecture'],r['watershed'],r['river'],[r],
+      '区が公表した特定地点の魚類調査から、保全上の懸念がない一般的な記載名を1件だけ参照しています。水系・川全域・現在の生息を確定しません。')
  result=[]
  for key,g in sorted(groups.items()):
   g['id']='srcfish_'+hashlib.sha256('|'.join(key).encode()).hexdigest()[:24]
@@ -97,7 +134,7 @@ def build():
   g['literal_fish_label_count']=len({r['recorded_name'] for r in records})
   g['individual_physical_river_identity_approved']=False
   result.append(g)
- if len(result)!=31:raise ValueError('Expected 31 source river groups')
+ if len(result)!=41:raise ValueError('Expected 41 source river groups')
  return {'schema':SCHEMA,'release':'2026-10-22-source-reference-display',
   'display_scope':'SOURCE_PUBLISHED_RIVER_FISH_REFERENCES_ONLY',
   'no_precise_locations_or_river_codes':True,'held_records_excluded':True,

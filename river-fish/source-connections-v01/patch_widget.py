@@ -19,7 +19,7 @@ def patch_script(script):
  ('if(e.source_only_name_evidence_v21){sourceOnlyDetail(e);return;}','if(e.source_only_name_evidence_v21&&!e.sourceFishV01){sourceOnlyDetail(e);return;}'),
  ('fishGroups=Array.from(map.values()).sort','addSourceFishV01(map,e);\n  fishGroups=Array.from(map.values()).sort'),
  ('if(current.source_only_name_evidence_v21){sourceOnlyDetail(current);return;}','if(current.source_only_name_evidence_v21&&!current.sourceFishV01){sourceOnlyDetail(current);return;}'),
- ('for(const m of ["過去の調査記録","DNA検出"])','for(const m of ["過去の調査記録","DNA検出","資料の確認種表","河川環境の説明","底生生物調査での魚類記録"])'),
+ ('for(const m of ["過去の調査記録","DNA検出"])','for(const m of ["過去の調査記録","DNA検出","資料の確認種表","河川環境の説明","底生生物調査での魚類記録","区の魚類調査"])'),
  ('const years=Array.from(row.dates).sort','if(row.sourceNotesV01){const notes=node("details");notes.appendChild(node("summary","資料の記録区分・調査年"));for(const text of row.sourceNotesV01)notes.appendChild(node("p",text,"note"));card.appendChild(notes);}\n const years=Array.from(row.dates).sort'),
  ('selected.slice(0,displayed).forEach','if(current.sourceFishV01)for(const text of current.sourceFishV01.scope_notes){const note=node("p",text,"note");note.style.gridColumn="1 / -1";$("fishlist").appendChild(note);}\n selected.slice(0,displayed).forEach'),
  ('if(!e||e.source_only_name_evidence_v21)return;','if(!e||(e.source_only_name_evidence_v21&&!e.sourceFishV01))return;'),

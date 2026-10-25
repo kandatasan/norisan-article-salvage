@@ -25,7 +25,12 @@ def fixtures():
 class ConnectionsTest(unittest.TestCase):
  def test_regeneration_and_source_scopes(self):
   layer=build();stored=json.loads((ROOT/'fish_source_connections_v01.json').read_text());self.assertEqual(layer,stored)
-  self.assertEqual((layer['group_count'],layer['record_count']),(31,261))
+  self.assertEqual((layer['group_count'],layer['record_count']),(41,271))
+  tokyo=[g for g in layer['groups'] if g['prefecture']=='東京都']
+  self.assertEqual(len(tokyo),10)
+  self.assertTrue(all(g['navigation_target_id'] and len(g['records'])==1 and g['watershed']=='水系未確認（公式資料の川名）' for g in tokyo))
+  self.assertEqual({g['records'][0]['recorded_name'] for g in tokyo},{'モツゴ','カワムツ','ボラ','マハゼ'})
+  self.assertFalse({'ウキゴリ','ミナミメダカ','ニホンウナギ','ビリンゴ'} & {r['recorded_name'] for g in tokyo for r in g['records']})
   hh=[r for g in layer['groups'] for r in g['records'] if r['source_id']=='HH23']
   self.assertEqual(len(hh),72);self.assertEqual({r['survey_year'] for r in hh},{2023})
   self.assertFalse({'ミナミメダカ','ドジョウ','アブラボテ','アカザ'} & {r['recorded_name'] for r in hh})
@@ -52,10 +57,10 @@ class ConnectionsTest(unittest.TestCase):
  def test_coverage_retains_holds_and_updates_denominator(self):
   atlas,meta,layer=fixtures();report=coverage(atlas,meta,layer)
   self.assertEqual(report['base_json_only']['fish_evidence_groups_excluding_identity_holds'],3)
-  self.assertEqual(report['additional_qualifying_groups'],28)
+  self.assertEqual(report['additional_qualifying_groups'],38)
   self.assertEqual(report['new_name_groups_added_to_denominator'],16)
-  self.assertEqual(report['fish_evidence_groups'],31)
-  self.assertEqual(report['river_name_display_groups'],32)
+  self.assertEqual(report['fish_evidence_groups'],41)
+  self.assertEqual(report['river_name_display_groups'],42)
   self.assertEqual(report['base_json_only']['watershed_only_entries_excluded_from_denominator'],1)
   bad=copy.deepcopy(layer);bad['groups'][0]['records'][0]['recorded_name']='未審査名'
   with self.assertRaises(ValueError):coverage(atlas,meta,bad)
