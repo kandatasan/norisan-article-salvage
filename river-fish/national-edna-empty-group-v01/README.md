@@ -1,9 +1,10 @@
-# National eDNA river-name candidate source (research only)
+# Kanagawa prefectural eDNA source inspection (research only)
 
-This read-only source inspection evaluates Table S1 from the peer-reviewed 2026 nationwide black-bass eDNA study (DOI `10.1002/edn3.70292`) as a possible source for fish-empty atlas display groups.
+This workflow checks the public Excel source files linked from Kanagawa Prefecture's environmental DNA page. The page lists fish eDNA results for FY2021–FY2025, including surveys of the prefecture's water-source rivers and a prefecture-wide citizen-science project.
 
-The paper reports 121 sampling sites across 31 prefectures in 2021–2023; eDNA from at least one of three bass taxa was detected at 87 sites. That makes it a promising source for the faster target: one directly named fish record can qualify an existing empty display group. A waterbody/site label is not automatically an atlas river, and eDNA is never rendered as capture, catchability, abundance, or current fish distribution.
+The current step checks only workbook structure. It prints each source's checksum and size, worksheet count, dimensions, and recognized column-header labels. It does not print worksheet titles or any source row, sampling-site name, locality, coordinate, or species result. A separate reviewed extraction and river-name crosswalk are required before this source can affect coverage.
 
-The workflow fetches the publisher's public supplement and emits only its SHA-256, archive member names, workbook dimensions, sheet names, and recognized column-header labels. It does not store or upload source rows, sample identifiers, coordinates, locality names, or species results. A separate reviewed parser and crosswalk will be needed before any candidate can affect coverage. This workflow never writes the website, WordPress, or Xserver.
+eDNA detections remain a distinct evidence method. They are not rendered as capture records, catchability, abundance, or confirmation of present-day habitat. The public source page and the linked data-use rules permit reuse with source attribution and a notice that the data was edited. No website, WordPress, Xserver, or public search data is changed by this workflow.
 
-Source article: https://doi.org/10.1002/edn3.70292
+- Source page: https://www.pref.kanagawa.jp/docs/b4f/suigen/edna.html
+- Data-use rules: https://www.pref.kanagawa.jp/documents/97797/riyo-kiyaku.pdf
