@@ -56,6 +56,7 @@ FIELD_HEADERS = {
 }
 POSITIVE_TEXT = {"検出", "陽性", "有", "あり", "○", "〇", "1", "+", "＋"}
 FISH_REFERENCE = REPO_ROOT / "river-fish" / "biota" / "official_biota_reference_2025_v18.csv"
+NATIONAL_RIVER_CODES = REPO_ROOT / "river-fish" / "national-codes-staged" / "river_codes_national_v07.csv"
 
 
 def normalize(value) -> str:
@@ -264,15 +265,64 @@ def classify_atlas_pairs(groups: dict, atlas: dict, label_counts: dict, layer: d
     return status_counts
 
 
+def classify_official_registry_pairs(groups: dict, registry_rows) -> Counter:
+    """Label exact watershed/river pairs in the national code-name registry.
+
+    Registry rows are name/code candidates only. Code values are not copied
+    into candidate output, and a match is never treated as identity approval
+    because the national list has no prefecture field.
+    """
+    row_counts = Counter()
+    for row in registry_rows:
+        water = normalize(row.get("watershed_name"))
+        river = normalize(row.get("river_name"))
+        if water and river:
+            row_counts[(water, river)] += 1
+
+    status_counts = Counter()
+    for pair in groups:
+        key = (normalize(pair[0]), normalize(pair[1]))
+        count = row_counts.get(key, 0)
+        if count == 0:
+            status = "no_exact_official_name_pair_candidate"
+        elif count == 1:
+            status = "one_exact_official_name_pair_row_candidate"
+        else:
+            status = "multiple_exact_official_name_pair_rows_hold"
+        groups[pair]["official_registry_name_pair_status"] = status
+        status_counts[status] += 1
+    return status_counts
+
+
+def load_official_registry_rows(path: Path = NATIONAL_RIVER_CODES) -> list[dict]:
+    expected = {"river_name", "watershed_name", "river_code"}
+    with path.open(encoding="utf-8-sig", newline="") as handle:
+        reader = csv.DictReader(handle)
+        if not expected.issubset(reader.fieldnames or []):
+            raise ValueError("Official national river-code registry schema changed")
+        rows = list(reader)
+    if not rows:
+        raise ValueError("Official national river-code registry is empty")
+    return rows
+
+
 def build_report() -> dict:
     taxon_lookup = load_fish_reference()
     source_summaries, group_data = collect_sources(taxon_lookup)
     atlas, atlas_hash = load_live("atlas.json")
     label_counts, label_hash = load_live("river_fish_label_counts_v25.json")
-    summarize(atlas, label_counts)
+    strict_coverage = summarize(atlas, label_counts)
     public_layer = read_public_layer()
     published_coverage = summarize_published_coverage(atlas, label_counts, public_layer)
     status_counts = classify_atlas_pairs(group_data, atlas, label_counts, public_layer)
+    registry_status_counts = classify_official_registry_pairs(
+        group_data, load_official_registry_rows()
+    )
+    unmatched_registry_status_counts = Counter(
+        values["official_registry_name_pair_status"]
+        for values in group_data.values()
+        if values["atlas_pair_status"] == "unmatched_exact_water_river_pair_needs_crosswalk"
+    )
 
     candidate_groups = []
     for (water, river), values in sorted(group_data.items()):
@@ -289,6 +339,7 @@ def build_report() -> dict:
             "positive_sample_result_cells": values["positive_cells"],
             "evidence_method": "environmental_DNA",
             "atlas_pair_status": values["atlas_pair_status"],
+            "official_registry_name_pair_status": values["official_registry_name_pair_status"],
             "individual_river_identity_approved": False,
             "publication_approval": False,
         })
@@ -300,14 +351,28 @@ def build_report() -> dict:
     hypothetical_additions = exact_empty + unmatched
     projected_denominator = baseline_denominator + hypothetical_additions
     projected_numerator = baseline_numerator + hypothetical_additions
+    strict_baseline_numerator = strict_coverage["fish_evidence_groups_excluding_identity_holds"]
+    strict_baseline_denominator = strict_coverage["river_name_display_groups"]
+    strict_projected_denominator = strict_baseline_denominator + hypothetical_additions
+    strict_projected_numerator = strict_baseline_numerator + hypothetical_additions
     return {
-        "schema": "kanagawa-edna-river-group-candidates-v01",
+        "schema": "kanagawa-edna-river-group-candidates-v02",
         "status": "research_candidates_only_not_publication_approval",
         "candidate_rule": "At least one official-reference fish taxon with a positive eDNA result and explicit source water-system and river fields.",
         "source_files": source_summaries,
         "source_file_count": len(source_summaries),
         "source_group_candidate_count": len(candidate_groups),
         "atlas_pair_status_counts": dict(sorted(status_counts.items())),
+        "official_registry_name_pair_status_counts": dict(sorted(registry_status_counts.items())),
+        "unmatched_registry_name_pair_status_counts": dict(sorted(unmatched_registry_status_counts.items())),
+        "live_strict_coverage_snapshot": {
+            "fish_evidence_groups_excluding_identity_holds": strict_baseline_numerator,
+            "river_name_display_groups": strict_baseline_denominator,
+            "coverage_percent": strict_coverage["coverage_percent_excluding_identity_holds"],
+            "additional_groups_needed_at_50_percent": strict_coverage["additional_qualifying_groups_needed"],
+            "atlas_json_sha256": atlas_hash,
+            "fish_label_counts_sha256": label_hash,
+        },
         "published_coverage_snapshot": {
             "fish_evidence_groups": baseline_numerator,
             "river_name_display_groups": baseline_denominator,
@@ -315,6 +380,17 @@ def build_report() -> dict:
             "additional_groups_needed_at_50_percent": published_coverage["additional_qualifying_groups_needed"],
             "atlas_json_sha256": atlas_hash,
             "fish_label_counts_sha256": label_hash,
+        },
+        "strict_live_all_unmatched_pairs_as_new_groups_hypothesis": {
+            "hypothetical_only": True,
+            "assumes_every_unmatched_pair_is_a_distinct_new_river_name_group": True,
+            "fish_evidence_groups": strict_projected_numerator,
+            "river_name_display_groups": strict_projected_denominator,
+            "coverage_percent": round(strict_projected_numerator / strict_projected_denominator * 100, 1)
+            if strict_projected_denominator else 0,
+            "additional_groups_needed_at_50_percent": max(
+                0, math.ceil(strict_projected_denominator / 2) - strict_projected_numerator
+            ),
         },
         "all_unmatched_pairs_as_new_group_hypothesis": {
             "hypothetical_only": True,
@@ -347,7 +423,10 @@ def main() -> None:
     args.out.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     safe_summary = {key: report[key] for key in (
         "status", "source_file_count", "source_group_candidate_count",
-        "atlas_pair_status_counts", "published_coverage_snapshot",
+        "atlas_pair_status_counts", "official_registry_name_pair_status_counts",
+        "unmatched_registry_name_pair_status_counts",
+        "live_strict_coverage_snapshot", "published_coverage_snapshot",
+        "strict_live_all_unmatched_pairs_as_new_groups_hypothesis",
         "all_unmatched_pairs_as_new_group_hypothesis",
     )}
     print("KANAGAWA_EDNA_RESEARCH_CANDIDATE_SUMMARY", json.dumps(safe_summary, ensure_ascii=False), flush=True)

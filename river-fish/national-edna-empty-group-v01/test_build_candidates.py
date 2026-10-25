@@ -4,7 +4,13 @@ import unittest
 
 from openpyxl import Workbook
 
-from build_candidates import classify_atlas_pairs, extract_workbook, is_positive_detection, parse_survey_year
+from build_candidates import (
+    classify_atlas_pairs,
+    classify_official_registry_pairs,
+    extract_workbook,
+    is_positive_detection,
+    parse_survey_year,
+)
 
 
 def fixture_xlsx(site_name="Sensitive sampling site", species_name="Protected fish label", result=1):
@@ -93,6 +99,29 @@ class CandidateExtractionTests(unittest.TestCase):
         self.assertEqual(counts["identity_hold_excluded"], 1)
         self.assertEqual(counts["unmatched_exact_water_river_pair_needs_crosswalk"], 1)
         self.assertEqual(counts["already_in_published_source_layer"], 1)
+
+    def test_official_registry_candidates_require_exact_pair_and_never_export_codes(self):
+        groups = {
+            ("Water A", "River A"): {},
+            ("Water B", "River B"): {},
+            ("Water C", "River D"): {},
+        }
+        rows = [
+            {"watershed_name": "Water A", "river_name": "River A", "river_code": "0000000001"},
+            {"watershed_name": "Water B", "river_name": "River B", "river_code": "0000000002"},
+            {"watershed_name": "Water B", "river_name": "River B", "river_code": "0000000003"},
+            {"watershed_name": "Other Water", "river_name": "River D", "river_code": "0000000004"},
+        ]
+        counts = classify_official_registry_pairs(groups, rows)
+        self.assertEqual(counts["one_exact_official_name_pair_row_candidate"], 1)
+        self.assertEqual(counts["multiple_exact_official_name_pair_rows_hold"], 1)
+        self.assertEqual(counts["no_exact_official_name_pair_candidate"], 1)
+        self.assertEqual(
+            groups[("Water A", "River A")]["official_registry_name_pair_status"],
+            "one_exact_official_name_pair_row_candidate",
+        )
+        self.assertNotIn("0000000001", repr(groups))
+        self.assertNotIn("0000000002", repr(groups))
 
 
 if __name__ == "__main__":
