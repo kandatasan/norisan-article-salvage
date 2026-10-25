@@ -82,8 +82,14 @@ def build_insert(current, desired, slug, expected_price_count):
         raise RuntimeError(f"{slug}: price row missing or ambiguous")
     if current_row.group(0) != desired_row.group(0):
         raise RuntimeError(f"{slug}: price row was edited; refusing overwrite")
-    next_end = desired.index("</tbody></table>", desired_row.end())
-    additions = desired[desired_row.end():next_end]
+    tail = desired[desired_row.end():]
+    first = re.match(r"\\s*<tr>[\\s\\S]*?</tr>", tail)
+    if not first:
+        raise RuntimeError(f"{slug}: first entry-price row absent")
+    second = re.match(r"\\s*<tr>[\\s\\S]*?</tr>", tail[first.end():])
+    if not second:
+        raise RuntimeError(f"{slug}: second entry-price row absent")
+    additions = tail[:first.end() + second.end()]
     if additions.count("最安グレード<br>（別仕様）") != 1 or additions.count("最安新車価格<br>（OPなし・税込）") != 1:
         raise RuntimeError(f"{slug}: expected two pricing rows")
     if additions.count("<tr>") != 2 or additions.count("</tr>") != 2:
