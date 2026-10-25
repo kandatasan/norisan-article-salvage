@@ -161,8 +161,10 @@ def preflight(auth):
             raise RuntimeError(f"{slug}: ID/slug does not match")
         if row.get("status") not in ("publish", "draft"):
             raise RuntimeError(f"{slug}: unexpected status {row.get('status')}")
-        if int(row.get("featured_media") or 0) != media_id:
-            raise RuntimeError(f"{slug}: featured_media mismatch")
+        # Featured images may legitimately be assigned during publication.
+        # Snapshot below requires their exact preservation through the update.
+        if not isinstance(row.get("featured_media"), int) or row["featured_media"] < 0:
+            raise RuntimeError(f"{slug}: malformed featured media ID")
         if "<!-- tsurikue-new-article:v1 slug=" + slug + " -->" not in before:
             raise RuntimeError(f"{slug}: original content marker missing")
         desired = Path(path).read_text(encoding="utf-8")
