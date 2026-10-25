@@ -30,3 +30,10 @@
 - 車種写真は見た目だけで権利確認できないため未使用。アイキャッチなし。
 - WordPress新規draftのみ・公開禁止。現在のGitHub main確認、専用branch、PR差分監査、Actions結果、投稿ID/status/title/本文/slug照合を完了条件とする。
 - アフィリエイトは中古車検討者に限って既存ガリバーblog_parts2843を1回。CTNは直接配置しない。
+
+## 2026-10-25追記：新車と中古を混ぜない比較方針
+- NX・ハリアー・2026年型CX-5・フォレスター・エクストレイル・アウトランダーの本表は、新車・メーカー希望小売価格で統一。最安グレードの価格と装備比較グレードの価格を区別する。
+- 旧型CX-5 XD Sports Appearance（KF型、2.2Lディーゼル）の充実装備は中古購入の補足のみ。表の7列に追加しない。中古販売価格の一点例・掲載平均を新車価格と直接比較しない。
+- 旧型XD Sports Appearanceの標準装備：本革シート、前席シートベンチレーション、BOSE 10スピーカー、360°ビューモニター。2025年旧型公式グレード／装備を出典とする： https://www.mazda.co.jp/cars/passenger/cx-5_kf/grade/ ; https://www.mazda.co.jp/cars/passenger/cx-5_kf/utility/ ; https://www.mazda.co.jp/cars/passenger/cx-5_kf/interior/ 。
+- 比較結果は価格や標準装備の数だけで勝者を断定しない。パワートレーン、走行条件、駆動方式、販売サービスなどの違いも示す。
+- WordPress 投稿4268、下書きのまま。既存の他記事・画像・CTAを変更しない。
