@@ -1,5 +1,4 @@
-
-name: Kanagawa eDNA empty-river source schema (read-only)
+name: Kanagawa eDNA river-group candidates (research only)
 on:
   pull_request:
     branches: [main]
@@ -10,7 +9,7 @@ on:
 permissions:
   contents: read
 jobs:
-  inspect-public-table-schema:
+  build-research-candidates:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
