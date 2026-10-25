@@ -1,6 +1,5 @@
 {
-  "operation": "create",
-  "status": "draft",
+  "operation": "update",
   "slug": "tanto-rival-cars",
   "title": "タントのライバル4台を比較！N-BOX・スペーシア・ルークス・デリカミニの装備と価格",
   "content_file": "content.html",
@@ -10,7 +9,8 @@
   "expected_media": {
     "3954": "/wp-content/uploads/2026/10/img_8618.jpg"
   },
-  "categories": [
-    47
-  ]
+  "post_id": 4264,
+  "expected_current_content_sha256": "8522fb9ffb5913d4b251a9ba9f250b68e0d159c119014c6d174b76d8ed11584e",
+  "expected_current_title": "タントのライバル4台を比較！N-BOX・スペーシア・ルークス・デリカミニの装備と価格",
+  "expected_current_featured_media": 3954
 }
