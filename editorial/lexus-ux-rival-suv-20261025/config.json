@@ -1,11 +1,14 @@
 {
-  "operation": "create",
-  "status": "draft",
+  "operation": "update",
   "slug": "lexus-ux-rival-suv",
   "title": "レクサスUXのライバル車5台を比較！サイズ・安全装備・快適装備・中古相場",
   "content_file": "content.html",
   "salvage_marker": "<!-- tsurikue-new-article:v1 slug=lexus-ux-rival-suv -->",
   "editorial_marker": "<!-- tsurikue-editorial:v1 slug=lexus-ux-rival-suv -->",
   "featured_media": 0,
-  "expected_media": {}
+  "expected_media": {},
+  "post_id": 4256,
+  "expected_current_content_sha256": "9ef937185814470c02816ab1a7241cca109656a4aea4922cc163ebff855fea8a",
+  "expected_current_title": "レクサスUXのライバル車5台を比較！サイズ・安全装備・快適装備・中古相場",
+  "expected_current_featured_media": 0
 }
