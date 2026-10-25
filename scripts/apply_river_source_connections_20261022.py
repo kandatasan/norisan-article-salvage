@@ -8,7 +8,7 @@ from patch_widget import BASE_SCRIPT_SHA256,extension,patch_script,sha
 from build_source_connections import build,validate_targets
 SITE='https://tsurikue.com';POST_ID=4240
 TITLE='日本の河川図鑑｜全国の河川名・水系・生き物を都道府県から探す'
-APPROVED_PREVIOUS_WIDGET_SHA256='337a4d8615e4cc58418bdb22404bebe9d94963ca63b3c84f77e1b625e1224c08'
+APPROVED_PREVIOUS_WIDGET_SHA256='573d61b513881306b9f931e5a99cdc94320f2f141b5c72cb34939edd2d17eafc'
 PROTECTED=('id','slug','status','title','excerpt','featured_media','categories','author','template')
 def request(path,auth,body=None):
  headers={'Authorization':auth,'Accept':'application/json','User-Agent':'tsurikue-source-connections/1.0'}

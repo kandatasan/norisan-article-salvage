@@ -39,6 +39,18 @@ async function until(fn){for(let i=0;i<250;i++){if(fn())return;await sleep(10)}t
  await until(()=>$('fishlist').textContent.includes('資料の確認種表'));
  const names=[...$('fishlist').querySelectorAll('h3')].map(x=>x.textContent);
  assert(names.includes('アユ'));assert(names.length>=7,'Existing historical fish records should remain');
+ select('pref','東京都');select('water','水系未確認（公式資料の川名）');
+ const nogawa=[...$('river').options].find(x=>x.textContent==='野川【資料に魚名掲載】');assert(nogawa);
+ select('river',nogawa.value);await until(()=>$('fishlist').textContent.includes('区の魚類調査'));
+ assert.deepStrictEqual([...$('fishlist').querySelectorAll('h3')].map(x=>x.textContent),['モツゴ']);
+ assert(!$('fishlist').textContent.includes('ミナミメダカ'));
+ $('atlasTabRiver').click();input('riverSearchV25','築地川');
+ await until(()=>$('riverSearchResultsV25').textContent.includes('築地川'));
+ assert($('riverSearchResultsV25').textContent.includes('県・市の公開資料に魚名掲載'));
+ $('atlasTabFish').click();input('reverseFishV24','マハゼ');
+ await until(()=>$('reverseResultsV24').querySelector('strong'));
+ for(const expand of [...$('reverseResultsV24').querySelectorAll('button')].filter(b=>b.textContent==='さらに河川名の記録を見る'))while(!expand.hidden)expand.click();
+ assert($('reverseResultsV24').textContent.includes('築地川'),$('reverseResultsV24').textContent.slice(0,500));
  assert.strictEqual(errors.length,0,errors.join('\n'));
  console.log('SOURCE_WIDGET_DOM_QA_OK',JSON.stringify({riverSearch:true,fishOnlyFilter:true,reverseNavigation:true,heldFishExcluded:true,existingDataRetained:true}));
  dom.window.close();
