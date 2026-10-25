@@ -11,9 +11,9 @@
 - 車間キープはACC等の追従、車線中央支援はACC連動操舵支援。車線逸脱警報・抑制と行を分離。自動運転の保証ではない。
 
 ## メーカー公式ソース
-- [Lexus UX 諸装備](https://lexus.jp/models/ux/features/price_package/) / [UX運転支援](https://lexus.jp/models/ux/features/safety/)
+- [LEXUS UX公式主要装備一覧（標準・オプション区別）](https://lexus.jp/models/ux/pdf/equipmentlist.pdf) / [Lexus UX 諸装備](https://lexus.jp/models/ux/features/price_package/) / [UX運転支援](https://lexus.jp/models/ux/features/safety/)
 - [MAZDA CX-30 安全](https://www.mazda.co.jp/cars/passenger/cx-30/safety/) / [グレード別](https://www.mazda.co.jp/cars/passenger/cx-30/grade/)
-- [TOYOTA Corolla Cross 安全](https://toyota.jp/corollacross/safety/) / [快適](https://toyota.jp/corollacross/usability/)
+- [TOYOTA カローラクロスZ ハンズフリーパワーバックドア標準](https://toyota.jp/corollacross/usability/) / [TOYOTA Corolla Cross 安全](https://toyota.jp/corollacross/safety/) / [快適](https://toyota.jp/corollacross/usability/)
 - [Honda VEZEL 装備](https://www.honda.co.jp/VEZEL/common/pdf/vezel_list.pdf) / [Honda SENSING FAQ](https://www.honda.co.jp/customer/auto/vezel/faq/qa001/)
 - [SUBARU Crosstrek 安全](https://www.subaru.jp/crosstrek/safety/) / [装備](https://www.subaru.jp/crosstrek/grade/) / [パワーリヤゲート対象モデル](https://faq.subaru.jp/faq/show/664?site_domain=default)
 - [NISSAN Kicks P16 プロパイロット](https://faq2.nissan.co.jp/faq/show/82222) / [Kicks G標準仕様（参考カタログ）](https://gazoo.com/catalog/maker/NISSAN/KICKS/202606/10163801/) / [Nissan Kicks 内装](https://www3.nissan.co.jp/vehicles/new/kicks/interior.html)
