@@ -1,3 +1,4 @@
+
 name: Kanagawa eDNA empty-river source schema (read-only)
 on:
   pull_request:
@@ -21,4 +22,10 @@ jobs:
         run: |
           python -m pip install openpyxl==3.1.5
           python -m unittest discover -s river-fish/national-edna-empty-group-v01 -p 'test_*.py' -v
-          python river-fish/national-edna-empty-group-v01/inspect_supplement.py
+          python river-fish/national-edna-empty-group-v01/build_candidates.py --out "$RUNNER_TEMP/kanagawa-edna-candidates/candidates.json"
+      - name: Upload group-level research candidates
+        uses: actions/upload-artifact@v4
+        with:
+          name: kanagawa-edna-river-group-candidates-v01
+          path: ${{ runner.temp }}/kanagawa-edna-candidates/candidates.json
+          retention-days: 14
