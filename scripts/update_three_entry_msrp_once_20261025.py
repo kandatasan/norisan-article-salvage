@@ -138,7 +138,7 @@ def snapshot(row):
     return (
         row.get("id"), row.get("slug"), row.get("status"),
         html.unescape(raw(row, "title")), row.get("featured_media"),
-        sorted(row.get("categories") or []), row.get("author"), raw(row, "excerpt"),
+        sorted(row.get("categories") or []), row.get("author"), (row.get("excerpt") or {}).get("raw", ""),
     )
 
 
