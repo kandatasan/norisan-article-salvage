@@ -83,10 +83,10 @@ def build_insert(current, desired, slug, expected_price_count):
     if current_row.group(0) != desired_row.group(0):
         raise RuntimeError(f"{slug}: price row was edited; refusing overwrite")
     tail = desired[desired_row.end():]
-    first = re.match(r"\\s*<tr>[\\s\\S]*?</tr>", tail)
+    first = re.match(r"\s*<tr>[\s\S]*?</tr>", tail)
     if not first:
         raise RuntimeError(f"{slug}: first entry-price row absent")
-    second = re.match(r"\\s*<tr>[\\s\\S]*?</tr>", tail[first.end():])
+    second = re.match(r"\s*<tr>[\s\S]*?</tr>", tail[first.end():])
     if not second:
         raise RuntimeError(f"{slug}: second entry-price row absent")
     additions = tail[:first.end() + second.end()]
