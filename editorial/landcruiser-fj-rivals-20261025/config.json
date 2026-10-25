@@ -1,11 +1,14 @@
 {
-  "operation": "create",
-  "status": "draft",
+  "operation": "update",
   "slug": "landcruiser-fj-rivals",
   "title": "ランクルFJのライバル車5台比較！安全装備・快適装備・価格とサイズは？",
   "content_file": "content.html",
   "salvage_marker": "<!-- tsurikue-new-article:v1 slug=landcruiser-fj-rivals -->",
   "editorial_marker": "<!-- tsurikue-editorial:v1 slug=landcruiser-fj-rivals -->",
   "featured_media": 0,
-  "expected_media": {}
+  "expected_media": {},
+  "post_id": 4261,
+  "expected_current_content_sha256": "405be66360e123fb838f715464b6c9829e861e61b6a414f1589cf0fa508f7b97",
+  "expected_current_title": "ランクルFJのライバル車5台比較！安全装備・快適装備・価格とサイズは？",
+  "expected_current_featured_media": 0
 }
