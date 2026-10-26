@@ -303,6 +303,116 @@ def apply_published_insertion(config_path: Path, cfg: dict[str, Any], auth: str)
                 print("PUBLISHED_INSERT_ROLLBACK_FAILED", repr(rollback_error), flush=True)
         raise
 
+
+def build_existing_table_cell_update(current: str, cfg: dict[str, Any]):
+    """Replace exactly one data cell in one identified HTML table row."""
+    label = str(cfg["target_row_label"])
+    if current.count(label) != 1:
+        raise RuntimeError("table row label not unique in the current WordPress content")
+    at = current.index(label)
+    start = current.rfind("<tr>", 0, at)
+    close = current.find("</tr>", at)
+    if start < 0 or close < 0:
+        raise RuntimeError("table row boundaries missing")
+    end = close + len("</tr>")
+    row = current[start:end]
+    if row.count(label) != 1:
+        raise RuntimeError("row label mismatch")
+    thend = row.find("</th>")
+    if thend < 0:
+        raise RuntimeError("table header cell missing")
+    thend += len("</th>")
+    cells = list(re.finditer(r"<td\b[^>]*>[^<]*</td>", row[thend:]))
+    n = int(cfg["expected_columns"])
+    index = int(cfg["target_column_index"])
+    if n <= 0 or len(cells) != n or not (0 <= index < n):
+        raise RuntimeError("table column count or index differs")
+    cell = cells[index].group(0)
+    before_value, after_value = str(cfg["expected_old_value"]), str(cfg["new_value"])
+    before_style, after_style = str(cfg["expected_old_style"]), str(cfg["new_style"])
+    if cell.count(">" + after_value + "</td>") == 1 and cell.count(after_style) == 1:
+        return current, "ALREADY_PRESENT"
+    if cell.count(">" + before_value + "</td>") != 1 or cell.count(before_style) != 1:
+        raise RuntimeError("target cell changed; refusing content overwrite")
+    new_cell = cell.replace(before_style, after_style, 1).replace(
+        ">" + before_value + "</td>", ">" + after_value + "</td>", 1
+    )
+    if new_cell == cell:
+        raise RuntimeError("no table cell replacement made")
+    updated_row = row[:thend] + row[thend:].replace(cell, new_cell, 1)
+    updated = current[:start] + updated_row + current[end:]
+    if len(re.findall(r"<td\b", updated_row)) != n:
+        raise RuntimeError("target row column count changed")
+    return updated, "UPDATE"
+
+
+def apply_existing_table_cell_replacement(config_path: Path, cfg: dict[str, Any], auth: str):
+    """An opt-in, content-only patch for draft or published posts with strict guards."""
+    post_id = int(cfg["post_id"])
+    slug = str(cfg["slug"])
+    if post_id <= 0 or not slug or cfg.get("content_file") is None:
+        raise RuntimeError("missing post identity or canonical content")
+    before_counts = public_counts(auth)
+    original = fetch_post_by_id(post_id, auth)
+    if original.get("id") != post_id or original.get("slug") != slug:
+        raise RuntimeError("post identity mismatch")
+    if original.get("status") not in cfg.get("accept_status", ["draft"]):
+        raise RuntimeError("post status differs; refusing patch")
+    title = html.unescape(raw_field(original, "title"))
+    if title != cfg["title"]:
+        raise RuntimeError("post title changed; refusing patch")
+    old = raw_field(original, "content")
+    if cfg.get("salvage_marker") not in old or cfg.get("editorial_marker") not in old:
+        raise RuntimeError("original post markers missing")
+    updated, action = build_existing_table_cell_update(old, cfg)
+    # The updated row should match the intended canonical GitHub source.
+    wanted = (config_path.parent / cfg["content_file"]).read_text(encoding="utf-8")
+    label = cfg["target_row_label"]
+    idx = wanted.index(label) if wanted.count(label) == 1 else -1
+    if idx < 0:
+        raise RuntimeError("canonical target row absent")
+    target_row = wanted[wanted.rfind("<tr>", 0, idx):wanted.find("</tr>", idx) + len("</tr>")]
+    current_idx = updated.index(label)
+    updated_row = updated[updated.rfind("<tr>", 0, current_idx):updated.find("</tr>", current_idx) + len("</tr>")]
+    if target_row != updated_row:
+        raise RuntimeError("saved target row does not match canonical GitHub row")
+    if old.count('[blog_parts id="2843"]') != updated.count('[blog_parts id="2843"]'):
+        raise RuntimeError("affiliate changed unexpectedly")
+    keys = ("id", "slug", "status", "featured_media", "categories", "author")
+    report_dir = Path("reports") / (slug + "-hud-correction")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    print("TABLE_CELL_PREFLIGHT_OK", post_id, slug, original["status"], action, flush=True)
+    latest = fetch_post_by_id(post_id, auth)
+    if any(original.get(k) != latest.get(k) for k in keys) or (
+        html.unescape(raw_field(latest, "title")) != title or raw_field(latest, "content") != old
+    ):
+        raise RuntimeError("concurrent WordPress edit; refusing table cell patch")
+    if action == "UPDATE":
+        response = post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{post_id}", auth, {"content": updated})
+        if response.get("id") != post_id or response.get("status") != original.get("status"):
+            raise RuntimeError("WordPress patch response does not preserve post identity/status")
+    after = fetch_post_by_id(post_id, auth)
+    after_counts = public_counts(auth)
+    if any(original.get(k) != after.get(k) for k in keys):
+        raise RuntimeError("post identity or metadata changed")
+    if html.unescape(raw_field(after, "title")) != title or raw_field(after, "content") != updated:
+        raise RuntimeError("WordPress saved content differs from exact table cell correction")
+    if before_counts != after_counts:
+        raise RuntimeError("published page/post counts changed")
+    result = {
+        "action": action, "post_id": post_id, "slug": slug,
+        "status": after["status"], "featured_media": after.get("featured_media"),
+        "before_sha256": hashlib.sha256(old.encode()).hexdigest(),
+        "after_sha256": hashlib.sha256(updated.encode()).hexdigest(),
+        "old_cell_value": cfg["expected_old_value"], "new_cell_value": cfg["new_value"],
+        "wordpress_write_count": int(action == "UPDATE"),
+        "publish_count": 0, "before_public": before_counts, "after_public": after_counts
+    }
+    (report_dir/"result.json").write_text(
+        json.dumps(result, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+    print("TABLE_CELL_VERIFIED", json.dumps(result, ensure_ascii=False), flush=True)
+    return result
+
 def apply(config_path: Path):
     user = os.environ.get("TSURIKUE_WP_USER"); password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
     if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
@@ -310,6 +420,8 @@ def apply(config_path: Path):
     raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
     if raw_cfg.get("operation") == "insert_published_block":
         return apply_published_insertion(config_path, raw_cfg, auth)
+    if raw_cfg.get("operation") == "replace_existing_table_cell":
+        return apply_existing_table_cell_replacement(config_path, raw_cfg, auth)
     cfg, full = load_package(config_path)
     if cfg.get("operation") == "create": return apply_create(cfg, full, auth)
     return apply_update(cfg, full, auth)
