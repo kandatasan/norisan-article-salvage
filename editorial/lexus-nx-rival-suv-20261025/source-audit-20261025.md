@@ -37,3 +37,9 @@
 - 旧型XD Sports Appearanceの標準装備：本革シート、前席シートベンチレーション、BOSE 10スピーカー、360°ビューモニター。2025年旧型公式グレード／装備を出典とする： https://www.mazda.co.jp/cars/passenger/cx-5_kf/grade/ ; https://www.mazda.co.jp/cars/passenger/cx-5_kf/utility/ ; https://www.mazda.co.jp/cars/passenger/cx-5_kf/interior/ 。
 - 比較結果は価格や標準装備の数だけで勝者を断定しない。パワートレーン、走行条件、駆動方式、販売サービスなどの違いも示す。
 - WordPress 投稿4268、下書きのまま。既存の他記事・画像・CTAを変更しない。
+
+## 2026-10-26 HUD表示修正
+- レクサスNX350h “version L” の **カラーヘッドアップディスプレイ（連動ステアリングスイッチ付）は標準装備（●）**。
+- 一次資料：LEXUS NX主要装備一覧表、PDF 2ページ目「インテリア」の該当行。 https://lexus.jp/models/nx/pdf/equipmentlist.pdf
+- 競合比較の「フロントガラスに速度などを表示」のNX欄を、未確認の「—」から標準の「○」へ訂正。セル文字色は #6b7280 から #19634b に合わせる。他セルは変更しない。
+- 投稿ID4268のslug, title, 公開状態, featured_media, categories, links, CTAを保持。全文上書きは禁止、該当HTML行のNX一セルだけを置換する。WordPress実保存内容・公開記事数を照合する。
