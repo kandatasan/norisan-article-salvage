@@ -43,3 +43,23 @@
 - 一次資料：LEXUS NX主要装備一覧表、PDF 2ページ目「インテリア」の該当行。 https://lexus.jp/models/nx/pdf/equipmentlist.pdf
 - 競合比較の「フロントガラスに速度などを表示」のNX欄を、未確認の「—」から標準の「○」へ訂正。セル文字色は #6b7280 から #19634b に合わせる。他セルは変更しない。
 - 投稿ID4268のslug, title, 公開状態, featured_media, categories, links, CTAを保持。全文上書きは禁止、該当HTML行のNX一セルだけを置換する。WordPress実保存内容・公開記事数を照合する。
+
+## 2026-10-26 六車種の安全装備・快適装備再監査
+
+2026年10月現在の対象グレードとメーカー公式装備資料に照らして表の全46行相当のセル（安全7×6、快適8×6）と価格・寸法8×6を再確認。以下は誤り・未確認の訂正箇所。判定不能な欄は — のまま維持。
+
+| 比較機能 | 車種（ゼロ始まり列） | 変更 | 根拠・留保 |
+|---|---|---|---|
+| 運転者の異常を検知して減速・停車を支援 | エクストレイル | — → ○ | G e-4ORCEのプロパイロット緊急停止支援は標準（T33 2024年度装備一覧●と現行公式機能の照合）： https://www3.nissan.co.jp/vehicles/new/x-trail/performance_safety/propilot.html |
+| 前席シートを温める | アウトランダーG | — → ○ | G前席シートヒーター標準： https://www.mitsubishi-motors.co.jp/lineup/outlander_phev/spec/pdf/outlander_phev_equip.pdf |
+| 前席シートから熱気を逃がす | アウトランダーG | — → × | Gにはベンチレーションの設定なし、P以上が標準： https://www.mitsubishi-motors.co.jp/lineup/outlander_phev/utility/uti_02.html |
+| ステアリングを温める | アウトランダーG | — → ○ | Gもステアリングヒーター標準： https://www.mitsubishi-motors.co.jp/lineup/outlander_phev/spec/pdf/outlander_phev_equip.pdf |
+| 運転席位置を記憶する | フォレスター | — → ○ | Premium S:HEV EXのアクセスキー対応シートメモリー標準： https://www.subaru.jp/forester/grade/ |
+| 運転席位置を記憶する | アウトランダーG | — → × | アウトランダーGはパワーシート標準だがメモリー設定なし： https://www.mitsubishi-motors.co.jp/lineup/outlander_phev/spec/pdf/outlander_phev_equip.pdf |
+| フロントガラスに速度などを表示 | エクストレイル | — → × | 2026年9月改良以後のエクストレイルT33はHUD設定なし（日産公式FAQ）： https://faq2.nissan.co.jp/faq/show/3915 |
+| フロントガラスに速度などを表示 | アウトランダーG | — → △ | アウトランダーGのHUDは税込77,000円メーカーオプション： https://www.mitsubishi-motors.co.jp/lineup/outlander_phev/spec/pdf/outlander_phev_equip.pdf |
+
+- トヨタ2026年8月ハリアー装備一覧（ https://toyota.jp/pages/contents/harrier/004_p_001/pdf/harrier_spec_202608.pdf ）：Z Leather Packageのパノラミックビューモニターは標準、Gは8.8万円OP。表のハリアーは変更不要。
+- フォレスターHUDやエクストレイルのシート換気、アウトランダーの異常時停車支援などは、対象モデルに対する資料不足または仕様解釈の差が残るため変更しない。
+- 運転者の異常時停車支援（日産G）は、プロパイロット使用中のハンドル操作無反応への介入であり、あらゆる健康異常の自動検知ではない。○は同等性能を意味しない。
+- すべて本文の8対象セルとその文字色だけの変更で、公開状態・画像・価格・CTA・他の本文を変更しない。更新はWP ID4268へのcontent-only patchと保存後metadata・公開件数照合で実施。
