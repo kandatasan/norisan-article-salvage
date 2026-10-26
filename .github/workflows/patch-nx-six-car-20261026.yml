@@ -1,0 +1,35 @@
+name: Correct NX six-car equipment matrix
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/patch_nx_six_car_matrix_20261026.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  correct-nx-six-car:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check Python syntax
+        run: python -m py_compile scripts/patch_nx_six_car_matrix_20261026.py
+      - name: Apply eight verified cell corrections to live NX post
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/patch_nx_six_car_matrix_20261026.py
+      - name: Upload post-update audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: nx-six-car-equipment-audit
+          path: reports/nx-six-car-20261026/
+          if-no-files-found: warn
