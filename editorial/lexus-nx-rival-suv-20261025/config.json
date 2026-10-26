@@ -1,5 +1,5 @@
 {
-  "operation": "update",
+  "operation": "replace_existing_table_cell",
   "slug": "lexus-nx-rival-suv",
   "title": "レクサスNXのライバル車5台を比較！ハリアー・CX-5など安全装備・快適装備・価格の違い",
   "content_file": "content.html",
@@ -8,7 +8,16 @@
   "featured_media": 0,
   "expected_media": {},
   "post_id": 4268,
-  "expected_current_content_sha256": "a583936142839804554645d53e5e5ba6816b0f67234621bcf4166c90ce6fc21a",
   "expected_current_title": "レクサスNXのライバル車5台を比較！ハリアー・CX-5など安全装備・快適装備・価格の違い",
-  "expected_current_featured_media": 0
+  "target_row_label": "フロントガラスに<br>速度などを表示",
+  "target_column_index": 0,
+  "expected_columns": 6,
+  "expected_old_value": "—",
+  "new_value": "○",
+  "expected_old_style": "color:#6b7280!important;",
+  "new_style": "color:#19634b!important;",
+  "accept_status": [
+    "publish",
+    "draft"
+  ]
 }
