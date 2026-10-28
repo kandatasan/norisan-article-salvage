@@ -68,6 +68,18 @@ sources = [
      "太田川水系河川整備計画（令和2年版）・現状と課題", "国土交通省中国地方整備局太田川河川事務所",
      "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf", "3章 5)支川根谷川・資料p78／PDF p53", None,
      "支川根谷川の節で見られる魚として列記。希少種と詳細地点は収録しない。"),
+    ("広島県", "瀬野川", "熊野川", "B", ["オイカワ", "カワムツ"],
+     "二級河川瀬野川水系河川整備計画【変更】", "広島県",
+     "https://www.pref.hiroshima.lg.jp/uploaded/attachment/554947.pdf", "1.2.3 (2)動植物・熊野川の段落・資料p13／PDF p14", None,
+     "熊野川の河川環境説明で生息魚として列記。重要種と詳細地点は収録しない。"),
+    ("広島県", "江の川", "江の川", "B", ["アユ", "ウグイ", "オイカワ", "カワムツ"],
+     "江の川本川ブロック河川環境に関する現状と課題", "広島県",
+     "https://www.pref.hiroshima.lg.jp/soshiki/99/1172196461943.html", "1-2-3 (2)動植物・土師ダムから三次市に至る本川中流域", None,
+     "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。"),
+    ("山口県", "錦川", "錦川", "A", ["オイカワ", "ウナギ"],
+     "錦川で採集されたアユ及びその他の魚類からのPCRによるEdwardsiella ictaluriの検出状況", "山口県水産研究センター",
+     "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197780.pdf", "研究報告第7号・資料pp77-82／PDF pp75-80、材料及び方法・結果", 2008,
+     "錦川の河川生息魚を採捕して検査した調査の魚名。放流稚アユは収録しない。"),
 ]
 
 for pref, water, river, grade, names, title, publisher, url, locator, year, summary in sources:

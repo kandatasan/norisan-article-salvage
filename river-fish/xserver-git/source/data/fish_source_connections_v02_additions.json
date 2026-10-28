@@ -4,8 +4,8 @@
   "display_scope": "SOURCE_PUBLISHED_RIVER_FISH_REFERENCES_ONLY",
   "no_precise_locations_or_river_codes": true,
   "held_records_excluded": true,
-  "group_count": 13,
-  "record_count": 41,
+  "group_count": 16,
+  "record_count": 49,
   "groups": [
     {
       "prefecture": "青森県",
@@ -924,6 +924,192 @@
       ],
       "id": "srcfish_2cf9849831863313c78d8190",
       "navigation_target_id": "official21_375b4b65ea0d80b524a13924",
+      "literal_fish_label_count": 2,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "広島県",
+      "watershed": "瀬野川",
+      "river": "熊野川",
+      "records": [
+        {
+          "recorded_name": "オイカワ",
+          "source_literal_label": "オイカワ",
+          "survey_year": null,
+          "source_id": "RF-20261028-14",
+          "source_title": "二級河川瀬野川水系河川整備計画【変更】",
+          "publisher": "広島県",
+          "source_url": "https://www.pref.hiroshima.lg.jp/uploaded/attachment/554947.pdf",
+          "source_locator": "1.2.3 (2)動植物・熊野川の段落・資料p13／PDF p14",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "熊野川の河川環境説明で生息魚として列記。重要種と詳細地点は収録しない。",
+          "scope_note": "熊野川の河川環境説明で生息魚として列記。重要種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "カワムツ",
+          "source_literal_label": "カワムツ",
+          "survey_year": null,
+          "source_id": "RF-20261028-14",
+          "source_title": "二級河川瀬野川水系河川整備計画【変更】",
+          "publisher": "広島県",
+          "source_url": "https://www.pref.hiroshima.lg.jp/uploaded/attachment/554947.pdf",
+          "source_locator": "1.2.3 (2)動植物・熊野川の段落・資料p13／PDF p14",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "熊野川の河川環境説明で生息魚として列記。重要種と詳細地点は収録しない。",
+          "scope_note": "熊野川の河川環境説明で生息魚として列記。重要種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_bcef1a6df7177e681784d3cd",
+      "navigation_target_id": "official21_1c618e3234a233f9cc677627",
+      "literal_fish_label_count": 2,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "広島県",
+      "watershed": "江の川",
+      "river": "江の川",
+      "records": [
+        {
+          "recorded_name": "アユ",
+          "source_literal_label": "アユ",
+          "survey_year": null,
+          "source_id": "RF-20261028-15",
+          "source_title": "江の川本川ブロック河川環境に関する現状と課題",
+          "publisher": "広島県",
+          "source_url": "https://www.pref.hiroshima.lg.jp/soshiki/99/1172196461943.html",
+          "source_locator": "1-2-3 (2)動植物・土師ダムから三次市に至る本川中流域",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "scope_note": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "ウグイ",
+          "source_literal_label": "ウグイ",
+          "survey_year": null,
+          "source_id": "RF-20261028-15",
+          "source_title": "江の川本川ブロック河川環境に関する現状と課題",
+          "publisher": "広島県",
+          "source_url": "https://www.pref.hiroshima.lg.jp/soshiki/99/1172196461943.html",
+          "source_locator": "1-2-3 (2)動植物・土師ダムから三次市に至る本川中流域",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "scope_note": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "オイカワ",
+          "source_literal_label": "オイカワ",
+          "survey_year": null,
+          "source_id": "RF-20261028-15",
+          "source_title": "江の川本川ブロック河川環境に関する現状と課題",
+          "publisher": "広島県",
+          "source_url": "https://www.pref.hiroshima.lg.jp/soshiki/99/1172196461943.html",
+          "source_locator": "1-2-3 (2)動植物・土師ダムから三次市に至る本川中流域",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "scope_note": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "カワムツ",
+          "source_literal_label": "カワムツ",
+          "survey_year": null,
+          "source_id": "RF-20261028-15",
+          "source_title": "江の川本川ブロック河川環境に関する現状と課題",
+          "publisher": "広島県",
+          "source_url": "https://www.pref.hiroshima.lg.jp/soshiki/99/1172196461943.html",
+          "source_locator": "1-2-3 (2)動植物・土師ダムから三次市に至る本川中流域",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "scope_note": "江の川本川の中流域の説明で生息魚として列記。支川全体への割り振りはしない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_9ef15e9ba2a13a4dd92b7ab8",
+      "navigation_target_id": "official21_80950cbe96f78448d391b471",
+      "literal_fish_label_count": 4,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "山口県",
+      "watershed": "錦川",
+      "river": "錦川",
+      "records": [
+        {
+          "recorded_name": "オイカワ",
+          "source_literal_label": "オイカワ",
+          "survey_year": 2008,
+          "source_id": "RF-20261028-16",
+          "source_title": "錦川で採集されたアユ及びその他の魚類からのPCRによるEdwardsiella ictaluriの検出状況",
+          "publisher": "山口県水産研究センター",
+          "source_url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197780.pdf",
+          "source_locator": "研究報告第7号・資料pp77-82／PDF pp75-80、材料及び方法・結果",
+          "evidence_class": "A",
+          "evidence_kind": "official_fish_survey_table",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "錦川の河川生息魚を採捕して検査した調査の魚名。放流稚アユは収録しない。",
+          "scope_note": "錦川の河川生息魚を採捕して検査した調査の魚名。放流稚アユは収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "ウナギ",
+          "source_literal_label": "ウナギ",
+          "survey_year": 2008,
+          "source_id": "RF-20261028-16",
+          "source_title": "錦川で採集されたアユ及びその他の魚類からのPCRによるEdwardsiella ictaluriの検出状況",
+          "publisher": "山口県水産研究センター",
+          "source_url": "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197780.pdf",
+          "source_locator": "研究報告第7号・資料pp77-82／PDF pp75-80、材料及び方法・結果",
+          "evidence_class": "A",
+          "evidence_kind": "official_fish_survey_table",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "錦川の河川生息魚を採捕して検査した調査の魚名。放流稚アユは収録しない。",
+          "scope_note": "錦川の河川生息魚を採捕して検査した調査の魚名。放流稚アユは収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_ea6a4c958ded2ba2773252a9",
+      "navigation_target_id": "official21_13bc07f18cad028353b910b2",
       "literal_fish_label_count": 2,
       "individual_physical_river_identity_approved": false
     }
