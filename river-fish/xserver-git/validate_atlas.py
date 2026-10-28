@@ -64,7 +64,7 @@ def validate(root: Path) -> dict:
                                    ('東京都', '北十間川'): '荒川', ('東京都', '小名木川'): '荒川',
                                    ('東京都', '旧江戸川'): '利根川', ('東京都', '新川'): '利根川', ('東京都', '中川'): '利根川',
                                    ('東京都', '新中川'): '利根川', ('東京都', '大場川'): '利根川', ('東京都', '伝右川'): '利根川',
-                                   **{('岐阜県', river): '木曽川' for river in ('可児川', '坂本川', '飛騨川', '矢戸川', '久々利川', '唐沢川', '加茂川')}}
+                                   **{('岐阜県', river): '木曽川' for river in ('可児川', '坂本川', '飛騨川', '矢戸川', '久々利川', '唐沢川', '加茂川', '大江川')}}
         if additions.get('schema') != 'tsurikue-source-fish-additions-v02' or not additions.get('no_precise_locations_or_river_codes') or not additions.get('held_records_excluded'):
             raise ValueError('Fish additions schema or safety flags invalid')
         if additions.get('group_count') != len(additions['groups']) or additions.get('record_count') != sum(len(g['records']) for g in additions['groups']):
