@@ -1,0 +1,492 @@
+{
+  "schema": "tsurikue-river-fish-research-candidates-v01",
+  "research_date": "2026-10-29",
+  "based_on_main_sha": "c84fe142902c5b9d8543bbb27790b474111b33c5",
+  "status": "RESEARCH_ONLY_NOT_CONNECTED_NOT_PUBLISHED",
+  "group_count": 8,
+  "record_count": 30,
+  "groups": [
+    {
+      "prefecture": "岐阜県",
+      "documented_watershed": "木曽川",
+      "river": "可児川",
+      "existing_river_group_id": "official21_fa0539d8433eaffbb6e9e825",
+      "existing_watershed_label": "水系未確認（公式資料の川名）",
+      "records": [
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ①可児川、巻末資料p2-38／PDF p39",
+          "survey_year": null,
+          "evidence_summary": "可児川の節で、魚類が生息すると明記。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "カワムツ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ①可児川、巻末資料p2-38／PDF p39",
+          "survey_year": null,
+          "evidence_summary": "可児川の節で、魚類が生息すると明記。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "ドジョウ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ①可児川、巻末資料p2-38／PDF p39",
+          "survey_year": null,
+          "evidence_summary": "可児川の節で、魚類が生息すると明記。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    },
+    {
+      "prefecture": "岐阜県",
+      "documented_watershed": "木曽川",
+      "river": "坂本川",
+      "existing_river_group_id": "official21_380a143bb430f5a7887e45c9",
+      "existing_watershed_label": "水系未確認（公式資料の川名）",
+      "records": [
+        {
+          "fish_name_original": "カワムツ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ②坂本川、巻末資料p2-39／PDF p40",
+          "survey_year": null,
+          "evidence_summary": "坂本川の節で魚名が多く確認されると明記。ヨシノボリを確定種へ置換しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ②坂本川、巻末資料p2-39／PDF p40",
+          "survey_year": null,
+          "evidence_summary": "坂本川の節で魚名が多く確認されると明記。ヨシノボリを確定種へ置換しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "ヨシノボリ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ②坂本川、巻末資料p2-39／PDF p40",
+          "survey_year": null,
+          "evidence_summary": "坂本川の節で魚名が多く確認されると明記。ヨシノボリを確定種へ置換しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    },
+    {
+      "prefecture": "岐阜県",
+      "documented_watershed": "木曽川",
+      "river": "飛騨川",
+      "existing_river_group_id": "official21_7fd7bbcd426cc97ef6a997a5",
+      "existing_watershed_label": "水系未確認（公式資料の川名）",
+      "records": [
+        {
+          "fish_name_original": "アユ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ③飛騨川、巻末資料p2-40／PDF p41",
+          "survey_year": null,
+          "evidence_summary": "飛騨川の節で生息魚として列記された一般的な魚名。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "ウグイ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ③飛騨川、巻末資料p2-40／PDF p41",
+          "survey_year": null,
+          "evidence_summary": "飛騨川の節で生息魚として列記された一般的な魚名。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "B",
+          "source_title": "岐阜県自然共生川づくりの手引き（案）巻末資料2「岐阜県の県土と水辺」",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+          "source_locator": "3.1 ③飛騨川、巻末資料p2-40／PDF p41",
+          "survey_year": null,
+          "evidence_summary": "飛騨川の節で生息魚として列記された一般的な魚名。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    },
+    {
+      "prefecture": "埼玉県",
+      "documented_watershed": "利根川",
+      "river": "元荒川",
+      "existing_river_group_id": "official21_3c2bb8cd5344088d83205105",
+      "existing_watershed_label": "利根川",
+      "records": [
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "A",
+          "source_title": "蓮田都市計画事業高虫西部土地区画整理事業環境影響評価書、第10章10.8 動物",
+          "publisher": "蓮田市",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/253444/j036-hyoukasho-10_8.pdf",
+          "source_locator": "10.8-16、魚類現地調査結果・表10.8-9／PDF p16",
+          "survey_year": 2021,
+          "evidence_summary": "元荒川の現地調査で確認された一般的な魚名を河川別の説明から採録。",
+          "river_identity_review": "PREFECTURE_WATERSHED_RIVER_NAME_MATCHED",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "モツゴ",
+          "evidence_class": "A",
+          "source_title": "蓮田都市計画事業高虫西部土地区画整理事業環境影響評価書、第10章10.8 動物",
+          "publisher": "蓮田市",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/253444/j036-hyoukasho-10_8.pdf",
+          "source_locator": "10.8-16、魚類現地調査結果・表10.8-9／PDF p16",
+          "survey_year": 2021,
+          "evidence_summary": "元荒川の現地調査で確認された一般的な魚名を河川別の説明から採録。",
+          "river_identity_review": "PREFECTURE_WATERSHED_RIVER_NAME_MATCHED",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "タモロコ",
+          "evidence_class": "A",
+          "source_title": "蓮田都市計画事業高虫西部土地区画整理事業環境影響評価書、第10章10.8 動物",
+          "publisher": "蓮田市",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/253444/j036-hyoukasho-10_8.pdf",
+          "source_locator": "10.8-16、魚類現地調査結果・表10.8-9／PDF p16",
+          "survey_year": 2021,
+          "evidence_summary": "元荒川の現地調査で確認された一般的な魚名を河川別の説明から採録。",
+          "river_identity_review": "PREFECTURE_WATERSHED_RIVER_NAME_MATCHED",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "カマツカ",
+          "evidence_class": "A",
+          "source_title": "蓮田都市計画事業高虫西部土地区画整理事業環境影響評価書、第10章10.8 動物",
+          "publisher": "蓮田市",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/253444/j036-hyoukasho-10_8.pdf",
+          "source_locator": "10.8-16、魚類現地調査結果・表10.8-9／PDF p16",
+          "survey_year": 2021,
+          "evidence_summary": "元荒川の現地調査で確認された一般的な魚名を河川別の説明から採録。",
+          "river_identity_review": "PREFECTURE_WATERSHED_RIVER_NAME_MATCHED",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "ニゴイ",
+          "evidence_class": "A",
+          "source_title": "蓮田都市計画事業高虫西部土地区画整理事業環境影響評価書、第10章10.8 動物",
+          "publisher": "蓮田市",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/253444/j036-hyoukasho-10_8.pdf",
+          "source_locator": "10.8-16、魚類現地調査結果・表10.8-9／PDF p16",
+          "survey_year": 2021,
+          "evidence_summary": "元荒川の現地調査で確認された一般的な魚名を河川別の説明から採録。",
+          "river_identity_review": "PREFECTURE_WATERSHED_RIVER_NAME_MATCHED",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "ウキゴリ",
+          "evidence_class": "A",
+          "source_title": "蓮田都市計画事業高虫西部土地区画整理事業環境影響評価書、第10章10.8 動物",
+          "publisher": "蓮田市",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/253444/j036-hyoukasho-10_8.pdf",
+          "source_locator": "10.8-16、魚類現地調査結果・表10.8-9／PDF p16",
+          "survey_year": 2021,
+          "evidence_summary": "元荒川の現地調査で確認された一般的な魚名を河川別の説明から採録。",
+          "river_identity_review": "PREFECTURE_WATERSHED_RIVER_NAME_MATCHED",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    },
+    {
+      "prefecture": "岐阜県",
+      "documented_watershed": "木曽川",
+      "river": "矢戸川",
+      "existing_river_group_id": "official21_2df72f1ed4248792efa33abd",
+      "existing_watershed_label": "水系未確認（公式資料の川名）",
+      "records": [
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・矢戸川、資料p17／PDF p22",
+          "survey_year": null,
+          "evidence_summary": "矢戸川の節で生息する魚として明記。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "カワムツ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・矢戸川、資料p17／PDF p22",
+          "survey_year": null,
+          "evidence_summary": "矢戸川の節で生息する魚として明記。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "ドジョウ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・矢戸川、資料p17／PDF p22",
+          "survey_year": null,
+          "evidence_summary": "矢戸川の節で生息する魚として明記。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "カワヨシノボリ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・矢戸川、資料p17／PDF p22",
+          "survey_year": null,
+          "evidence_summary": "矢戸川の節で生息する魚として明記。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    },
+    {
+      "prefecture": "岐阜県",
+      "documented_watershed": "木曽川",
+      "river": "久々利川",
+      "existing_river_group_id": "official21_066fd4bf13d988fc004016d4",
+      "existing_watershed_label": "水系未確認（公式資料の川名）",
+      "records": [
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・久々利川、資料pp17-18／PDF pp22-23",
+          "survey_year": null,
+          "evidence_summary": "久々利川の節で確認魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "カワムツ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・久々利川、資料pp17-18／PDF pp22-23",
+          "survey_year": null,
+          "evidence_summary": "久々利川の節で確認魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "トウヨシノボリ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・久々利川、資料pp17-18／PDF pp22-23",
+          "survey_year": null,
+          "evidence_summary": "久々利川の節で確認魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "モツゴ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・久々利川、資料pp17-18／PDF pp22-23",
+          "survey_year": null,
+          "evidence_summary": "久々利川の節で確認魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    },
+    {
+      "prefecture": "岐阜県",
+      "documented_watershed": "木曽川",
+      "river": "唐沢川",
+      "existing_river_group_id": "official21_a2ee8d05515c5c36d3ae51f7",
+      "existing_watershed_label": "水系未確認（公式資料の川名）",
+      "records": [
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・唐沢川、資料p18／PDF p23",
+          "survey_year": null,
+          "evidence_summary": "唐沢川の節で確認された一般的な魚名。貴重種は除外。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "カワムツ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・唐沢川、資料p18／PDF p23",
+          "survey_year": null,
+          "evidence_summary": "唐沢川の節で確認された一般的な魚名。貴重種は除外。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    },
+    {
+      "prefecture": "岐阜県",
+      "documented_watershed": "木曽川",
+      "river": "加茂川",
+      "existing_river_group_id": "official21_c2049ea9931ec220bb3d8f04",
+      "existing_watershed_label": "水系未確認（公式資料の川名）",
+      "records": [
+        {
+          "fish_name_original": "オイカワ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・加茂川、資料p18／PDF p23",
+          "survey_year": null,
+          "evidence_summary": "加茂川の節で確認魚として列記。細かな区間は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "カワムツ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・加茂川、資料p18／PDF p23",
+          "survey_year": null,
+          "evidence_summary": "加茂川の節で確認魚として列記。細かな区間は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "アユ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・加茂川、資料p18／PDF p23",
+          "survey_year": null,
+          "evidence_summary": "加茂川の節で確認魚として列記。細かな区間は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "ウキゴリ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・加茂川、資料p18／PDF p23",
+          "survey_year": null,
+          "evidence_summary": "加茂川の節で確認魚として列記。細かな区間は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        },
+        {
+          "fish_name_original": "トウヨシノボリ",
+          "evidence_class": "B",
+          "source_title": "一級河川木曽川水系 木曽川中流圏域河川整備計画（平成24年11月）",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1489.pdf",
+          "source_locator": "1.2.2 (2) 河川ごとの特徴・加茂川、資料p18／PDF p23",
+          "survey_year": null,
+          "evidence_summary": "加茂川の節で確認魚として列記。細かな区間は収録しない。",
+          "river_identity_review": "PREFECTURE_AND_RIVER_NAME_MATCHED_SOURCE_WATERSHED_RETAINED_SEPARATELY",
+          "conservation_review": "GENERAL_FISH_NAME_ONLY_NO_PRECISE_SITE",
+          "publication_status": "RESEARCH_CANDIDATE_NOT_CONNECTED"
+        }
+      ]
+    }
+  ],
+  "held_review": [
+    {
+      "source_url": "https://www.pref.chiba.lg.jp/suiho/shingikai/mizukankyou/documents/h230627_toushin.pdf",
+      "river": "根木名川",
+      "reason": "検索索引に魚名の記述があるが、PDF本文の文字抽出で水域と魚名の対応を再確認できず保留。",
+      "status": "SOURCE_LAYOUT_REVIEW_REQUIRED"
+    },
+    {
+      "source_url": "https://www.pref.niigata.lg.jp/uploaded/attachment/53734.pdf",
+      "river": "三面川",
+      "reason": "水系全体の記述と本川の記述を区別するため、原PDFの該当段落を再確認する。",
+      "status": "RIVER_SCOPE_REVIEW_REQUIRED"
+    },
+    {
+      "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1458.pdf",
+      "river": "津屋川",
+      "reason": "魚類17種とあるが魚名が同じ節に明記されていない。",
+      "status": "NO_LITERAL_FISH_LABEL"
+    }
+  ]
+}
