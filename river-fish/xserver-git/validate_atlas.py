@@ -50,6 +50,34 @@ def validate(root: Path) -> dict:
     atlas = json.loads((root / 'data/atlas.json').read_text(encoding='utf-8'))
     if not isinstance(atlas, (dict, list)):
         raise ValueError('data/atlas.json must be structured JSON')
+    additions_path = root / 'data/fish_source_connections_v02_additions.json'
+    if additions_path.exists():
+        additions = json.loads(additions_path.read_text(encoding='utf-8'))
+        prior = json.loads((root / 'data/fish_source_connections_v01.json').read_text(encoding='utf-8'))
+        by_id = {entry['id']: entry for entry in atlas['entries']}
+        used = {g['navigation_target_id'] for g in prior['groups'] if g['navigation_target_id']}
+        if additions.get('schema') != 'tsurikue-source-fish-additions-v02' or not additions.get('no_precise_locations_or_river_codes') or not additions.get('held_records_excluded'):
+            raise ValueError('Fish additions schema or safety flags invalid')
+        if additions.get('group_count') != len(additions['groups']) or additions.get('record_count') != sum(len(g['records']) for g in additions['groups']):
+            raise ValueError('Fish additions counts invalid')
+        for group in additions['groups']:
+            target = group['navigation_target_id']
+            entry = by_id.get(target)
+            if target in used or not entry or entry['kind'] != 'official_river_name_only_v21' or (entry['source_prefecture'], entry['water'], entry['name']) != (group['prefecture'], group['watershed'], group['river']):
+                raise ValueError(f'Fish addition has ambiguous or duplicate target: {target}')
+            used.add(target)
+            if group['literal_fish_label_count'] != len(group['records']) or not group['records']:
+                raise ValueError(f'Fish addition record count invalid: {target}')
+            for record in group['records']:
+                if record['evidence_class'] not in ('A', 'B') or not record['source_url'].startswith('https://') or not all(record.get(k) for k in ('recorded_name', 'source_title', 'publisher', 'source_locator', 'evidence_summary')):
+                    raise ValueError(f'Fish addition lacks publishable evidence: {target}')
+                if record['river_identity_review'] != 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL' or record['conservation_review'] != 'NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED' or record['publication_status'] != 'STAGING_CANDIDATE':
+                    raise ValueError(f'Fish addition review incomplete: {target}')
+        detail_path = root / 'data/river_detail_page_ids_v01.json'
+        details = json.loads(detail_path.read_text(encoding='utf-8'))
+        actual = sorted(p.parent.name for p in (root / 'river').glob('*/index.html'))
+        if details.get('schema') != 'river-detail-page-ids-v01' or details.get('ids') != actual:
+            raise ValueError('River detail page link inventory differs from filesystem')
     for rel in ('index.html', 'river/index.html'):
         if '<html' not in (root / rel).read_text(encoding='utf-8').lower():
             raise ValueError(f'Not an HTML document: {rel}')
