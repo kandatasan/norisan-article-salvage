@@ -1,11 +1,11 @@
 {
   "schema": "tsurikue-source-fish-additions-v02",
-  "release": "2026-10-29-saitama-shiga-evidence-batch3-staging",
+  "release": "2026-10-29-gunma-evidence-batch4-staging",
   "display_scope": "SOURCE_PUBLISHED_RIVER_FISH_REFERENCES_ONLY",
   "no_precise_locations_or_river_codes": true,
   "held_records_excluded": true,
-  "group_count": 56,
-  "record_count": 166,
+  "group_count": 63,
+  "record_count": 176,
   "groups": [
     {
       "prefecture": "青森県",
@@ -3836,6 +3836,291 @@
       ],
       "id": "srcfish_d4a394a3bdfbf25c1dd03d5a",
       "navigation_target_id": "official21_780956a720835e0d68fe576a",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "群馬県",
+      "watershed": "利根川",
+      "river": "利根川",
+      "records": [
+        {
+          "recorded_name": "アユ",
+          "source_literal_label": "アユ",
+          "survey_year": 2026,
+          "source_id": "RF-20261029-B4-01",
+          "source_title": "水産物に対する放射性物質の安全検査について（第349回）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/site/houdou/757954.html",
+          "source_locator": "2．検査結果（採捕魚・養殖魚）・利根川／アユ行",
+          "evidence_class": "A",
+          "evidence_kind": "official_capture_record",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "群馬県の2026年検査結果表で、利根川の採捕魚としてアユを明記。市町村以下の採捕場所は収録しない。",
+          "scope_note": "群馬県の2026年検査結果表で、利根川の採捕魚としてアユを明記。市町村以下の採捕場所は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。",
+        "資料に市町村以下の採捕場所がある場合も、公開データには収録していません。"
+      ],
+      "id": "srcfish_1a2480efc891afc7d4126879",
+      "navigation_target_id": "official21_9aebdedc59a35c629f0ee386",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "群馬県",
+      "watershed": "利根川",
+      "river": "吾妻川",
+      "records": [
+        {
+          "recorded_name": "ヤマメ",
+          "source_literal_label": "ヤマメ",
+          "survey_year": 2023,
+          "source_id": "RF-20261029-B4-02",
+          "source_title": "水産物に対する放射性物質の安全検査について（第315回）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/site/houdou/203552.html",
+          "source_locator": "2．検査結果（採捕魚）・吾妻川／ヤマメ行",
+          "evidence_class": "A",
+          "evidence_kind": "official_capture_record",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "群馬県の2023年検査結果表で、吾妻川の採捕魚としてヤマメを明記。市町村以下の採捕場所は収録しない。",
+          "scope_note": "群馬県の2023年検査結果表で、吾妻川の採捕魚としてヤマメを明記。市町村以下の採捕場所は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。",
+        "資料に市町村以下の採捕場所がある場合も、公開データには収録していません。"
+      ],
+      "id": "srcfish_aa40385fafd11e9ecc09f7a1",
+      "navigation_target_id": "official21_72b7f5f89c83b7aeb0f5d8b7",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "群馬県",
+      "watershed": "利根川",
+      "river": "広瀬川",
+      "records": [
+        {
+          "recorded_name": "コイ",
+          "source_literal_label": "コイ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B4-03",
+          "source_title": "群馬県水産試験場研究報告第15号「KHV病既発生水域における野生コイのKHV保菌調査（桃ノ木川・広瀬川・荒砥川・神沢川）」",
+          "publisher": "群馬県水産試験場",
+          "source_url": "https://www.pref.gunma.jp/page/20869.html",
+          "source_locator": "1 研究報告・KHV病既発生水域における野生コイのKHV保菌調査",
+          "evidence_class": "A",
+          "evidence_kind": "official_capture_record",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "群馬県水産試験場の研究報告題名で、広瀬川を野生コイの調査水域として明記。詳細地点は収録しない。",
+          "scope_note": "群馬県水産試験場の研究報告題名で、広瀬川を野生コイの調査水域として明記。詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。",
+        "資料に市町村以下の採捕場所がある場合も、公開データには収録していません。"
+      ],
+      "id": "srcfish_2f2dafc178b2e67298003d89",
+      "navigation_target_id": "official21_580fd9add89b6aafbfe96669",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "群馬県",
+      "watershed": "利根川",
+      "river": "烏川",
+      "records": [
+        {
+          "recorded_name": "トウヨシノボリ",
+          "source_literal_label": "トウヨシノボリ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B4-04",
+          "source_title": "烏川圏域河川整備計画（変更）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/page/11140.html",
+          "source_locator": "第2章 第3節 河川環境について・烏川下流部",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "scope_note": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "ウグイ",
+          "source_literal_label": "ウグイ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B4-04",
+          "source_title": "烏川圏域河川整備計画（変更）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/page/11140.html",
+          "source_locator": "第2章 第3節 河川環境について・烏川下流部",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "scope_note": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "アブラハヤ",
+          "source_literal_label": "アブラハヤ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B4-04",
+          "source_title": "烏川圏域河川整備計画（変更）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/page/11140.html",
+          "source_locator": "第2章 第3節 河川環境について・烏川下流部",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "scope_note": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "オイカワ",
+          "source_literal_label": "オイカワ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B4-04",
+          "source_title": "烏川圏域河川整備計画（変更）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/page/11140.html",
+          "source_locator": "第2章 第3節 河川環境について・烏川下流部",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "scope_note": "烏川下流部の生息魚として明記された一般魚を原表記のまま収録。重要種と詳細区間は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。",
+        "資料に市町村以下の採捕場所がある場合も、公開データには収録していません。"
+      ],
+      "id": "srcfish_7be874ff16199f8f71db8da7",
+      "navigation_target_id": "official21_eda0a5bb0c5fbaaa76639ade",
+      "literal_fish_label_count": 4,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "群馬県",
+      "watershed": "利根川",
+      "river": "谷田川",
+      "records": [
+        {
+          "recorded_name": "チャネルキャットフィッシュ",
+          "source_literal_label": "チャネルキャットフィッシュ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B4-05",
+          "source_title": "水試だより48号「チャネルキャットフィッシュ」",
+          "publisher": "群馬県水産試験場",
+          "source_url": "https://www.pref.gunma.jp/page/20880.html",
+          "source_locator": "チャネルキャットフィッシュ・群馬県内の採捕記録",
+          "evidence_class": "A",
+          "evidence_kind": "official_capture_record",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "群馬県水産試験場が、谷田川におけるチャネルキャットフィッシュの採捕記録を明記。詳細地点は収録しない。",
+          "scope_note": "群馬県水産試験場が、谷田川におけるチャネルキャットフィッシュの採捕記録を明記。詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。",
+        "資料に市町村以下の採捕場所がある場合も、公開データには収録していません。"
+      ],
+      "id": "srcfish_5e850116e457a83eb72c42c6",
+      "navigation_target_id": "official21_f1c837540742a3eda5996173",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "群馬県",
+      "watershed": "利根川",
+      "river": "赤谷川",
+      "records": [
+        {
+          "recorded_name": "イワナ",
+          "source_literal_label": "イワナ",
+          "survey_year": 2023,
+          "source_id": "RF-20261029-B4-06",
+          "source_title": "水産物に対する放射性物質の安全検査について（第315回）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/site/houdou/203552.html",
+          "source_locator": "2．検査結果（採捕魚）・赤谷川／イワナ行",
+          "evidence_class": "A",
+          "evidence_kind": "official_capture_record",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "群馬県の2023年検査結果表で、赤谷川の採捕魚としてイワナを明記。市町村以下の採捕場所は収録しない。",
+          "scope_note": "群馬県の2023年検査結果表で、赤谷川の採捕魚としてイワナを明記。市町村以下の採捕場所は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。",
+        "資料に市町村以下の採捕場所がある場合も、公開データには収録していません。"
+      ],
+      "id": "srcfish_d273f05e116a9b50323871ff",
+      "navigation_target_id": "official21_aa13b65f67182d342b9af82b",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "群馬県",
+      "watershed": "利根川",
+      "river": "鶴生田川",
+      "records": [
+        {
+          "recorded_name": "カネヒラ",
+          "source_literal_label": "カネヒラ",
+          "survey_year": 2017,
+          "source_id": "RF-20261029-B4-07",
+          "source_title": "邑楽・館林圏域河川整備計画（変更）",
+          "publisher": "群馬県",
+          "source_url": "https://www.pref.gunma.jp/page/11156.html",
+          "source_locator": "第2章 第3節（1）自然環境 2）魚類等",
+          "evidence_class": "A",
+          "evidence_kind": "official_fish_survey_record",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "平成29年度河川水辺の国勢調査で鶴生田川のカネヒラを確認したと明記。詳細地点は収録しない。",
+          "scope_note": "平成29年度河川水辺の国勢調査で鶴生田川のカネヒラを確認したと明記。詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。",
+        "資料に市町村以下の採捕場所がある場合も、公開データには収録していません。"
+      ],
+      "id": "srcfish_76f8a5ea803789d96e292ff6",
+      "navigation_target_id": "official21_ae28aff8e775fc577096bbee",
       "literal_fish_label_count": 1,
       "individual_physical_river_identity_approved": false
     }
