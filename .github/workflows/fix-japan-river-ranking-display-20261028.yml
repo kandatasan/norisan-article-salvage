@@ -1,0 +1,36 @@
+name: Fix Japan river ranking sticky scroll display
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/fix_japan_river_ranking_display_20261028.py'
+      - '.github/workflows/fix-japan-river-ranking-display-20261028.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/fix_japan_river_ranking_display_20261028.py'
+      - '.github/workflows/fix-japan-river-ranking-display-20261028.yml'
+permissions:
+  contents: read
+jobs:
+  rank-display-fix:
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Syntax check
+        run: python -m py_compile scripts/fix_japan_river_ranking_display_20261028.py
+      - name: Authenticated WP read-only preflight
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/fix_japan_river_ranking_display_20261028.py check
+      - name: Repair CSS and river click handler after merge
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/fix_japan_river_ranking_display_20261028.py apply
