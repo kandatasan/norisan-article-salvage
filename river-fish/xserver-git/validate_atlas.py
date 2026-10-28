@@ -57,13 +57,14 @@ def validate(root: Path) -> dict:
         survey_counts = {e['survey_river_group_id']: e for e in json.loads((root / 'data/river_fish_label_counts_v25.json').read_text(encoding='utf-8'))['entries']}
         by_id = {entry['id']: entry for entry in atlas['entries']}
         used = {g['navigation_target_id'] for g in prior['groups'] if g['navigation_target_id']}
-        tokyo_source_watersheds = {'善福寺川': '荒川', '妙正寺川': '荒川', '黒目川': '荒川',
-                                   '落合川': '荒川', '石神井川': '荒川', '呑川': '呑川', '目黒川': '目黒川',
-                                   '柳瀬川': '荒川', '空堀川': '荒川', '奈良橋川': '荒川',
-                                   '新河岸川': '荒川', '白子川': '荒川', '旧中川': '荒川',
-                                   '北十間川': '荒川', '小名木川': '荒川',
-                                   '旧江戸川': '利根川', '新川': '利根川', '中川': '利根川',
-                                   '新中川': '利根川', '大場川': '利根川', '伝右川': '利根川'}
+        documented_source_watersheds = {('東京都', '善福寺川'): '荒川', ('東京都', '妙正寺川'): '荒川', ('東京都', '黒目川'): '荒川',
+                                   ('東京都', '落合川'): '荒川', ('東京都', '石神井川'): '荒川', ('東京都', '呑川'): '呑川', ('東京都', '目黒川'): '目黒川',
+                                   ('東京都', '柳瀬川'): '荒川', ('東京都', '空堀川'): '荒川', ('東京都', '奈良橋川'): '荒川',
+                                   ('東京都', '新河岸川'): '荒川', ('東京都', '白子川'): '荒川', ('東京都', '旧中川'): '荒川',
+                                   ('東京都', '北十間川'): '荒川', ('東京都', '小名木川'): '荒川',
+                                   ('東京都', '旧江戸川'): '利根川', ('東京都', '新川'): '利根川', ('東京都', '中川'): '利根川',
+                                   ('東京都', '新中川'): '利根川', ('東京都', '大場川'): '利根川', ('東京都', '伝右川'): '利根川',
+                                   **{('岐阜県', river): '木曽川' for river in ('可児川', '坂本川', '飛騨川', '矢戸川', '久々利川', '唐沢川', '加茂川')}}
         if additions.get('schema') != 'tsurikue-source-fish-additions-v02' or not additions.get('no_precise_locations_or_river_codes') or not additions.get('held_records_excluded'):
             raise ValueError('Fish additions schema or safety flags invalid')
         if additions.get('group_count') != len(additions['groups']) or additions.get('record_count') != sum(len(g['records']) for g in additions['groups']):
@@ -76,10 +77,11 @@ def validate(root: Path) -> dict:
             if target in used or not (official_match or survey_match):
                 raise ValueError(f'Fish addition has ambiguous or duplicate target: {target}')
             used.add(target)
-            tokyo_match = group['prefecture'] == '東京都' and group['river'] in tokyo_source_watersheds
-            if tokyo_match:
-                if group['watershed'] != '水系未確認（公式資料の川名）' or group.get('documented_watershed') != tokyo_source_watersheds[group['river']]:
-                    raise ValueError(f'Tokyo source watershed was conflated with the existing group: {target}')
+            source_watershed = documented_source_watersheds.get((group['prefecture'], group['river']))
+            source_watershed_match = source_watershed is not None
+            if source_watershed_match:
+                if group['watershed'] != '水系未確認（公式資料の川名）' or group.get('documented_watershed') != source_watershed:
+                    raise ValueError(f'Source watershed was conflated with the existing group: {target}')
             elif 'documented_watershed' in group:
                 raise ValueError(f'Unexpected source watershed: {target}')
             if group['literal_fish_label_count'] != len(group['records']) or not group['records']:
@@ -87,7 +89,7 @@ def validate(root: Path) -> dict:
             for record in group['records']:
                 if record['evidence_class'] not in ('A', 'B') or not record['source_url'].startswith('https://') or not all(record.get(k) for k in ('recorded_name', 'source_title', 'publisher', 'source_locator', 'evidence_summary')):
                     raise ValueError(f'Fish addition lacks publishable evidence: {target}')
-                identity_flag = ('EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED' if tokyo_match else 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL') if official_match else 'SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL'
+                identity_flag = ('EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED' if source_watershed_match else 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL') if official_match else 'SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL'
                 if record['river_identity_review'] != identity_flag or record['conservation_review'] != 'NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED' or record['publication_status'] != 'STAGING_CANDIDATE':
                     raise ValueError(f'Fish addition review incomplete: {target}')
         detail_path = root / 'data/river_detail_page_ids_v01.json'
