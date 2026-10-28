@@ -54,6 +54,7 @@ def validate(root: Path) -> dict:
     if additions_path.exists():
         additions = json.loads(additions_path.read_text(encoding='utf-8'))
         prior = json.loads((root / 'data/fish_source_connections_v01.json').read_text(encoding='utf-8'))
+        survey_counts = {e['survey_river_group_id']: e for e in json.loads((root / 'data/river_fish_label_counts_v25.json').read_text(encoding='utf-8'))['entries']}
         by_id = {entry['id']: entry for entry in atlas['entries']}
         used = {g['navigation_target_id'] for g in prior['groups'] if g['navigation_target_id']}
         if additions.get('schema') != 'tsurikue-source-fish-additions-v02' or not additions.get('no_precise_locations_or_river_codes') or not additions.get('held_records_excluded'):
@@ -63,7 +64,9 @@ def validate(root: Path) -> dict:
         for group in additions['groups']:
             target = group['navigation_target_id']
             entry = by_id.get(target)
-            if target in used or not entry or entry['kind'] != 'official_river_name_only_v21' or (entry['source_prefecture'], entry['water'], entry['name']) != (group['prefecture'], group['watershed'], group['river']):
+            official_match = entry and entry['kind'] == 'official_river_name_only_v21' and (entry['source_prefecture'], entry['water'], entry['name']) == (group['prefecture'], group['watershed'], group['river'])
+            survey_match = entry and target == 'rn_51c8995e0adad93e3f85603c' and entry['kind'] == 'historical_national_river_survey' and entry['region'] == 'tohoku' and (group['prefecture'], group['watershed'], group['river']) == ('青森県', '岩木川', '浅瀬石川') and (entry['water'], entry['name']) == (group['watershed'], group['river']) and not survey_counts[target]['fish_name_in_source_records']
+            if target in used or not (official_match or survey_match):
                 raise ValueError(f'Fish addition has ambiguous or duplicate target: {target}')
             used.add(target)
             if group['literal_fish_label_count'] != len(group['records']) or not group['records']:
@@ -71,7 +74,8 @@ def validate(root: Path) -> dict:
             for record in group['records']:
                 if record['evidence_class'] not in ('A', 'B') or not record['source_url'].startswith('https://') or not all(record.get(k) for k in ('recorded_name', 'source_title', 'publisher', 'source_locator', 'evidence_summary')):
                     raise ValueError(f'Fish addition lacks publishable evidence: {target}')
-                if record['river_identity_review'] != 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL' or record['conservation_review'] != 'NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED' or record['publication_status'] != 'STAGING_CANDIDATE':
+                identity_flag = 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL' if official_match else 'SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL'
+                if record['river_identity_review'] != identity_flag or record['conservation_review'] != 'NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED' or record['publication_status'] != 'STAGING_CANDIDATE':
                     raise ValueError(f'Fish addition review incomplete: {target}')
         detail_path = root / 'data/river_detail_page_ids_v01.json'
         details = json.loads(detail_path.read_text(encoding='utf-8'))

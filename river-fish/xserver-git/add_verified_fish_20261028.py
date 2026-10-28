@@ -7,6 +7,7 @@ from pathlib import Path
 ROOT = Path(__file__).parent / "source" / "data"
 atlas = json.loads((ROOT / "atlas.json").read_text())
 prior = json.loads((ROOT / "fish_source_connections_v01.json").read_text())
+survey_counts = {e["survey_river_group_id"]: e for e in json.loads((ROOT / "river_fish_label_counts_v25.json").read_text())["entries"]}
 existing = {g["navigation_target_id"] for g in prior["groups"] if g["navigation_target_id"]}
 data = {"schema": "tsurikue-source-fish-additions-v02", "release": "2026-10-28-river-evidence-review-staging",
         "display_scope": "SOURCE_PUBLISHED_RIVER_FISH_REFERENCES_ONLY", "no_precise_locations_or_river_codes": True,
@@ -80,11 +81,20 @@ sources = [
      "錦川で採集されたアユ及びその他の魚類からのPCRによるEdwardsiella ictaluriの検出状況", "山口県水産研究センター",
      "https://www.pref.yamaguchi.lg.jp/uploaded/attachment/197780.pdf", "研究報告第7号・資料pp77-82／PDF pp75-80、材料及び方法・結果", 2008,
      "錦川の河川生息魚を採捕して検査した調査の魚名。放流稚アユは収録しない。"),
+    ("青森県", "岩木川", "浅瀬石川", "A", ["コイ", "ギンブナ", "アブラハヤ", "ドジョウ", "ウグイ", "アユ"],
+     "岩木川流域保全計画", "青森県",
+     "https://www.pref.aomori.lg.jp/soshiki/kankyo/kankyo/files/plan10.pdf", "図3・資料p24／PDF p25・浅瀬石川の欄", None,
+     "浅瀬石川の欄に魚名を示し、図の注記で現地調査時の確認種と説明。希少種は収録しない。"),
 ]
 
 for pref, water, river, grade, names, title, publisher, url, locator, year, summary in sources:
     matches = [e for e in atlas["entries"] if e["name"] == river and e["water"] == water
                and e.get("source_prefecture") == pref and e["kind"] == "official_river_name_only_v21"]
+    if (pref, water, river) == ("青森県", "岩木川", "浅瀬石川"):
+        matches = [e for e in atlas["entries"] if e["id"] == "rn_51c8995e0adad93e3f85603c"
+                   and e["kind"] == "historical_national_river_survey" and e["region"] == "tohoku"
+                   and (e["water"], e["name"]) == (water, river)
+                   and not survey_counts[e["id"]]["fish_name_in_source_records"]]
     assert len(matches) == 1, (pref, water, river)
     entry = matches[0]
     assert entry["id"] not in existing, entry["id"]
@@ -98,7 +108,7 @@ for pref, water, river, grade, names, title, publisher, url, locator, year, summ
         "evidence_kind": "official_fish_survey_table" if grade == "A" else "official_environment_narrative",
         "method_label": "魚類調査記録" if grade == "A" else "資料に掲載された生息魚",
         "evidence_summary": summary, "scope_note": summary,
-        "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+        "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL" if entry["kind"] == "official_river_name_only_v21" else "SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL",
         "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
         "publication_status": "STAGING_CANDIDATE"
     } for name in names]
