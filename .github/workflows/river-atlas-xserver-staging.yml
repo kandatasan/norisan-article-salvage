@@ -54,11 +54,11 @@ jobs:
       contents: write
       pull-requests: write
     env:
-      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }
-      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }
-      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }
-      SOURCE_DIR: ${{ inputs.source_dir }
-      GH_TOKEN: ${{ github.token }
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+      SOURCE_DIR: ${{ inputs.source_dir }}
+      GH_TOKEN: ${{ github.token }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -108,9 +108,9 @@ jobs:
     timeout-minutes: 15
     environment: river-atlas-staging
     env:
-      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }
-      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }
-      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
