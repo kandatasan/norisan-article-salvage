@@ -1,6 +1,10 @@
 name: River atlas Xserver GitHub staging
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - 'river-fish/xserver-git/source/**'
   pull_request:
     branches: [main]
     paths:
@@ -103,7 +107,7 @@ jobs:
             --body "Static release imported from Xserver: $SOURCE_DIR. Check content, data license and diffs before merging. Production was not changed."
 
   deploy-staging:
-    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'deploy-staging'
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'deploy-staging')
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: river-atlas-staging
