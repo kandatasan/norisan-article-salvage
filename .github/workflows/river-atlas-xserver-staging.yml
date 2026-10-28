@@ -1,0 +1,168 @@
+name: River atlas Xserver GitHub staging
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'river-fish/xserver-git/**'
+      - '.github/workflows/river-atlas-xserver-staging.yml'
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'Import source PR or deploy to isolated preview'
+        required: true
+        type: choice
+        options: [bootstrap-pr, deploy-staging]
+      source_dir:
+        description: 'Source folder on Xserver for bootstrap'
+        required: true
+        type: choice
+        options: [river-fish-atlas, river-fish-atlas-v0291]
+
+permissions:
+  contents: read
+concurrency:
+  group: river-atlas-xserver-${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  validate-pr:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source and validator
+        shell: bash
+        run: |
+          python -m py_compile river-fish/xserver-git/validate_atlas.py
+          bash -n river-fish/xserver-git/verify_host_key.sh
+          if [[ -d river-fish/xserver-git/source ]]; then
+            python river-fish/xserver-git/validate_atlas.py river-fish/xserver-git/source
+          else
+            echo 'No source imported yet; run bootstrap-pr after merging.'
+          fi
+
+  bootstrap-pr:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'bootstrap-pr'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }
+      SOURCE_DIR: ${{ inputs.source_dir }
+      GH_TOKEN: ${{ github.token }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Configure SSH with verified host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" &&
+            test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > ~/.ssh/xserver_deploy_key
+          bash river-fish/xserver-git/verify_host_key.sh
+          chmod 600 ~/.ssh/xserver_deploy_key
+          ssh-keygen -l -f ~/.ssh/known_hosts >/dev/null
+      - name: Read Xserver release and open a draft source PR
+        shell: bash
+        run: |
+          set -euo pipefail
+          case "$SOURCE_DIR" in river-fish-atlas|river-fish-atlas-v0291) ;; *) exit 1;; esac
+          SSH='ssh -i /home/runner/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/home/runner/.ssh/known_hosts'
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" \
+            'test -d "$HOME/tsurikue.com/public_html" && test ! -L "$HOME/tsurikue.com/public_html"'
+          mkdir -p river-fish/xserver-git/source
+          rsync -az -e "$SSH" --include='*/' --include='*.html' --include='*.json' \
+            --include='*.xml' --include='*.txt' --include='*.csv' --exclude='*' \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:tsurikue.com/public_html/$SOURCE_DIR/" \
+            river-fish/xserver-git/source/
+          python river-fish/xserver-git/validate_atlas.py river-fish/xserver-git/source
+          branch="automation/river-atlas-source-$GITHUB_RUN_ID"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git checkout -b "$branch"
+          git add river-fish/xserver-git/source
+          git diff --cached --quiet && { echo 'No source changes'; exit 1; }
+          git commit -m 'Import Xserver river atlas static files for review'
+          git push origin "$branch"
+          gh pr create --draft --base main --head "$branch" \
+            --title 'Review imported Xserver river atlas source' \
+            --body "Static release imported from Xserver: $SOURCE_DIR. Check content, data license and diffs before merging. Production was not changed."
+
+  deploy-staging:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'deploy-staging'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: river-atlas-staging
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate GitHub source before transfer
+        run: python river-fish/xserver-git/validate_atlas.py river-fish/xserver-git/source
+      - name: Configure SSH with verified host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" &&
+            test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > ~/.ssh/xserver_deploy_key
+          bash river-fish/xserver-git/verify_host_key.sh
+          chmod 600 ~/.ssh/xserver_deploy_key
+      - name: Sync only to isolated staging folder
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSH='ssh -i /home/runner/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/home/runner/.ssh/known_hosts'
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          stage="$root/river-fish-atlas-ci-preview"
+          test -d "$root" && test ! -L "$root" && test ! -L "$stage"
+          mkdir -p "$stage"
+          SH
+          # --delete affects the dedicated ci-preview folder, never the live site.
+          rsync -az --delete -e "$SSH" river-fish/xserver-git/source/ \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:tsurikue.com/public_html/river-fish-atlas-ci-preview/"
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          stage="$HOME/tsurikue.com/public_html/river-fish-atlas-ci-preview"
+          test -f "$stage/index.html" && test -f "$stage/sitemap.xml" &&
+            test -f "$stage/data/atlas.json"
+          printf '%s\n' '<IfModule mod_headers.c>' \
+            'Header always set X-Robots-Tag "noindex, nofollow"' \
+            '</IfModule>' > "$stage/.htaccess"
+          SH
+      - name: Check stage via HTTPS, no production changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://tsurikue.com/river-fish-atlas-ci-preview'
+          curl -fsSL --retry 2 "$url/index.html" -o /tmp/index.html
+          curl -fsSL --retry 2 "$url/sitemap.xml" -o /tmp/sitemap.xml
+          curl -fsSL --retry 2 "$url/data/atlas.json" -o /tmp/atlas.json
+          grep -qi '<html' /tmp/index.html
+          python -m json.tool /tmp/atlas.json >/dev/null
+          printf 'Verified preview: %s/index.html\n' "$url" >> "$GITHUB_STEP_SUMMARY"
+          printf 'Production atlas and WordPress unchanged.\n' >> "$GITHUB_STEP_SUMMARY"
