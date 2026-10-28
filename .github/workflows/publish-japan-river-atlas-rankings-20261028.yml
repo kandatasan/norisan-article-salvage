@@ -1,0 +1,46 @@
+name: Publish guarded river atlas rankings
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'content/revisions/japan-river-atlas-rankings-20261028.json'
+      - 'scripts/add_japan_river_atlas_rankings_20261028.py'
+      - '.github/workflows/publish-japan-river-atlas-rankings-20261028.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'content/revisions/japan-river-atlas-rankings-20261028.json'
+      - 'scripts/add_japan_river_atlas_rankings_20261028.py'
+      - '.github/workflows/publish-japan-river-atlas-rankings-20261028.yml'
+permissions:
+  contents: read
+jobs:
+  validate-ranking-addition:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+      - name: Check Python syntax and exact data counts
+        run: |
+          python -m py_compile scripts/add_japan_river_atlas_rankings_20261028.py
+          python - <<'PY'
+          import json
+          d=json.load(open('content/revisions/japan-river-atlas-rankings-20261028.json'))
+          assert len(d['lengths'])==10 and len(d['areas'])==10 and len(d['quality'])==13
+          assert d['lengths'][7][1]==227
+          print('RIVER_RANKING_SOURCE_COUNTS_OK',flush=True)
+          PY
+      - name: Authenticated read-only Gutenberg diff and current WP preimage
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/add_japan_river_atlas_rankings_20261028.py check
+      - name: Apply to original published WP post only after main merge
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/add_japan_river_atlas_rankings_20261028.py apply
