@@ -22,7 +22,7 @@ on:
 permissions:
   contents: read
 concurrency:
-  group: river-atlas-xserver-${{ github.workflow }
+  group: river-atlas-xserver-${{ github.workflow }}
   cancel-in-progress: false
 
 jobs:
@@ -39,6 +39,7 @@ jobs:
         shell: bash
         run: |
           python -m py_compile river-fish/xserver-git/validate_atlas.py
+          bash -n river-fish/xserver-git/verify_host_key.sh
           if [[ -d river-fish/xserver-git/source ]]; then
             python river-fish/xserver-git/validate_atlas.py river-fish/xserver-git/source
           else
