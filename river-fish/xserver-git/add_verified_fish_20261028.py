@@ -85,7 +85,51 @@ sources = [
      "岩木川流域保全計画", "青森県",
      "https://www.pref.aomori.lg.jp/soshiki/kankyo/kankyo/files/plan10.pdf", "図3・資料p24／PDF p25・浅瀬石川の欄", None,
      "浅瀬石川の欄に魚名を示し、図の注記で現地調査時の確認種と説明。希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "善福寺川", "A", ["モツゴ"],
+     "荒川水系 神田川流域河川整備計画", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/content/000062580.pdf", "表2-5 主な生物確認状況・善福寺川欄／資料p24・PDF p25", None,
+     "都の生物調査をまとめた善福寺川の魚類欄。飼育品種や希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "妙正寺川", "A", ["トウヨシノボリ類"],
+     "荒川水系 神田川流域河川整備計画", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/content/000062580.pdf", "表2-5 主な生物確認状況・妙正寺川欄／資料p24・PDF p25", None,
+     "都の生物調査をまとめた妙正寺川の魚類欄。原資料の「類」を維持し、希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "黒目川", "A", ["ウグイ", "モツゴ", "コイ"],
+     "荒川水系 黒目川流域河川整備計画（東京都管理区間）", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/content/000007284.pdf", "表2-2 黒目川・落合川で確認されている魚類・黒目川の各欄", None,
+     "黒目川の区間別欄に確認を示す丸印がある魚名。区間や希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "落合川", "A", ["ウグイ", "モツゴ", "コイ"],
+     "荒川水系 黒目川流域河川整備計画（東京都管理区間）", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/content/000007284.pdf", "表2-2 黒目川・落合川で確認されている魚類・落合川の各欄", None,
+     "落合川の区間別欄に確認を示す丸印がある魚名。区間や希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "石神井川", "A", ["コイ", "オイカワ", "モツゴ"],
+     "荒川水系 石神井川河川整備計画", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/documents/d/kensetsu/000007328_2", "表2-2 石神井川における主な生物確認状況・魚類／資料p12・PDF p13", None,
+     "都の生物調査をまとめた石神井川の確認種。希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "呑川", "A", ["コイ", "ボラ"],
+     "呑川流域河川整備計画", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/documents/d/kensetsu/000029221", "表2-2 呑川における主な生物確認状況・魚類／資料p15・PDF p16", None,
+     "大田区の環境調査をまとめた呑川の確認種。希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "目黒川", "A", ["オイカワ", "モツゴ", "スズキ", "ボラ"],
+     "目黒川流域河川整備計画", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/content/000038913.pdf", "第2章第3節 河川の生態系・魚類、表2-5", None,
+     "中小河川環境実態調査等をまとめた目黒川の魚類説明に確認種として明記。希少種は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "柳瀬川", "A", ["コイ", "カワムツ", "モツゴ", "タモロコ"],
+     "荒川水系 柳瀬川流域河川整備計画（東京都管理区間・変更原案）", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/documents/d/kensetsu/000058559", "表2-2 確認種の一覧・柳瀬川の魚類欄／資料p18・PDF p21", None,
+     "改訂前後の生物調査資料を整理した柳瀬川の確認種欄。重要種と詳細地点は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "空堀川", "A", ["コイ", "カワムツ", "モツゴ", "タモロコ"],
+     "荒川水系 柳瀬川流域河川整備計画（東京都管理区間・変更原案）", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/documents/d/kensetsu/000058559", "表2-2 確認種の一覧・空堀川の魚類欄／資料p18・PDF p21", None,
+     "改訂前後の生物調査資料を整理した空堀川の確認種欄。重要種と詳細地点は収録しない。"),
+    ("東京都", "水系未確認（公式資料の川名）", "奈良橋川", "A", ["コイ", "カワムツ", "モツゴ", "タモロコ"],
+     "荒川水系 柳瀬川流域河川整備計画（東京都管理区間・変更原案）", "東京都",
+     "https://www.kensetsu.metro.tokyo.lg.jp/documents/d/kensetsu/000058559", "表2-2 確認種の一覧・奈良橋川の魚類欄／資料p18・PDF p21", None,
+     "改訂前後の生物調査資料を整理した奈良橋川の確認種欄。重要種と詳細地点は収録しない。"),
 ]
+
+documented_watersheds = {"善福寺川": "荒川", "妙正寺川": "荒川", "黒目川": "荒川",
+                         "落合川": "荒川", "石神井川": "荒川", "呑川": "呑川", "目黒川": "目黒川",
+                         "柳瀬川": "荒川", "空堀川": "荒川", "奈良橋川": "荒川"}
 
 for pref, water, river, grade, names, title, publisher, url, locator, year, summary in sources:
     matches = [e for e in atlas["entries"] if e["name"] == river and e["water"] == water
@@ -108,15 +152,18 @@ for pref, water, river, grade, names, title, publisher, url, locator, year, summ
         "evidence_kind": "official_fish_survey_table" if grade == "A" else "official_environment_narrative",
         "method_label": "魚類調査記録" if grade == "A" else "資料に掲載された生息魚",
         "evidence_summary": summary, "scope_note": summary,
-        "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL" if entry["kind"] == "official_river_name_only_v21" else "SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL",
+        "river_identity_review": ("EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED" if pref == "東京都" else
+                                  "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL") if entry["kind"] == "official_river_name_only_v21" else "SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL",
         "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
         "publication_status": "STAGING_CANDIDATE"
     } for name in names]
     data["groups"].append({
         "prefecture": pref, "watershed": water, "river": river, "records": records,
-        "scope_notes": ["公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"],
+        "scope_notes": ([f"原資料の水系名は{documented_watersheds[river]}。既存グループの水系未確認表示を変更せず、川名と東京都を照合しています。"] if pref == "東京都" else [])
+                       + ["公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"],
         "id": group_id, "navigation_target_id": entry["id"],
         "literal_fish_label_count": len(records), "individual_physical_river_identity_approved": False,
+        **({"documented_watershed": documented_watersheds[river]} if pref == "東京都" else {}),
     })
 
 data["group_count"] = len(data["groups"])
