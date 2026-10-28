@@ -230,7 +230,7 @@ async function setup(){
  $("fishsearch").addEventListener("input",()=>{displayed=FETCH_LIMIT;render()});
  $("more").addEventListener("click",()=>{displayed+=FETCH_LIMIT;render()});
  try{
- const result=await Promise.all([load("atlas.json"),load("fish_master.json"),load("fish_source_connections_v01.json?v=5df226a8642672dc"),load("fish_source_connections_v02_additions.json?v=20261028f"),load("river_detail_page_ids_v01.json?v=20261028")]);
+ const result=await Promise.all([load("atlas.json"),load("fish_master.json"),load("fish_source_connections_v01.json?v=5df226a8642672dc"),load("fish_source_connections_v02_additions.json?v=20261029a"),load("river_detail_page_ids_v01.json?v=20261028")]);
   const additions=result[3];
   if(additions.schema!=="tsurikue-source-fish-additions-v02"||!additions.no_precise_locations_or_river_codes||!additions.held_records_excluded||additions.group_count!==additions.groups.length||additions.record_count!==additions.groups.reduce((n,g)=>n+g.records.length,0))throw Error("追加魚類資料の形式が一致しません");
   if(result[4].schema!=="river-detail-page-ids-v01"||result[4].ids.length!==273)throw Error("河川詳細リンク一覧が一致しません");
