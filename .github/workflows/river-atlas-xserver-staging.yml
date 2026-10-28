@@ -56,7 +56,6 @@ jobs:
       XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }
       XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }
       XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }
-      XSERVER_SSH_KNOWN_HOSTS: ${{ secrets.XSERVER_SSH_KNOWN_HOSTS }
       SOURCE_DIR: ${{ inputs.source_dir }
       GH_TOKEN: ${{ github.token }
     steps:
@@ -69,11 +68,11 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" &&
-            test -n "$XSERVER_SSH_PRIVATE_KEY" && test -n "$XSERVER_SSH_KNOWN_HOSTS"
+            test -n "$XSERVER_SSH_PRIVATE_KEY"
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > ~/.ssh/xserver_deploy_key
-          printf '%s\n' "$XSERVER_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/xserver_deploy_key ~/.ssh/known_hosts
+          bash river-fish/xserver-git/verify_host_key.sh
+          chmod 600 ~/.ssh/xserver_deploy_key
           ssh-keygen -l -f ~/.ssh/known_hosts >/dev/null
       - name: Read Xserver release and open a draft source PR
         shell: bash
@@ -111,7 +110,6 @@ jobs:
       XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }
       XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }
       XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }
-      XSERVER_SSH_KNOWN_HOSTS: ${{ secrets.XSERVER_SSH_KNOWN_HOSTS }
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -124,11 +122,11 @@ jobs:
         run: |
           set -euo pipefail
           test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" &&
-            test -n "$XSERVER_SSH_PRIVATE_KEY" && test -n "$XSERVER_SSH_KNOWN_HOSTS"
+            test -n "$XSERVER_SSH_PRIVATE_KEY"
           mkdir -p ~/.ssh && chmod 700 ~/.ssh
           printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > ~/.ssh/xserver_deploy_key
-          printf '%s\n' "$XSERVER_SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/xserver_deploy_key ~/.ssh/known_hosts
+          bash river-fish/xserver-git/verify_host_key.sh
+          chmod 600 ~/.ssh/xserver_deploy_key
       - name: Sync only to isolated staging folder
         shell: bash
         run: |
