@@ -56,6 +56,18 @@ sources = [
      "佐波川小野水辺の楽校・佐波川の奈美地区にいる生き物", "国土交通省中国地方整備局山口河川国道事務所",
      "https://www.cgr.mlit.go.jp/yamaguchi/river/school/08.html", "魚類欄", None,
      "佐波川で見られる魚として記述。希少種と細かな地点は収録しない。"),
+    ("広島県", "太田川", "三篠川", "B", ["ニホンウナギ", "ドジョウ", "ドンコ"],
+     "太田川水系河川整備計画（令和2年版）・現状と課題", "国土交通省中国地方整備局太田川河川事務所",
+     "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf", "3章 4)支川三篠川・資料p77／PDF p52", None,
+     "支川三篠川の節で生息魚として列記。希少種と詳細地点は収録しない。"),
+    ("広島県", "太田川", "滝山川", "B", ["アユ", "カワヨシノボリ"],
+     "太田川水系河川整備計画（令和2年版）・現状と課題", "国土交通省中国地方整備局太田川河川事務所",
+     "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf", "3章 6)支川滝山川・資料p78／PDF p53", None,
+     "支川滝山川の節で生息魚として列記。希少種と詳細地点は収録しない。"),
+    ("広島県", "太田川", "根谷川", "B", ["ニホンウナギ", "ドンコ"],
+     "太田川水系河川整備計画（令和2年版）・現状と課題", "国土交通省中国地方整備局太田川河川事務所",
+     "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf", "3章 5)支川根谷川・資料p78／PDF p53", None,
+     "支川根谷川の節で見られる魚として列記。希少種と詳細地点は収録しない。"),
 ]
 
 for pref, water, river, grade, names, title, publisher, url, locator, year, summary in sources:
