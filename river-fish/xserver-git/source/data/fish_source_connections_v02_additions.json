@@ -1,11 +1,11 @@
 {
   "schema": "tsurikue-source-fish-additions-v02",
-  "release": "2026-10-29-gifu-saitama-evidence-staging",
+  "release": "2026-10-29-gifu-saitama-evidence-batch2-staging",
   "display_scope": "SOURCE_PUBLISHED_RIVER_FISH_REFERENCES_ONLY",
   "no_precise_locations_or_river_codes": true,
   "held_records_excluded": true,
-  "group_count": 46,
-  "record_count": 147,
+  "group_count": 51,
+  "record_count": 153,
   "groups": [
     {
       "prefecture": "青森県",
@@ -3351,6 +3351,186 @@
       "id": "srcfish_5ec53b980ef34699d9a99640",
       "navigation_target_id": "official21_3c2bb8cd5344088d83205105",
       "literal_fish_label_count": 6,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "岐阜県",
+      "watershed": "水系未確認（公式資料の川名）",
+      "river": "大江川",
+      "records": [
+        {
+          "recorded_name": "フナ類",
+          "source_literal_label": "フナ類",
+          "survey_year": null,
+          "source_id": "RF-20261029-B2-01",
+          "source_title": "一級河川木曽川水系 境川圏域河川整備計画",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1497.pdf",
+          "source_locator": "1.2.3 (2)河川ごとの特徴・大江川／資料p19・PDF p20",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "大江川の河川別説明で、緩流域を好む魚として明記。詳細区間は収録しない。",
+          "scope_note": "大江川の河川別説明で、緩流域を好む魚として明記。詳細区間は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "モツゴ",
+          "source_literal_label": "モツゴ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B2-01",
+          "source_title": "一級河川木曽川水系 境川圏域河川整備計画",
+          "publisher": "岐阜県",
+          "source_url": "https://www.pref.gifu.lg.jp/uploaded/attachment/1497.pdf",
+          "source_locator": "1.2.3 (2)河川ごとの特徴・大江川／資料p19・PDF p20",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "大江川の河川別説明で、緩流域を好む魚として明記。詳細区間は収録しない。",
+          "scope_note": "大江川の河川別説明で、緩流域を好む魚として明記。詳細区間は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "原資料の水系名は木曽川。既存グループの水系未確認表示を変更せず、川名と都道府県を照合しています。",
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_67b1dd863547613e614e7228",
+      "navigation_target_id": "official21_4f9a7340bbbdac356a0e1245",
+      "literal_fish_label_count": 2,
+      "individual_physical_river_identity_approved": false,
+      "documented_watershed": "木曽川"
+    },
+    {
+      "prefecture": "埼玉県",
+      "watershed": "利根川",
+      "river": "綾瀬川",
+      "records": [
+        {
+          "recorded_name": "タイリクバラタナゴ",
+          "source_literal_label": "タイリクバラタナゴ",
+          "survey_year": 2021,
+          "source_id": "RF-20261029-B2-02",
+          "source_title": "蓮田都市計画事業高虫西部土地区画整理事業環境影響評価書 第10章10.8 動物",
+          "publisher": "蓮田市",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/253444/j036-hyoukasho-10_8.pdf",
+          "source_locator": "魚類現地調査結果・表10.8-9／資料p10.8-16・PDF p16",
+          "evidence_class": "A",
+          "evidence_kind": "official_fish_survey_table",
+          "method_label": "魚類調査記録",
+          "evidence_summary": "網等による捕獲と直接観察による現地調査で、綾瀬川の確認魚として明記。保全対象魚と詳細地点は収録しない。",
+          "scope_note": "網等による捕獲と直接観察による現地調査で、綾瀬川の確認魚として明記。保全対象魚と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_65c9270bacc8e892cee64b80",
+      "navigation_target_id": "official21_dd6430458c3e16f62602cc74",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "埼玉県",
+      "watershed": "利根川",
+      "river": "大落古利根川",
+      "records": [
+        {
+          "recorded_name": "モツゴ",
+          "source_literal_label": "モツゴ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B2-03",
+          "source_title": "令和元年度版 川の国埼玉検定（中・上級編）検定用テキスト",
+          "publisher": "埼玉県",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/4705/kawakentext.pdf",
+          "source_locator": "2 川の形態と自然・環境「埼玉県に生息する主な魚類」／資料p5・PDF p5",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "埼玉県環境科学国際センターの魚類研究成果から作成された資料で、大落古利根川産モツゴとして掲載。詳細地点は収録しない。",
+          "scope_note": "埼玉県環境科学国際センターの魚類研究成果から作成された資料で、大落古利根川産モツゴとして掲載。詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_696b4e216987a0516a6c3ce7",
+      "navigation_target_id": "official21_d1f1eccea694766c3bfc7d66",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "埼玉県",
+      "watershed": "利根川",
+      "river": "神流川",
+      "records": [
+        {
+          "recorded_name": "カジカ",
+          "source_literal_label": "カジカ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B2-04",
+          "source_title": "令和元年度版 川の国埼玉検定（中・上級編）検定用テキスト",
+          "publisher": "埼玉県",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/4705/kawakentext.pdf",
+          "source_locator": "2 川の形態と自然・環境「埼玉県に生息する主な魚類」／資料p5・PDF p5",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "埼玉県環境科学国際センターの魚類研究成果から作成された資料で、神流川産カジカとして掲載。詳細地点は収録しない。",
+          "scope_note": "埼玉県環境科学国際センターの魚類研究成果から作成された資料で、神流川産カジカとして掲載。詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_79a60852368e5061b163fe14",
+      "navigation_target_id": "official21_8d233354838ccf9d1c26cafa",
+      "literal_fish_label_count": 1,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "埼玉県",
+      "watershed": "荒川",
+      "river": "赤平川",
+      "records": [
+        {
+          "recorded_name": "ウグイ",
+          "source_literal_label": "ウグイ",
+          "survey_year": null,
+          "source_id": "RF-20261029-B2-05",
+          "source_title": "令和元年度版 川の国埼玉検定（中・上級編）検定用テキスト",
+          "publisher": "埼玉県",
+          "source_url": "https://www.pref.saitama.lg.jp/documents/4705/kawakentext.pdf",
+          "source_locator": "2 川の形態と自然・環境「埼玉県に生息する主な魚類」／資料p5・PDF p5",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "埼玉県環境科学国際センターの魚類研究成果から作成された資料で、赤平川産ウグイとして掲載。詳細地点は収録しない。",
+          "scope_note": "埼玉県環境科学国際センターの魚類研究成果から作成された資料で、赤平川産ウグイとして掲載。詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_1dde9f1eb263fd45f3093876",
+      "navigation_target_id": "official21_385107941beb12719259c660",
+      "literal_fish_label_count": 1,
       "individual_physical_river_identity_approved": false
     }
   ]
