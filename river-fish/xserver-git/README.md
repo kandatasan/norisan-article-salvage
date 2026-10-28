@@ -15,14 +15,13 @@
 
 XserverでSSHを有効にし、公開鍵認証の鍵ペアを用意してください。Xserverの現行マニュアルでSSHホスト・ユーザー・ポートを確認してください。本Workflowの接続ポートは **10022** です。
 
-GitHubリポジトリ `kandatasan/norisan-article-salvage` の「Settings → Secrets and variables → Actions」に次の4つを設定してください。
+GitHubリポジトリ `kandatasan/norisan-article-salvage` の「Settings → Secrets and variables → Actions」に次の3つを設定してください。
 
 - `XSERVER_SSH_HOST`：SSHホスト名（ポートは含めない）
 - `XSERVER_SSH_USER`：SSHユーザー
 - `XSERVER_SSH_PRIVATE_KEY`：鍵の秘密鍵全文（改行を保ったまま）
-- `XSERVER_SSH_KNOWN_HOSTS`：事前に指紋を確認したSSHホスト鍵のknown_hostsエントリ（10022番のときは `[host]:10022` 形式）
 
-秘密鍵はチャット・GitHub Issue・PR・公開リポジトリへ貼り付けないでください。known_hostsは無検証のssh-keyscanをそのまま登録せず、ホスト鍵の指紋をXserverの信頼できる情報と照合してください。
+秘密鍵はチャット・GitHub Issue・PR・公開リポジトリへ貼り付けないでください。サーバーの本人確認は、Xserver管理画面「SSHソフト設定」に表示されたED25519のホスト鍵フィンガープリント（`SHA256:PyIMaiPnrtflg2uTw6UMU6aPE8/qZcmDGsQA8T86veI`）をスクリプトに固定して照合します。通信先から取得したSSH公開鍵が一致したときだけknown_hostsに保存します。この方式では `XSERVER_SSH_KNOWN_HOSTS` Secretは**不要**です。サーバー側のホスト鍵が更新されたときは、公式管理画面で新指紋を確認し、PRで照合値を更新してください。
 
 GitHub ActionsによるPRの作成がリポジトリ設定で禁止されている場合、`bootstrap-pr` は最後に停止します。作成権限の有効化は設定を理解してから行ってください。
 
@@ -62,4 +61,4 @@ previewにはX-Robots-Tag `noindex, nofollow` を付与します。テスト先�
 
 ## 停止条件
 
-SSH接続不可、ホスト鍵検証失敗、rsyncがXserverで使えない、ソースの構造不一致、JSON破損、フォルダ名が想定外の場合は止まります。自動で本番に切り替える機能は含まれていません。
+SSH接続不可、公式画面のED25519指紋との照合失敗、rsyncがXserverで使えない、ソースの構造不一致、JSON破損、フォルダ名が想定外の場合は止まります。自動で本番に切り替える機能は含まれていません。
