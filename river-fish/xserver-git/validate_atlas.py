@@ -65,6 +65,7 @@ def validate(root: Path) -> dict:
                                    ('東京都', '旧江戸川'): '利根川', ('東京都', '新川'): '利根川', ('東京都', '中川'): '利根川',
                                    ('東京都', '新中川'): '利根川', ('東京都', '大場川'): '利根川', ('東京都', '伝右川'): '利根川',
                                    **{('岐阜県', river): '木曽川' for river in ('可児川', '坂本川', '飛騨川', '矢戸川', '久々利川', '唐沢川', '加茂川', '大江川')}}
+        documented_source_river_labels = {('滋賀県', '山賀川'): '山賀川(新守山川)'}
         if additions.get('schema') != 'tsurikue-source-fish-additions-v02' or not additions.get('no_precise_locations_or_river_codes') or not additions.get('held_records_excluded'):
             raise ValueError('Fish additions schema or safety flags invalid')
         if additions.get('group_count') != len(additions['groups']) or additions.get('record_count') != sum(len(g['records']) for g in additions['groups']):
@@ -84,12 +85,19 @@ def validate(root: Path) -> dict:
                     raise ValueError(f'Source watershed was conflated with the existing group: {target}')
             elif 'documented_watershed' in group:
                 raise ValueError(f'Unexpected source watershed: {target}')
+            source_river_label = documented_source_river_labels.get((group['prefecture'], group['river']))
+            source_river_label_match = source_river_label is not None
+            if source_river_label_match:
+                if group.get('documented_river_label') != source_river_label:
+                    raise ValueError(f'Source river label alias was not retained: {target}')
+            elif 'documented_river_label' in group:
+                raise ValueError(f'Unexpected source river label alias: {target}')
             if group['literal_fish_label_count'] != len(group['records']) or not group['records']:
                 raise ValueError(f'Fish addition record count invalid: {target}')
             for record in group['records']:
                 if record['evidence_class'] not in ('A', 'B') or not record['source_url'].startswith('https://') or not all(record.get(k) for k in ('recorded_name', 'source_title', 'publisher', 'source_locator', 'evidence_summary')):
                     raise ValueError(f'Fish addition lacks publishable evidence: {target}')
-                identity_flag = ('EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED' if source_watershed_match else 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL') if official_match else 'SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL'
+                identity_flag = ('EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL_WITH_DOCUMENTED_ALIAS' if source_river_label_match else ('EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED' if source_watershed_match else 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL')) if official_match else 'SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL'
                 if record['river_identity_review'] != identity_flag or record['conservation_review'] != 'NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED' or record['publication_status'] != 'STAGING_CANDIDATE':
                     raise ValueError(f'Fish addition review incomplete: {target}')
         detail_path = root / 'data/river_detail_page_ids_v01.json'
