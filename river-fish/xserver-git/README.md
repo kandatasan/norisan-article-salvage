@@ -4,12 +4,12 @@
 
 現在の公開ソースはXserverにあり、GitHub内の旧ビルダーは `xserver-release-v028` までです。v0.28を誤って再公開しないよう、先にXserverの現行版をGitHubに取り込む仕組みを作りました。
 
-導入は2段階です。
+導入は3段階です。
 
 1. **bootstrap-pr**：Xserverの選択フォルダを読み取ってGitHubにドラフトPRを作る。サーバーは変更しない。
 2. **deploy-staging**：PRの内容をレビューしてmainにマージすると、`river-fish/xserver-git/source/**` の更新を検知してXserverの専用テストフォルダに自動転送（手動での再実行も可）。
 
-**本番 `public_html/river-fish-atlas` は変更しません。** WordPressと `biota` も変更しません。本番切り替えは別PRで、バックアップ・復旧・ブラウザ実動作確認を追加してから行います。
+**通常のデータ取り込み・テスト環境向け自動同期では、本番 `public_html/river-fish-atlas` は変更しません。** 本番専用ワークフローで明示的に `publish` を選択した場合に限り静的フォルダを変更します。WordPressと `biota` は対象外です。
 
 ## 最初の1回だけ必要な設定
 
@@ -51,7 +51,21 @@ https://tsurikue.com/river-fish-atlas-ci-preview/index.html
 
 previewにはX-Robots-Tag `noindex, nofollow` を付与します。テスト先のHTML内に本番canonicalが残る場合でも、テスト結果を本番SEO完了の証拠とは扱いません。
 
-## 3. 次の段階
+## 3. 本番公開用・安全ワークフロー（2026-10-28）
+
+GitHub Actions「River atlas guarded Xserver production release」を使います。通常のPR・pushは読み取り事前検査とオフライン復旧テストだけ。本番は**勝手に公開されません**。
+
+**初回公開前に必須**：GitHub Settings → Environmentsで `river-atlas-production` を作成し、利用可能な場合はRequired reviewersとmainブランチ制限を設定。未定義のEnvironmentはGitHub側で承認なしに自動生成されるため、承認保護を確認するまでpublishを実行しないでください。ブラウザでの都道府県・川名・魚名検索テストも別途必要です。
+
+1. **preflight**：mainから起動。現在の公開版・ステージングのディレクトリとファイル種別を読み取り、GitHubの821ファイルとプレビューの内容・HTTPS代表ファイルの一致を検査。サーバーは読み取りのみ。公開フォルダに追加のPHP/JS/.htaccessなどがあれば停止。
+2. **publish**：mainの40桁コミットSHAを `expected_sha` に、`PUBLISH_RIVER_ATLAS` を `confirmation` に入力して手動実行。承認後、非公開候補ディレクトリへ転送して内容を再照合し、現行版を非公開バックアップとして保存して切り替え。HTTPSで代表ファイルと河川詳細を取得・比較し、不一致なら自動復旧を試みます。
+3. **rollback**：`ROLLBACK_RIVER_ATLAS` を `confirmation` に、公開したGitHub Actionsの数字のRun IDを `rollback_release_id` に入力して手動実行。現在の稼働版のRun IDと一致するバックアップがある場合だけ復旧します。
+
+バックアップの保存先：`$HOME/.tsurikue-river-atlas-releases/backup-<Run ID>/`。公開ルートの外で管理し、復旧時の失敗版も `failed-<Run ID>/` に残します。データを削除する手順はこのワークフローにはありません。
+
+**制限と注意**：フォルダ移動の間に短時間の表示欠落が生じ得ます。サーバー強制停止・SSH断などでは自動復旧できないケースがあります。Xserverからの手動復旧経路も維持してください。初回公開前に検索3方式・原資料出典・canonical・サイトマップ・現行公開版との差分を確認してください。
+
+## 4. 次の段階
 
 - 都道府県・川名・魚名の3タブをブラウザで実際に動作検査
 - 全国の原資料・出典URLの404を監査し、同一資料の移転先が確認できたものだけ修正
