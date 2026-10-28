@@ -1,0 +1,242 @@
+name: River atlas guarded Xserver production release
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/river-atlas-xserver-production.yml'
+      - 'river-fish/xserver-git/release_prod.sh'
+      - 'river-fish/xserver-git/test_release_prod.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/river-atlas-xserver-production.yml'
+      - 'river-fish/xserver-git/release_prod.sh'
+      - 'river-fish/xserver-git/test_release_prod.py'
+  workflow_dispatch:
+    inputs:
+      operation:
+        description: 'preflight (read only), publish (changes live), or rollback'
+        type: choice
+        required: true
+        options: [preflight, publish, rollback]
+      confirmation:
+        description: 'For publish: PUBLISH_RIVER_ATLAS / rollback: ROLLBACK_RIVER_ATLAS'
+        type: string
+        required: false
+      expected_sha:
+        description: 'For publish: exact 40-character main commit SHA to publish'
+        type: string
+        required: false
+      rollback_release_id:
+        description: 'For rollback: numeric GitHub Actions run ID from the publish run'
+        type: string
+        required: false
+
+permissions:
+  contents: read
+concurrency:
+  group: river-atlas-production-release
+  cancel-in-progress: false
+
+jobs:
+  safety-tests:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline release and rollback rehearsal (no server credentials)
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n river-fish/xserver-git/release_prod.sh
+          python river-fish/xserver-git/test_release_prod.py
+          python -m py_compile river-fish/xserver-git/validate_atlas.py
+
+  preflight:
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && (inputs.operation == 'preflight' || inputs.operation == 'publish')))
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      EXPECTED_SHA: ${{ inputs.expected_sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify commit and local source
+        shell: bash
+        env:
+          ACTION_EVENT: ${{ github.event_name }}
+          ACTION_OPERATION: ${{ inputs.operation }}
+        run: |
+          set -euo pipefail
+          if [[ "$ACTION_EVENT" == workflow_dispatch && "$ACTION_OPERATION" == publish ]]; then
+            [[ "$CONFIRMATION" == PUBLISH_RIVER_ATLAS ]] || { echo 'Explicit publish confirmation missing' >&2; exit 1; }
+            [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ && "$EXPECTED_SHA" == "$GITHUB_SHA" ]] || { echo 'Expected SHA does not match checked-out main' >&2; exit 1; }
+          fi
+          bash -n river-fish/xserver-git/release_prod.sh
+          python river-fish/xserver-git/test_release_prod.py
+          python river-fish/xserver-git/validate_atlas.py river-fish/xserver-git/source
+      - name: Configure pinned Xserver SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > ~/.ssh/xserver_deploy_key
+          chmod 600 ~/.ssh/xserver_deploy_key
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Read-only stage and production checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSH='ssh -i /home/runner/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/home/runner/.ssh/known_hosts'
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" bash -s -- preflight "$GITHUB_RUN_ID" \
+            < river-fish/xserver-git/release_prod.sh
+          difference="$(rsync -rcn --delete --exclude='.htaccess' --out-format='%i %n' \
+            -e "$SSH" river-fish/xserver-git/source/ \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:tsurikue.com/public_html/river-fish-atlas-ci-preview/")"
+          if [[ -n "$difference" ]]; then
+            echo 'Staging is not identical to current GitHub source. Stop before publication.' >&2
+            printf '%s\n' "$difference" | head -40 >&2
+            exit 1
+          fi
+          url='https://tsurikue.com/river-fish-atlas-ci-preview'
+          for f in index.html sitemap.xml data/atlas.json river/index.html; do
+            local_file="/tmp/$(echo "$f" | tr '/' '_').preview"
+            curl -fsSL --retry 2 "$url/$f" -o "$local_file"
+            cmp -s "$local_file" "river-fish/xserver-git/source/$f" || { echo "Preview HTTPS mismatch: $f" >&2; exit 1; }
+          done
+          echo 'Read-only source, stage HTTPS and live-folder checks passed.' >> "$GITHUB_STEP_SUMMARY"
+
+  publish:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'publish'
+    needs: preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: river-atlas-production
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      EXPECTED_SHA: ${{ inputs.expected_sha }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm pinned release and validate static source
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CONFIRMATION" == PUBLISH_RIVER_ATLAS ]]
+          [[ "$EXPECTED_SHA" =~ ^[0-9a-f]{40}$ && "$EXPECTED_SHA" == "$GITHUB_SHA" ]]
+          python river-fish/xserver-git/validate_atlas.py river-fish/xserver-git/source
+      - name: Configure pinned Xserver SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > ~/.ssh/xserver_deploy_key
+          chmod 600 ~/.ssh/xserver_deploy_key
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Revalidate unchanged preview and prepare private candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          SSH='ssh -i /home/runner/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=/home/runner/.ssh/known_hosts'
+          difference="$(rsync -rcn --delete --exclude='.htaccess' --out-format='%i %n' \
+            -e "$SSH" river-fish/xserver-git/source/ \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:tsurikue.com/public_html/river-fish-atlas-ci-preview/")"
+          [[ -z "$difference" ]] || { echo 'Preview changed after preflight' >&2; exit 1; }
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" bash -s -- prepare "$GITHUB_RUN_ID" \
+            < river-fish/xserver-git/release_prod.sh
+          rsync -az --delete -e "$SSH" river-fish/xserver-git/source/ \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-river-atlas-releases/candidate-$GITHUB_RUN_ID/"
+          candidate_difference="$(rsync -rcn --delete --out-format='%i %n' -e "$SSH" \
+            river-fish/xserver-git/source/ \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-river-atlas-releases/candidate-$GITHUB_RUN_ID/")"
+          [[ -z "$candidate_difference" ]] || { echo 'Private candidate does not match repository source' >&2; exit 1; }
+      - name: Publish candidate, preserving previous live folder privately
+        id: publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" bash -s -- publish "$GITHUB_RUN_ID" \
+            < river-fish/xserver-git/release_prod.sh
+      - name: Verify published HTTPS files against exact GitHub source
+        shell: bash
+        run: |
+          set -euo pipefail
+          url='https://tsurikue.com/river-fish-atlas'
+          for f in index.html sitemap.xml data/atlas.json river/index.html; do
+            local_file="/tmp/$(echo "$f" | tr '/' '_').published"
+            curl -fsSL --retry 2 "$url/$f?run=$GITHUB_RUN_ID" -o "$local_file"
+            cmp -s "$local_file" "river-fish/xserver-git/source/$f" || { echo "Live HTTPS mismatch: $f" >&2; exit 1; }
+          done
+          curl -fsSL --retry 2 "$url/river/rn_09ffa2b6b65b7ddd81cbb6ed/index.html?run=$GITHUB_RUN_ID" \
+            -o /tmp/river-detail.published
+          cmp -s /tmp/river-detail.published river-fish/xserver-git/source/river/rn_09ffa2b6b65b7ddd81cbb6ed/index.html
+          printf 'Published SHA: %s\nRelease ID: %s\nPrevious version preserved privately on Xserver.\n' \
+            "$GITHUB_SHA" "$GITHUB_RUN_ID" >> "$GITHUB_STEP_SUMMARY"
+      - name: Automatically restore prior live release on failed publish verification
+        if: failure() && steps.publish.outcome != 'skipped'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" bash -s -- rollback-auto "$GITHUB_RUN_ID" \
+            < river-fish/xserver-git/release_prod.sh
+          curl -fsSL --retry 2 'https://tsurikue.com/river-fish-atlas/index.html' -o /tmp/atlas-restored.html
+          grep -qi '<html' /tmp/atlas-restored.html
+
+  rollback:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.operation == 'rollback'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment: river-atlas-production
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+      CONFIRMATION: ${{ inputs.confirmation }}
+      ROLLBACK_ID: ${{ inputs.rollback_release_id }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Require exact rollback confirmation and release ID
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$CONFIRMATION" == ROLLBACK_RIVER_ATLAS ]]
+          [[ "$ROLLBACK_ID" =~ ^[0-9]{5,20}$ ]]
+          bash -n river-fish/xserver-git/release_prod.sh
+      - name: Configure pinned Xserver SSH key
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p ~/.ssh && chmod 700 ~/.ssh
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > ~/.ssh/xserver_deploy_key
+          chmod 600 ~/.ssh/xserver_deploy_key
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Restore current release backup, refuse to overwrite another release
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/xserver_deploy_key -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" bash -s -- rollback-manual "$ROLLBACK_ID" \
+            < river-fish/xserver-git/release_prod.sh
+          curl -fsSL --retry 2 'https://tsurikue.com/river-fish-atlas/index.html' -o /tmp/restored.html
+          grep -qi '<html' /tmp/restored.html
+          printf 'Restored backup for release ID %s\n' "$ROLLBACK_ID" >> "$GITHUB_STEP_SUMMARY"
