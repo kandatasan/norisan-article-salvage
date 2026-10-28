@@ -98,7 +98,11 @@ def validate(root: Path) -> dict:
                 if record['evidence_class'] not in ('A', 'B') or not record['source_url'].startswith('https://') or not all(record.get(k) for k in ('recorded_name', 'source_title', 'publisher', 'source_locator', 'evidence_summary')):
                     raise ValueError(f'Fish addition lacks publishable evidence: {target}')
                 identity_flag = ('EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL_WITH_DOCUMENTED_ALIAS' if source_river_label_match else ('EXACT_EXISTING_PREFECTURE_RIVER_LABEL_WITH_SOURCE_WATERSHED' if source_watershed_match else 'EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL')) if official_match else 'SOURCE_PREFECTURE_AND_EXISTING_REGION_WATERSHED_RIVER_LABEL'
-                if record['river_identity_review'] != identity_flag or record['conservation_review'] != 'NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED' or record['publication_status'] != 'STAGING_CANDIDATE':
+                conservation_flags = {
+                    'NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED',
+                    'RIVER_LEVEL_ONLY_PRECISE_SITE_NOT_PUBLISHED',
+                }
+                if record['river_identity_review'] != identity_flag or record['conservation_review'] not in conservation_flags or record['publication_status'] != 'STAGING_CANDIDATE':
                     raise ValueError(f'Fish addition review incomplete: {target}')
         detail_path = root / 'data/river_detail_page_ids_v01.json'
         details = json.loads(detail_path.read_text(encoding='utf-8'))
