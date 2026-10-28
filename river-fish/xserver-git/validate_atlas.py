@@ -59,7 +59,11 @@ def validate(root: Path) -> dict:
         used = {g['navigation_target_id'] for g in prior['groups'] if g['navigation_target_id']}
         tokyo_source_watersheds = {'善福寺川': '荒川', '妙正寺川': '荒川', '黒目川': '荒川',
                                    '落合川': '荒川', '石神井川': '荒川', '呑川': '呑川', '目黒川': '目黒川',
-                                   '柳瀬川': '荒川', '空堀川': '荒川', '奈良橋川': '荒川'}
+                                   '柳瀬川': '荒川', '空堀川': '荒川', '奈良橋川': '荒川',
+                                   '新河岸川': '荒川', '白子川': '荒川', '旧中川': '荒川',
+                                   '北十間川': '荒川', '小名木川': '荒川',
+                                   '旧江戸川': '利根川', '新川': '利根川', '中川': '利根川',
+                                   '新中川': '利根川', '大場川': '利根川', '伝右川': '利根川'}
         if additions.get('schema') != 'tsurikue-source-fish-additions-v02' or not additions.get('no_precise_locations_or_river_codes') or not additions.get('held_records_excluded'):
             raise ValueError('Fish additions schema or safety flags invalid')
         if additions.get('group_count') != len(additions['groups']) or additions.get('record_count') != sum(len(g['records']) for g in additions['groups']):
