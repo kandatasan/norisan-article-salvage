@@ -7,7 +7,7 @@
 導入は2段階です。
 
 1. **bootstrap-pr**：Xserverの選択フォルダを読み取ってGitHubにドラフトPRを作る。サーバーは変更しない。
-2. **deploy-staging**：PRの内容をレビューしてmainにマージした後、GitHubのソースをXserverの専用テストフォルダに自動転送。
+2. **deploy-staging**：PRの内容をレビューしてmainにマージすると、`river-fish/xserver-git/source/**` の更新を検知してXserverの専用テストフォルダに自動転送（手動での再実行も可）。
 
 **本番 `public_html/river-fish-atlas` は変更しません。** WordPressと `biota` も変更しません。本番切り替えは別PRで、バックアップ・復旧・ブラウザ実動作確認を追加してから行います。
 
@@ -40,8 +40,8 @@ GitHub ActionsによるPRの作成がリポジトリ設定で禁止されてい�
 
 ## 2. GitHubからテスト用フォルダへ自動転送
 
-1. 取り込みPRを確認後にmainへマージ。
-2. 同じActionsで `operation = deploy-staging` を選択し手動実行。
+1. 取り込みPRを確認後にmainへマージ。`source/**` に差分がある場合、mainへのpushを受けて専用テストフォルダへの自動転送が始まります。
+2. 必要に応じて同じActionsで `operation = deploy-staging` を選択し手動で再実行もできます。
 3. `river-fish/xserver-git/source/` の静的ファイルを検証し、Xserverの **`$HOME/tsurikue.com/public_html/river-fish-atlas-ci-preview/`** だけを同期します。
 4. previewのHTML・XMLサイトマップ・JSONをHTTPSから取得してスモークテストします。
 
