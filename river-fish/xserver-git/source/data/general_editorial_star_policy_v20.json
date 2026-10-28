@@ -1,0 +1,164 @@
+{
+  "version": "v20",
+  "date": "2026-10-20",
+  "type": "TSURIKUE_EDITORIAL_GENERAL_GUIDE_NOT_A_SPECIES_SCIENTIFIC_RATING",
+  "notes": "User authorized non-scientific general editorial stars. Not a claim of catch probability, national endangered category, safety to eat, or river-specific distribution. Existing 349 rarity and 134 taste drafts are accepted as provisional general editorial values; only 26 additions made to cuisine-commonly-discussed fish. All are AI editorial estimates, not independently fact-checked.",
+  "rarity": {
+    "scale": 5,
+    "axis": "魚が暮らす適切な環境において、一般の釣り・観察で出会う機会の編集上の目安",
+    "rubric": {
+      "1": "比較的見かけやすい",
+      "2": "比較的出会いやすい",
+      "3": "地域・環境が合えば出会える",
+      "4": "出会う場所や機会が限られがち",
+      "5": "観察機会が特に限られがち"
+    },
+    "excluded": "種の同定が保留の魚名には付けない。環境省の絶滅危惧ランクではない。"
+  },
+  "taste": {
+    "scale": 5,
+    "axis": "適法・適切に処理され、食材として扱われる場合の一般的な評判を編集上の目安で表示",
+    "rubric": {
+      "1": "食味の好みが分かれやすい",
+      "2": "食べ方や好みに左右されやすい",
+      "3": "一般的に楽しめる",
+      "4": "食材としての評価が高い",
+      "5": "特に人気の高い味"
+    },
+    "excluded": "食文化の情報が薄いもの、毒性・同定・保護面に懸念のあるものは未評価。食用の安全性も採捕の合法性も表さない。フグとキタマクラは無評価。"
+  },
+  "human_individual_approval_count": 0,
+  "official_scientific_star_evidence_count": 0,
+  "new_taste_star_edits": [
+    {
+      "recorded_name": "ニホンウナギ",
+      "taste_stars_general": 5,
+      "basis": "蒲焼きで知られる食材としての一般的評価"
+    },
+    {
+      "recorded_name": "カジカ",
+      "taste_stars_general": 4,
+      "basis": "地域料理で親しまれる淡水魚"
+    },
+    {
+      "recorded_name": "ギギ",
+      "taste_stars_general": 3,
+      "basis": "地域的に食利用されるナマズ類"
+    },
+    {
+      "recorded_name": "ドンコ",
+      "taste_stars_general": 3,
+      "basis": "地域の川魚料理の印象"
+    },
+    {
+      "recorded_name": "タモロコ",
+      "taste_stars_general": 3,
+      "basis": "小魚の佃煮などの食利用"
+    },
+    {
+      "recorded_name": "モツゴ",
+      "taste_stars_general": 2,
+      "basis": "小魚の甘露煮などの食利用"
+    },
+    {
+      "recorded_name": "アブラハヤ",
+      "taste_stars_general": 2,
+      "basis": "川魚の揚げ物などの食利用"
+    },
+    {
+      "recorded_name": "ソウギョ",
+      "taste_stars_general": 3,
+      "basis": "中国料理を含む淡水魚料理での一般的評価"
+    },
+    {
+      "recorded_name": "ハクレン",
+      "taste_stars_general": 2,
+      "basis": "淡水魚料理としての評価は調理法・水域に左右される"
+    },
+    {
+      "recorded_name": "タウナギ",
+      "taste_stars_general": 3,
+      "basis": "東アジアの食文化での一般的評価"
+    },
+    {
+      "recorded_name": "タイワンドジョウ",
+      "taste_stars_general": 3,
+      "basis": "ライギョ類の食文化の一般的評価"
+    },
+    {
+      "recorded_name": "ウロハゼ",
+      "taste_stars_general": 3,
+      "basis": "ハゼ類の料理としての一般的評価"
+    },
+    {
+      "recorded_name": "カワアナゴ",
+      "taste_stars_general": 3,
+      "basis": "地域的な淡水魚料理としての印象"
+    },
+    {
+      "recorded_name": "クロサギ",
+      "taste_stars_general": 3,
+      "basis": "沿岸の小型白身魚としての一般的評価"
+    },
+    {
+      "recorded_name": "トウゴロウイワシ",
+      "taste_stars_general": 2,
+      "basis": "小型魚の揚げ物などの食利用"
+    },
+    {
+      "recorded_name": "コボラ",
+      "taste_stars_general": 3,
+      "basis": "ボラ類に近い魚としての一般的評価"
+    },
+    {
+      "recorded_name": "カゴカキダイ",
+      "taste_stars_general": 3,
+      "basis": "食利用される小型沿岸魚としての目安"
+    },
+    {
+      "recorded_name": "マタナゴ",
+      "taste_stars_general": 3,
+      "basis": "ウミタナゴ類の料理としての一般的評価"
+    },
+    {
+      "recorded_name": "マツダイ",
+      "taste_stars_general": 4,
+      "basis": "白身の食用魚としての一般的評価"
+    },
+    {
+      "recorded_name": "オキエソ",
+      "taste_stars_general": 3,
+      "basis": "練り物などに利用されるエソ類の印象"
+    },
+    {
+      "recorded_name": "トカゲエソ",
+      "taste_stars_general": 3,
+      "basis": "エソ類の練り物利用などの印象"
+    },
+    {
+      "recorded_name": "ツバメコノシロ",
+      "taste_stars_general": 4,
+      "basis": "食用魚としての一般的評価"
+    },
+    {
+      "recorded_name": "ササウシノシタ",
+      "taste_stars_general": 3,
+      "basis": "ウシノシタ類の料理としての一般的評価"
+    },
+    {
+      "recorded_name": "アミメハギ",
+      "taste_stars_general": 2,
+      "basis": "小型のカワハギ類としての一般的評価"
+    },
+    {
+      "recorded_name": "タイワンメナダ",
+      "taste_stars_general": 3,
+      "basis": "ボラ類の料理としての一般的評価"
+    },
+    {
+      "recorded_name": "トカゲゴチ",
+      "taste_stars_general": 3,
+      "basis": "コチ類の白身魚料理としての一般的評価"
+    }
+  ]
+}
