@@ -214,7 +214,7 @@ def main(mode):
         if final[key]!=before_post[key]:raise RuntimeError("Protected WordPress field changed: "+key)
     if final["content"]["raw"]!=after:
         raise RuntimeError("WordPress did not preserve inserted markup")
-    if final["content"]["rendered"].count(MARKER)!=1:
+    if final["content"]["rendered"].count('id="'+MARKER+'"')!=1:
         raise RuntimeError("Rendering does not include ranking widget")
     print("RIVER_RANKINGS_WORDPRESS_VERIFIED",json.dumps({
         "post_id":final["id"],"slug":final["slug"],"status":final["status"],
