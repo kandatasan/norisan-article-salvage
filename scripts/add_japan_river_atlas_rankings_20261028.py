@@ -45,7 +45,7 @@ def table(kind, entries):
         label, metric, pref_label = "水質が最も良好な河川13選", "水質評価", "調査対象県"
     out = ['<div class="tsu-rank-scroll" role="region" aria-label="' + label + '（横スクロールできます）" tabindex="0">',
            '<table class="tsu-rank-table ' + kind + '"><thead><tr>',
-           '<th scope="col">川名</th><th scope="col">' + pref_label + '</th><th scope="col">' + metric + '</th>',
+           '<th scope="col">川名</th><th scope="col">' + metric + '</th><th scope="col">' + pref_label + '</th>',
            '</tr></thead><tbody>']
     for i, entry in enumerate(entries, 1):
         name, number_or_pref = entry[0], entry[1]
@@ -56,8 +56,8 @@ def table(kind, entries):
             pref, measure = number_or_pref, "最高評価"
             prefix = ''
         out.append('<tr><th scope="row">' + prefix + link(name) +
-                   '</th><td class="tsu-pref">' + esc(pref) +
-                   '</td><td class="tsu-rank-value">' + esc(measure) + '</td></tr>')
+                   '</th><td class="tsu-rank-value">' + esc(measure) +
+                   '</td><td class="tsu-pref">' + esc(pref) + '</td></tr>')
     out.append('</tbody></table></div>')
     return ''.join(out)
 def make_block(spec):
