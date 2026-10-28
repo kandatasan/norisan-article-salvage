@@ -4,8 +4,8 @@
   "display_scope": "SOURCE_PUBLISHED_RIVER_FISH_REFERENCES_ONLY",
   "no_precise_locations_or_river_codes": true,
   "held_records_excluded": true,
-  "group_count": 10,
-  "record_count": 34,
+  "group_count": 13,
+  "record_count": 41,
   "groups": [
     {
       "prefecture": "青森県",
@@ -757,6 +757,174 @@
       "id": "srcfish_6691b6c3fb8378fd993c9bba",
       "navigation_target_id": "official21_a2b65ae6b1124c7260305fd2",
       "literal_fish_label_count": 4,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "広島県",
+      "watershed": "太田川",
+      "river": "三篠川",
+      "records": [
+        {
+          "recorded_name": "ニホンウナギ",
+          "source_literal_label": "ニホンウナギ",
+          "survey_year": null,
+          "source_id": "RF-20261028-11",
+          "source_title": "太田川水系河川整備計画（令和2年版）・現状と課題",
+          "publisher": "国土交通省中国地方整備局太田川河川事務所",
+          "source_url": "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf",
+          "source_locator": "3章 4)支川三篠川・資料p77／PDF p52",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "支川三篠川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "scope_note": "支川三篠川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "ドジョウ",
+          "source_literal_label": "ドジョウ",
+          "survey_year": null,
+          "source_id": "RF-20261028-11",
+          "source_title": "太田川水系河川整備計画（令和2年版）・現状と課題",
+          "publisher": "国土交通省中国地方整備局太田川河川事務所",
+          "source_url": "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf",
+          "source_locator": "3章 4)支川三篠川・資料p77／PDF p52",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "支川三篠川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "scope_note": "支川三篠川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "ドンコ",
+          "source_literal_label": "ドンコ",
+          "survey_year": null,
+          "source_id": "RF-20261028-11",
+          "source_title": "太田川水系河川整備計画（令和2年版）・現状と課題",
+          "publisher": "国土交通省中国地方整備局太田川河川事務所",
+          "source_url": "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf",
+          "source_locator": "3章 4)支川三篠川・資料p77／PDF p52",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "支川三篠川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "scope_note": "支川三篠川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_c2058b80639f2159a56e691e",
+      "navigation_target_id": "official21_c781bac4b57ad8f98c017436",
+      "literal_fish_label_count": 3,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "広島県",
+      "watershed": "太田川",
+      "river": "滝山川",
+      "records": [
+        {
+          "recorded_name": "アユ",
+          "source_literal_label": "アユ",
+          "survey_year": null,
+          "source_id": "RF-20261028-12",
+          "source_title": "太田川水系河川整備計画（令和2年版）・現状と課題",
+          "publisher": "国土交通省中国地方整備局太田川河川事務所",
+          "source_url": "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf",
+          "source_locator": "3章 6)支川滝山川・資料p78／PDF p53",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "支川滝山川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "scope_note": "支川滝山川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "カワヨシノボリ",
+          "source_literal_label": "カワヨシノボリ",
+          "survey_year": null,
+          "source_id": "RF-20261028-12",
+          "source_title": "太田川水系河川整備計画（令和2年版）・現状と課題",
+          "publisher": "国土交通省中国地方整備局太田川河川事務所",
+          "source_url": "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf",
+          "source_locator": "3章 6)支川滝山川・資料p78／PDF p53",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "支川滝山川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "scope_note": "支川滝山川の節で生息魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_50f52b5c19fcdbaa798bd3c9",
+      "navigation_target_id": "official21_af5d19e17c739cc081f934f5",
+      "literal_fish_label_count": 2,
+      "individual_physical_river_identity_approved": false
+    },
+    {
+      "prefecture": "広島県",
+      "watershed": "太田川",
+      "river": "根谷川",
+      "records": [
+        {
+          "recorded_name": "ニホンウナギ",
+          "source_literal_label": "ニホンウナギ",
+          "survey_year": null,
+          "source_id": "RF-20261028-13",
+          "source_title": "太田川水系河川整備計画（令和2年版）・現状と課題",
+          "publisher": "国土交通省中国地方整備局太田川河川事務所",
+          "source_url": "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf",
+          "source_locator": "3章 5)支川根谷川・資料p78／PDF p53",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "支川根谷川の節で見られる魚として列記。希少種と詳細地点は収録しない。",
+          "scope_note": "支川根谷川の節で見られる魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        },
+        {
+          "recorded_name": "ドンコ",
+          "source_literal_label": "ドンコ",
+          "survey_year": null,
+          "source_id": "RF-20261028-13",
+          "source_title": "太田川水系河川整備計画（令和2年版）・現状と課題",
+          "publisher": "国土交通省中国地方整備局太田川河川事務所",
+          "source_url": "https://www.cgr.mlit.go.jp/ootagawa/plan2/plan2pdf/03plan2.pdf",
+          "source_locator": "3章 5)支川根谷川・資料p78／PDF p53",
+          "evidence_class": "B",
+          "evidence_kind": "official_environment_narrative",
+          "method_label": "資料に掲載された生息魚",
+          "evidence_summary": "支川根谷川の節で見られる魚として列記。希少種と詳細地点は収録しない。",
+          "scope_note": "支川根谷川の節で見られる魚として列記。希少種と詳細地点は収録しない。",
+          "river_identity_review": "EXACT_EXISTING_PREFECTURE_WATERSHED_RIVER_LABEL",
+          "conservation_review": "NO_PRECISE_SITE_OR_SENSITIVE_FISH_PUBLISHED",
+          "publication_status": "STAGING_CANDIDATE"
+        }
+      ],
+      "scope_notes": [
+        "公的資料の記述です。現在の生息や実在河川の同一性を保証しません。"
+      ],
+      "id": "srcfish_2cf9849831863313c78d8190",
+      "navigation_target_id": "official21_375b4b65ea0d80b524a13924",
+      "literal_fish_label_count": 2,
       "individual_physical_river_identity_approved": false
     }
   ]
