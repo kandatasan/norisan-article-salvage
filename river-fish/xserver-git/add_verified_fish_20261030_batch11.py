@@ -29,7 +29,7 @@ sources = [
          publisher="沖縄県水産試験場", url="https://www.pref.okinawa.jp/fish/kenkyu/jigyohokoku-data/jihous56/76_128.pdf",
          locator="89頁 表III-6 安謝川河口で得られた魚類",
          cls="A", kind="official_fish_survey_record", method="魚類調査記録",
-         summary="沖縄県水産試験場報告の1981年安謝川河口域2回採集表から、保全審査記号のない24魚名だけを原表記で収録。採集点、個体数、体長は収録しない。"),
+         summary="沖縄県水産試験場報告の1981年安謝川河口域2回採集表から24魚名を原表記で収録。意味を安全に確定できない注記記号付き9魚名と、採集点・個体数・体長は収録しない。"),
     dict(prefecture="沖縄県", river="比謝川", names=["Anguilla marmorata QPG"],
          year=None, sid="RF-20261030-B11-03", title="沖縄県水産試験場事業報告書（魚類目録）",
          publisher="沖縄県水産試験場", url="https://www.pref.okinawa.jp/fish/kenkyu/jigyohokoku-data/jihous07/142_160.pdf",
