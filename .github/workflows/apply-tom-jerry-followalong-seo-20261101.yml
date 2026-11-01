@@ -1,0 +1,45 @@
+name: Apply follow-along Tom and Jerry article to WordPress draft
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_followalong_seo_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/followalong-seo-20261101.html'
+      - '.github/workflows/apply-tom-jerry-followalong-seo-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_followalong_seo_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/followalong-seo-20261101.html'
+      - '.github/workflows/apply-tom-jerry-followalong-seo-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  verify-and-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify Python syntax
+        run: python -m py_compile scripts/apply_tom_jerry_followalong_seo_20261101.py
+      - name: Read-only audit live WordPress draft, media and proposed text
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_followalong_seo_20261101.py check
+      - name: Apply content-only follow-along rewrite to existing draft
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_followalong_seo_20261101.py apply
+      - name: Archive WordPress audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-followalong-seo
+          path: reports/tom-jerry-followalong-seo/
+          if-no-files-found: warn
