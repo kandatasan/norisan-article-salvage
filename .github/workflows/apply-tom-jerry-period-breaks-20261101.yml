@@ -1,0 +1,45 @@
+name: Fix Tom and Jerry period line breaks in WordPress
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_period_breaks_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/period-breaks-20261101.html'
+      - '.github/workflows/apply-tom-jerry-period-breaks-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_period_breaks_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/period-breaks-20261101.html'
+      - '.github/workflows/apply-tom-jerry-period-breaks-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  verify-and-update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Python syntax
+        run: python -m py_compile scripts/apply_tom_jerry_period_breaks_20261101.py
+      - name: Check live draft, paragraph breaks and all existing photos
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_period_breaks_20261101.py check
+      - name: Apply exact paragraph line breaks to existing unpublished draft
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_period_breaks_20261101.py apply
+      - name: Archive verification
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-period-breaks
+          path: reports/tom-jerry-period-breaks/
+          if-no-files-found: warn
