@@ -1,0 +1,45 @@
+name: Correct Tom and Jerry storyboard and Quacker description
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_factual_corrections_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/storyboard-quacker-corrected-20261101.html'
+      - '.github/workflows/apply-tom-jerry-factual-corrections-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_factual_corrections_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/storyboard-quacker-corrected-20261101.html'
+      - '.github/workflows/apply-tom-jerry-factual-corrections-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  audit-and-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate script
+        run: python -m py_compile scripts/apply_tom_jerry_factual_corrections_20261101.py
+      - name: Read-only check against exact WP draft and all 15 images
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_factual_corrections_20261101.py check
+      - name: Make two corrections without changing post status or photos
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_factual_corrections_20261101.py apply
+      - name: Save audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-storyboard-quacker-corrections
+          path: reports/tom-jerry-factual-corrections/
+          if-no-files-found: warn
