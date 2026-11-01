@@ -1,0 +1,43 @@
+name: Update published Tom and Jerry headline only
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/update_tom_jerry_published_title_only_20261101.py'
+      - '.github/workflows/update-tom-jerry-published-title-only-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_tom_jerry_published_title_only_20261101.py'
+      - '.github/workflows/update-tom-jerry-published-title-only-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  check-and-update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check Python syntax
+        run: python -m py_compile scripts/update_tom_jerry_published_title_only_20261101.py
+      - name: Validate exact live article and photos (read-only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_tom_jerry_published_title_only_20261101.py check
+      - name: Update published headline without touching URL
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_tom_jerry_published_title_only_20261101.py apply
+      - name: Store headline change audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-title-only
+          path: reports/tom-jerry-title-only/
+          if-no-files-found: warn
