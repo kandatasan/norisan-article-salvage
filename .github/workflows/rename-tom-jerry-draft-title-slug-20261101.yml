@@ -1,0 +1,43 @@
+name: Rename Tom and Jerry unpublished review title and slug
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/rename_tom_jerry_draft_title_slug_20261101.py'
+      - '.github/workflows/rename-tom-jerry-draft-title-slug-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/rename_tom_jerry_draft_title_slug_20261101.py'
+      - '.github/workflows/rename-tom-jerry-draft-title-slug-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  audit-and-rename:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Python syntax
+        run: python -m py_compile scripts/rename_tom_jerry_draft_title_slug_20261101.py
+      - name: Read-only verify exact post and free new slug
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/rename_tom_jerry_draft_title_slug_20261101.py check
+      - name: Rename draft title and slug only
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/rename_tom_jerry_draft_title_slug_20261101.py apply
+      - name: Archive WordPress result
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-title-slug-audit
+          path: reports/tom-jerry-title-slug/
+          if-no-files-found: warn
