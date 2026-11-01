@@ -59,6 +59,11 @@ def counts(t):
 def main(mode):
     if mode not in ("check","apply"):raise RuntimeError("check or apply")
     t=auth();before=getpost(t)
+    print("LIVE_META",json.dumps({
+        "id":before.get("id"),"slug":before.get("slug"),"status":before.get("status"),
+        "title":title(before),"content_sha256":digest(raw(before)),
+        "featured_media":before.get("featured_media"),"link":before.get("link")
+    },ensure_ascii=False),flush=True)
     verify(before,OLD_TITLE)
     print("TITLE_ONLY_PREFLIGHT_OK",json.dumps({"id":PID,"status":"publish","slug_unchanged":SLUG,
       "new_title":NEW_TITLE,"photos":15,"featured_media":4301},ensure_ascii=False),flush=True)
