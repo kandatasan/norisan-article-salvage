@@ -128,6 +128,12 @@ def main(mode):
         raise RuntimeError("Use check or apply")
     token = auth_header()
     before = live_post(token)
+    print("CURRENT_POST_METADATA", json.dumps({
+        "id": before.get("id"), "slug": before.get("slug"), "status": before.get("status"),
+        "title": live_title(before), "category_ids": before.get("categories"),
+        "featured_media": before.get("featured_media"),
+        "content_sha256": sha(current_body(before))
+    }, ensure_ascii=False), flush=True)
     old = validate_base(before, OLD_SLUG, OLD_TITLE)
     duplicate_slug_check(token)
     print("RENAME_PREFLIGHT_OK", json.dumps({
