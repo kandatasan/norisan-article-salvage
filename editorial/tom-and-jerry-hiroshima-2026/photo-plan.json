@@ -1,7 +1,7 @@
 {
   "status": "EXISTING_WP_MEDIA_INSERTED_AND_VERIFIED",
   "post_id": 4282,
-  "post_slug": "tom-and-jerry-exhibition-hiroshima-2026",
+  "post_slug": "tom-and-jerry-exhibition-review",
   "post_status": "draft",
   "featured_media_id": 4301,
   "final_wordpress_content_sha256": "4e91ed9241e30faae4d220ca2552f84e5ddef3acf4aa3f66e2acbce1f88b69d9",
@@ -119,10 +119,14 @@
   ],
   "insertion_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287003724",
   "featured_image_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287245794",
-  "editing_warning": "WordPress post 4282 is canonical. editorial/content.html is an old pre-image snapshot; latest_text_revision contains placeholders, not WordPress image markup. For next edit, reconstruct exact live post from current SHA. Keep draft status, post ID, all existing 15 photos and featured 4301 unchanged.",
+  "editing_warning": "WordPress post 4282 is canonical with slug tom-and-jerry-exhibition-review and featured image 4301. editorial/config.json and editorial/content.html are historical pre-image/pre-new-slug snapshots, not safe to apply directly. For later revisions, reconstruct/verify live post body SHA and media before updating. Preserve draft status, 15 existing images, and category unless user directs otherwise.",
   "latest_text_revision": "editorial/tom-and-jerry-hiroshima-2026/revisions/storyboard-quacker-corrected-20261101.html",
   "verified_paragraph_count": 45,
   "soft_breaks_verified": 45,
   "factual_corrections_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41297842500",
-  "historical_period_breaks_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41290094550"
+  "historical_period_breaks_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41290094550",
+  "post_title": "トムとジェリー展に行ってきた！見どころ・所要時間・限定グッズを写真で紹介【広島そごう会場】",
+  "old_post_slug": "tom-and-jerry-exhibition-hiroshima-2026",
+  "metadata_only_change_verified": true,
+  "title_slug_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41302275919"
 }
