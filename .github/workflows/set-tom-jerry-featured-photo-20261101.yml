@@ -1,0 +1,41 @@
+name: Set Tom and Jerry draft featured photo
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/set_tom_jerry_featured_photo_20261101.py'
+      - '.github/workflows/set-tom-jerry-featured-photo-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/set_tom_jerry_featured_photo_20261101.py'
+      - '.github/workflows/set-tom-jerry-featured-photo-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  featured-photo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact existing WordPress photo and unchanged draft
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/set_tom_jerry_featured_photo_20261101.py check
+      - name: Apply to existing draft only
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/set_tom_jerry_featured_photo_20261101.py apply
+      - name: Upload audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-featured-audit
+          path: reports/tom-jerry-featured-image/
+          if-no-files-found: warn
