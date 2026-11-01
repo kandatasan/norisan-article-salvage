@@ -1,22 +1,28 @@
 {
-  "status": "PENDING_RIGHTS_VERIFICATION",
-  "note": "User supplied photos. No image uploaded to public GitHub or WordPress until Hiroshima-event blog-use permission is confirmed. Faces/background visitors require review. Comments in content are photo slots only.",
-  "required_confirmation": "Commercial/advertising-supported blog publication of exhibition artwork/photos permitted by Hiroshima event organizer",
+  "status": "BLOG_PHOTO_PERMISSION_USER_CONFIRMED__MEDIA_UPLOAD_NOT_YET_DONE",
+  "permission": "User reports on-site event staff explicitly welcomed blog publication of photographs and videos.",
+  "exception": "Photography prohibited for high-priced paintings (approximately JPY 50,000 to JPY 270,000); none to be used.",
+  "visitor_privacy": "Crop or blur identifiable visitors/reflections where present before publication.",
   "selected_photos": [
     "IMG_9053.jpeg",
+    "IMG_9031(1).jpeg",
     "IMG_9032.jpeg",
     "IMG_9033(1).jpeg",
     "IMG_9034.jpeg",
+    "IMG_9040.jpeg",
     "IMG_9037.jpeg",
-    "IMG_9041.jpeg",
     "IMG_9042.jpeg",
     "IMG_9046.jpeg",
-    "IMG_9048.jpeg",
     "IMG_9047.jpeg",
+    "IMG_9048.jpeg",
     "IMG_9052.jpeg",
     "IMG_9058.jpeg",
     "IMG_9063.jpeg",
-    "IMG_9060.jpeg"
+    "IMG_9068.jpeg"
   ],
-  "additional_photos_available": 16
+  "photo_slots_in_draft": 15,
+  "uploaded_wp_media": 0,
+  "missing_media_source": "Source photo attachments currently available only in this conversation, not GitHub or WordPress media library.",
+  "source_article_post_id": 4282,
+  "notes": "No media ID or image src is invented. WordPress content keeps TSURIKUE_IMAGE slot comments for later media insertion."
 }
