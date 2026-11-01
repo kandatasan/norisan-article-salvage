@@ -1,0 +1,32 @@
+name: Diagnose Tom and Jerry title display (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/audit_tom_jerry_title_display_20261101.py'
+      - '.github/workflows/audit-tom-jerry-title-display-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: python -m py_compile scripts/audit_tom_jerry_title_display_20261101.py
+      - name: Inspect only; never write WordPress
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/audit_tom_jerry_title_display_20261101.py
+      - name: Archive audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-title-display-audit
+          path: reports/tom-jerry-title-display-audit.json
+          if-no-files-found: warn
