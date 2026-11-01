@@ -4,7 +4,7 @@
   "post_slug": "tom-and-jerry-exhibition-hiroshima-2026",
   "post_status": "draft",
   "featured_media_id": 4301,
-  "final_wordpress_content_sha256": "0bc144dcbcdc7c76afedf87f1f15bead24b347323034facd83678e6e29dbd3e2",
+  "final_wordpress_content_sha256": "7a2bfb0c7e8069a4b20808b8d1dcf1e0ec6506683652d4d59157da0f10f8c35a",
   "user_permission": "User confirmed all supplied photos were approved for blog use by on-site staff. Prohibited high-priced paintings were not photographed.",
   "media_uploads_this_workflow": 0,
   "selected_photo_count": 15,
@@ -119,5 +119,9 @@
   ],
   "insertion_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287003724",
   "featured_image_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287245794",
-  "editing_warning": "WordPress post 4282 is the current source of truth. editorial/content.html and config.json are PRE-IMAGE snapshots and intentionally not authoritative after media insertion; refresh exact current body and expected media fields before another editorial body update. Guarded workflow will otherwise stop."
+  "editing_warning": "WordPress post 4282 is the source of truth. editorial/content.html is an older pre-image pre-tone template; the tone revision HTML contains photo slots, not embedded media. For future edits reconstruct from the live exact post body and current SHA before changing text. Images, featured media, title, post ID, slug and draft status must stay guarded.",
+  "tone_revision": "editorial/tom-and-jerry-hiroshima-2026/revisions/tone-rhythm-20261101.html",
+  "tone_revision_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41289280178",
+  "paragraphs_before_tone_revision": 50,
+  "paragraphs_after_tone_revision": 45
 }
