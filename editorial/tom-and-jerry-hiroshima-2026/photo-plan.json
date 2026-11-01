@@ -1,0 +1,22 @@
+{
+  "status": "PENDING_RIGHTS_VERIFICATION",
+  "note": "User supplied photos. No image uploaded to public GitHub or WordPress until Hiroshima-event blog-use permission is confirmed. Faces/background visitors require review. Comments in content are photo slots only.",
+  "required_confirmation": "Commercial/advertising-supported blog publication of exhibition artwork/photos permitted by Hiroshima event organizer",
+  "selected_photos": [
+    "IMG_9053.jpeg",
+    "IMG_9032.jpeg",
+    "IMG_9033(1).jpeg",
+    "IMG_9034.jpeg",
+    "IMG_9037.jpeg",
+    "IMG_9041.jpeg",
+    "IMG_9042.jpeg",
+    "IMG_9046.jpeg",
+    "IMG_9048.jpeg",
+    "IMG_9047.jpeg",
+    "IMG_9052.jpeg",
+    "IMG_9058.jpeg",
+    "IMG_9063.jpeg",
+    "IMG_9060.jpeg"
+  ],
+  "additional_photos_available": 16
+}
