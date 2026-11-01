@@ -100,10 +100,14 @@ def prepare(post):
             raise RuntimeError("STOP: image alt unexpectedly changed "+str(mid))
         if "<figcaption" not in img:
             raise RuntimeError("STOP: missing image caption "+str(mid))
-    recreated=inject(original,base_slots,images)
+    cfg=json.loads(Path("editorial/tom-and-jerry-hiroshima-2026/config.json").read_text("utf-8"))
+    # The original package writer prepended two identity markers, before any Gutenberg blocks.
+    identity_prefix=cfg["salvage_marker"]+"\n"+cfg["editorial_marker"]+"\n"
+    recreated=identity_prefix+inject(original,base_slots,images)
     if recreated!=current:
-        raise RuntimeError("STOP: cannot reconstruct current WordPress from original source plus exact live image blocks")
-    new=inject(revised,new_slots,images)
+        first=next((i for i,(a,b) in enumerate(zip(recreated,current)) if a!=b),min(len(recreated),len(current)))
+        raise RuntimeError(f"STOP: live WordPress reconstruction mismatch at byte {first}; lengths {len(recreated)}/{len(current)}")
+    new=identity_prefix+inject(revised,new_slots,images)
     if IMAGE.findall(new)!=images:
         raise RuntimeError("STOP: image Gutenberg markup changed")
     if new.count("<!-- wp:table")!=current.count("<!-- wp:table") or new.count("<!-- wp:heading")!=current.count("<!-- wp:heading"):
