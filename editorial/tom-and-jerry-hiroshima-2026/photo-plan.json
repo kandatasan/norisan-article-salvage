@@ -4,7 +4,7 @@
   "post_slug": "tom-and-jerry-exhibition-hiroshima-2026",
   "post_status": "draft",
   "featured_media_id": 4301,
-  "final_wordpress_content_sha256": "b14c9c983fd47f65bd05ef33e8fcc74325ed6057186954ab72ef9bc6b71c419e",
+  "final_wordpress_content_sha256": "4e91ed9241e30faae4d220ca2552f84e5ddef3acf4aa3f66e2acbce1f88b69d9",
   "user_permission": "User confirmed all supplied photos were approved for blog use by on-site staff. Prohibited high-priced paintings were not photographed.",
   "media_uploads_this_workflow": 0,
   "selected_photo_count": 15,
@@ -119,9 +119,10 @@
   ],
   "insertion_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287003724",
   "featured_image_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287245794",
-  "editing_warning": "WP post 4282 is canonical. Source editorial/content.html is an older pre-image snapshot. Latest text revision has 15 photo slots but not media markup; reconstruct live post from exact WordPress content before editing. Status, post ID, slug, 15 photo IDs, cover 4301 must stay protected.",
-  "latest_text_revision": "editorial/tom-and-jerry-hiroshima-2026/revisions/period-breaks-20261101.html",
-  "verified_paragraph_count": 99,
-  "period_breaks_verified": true,
-  "period_breaks_action": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41290094550"
+  "editing_warning": "WordPress post 4282 is canonical. editorial/content.html is an old pre-image snapshot; latest_text_revision contains placeholders, not WordPress image markup. For next edit, reconstruct exact live post from current SHA. Keep draft status, post ID, all existing 15 photos and featured 4301 unchanged.",
+  "latest_text_revision": "editorial/tom-and-jerry-hiroshima-2026/revisions/storyboard-quacker-corrected-20261101.html",
+  "verified_paragraph_count": 45,
+  "soft_breaks_verified": 45,
+  "factual_corrections_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41297842500",
+  "historical_period_breaks_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41290094550"
 }
