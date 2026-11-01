@@ -116,8 +116,14 @@ def prepare(post):
         raise RuntimeError("STOP: existing image Gutenberg blocks changed during reordering")
     if len(set(re.findall(r'wp-image-(\d+)',new)))!=15:
         raise RuntimeError("STOP: duplicate or missing media IDs")
-    if new.count("<!-- wp:table")!=current.count("<!-- wp:table") or new.count("<!-- wp:heading")!=current.count("<!-- wp:heading"):
-        raise RuntimeError("STOP: headings or pricing table count changed")
+    if new.count("<!-- wp:table")!=1 or current.count("<!-- wp:table")!=1:
+        raise RuntimeError("STOP: original pricing table missing or duplicated")
+    old_table=re.search(r"<!-- wp:table -->.*?<!-- /wp:table -->",current,re.S)
+    new_table=re.search(r"<!-- wp:table -->.*?<!-- /wp:table -->",new,re.S)
+    if not old_table or not new_table or old_table.group()!=new_table.group():
+        raise RuntimeError("STOP: official fee table contents changed")
+    if not 8<=new.count("<!-- wp:heading")<=15:
+        raise RuntimeError("STOP: revised story section headings missing/unexpected")
     if new.count("<!-- wp:paragraph -->")!=45:
         raise RuntimeError("STOP: unexpected paragraph count")
     if new.count("<br>")!=43:
