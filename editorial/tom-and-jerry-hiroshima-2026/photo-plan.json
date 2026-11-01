@@ -121,9 +121,8 @@
   "featured_image_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287245794",
   "editing_warning": "WordPress post 4282 is canonical. editorial/content.html is an old pre-image snapshot; latest_text_revision contains placeholders, not WordPress image markup. For next edit, reconstruct exact live post from current SHA. Keep draft status, post ID, all existing 15 photos and featured 4301 unchanged.",
   "latest_text_revision": "editorial/tom-and-jerry-hiroshima-2026/revisions/storyboard-quacker-corrected-20261101.html",
-  "verified_paragraph_count": 99,
-  "period_breaks_verified": true,
-  "period_breaks_action": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41290094550",
+  "verified_paragraph_count": 45,
   "soft_breaks_verified": 45,
-  "factual_corrections_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41297842500"
+  "factual_corrections_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41297842500",
+  "historical_period_breaks_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41290094550"
 }
