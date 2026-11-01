@@ -1,0 +1,43 @@
+name: Apply Tom and Jerry tone and paragraph rhythm
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_tone_rhythm_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/tone-rhythm-20261101.html'
+      - '.github/workflows/apply-tom-jerry-tone-rhythm-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_tom_jerry_tone_rhythm_20261101.py'
+      - 'editorial/tom-and-jerry-hiroshima-2026/revisions/tone-rhythm-20261101.html'
+      - '.github/workflows/apply-tom-jerry-tone-rhythm-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  validate-and-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify WP current draft and unchanged 15 media blocks
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_tone_rhythm_20261101.py check
+      - name: Apply only guarded tone changes to WP draft
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_tom_jerry_tone_rhythm_20261101.py apply
+      - name: Store tone-change audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-tone-rhythm
+          path: reports/tom-jerry-tone-rhythm/
+          if-no-files-found: warn
