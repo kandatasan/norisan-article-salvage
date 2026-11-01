@@ -153,7 +153,7 @@ def verify_applied(post):
     images=IMAGE.findall(saved)
     actual=[]
     for img,slot,mid in zip(images,slots,expected):
-        found=re.search(r'class="wp-image-(\\d+)"',img)
+        found=re.search(r'class="wp-image-(\d+)"',img)
         if not found or int(found.group(1))!=mid:
             raise RuntimeError("STOP: saved media order differs from approved follow-along sequence")
         if 'alt="'+html.escape(slot[1],quote=True)+'"' not in img:
@@ -167,7 +167,7 @@ def verify_applied(post):
         raise RuntimeError("STOP: original ticket table changed")
     if saved.count("<!-- wp:paragraph -->")!=45 or saved.count("<br>")!=43:
         raise RuntimeError("STOP: follow-along scene/soft-linebreak structure mismatch")
-    if not saved.startswith("<!-- tsurikue-salvage:v1 -->\\n<!-- tsurikue-editorial:tom-and-jerry-hiroshima-2026:v1 -->\\n"):
+    if not saved.startswith("<!-- tsurikue-salvage:v1 -->\n<!-- tsurikue-editorial:tom-and-jerry-hiroshima-2026:v1 -->\n"):
         raise RuntimeError("STOP: editorial identity markers missing")
     return {"post_id":PID,"slug":SLUG,"status":"draft","image_count":15,"featured_media":4301,
         "saved_content_sha256":TARGET_SHA,"paragraph_blocks":45,"soft_line_breaks":43,
@@ -183,7 +183,7 @@ def main(mode):
         report=verify_applied(current)
         out=Path("reports/tom-jerry-followalong-seo")
         out.mkdir(parents=True,exist_ok=True)
-        (out/"result.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\\n")
+        (out/"result.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n")
         print("FOLLOWALONG_ALREADY_APPLIED_VERIFIED",json.dumps(report,ensure_ascii=False),flush=True)
         return
     protect(current)
