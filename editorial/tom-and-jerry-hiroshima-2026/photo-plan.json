@@ -4,7 +4,7 @@
   "post_slug": "tom-and-jerry-exhibition-hiroshima-2026",
   "post_status": "draft",
   "featured_media_id": 4301,
-  "final_wordpress_content_sha256": "0bc144dcbcdc7c76afedf87f1f15bead24b347323034facd83678e6e29dbd3e2",
+  "final_wordpress_content_sha256": "b14c9c983fd47f65bd05ef33e8fcc74325ed6057186954ab72ef9bc6b71c419e",
   "user_permission": "User confirmed all supplied photos were approved for blog use by on-site staff. Prohibited high-priced paintings were not photographed.",
   "media_uploads_this_workflow": 0,
   "selected_photo_count": 15,
@@ -119,5 +119,9 @@
   ],
   "insertion_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287003724",
   "featured_image_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41287245794",
-  "editing_warning": "WordPress post 4282 is the current source of truth. editorial/content.html and config.json are PRE-IMAGE snapshots and intentionally not authoritative after media insertion; refresh exact current body and expected media fields before another editorial body update. Guarded workflow will otherwise stop."
+  "editing_warning": "WP post 4282 is canonical. Source editorial/content.html is an older pre-image snapshot. Latest text revision has 15 photo slots but not media markup; reconstruct live post from exact WordPress content before editing. Status, post ID, slug, 15 photo IDs, cover 4301 must stay protected.",
+  "latest_text_revision": "editorial/tom-and-jerry-hiroshima-2026/revisions/period-breaks-20261101.html",
+  "verified_paragraph_count": 99,
+  "period_breaks_verified": true,
+  "period_breaks_action": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41290094550"
 }
