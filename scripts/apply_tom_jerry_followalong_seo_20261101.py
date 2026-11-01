@@ -22,6 +22,7 @@ SLUG="tom-and-jerry-exhibition-hiroshima-2026"
 TITLE="【広島】そごうのトムとジェリー展に行ってきた！見どころと限定グッズを現地レポ"
 SITE="https://tsurikue.com"
 PREV_SHA="b14c9c983fd47f65bd05ef33e8fcc74325ed6057186954ab72ef9bc6b71c419e"
+TARGET_SHA="732182a653985e985fd271dbe52526cd05d16717992b792449fe3c7363c0ac0d"
 BASE=Path("editorial/tom-and-jerry-hiroshima-2026/revisions/period-breaks-20261101.html")
 NEW=Path("editorial/tom-and-jerry-hiroshima-2026/revisions/followalong-seo-20261101.html")
 PLAN=Path("editorial/tom-and-jerry-hiroshima-2026/photo-plan.json")
@@ -133,10 +134,58 @@ def prepare(post):
     if new==current:raise RuntimeError("STOP: no text changes")
     return new
 
+def verify_applied(post):
+    # The first apply completed its WP write but the old post-write audit
+    # compared images in their PREVIOUS order. Never repeat that POST.
+    if (post.get("id"),post.get("slug"),post.get("status"))!=(PID,SLUG,"draft"):
+        raise RuntimeError("STOP: wrong post identity/status")
+    if html.unescape((post.get("title") or {}).get("raw") or "")!=TITLE:
+        raise RuntimeError("STOP: title unexpectedly changed")
+    if post.get("categories")!=[7] or int(post.get("featured_media") or 0)!=4301:
+        raise RuntimeError("STOP: cover/category unexpectedly changed")
+    saved=raw(post)
+    if digest(saved)!=TARGET_SHA:
+        raise RuntimeError("STOP: live WP body differs from both exact previous and expected saved content")
+    slots=SLOT.findall(NEW.read_text("utf-8"))
+    media=json.loads(PLAN.read_text("utf-8"))["media_mapping"]
+    mapping={item["source"]:int(item["wp_media_id"]) for item in media}
+    expected=[mapping[slot[0]] for slot in slots]
+    images=IMAGE.findall(saved)
+    actual=[]
+    for img,slot,mid in zip(images,slots,expected):
+        found=re.search(r'class="wp-image-(\\d+)"',img)
+        if not found or int(found.group(1))!=mid:
+            raise RuntimeError("STOP: saved media order differs from approved follow-along sequence")
+        if 'alt="'+html.escape(slot[1],quote=True)+'"' not in img:
+            raise RuntimeError("STOP: saved image alt no longer matches approved metadata")
+        actual.append(int(found.group(1)))
+    if len(images)!=15 or actual!=expected or len(set(actual))!=15:
+        raise RuntimeError("STOP: saved image IDs/count differ")
+    orig_table=re.search(r"<!-- wp:table -->.*?<!-- /wp:table -->",BASE.read_text("utf-8"),re.S)
+    saved_table=re.search(r"<!-- wp:table -->.*?<!-- /wp:table -->",saved,re.S)
+    if not orig_table or not saved_table or orig_table.group()!=saved_table.group():
+        raise RuntimeError("STOP: original ticket table changed")
+    if saved.count("<!-- wp:paragraph -->")!=45 or saved.count("<br>")!=43:
+        raise RuntimeError("STOP: follow-along scene/soft-linebreak structure mismatch")
+    if not saved.startswith("<!-- tsurikue-salvage:v1 -->\\n<!-- tsurikue-editorial:tom-and-jerry-hiroshima-2026:v1 -->\\n"):
+        raise RuntimeError("STOP: editorial identity markers missing")
+    return {"post_id":PID,"slug":SLUG,"status":"draft","image_count":15,"featured_media":4301,
+        "saved_content_sha256":TARGET_SHA,"paragraph_blocks":45,"soft_line_breaks":43,
+        "media_uploads":0,"write_count":0,"result":"ALREADY_APPLIED_AND_VERIFIED"}
+
 def main(mode):
     if mode not in ("check","apply"):raise RuntimeError("mode must be check/apply")
     token=auth()
     current=get_wp(token)
+    current_sha=digest(raw(current))
+    print("WP_LIVE_SHA_AFTER_ATTEMPT",current_sha,flush=True)
+    if current_sha==TARGET_SHA:
+        report=verify_applied(current)
+        out=Path("reports/tom-jerry-followalong-seo")
+        out.mkdir(parents=True,exist_ok=True)
+        (out/"result.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\\n")
+        print("FOLLOWALONG_ALREADY_APPLIED_VERIFIED",json.dumps(report,ensure_ascii=False),flush=True)
+        return
     protect(current)
     new=prepare(current)
     out=Path("reports/tom-jerry-followalong-seo")
@@ -163,7 +212,7 @@ def main(mode):
     for key in ("id","slug","status","title","categories","featured_media","author"):
         if saved.get(key)!=current.get(key):
             raise RuntimeError("STOP: protected WordPress field changed: "+key)
-    if raw(saved)!=new or IMAGE.findall(raw(saved))!=IMAGE.findall(raw(current)):
+    if raw(saved)!=new or sorted(IMAGE.findall(raw(saved)))!=sorted(IMAGE.findall(raw(current))):
         raise RuntimeError("STOP: saved WordPress body/images did not match guarded edit")
     report["after_body_sha256"]=digest(raw(saved))
     report["result"]="UPDATED_AND_VERIFIED"
