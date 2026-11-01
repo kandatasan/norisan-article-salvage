@@ -1,5 +1,5 @@
 {
-  "operation": "create",
+  "post_id": 4282,
   "slug": "tom-and-jerry-exhibition-hiroshima-2026",
   "title": "【広島】そごうのトムとジェリー展に行ってきた！見どころと限定グッズを現地レポ",
   "status": "draft",
@@ -10,5 +10,8 @@
   "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
   "editorial_marker": "<!-- tsurikue-editorial:tom-and-jerry-hiroshima-2026:v1 -->",
   "content_file": "content.html",
-  "expected_media": {}
+  "expected_media": {},
+  "expected_current_content_sha256": "6d8dc37257fed4a4628d4fa47253e4b0ca2788f48880c66c28219bf491ff5396",
+  "expected_current_title": "【広島】そごうのトムとジェリー展に行ってきた！見どころと限定グッズを現地レポ",
+  "expected_current_featured_media": 0
 }
