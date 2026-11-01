@@ -1,0 +1,43 @@
+name: Update Tom and Jerry evergreen title and slug (draft only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/update_tom_jerry_title_slug_20261101.py'
+      - '.github/workflows/update-tom-jerry-title-slug-20261101.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/update_tom_jerry_title_slug_20261101.py'
+      - '.github/workflows/update-tom-jerry-title-slug-20261101.yml'
+permissions:
+  contents: read
+jobs:
+  validate-and-update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check script syntax
+        run: python -m py_compile scripts/update_tom_jerry_title_slug_20261101.py
+      - name: Read-only verify WordPress draft post and slug uniqueness
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_tom_jerry_title_slug_20261101.py check
+      - name: Apply title and slug only to unpublished post 4282
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/update_tom_jerry_title_slug_20261101.py apply
+      - name: Archive WordPress metadata audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: tom-jerry-title-slug
+          path: reports/tom-jerry-title-slug-20261101/
+          if-no-files-found: warn
