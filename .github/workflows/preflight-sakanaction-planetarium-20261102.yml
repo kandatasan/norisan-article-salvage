@@ -1,0 +1,32 @@
+name: Preflight Sakanaction planetarium original photos and duplicate posts
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/preflight_sakanaction_planetarium_20261102.py'
+      - '.github/workflows/preflight-sakanaction-planetarium-20261102.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate Python syntax
+        run: python -m py_compile scripts/preflight_sakanaction_planetarium_20261102.py
+      - name: Read-only WP media, duplicate and category check
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/preflight_sakanaction_planetarium_20261102.py
+      - name: Archive preflight
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sakanaction-planetarium-preflight
+          path: reports/sakanaction-planetarium-preflight/
+          if-no-files-found: warn
