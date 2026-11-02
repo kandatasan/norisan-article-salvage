@@ -16,8 +16,10 @@
     "4337": "/wp-content/uploads/2026/11/img_9085.jpg"
   },
   "post_id": 4338,
-  "expected_current_content_sha256": "e6f7273e7789659a44da87ef65eb1b6271a6d9189a1ef7f6eb98eb06fc42d141",
+  "expected_current_content_sha256": "17cca9e9b8359d37650c89662090da72796fae2b8a8963def15f5adf58ccd6a5",
   "expected_current_title": "サカナクションのプラネタリウムに行ってきた！510円で大満足の感想とチケット購入の注意点【広島】",
   "expected_current_featured_media": 4336,
-  "creation_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41378117974"
+  "creation_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41378117974",
+  "latest_editorial_audit_run": "https://github.com/kandatasan/norisan-article-salvage/actions/runs/41379206179",
+  "latest_edit_note": "2026-11-02: Trim repeated emotional claims, group same scene with soft breaks. 12 Gutenberg paragraphs, 2 practical-info tables, 3 original WordPress photos. Preserve draft; avoid regenerating from obsolete text."
 }
