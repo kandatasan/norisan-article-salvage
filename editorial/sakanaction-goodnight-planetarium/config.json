@@ -1,0 +1,18 @@
+{
+  "operation": "create",
+  "title": "サカナクションのプラネタリウムに行ってきた！510円で大満足の感想とチケット購入の注意点【広島】",
+  "slug": "sakanaction-goodnight-planetarium",
+  "status": "draft",
+  "categories": [
+    7
+  ],
+  "featured_media": 4336,
+  "salvage_marker": "<!-- tsurikue-salvage:v1 -->",
+  "editorial_marker": "<!-- tsurikue-editorial:sakanaction-goodnight-planetarium:v1 -->",
+  "content_file": "content.html",
+  "expected_media": {
+    "4335": "/wp-content/uploads/2026/11/img_9089.jpg",
+    "4336": "/wp-content/uploads/2026/11/img_9086.jpg",
+    "4337": "/wp-content/uploads/2026/11/img_9085.jpg"
+  }
+}
