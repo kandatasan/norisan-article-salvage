@@ -1,0 +1,15 @@
+{
+  "operation": "insert_gulliver_context_ctas",
+  "post_id": 3945,
+  "slug": "lexus-lbx-used",
+  "title": "レクサスLBXの中古車は狙い目？新車との価格差・CPO・選び方を本音で解説",
+  "expected_featured_media": 1513,
+  "expected_current_content_sha256": "3ce797dbf37fb7490eb69600fad6686aaba0cc2470bc848192edeccc58b6b6f0",
+  "banner_before_heading": "中古LBXで見るのは、この4つでいい",
+  "button_slots": [
+    {
+      "before_heading": "私が見るならRelax｜中古は379万円〜",
+      "copy": "LBXの中古相場を見たら、Relaxの価格と装備を実際の在庫で比べてみよう。"
+    }
+  ]
+}
