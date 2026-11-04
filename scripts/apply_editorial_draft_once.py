@@ -540,11 +540,164 @@ def apply_published_affiliate_swap(cfg: dict[str, Any], auth: str):
         raise
 
 
+
+def build_published_gulliver_context_ctas(current: str, cfg: dict[str, Any]) -> tuple[str, str]:
+    """Add one quiet banner plus 0–2 contextual buttons to an existing published article."""
+    banner = '[blog_parts id="2843"]'
+    button = '[blog_parts id="4172"]'
+    slots = cfg["button_slots"]
+    if not isinstance(slots, list) or len(slots) > 2:
+        raise RuntimeError("only zero to two extra buttons allowed (max three total)")
+    if len(set(x["before_heading"] for x in slots)) != len(slots):
+        raise RuntimeError("button anchors not unique")
+    if any(not x.get("copy") or "<" in x["copy"] or ">" in x["copy"] for x in slots):
+        raise RuntimeError("invalid CTA copy")
+    if cfg["banner_before_heading"] in {x["before_heading"] for x in slots}:
+        raise RuntimeError("banner and button cannot be placed directly together")
+
+    if current.count(banner) == 1 and current.count(button) == 1 + len(slots):
+        if all(current.count(x["copy"]) == 1 for x in slots):
+            return current, "ALREADY_PRESENT"
+        raise RuntimeError("affiliate counts match but contextual microcopy drifted")
+    if current.count(banner) != 0 or current.count(button) != 1:
+        raise RuntimeError("expected one managed button and no banner before rebalance")
+
+    def insert_before_heading(source: str, heading_text: str, fragment: str) -> str:
+        pat = re.compile(
+            r'<!-- wp:heading(?: [^\n]*)? -->\s*<h2\b[^>]*>.*?</h2>\s*<!-- /wp:heading -->',
+            re.S
+        )
+        matches = []
+        for m in pat.finditer(source):
+            text_only = html.unescape(re.sub(r"<[^>]+>", "", m.group(0)).strip())
+            if text_only == heading_text:
+                matches.append(m)
+        if len(matches) != 1:
+            raise RuntimeError(f"heading anchor count is {len(matches)}: {heading_text!r}")
+        pos = matches[0].start()
+        return source[:pos] + fragment + "\n\n" + source[pos:]
+
+    updated = insert_before_heading(
+        current, cfg["banner_before_heading"],
+        '<!-- wp:shortcode -->\n' + banner + '\n<!-- /wp:shortcode -->'
+    )
+    for slot in slots:
+        fragment = ('<!-- wp:paragraph -->\n<p>' + slot["copy"] +
+                    '</p>\n<!-- /wp:paragraph -->\n\n'
+                    '<!-- wp:shortcode -->\n' + button + '\n<!-- /wp:shortcode -->')
+        if slot["copy"] in updated:
+            raise RuntimeError("CTA microcopy already exists")
+        updated = insert_before_heading(updated, slot["before_heading"], fragment)
+    if updated.count(banner) != 1 or updated.count(button) != 1 + len(slots):
+        raise RuntimeError("Gulliver CTA counts after rebalance are invalid")
+    if updated.count(button) > 3:
+        raise RuntimeError("more than three Gulliver buttons")
+    if re.findall(r"\bwp-image-\d+\b", updated) != re.findall(r"\bwp-image-\d+\b", current):
+        raise RuntimeError("WordPress media IDs changed")
+    if re.findall(r'https?://[^\s"<]+', updated) != re.findall(r'https?://[^\s"<]+', current):
+        raise RuntimeError("article links changed")
+    if updated.count("<h2") != current.count("<h2") or updated.count("<h3") != current.count("<h3"):
+        raise RuntimeError("article headings changed")
+    return updated, "UPDATE"
+
+
+def apply_published_gulliver_context_ctas(cfg: dict[str, Any], auth: str):
+    """Guarded WordPress-only content insertion; preserve every existing article block."""
+    pid = int(cfg["post_id"])
+    before_counts = public_counts(auth)
+    original = fetch_post_by_id(pid, auth)
+    title = html.unescape(raw_field(original, "title"))
+    if (original.get("id"), original.get("slug"), original.get("status")) != (
+        pid, cfg["slug"], "publish"
+    ):
+        raise RuntimeError("published Gulliver target identity/status mismatch")
+    if title != cfg["title"]:
+        raise RuntimeError("post title drifted")
+    if int(original.get("featured_media") or 0) != int(cfg["expected_featured_media"]):
+        raise RuntimeError("post thumbnail drifted")
+    old = raw_field(original, "content")
+    expected_sha = cfg["expected_current_content_sha256"]
+    action = "UPDATE"
+    if hashlib.sha256(old.encode()).hexdigest() != expected_sha:
+        # Only allow an exact, already-applied result; do not overwrite later WP edits.
+        if old.count('[blog_parts id="2843"]') == 1 and old.count('[blog_parts id="4172"]') == 1 + len(cfg["button_slots"]) and all(
+            old.count(x["copy"]) == 1 for x in cfg["button_slots"]
+        ):
+            action = "ALREADY_PRESENT"
+            updated = old
+        else:
+            raise RuntimeError("post content differs from verified previous CTA release")
+    else:
+        updated, action = build_published_gulliver_context_ctas(old, cfg)
+    keys = ("id", "slug", "status", "featured_media", "categories", "author")
+    newest = fetch_post_by_id(pid, auth)
+    if any(newest.get(k) != original.get(k) for k in keys) or (
+        html.unescape(raw_field(newest, "title")) != title or raw_field(newest, "content") != old
+    ):
+        raise RuntimeError("WordPress content or metadata changed between reads")
+    wrote = False
+    report_dir = Path("reports") / (cfg["slug"] + "-gulliver-context-20261104")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        if action == "UPDATE":
+            response = post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{pid}", auth, {"content": updated})
+            wrote = True
+            if response.get("id") != pid or response.get("slug") != cfg["slug"] or response.get("status") != "publish":
+                raise RuntimeError("WordPress update response invalid")
+        after = fetch_post_by_id(pid, auth)
+        after_counts = public_counts(auth)
+        if any(after.get(k) != original.get(k) for k in keys) or (
+            html.unescape(raw_field(after, "title")) != title
+        ):
+            raise RuntimeError("post metadata changed after contextual CTA insertion")
+        if raw_field(after, "content") != updated:
+            raise RuntimeError("WordPress saved content is not the intended insertion")
+        if before_counts != after_counts:
+            raise RuntimeError("published post/page totals changed")
+        result = {
+            "action": action, "post_id": pid, "slug": cfg["slug"],
+            "title": title, "status": "publish",
+            "featured_media": after.get("featured_media"),
+            "banner_count": updated.count('[blog_parts id="2843"]'),
+            "button_count": updated.count('[blog_parts id="4172"]'),
+            "old_sha256": hashlib.sha256(old.encode()).hexdigest(),
+            "new_sha256": hashlib.sha256(updated.encode()).hexdigest(),
+            "wordpress_write_count": int(wrote),
+        }
+        (report_dir/"result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+        (report_dir/"summary.md").write_text(
+            f"# Gulliver context CTA {cfg['slug']}\n\n"
+            f"- action: {action}\n- post_id: {pid}\n- status: publish\n"
+            f"- banner: {result['banner_count']}, buttons: {result['button_count']}\n"
+            f"- featured_media: {after.get('featured_media')}\n"
+            f"- old SHA: {result['old_sha256']}\n- new SHA: {result['new_sha256']}\n",
+            encoding="utf-8"
+        )
+        print("GULLIVER_CONTEXT_CTA_VERIFIED", json.dumps(result, ensure_ascii=False), flush=True)
+        return result
+    except Exception:
+        if wrote:
+            try:
+                now = fetch_post_by_id(pid, auth)
+                if raw_field(now, "content") == updated and all(
+                    now.get(k) == original.get(k) for k in keys
+                ):
+                    post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{pid}", auth, {"content": old})
+                    print("GULLIVER_CONTEXT_CTA_ROLLBACK", pid, flush=True)
+                else:
+                    print("GULLIVER_CONTEXT_CTA_ROLLBACK_SKIPPED_DRIFT", pid, flush=True)
+            except Exception as error:
+                print("GULLIVER_CONTEXT_CTA_ROLLBACK_FAILED", repr(error), flush=True)
+        raise
+
+
 def apply(config_path: Path):
     user = os.environ.get("TSURIKUE_WP_USER"); password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
     if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
     auth = auth_header(user, password)
     raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
+    if raw_cfg.get("operation") == "insert_gulliver_context_ctas":
+        return apply_published_gulliver_context_ctas(raw_cfg, auth)
     if raw_cfg.get("operation") == "replace_published_gulliver_banner":
         return apply_published_affiliate_swap(raw_cfg, auth)
     if raw_cfg.get("operation") == "insert_published_block":
