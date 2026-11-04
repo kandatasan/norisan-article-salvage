@@ -7,6 +7,7 @@ on:
       - 'editorial/**'
       - 'scripts/apply_editorial_draft_once.py'
       - 'tests/test_apply_editorial_published_insert.py'
+      - 'tests/test_gulliver_cta_20261104.py'
   push:
     branches: [main]
     paths:
@@ -34,7 +35,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Run generic safety tests
-        run: python -m unittest tests/test_apply_editorial_draft_once.py tests/test_apply_editorial_draft_create.py tests/test_apply_editorial_published_insert.py tests/test_nx_hud_table_patch_20261026.py -v
+        run: python -m unittest tests/test_apply_editorial_draft_once.py tests/test_apply_editorial_draft_create.py tests/test_apply_editorial_published_insert.py tests/test_nx_hud_table_patch_20261026.py tests/test_gulliver_cta_20261104.py -v
       - name: Resolve configs
         shell: bash
         run: |
