@@ -1,0 +1,27 @@
+{
+  "operation": "replace_published_affiliate_copy",
+  "post_id": 3973,
+  "slug": "tanto-used-best-year",
+  "title": "タント中古は何年式がおすすめ？注意点も実車オーナーが解説",
+  "expected_featured_media": 3954,
+  "expected_current_content_sha256": "989142d911f987b04de6f8e35bef4b4d0dd36af19a4d8f61df3f86225be3c3e7",
+  "expected_after_sha256": "9f81a418fedd7fc129d3f26efd82ef067f2bbe7e135cc7124f29fc005f65654d",
+  "replacements": [
+    {
+      "before": "4代目の前期と2022年以降で、実際の中古タントの値段も比べてみよう。",
+      "after": "4代目前期か、2022年10月以降か。希望の年式と予算を伝えて、候補を探してもらおう。"
+    },
+    {
+      "before": "2019年以降の4代目から、",
+      "after": "年式・装備・予算を伝えて、"
+    },
+    {
+      "before": "ガリバーで中古タントを探してみよう。",
+      "after": "中古タントを探してもらおう。"
+    },
+    {
+      "before": "体感では、わが家のレクサスUXより後席の膝前や頭上は広く感じます。横幅はさすがにUXのほうが広いですが、軽自動車に乗っている感じが薄いのはタントの好きなところです。",
+      "after": "体感では、わが家のレクサスUXより後席の膝前や頭上は広く感じます。横幅はUXのほうが広いですが、足元に余裕があるのはタントの魅力。毎日乗る車なら、この使いやすさはうれしいところです。"
+    }
+  ]
+}
