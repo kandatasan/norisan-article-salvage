@@ -1,0 +1,15 @@
+{
+  "operation": "insert_gulliver_context_ctas",
+  "post_id": 4264,
+  "slug": "tanto-rival-cars",
+  "title": "タントのライバル4台を比較！N-BOX・スペーシア・ルークス・デリカミニの装備と価格",
+  "expected_featured_media": 3954,
+  "expected_current_content_sha256": "bea9c374d9f8863b0c7ad8ec1336f27c5cfd477169e3e95b34dfdc3da07b6107",
+  "banner_before_heading": "安全装備の○△×比較｜車間キープとレーン支援を分けた",
+  "button_slots": [
+    {
+      "before_heading": "価格・サイズを比較｜同じ軽規格でも高さには差がある",
+      "copy": "予算が決まっているなら、5車種の中古価格もいったん見てみよう。"
+    }
+  ]
+}
