@@ -1,0 +1,14 @@
+{
+  "operation": "insert_gulliver_extra_buttons",
+  "post_id": 2329,
+  "slug": "ux300h",
+  "title": "レクサスUX300hを試乗｜UX250hオーナーが比較して感じた3つの違い",
+  "expected_featured_media": 2330,
+  "expected_current_content_sha256": "edc70baa2d006334a0f8aa977790dc3accbfcd979abd19943476896059404a17",
+  "button_slots": [
+    {
+      "before_heading": "UX250hとUX300hの外観デザインは変わっていない",
+      "copy": "250hと300hの違いが見えてきたら、欲しい装備をガリバーに伝えて中古UXを探してみよう。"
+    }
+  ]
+}

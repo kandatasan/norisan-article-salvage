@@ -1,0 +1,18 @@
+{
+  "operation": "insert_gulliver_extra_buttons",
+  "post_id": 2517,
+  "slug": "ux-koukai",
+  "title": "レクサスUXはひどい？616万円で買って後悔した欠点と満足している理由",
+  "expected_featured_media": 2208,
+  "expected_current_content_sha256": "0ca2417cd53915256a6fd9507b48164d586eb91a2f1dc56a6756d53687780e22",
+  "button_slots": [
+    {
+      "before_heading": "レクサスUXを買って「ひどい」と感じた6つの欠点",
+      "copy": "中古UXも候補なら、予算と欲しいグレードをガリバーに伝えて探してみよう。"
+    },
+    {
+      "before_heading": "まとめ｜616万円なら文句あり。中古UXならかなりアリ",
+      "copy": "後席や荷室の弱点まで納得できたら、希望の年式と装備で中古UXを探してみよう。"
+    }
+  ]
+}

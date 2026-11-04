@@ -1,0 +1,14 @@
+{
+  "operation": "insert_gulliver_extra_buttons",
+  "post_id": 3965,
+  "slug": "tanto-6years-review",
+  "title": "タントにターボは必要？NAを6年以上乗った我が家の結論",
+  "expected_featured_media": 3954,
+  "expected_current_content_sha256": "e17497861e48574e7dc73b0ed92a33fbf94a1f4bdf0249587e43c6c221181fd4",
+  "button_slots": [
+    {
+      "before_heading": "NAでも室内の広さはしっかりタント",
+      "copy": "NAとターボの装備差が分かったら、希望条件を伝えて中古タントを探してみよう。"
+    }
+  ]
+}

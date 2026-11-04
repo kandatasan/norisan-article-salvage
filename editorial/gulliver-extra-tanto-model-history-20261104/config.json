@@ -1,0 +1,14 @@
+{
+  "operation": "insert_gulliver_extra_buttons",
+  "post_id": 4004,
+  "slug": "tanto-model-history",
+  "title": "タントの歴代モデル・年式・型式一覧｜L350S〜LA650Sを4代まとめ",
+  "expected_featured_media": 3978,
+  "expected_current_content_sha256": "4c3723b27d6b6557060229e49d8b326d5c99d5c9be360aab1bef79bd34e99fde",
+  "button_slots": [
+    {
+      "before_heading": "まとめ｜タントは2026年時点で4代目",
+      "copy": "欲しい型式が分かったら、年式と予算を伝えて中古タントの候補を探してみよう。"
+    }
+  ]
+}

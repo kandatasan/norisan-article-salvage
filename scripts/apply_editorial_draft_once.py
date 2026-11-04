@@ -691,11 +691,187 @@ def apply_published_gulliver_context_ctas(cfg: dict[str, Any], auth: str):
         raise
 
 
+
+def build_published_gulliver_extra_buttons(current: str, cfg: dict[str, Any]) -> tuple[str, str]:
+    """Insert up to two context-specific Gulliver buttons without touching the small banner."""
+    banner = '[blog_parts id="2843"]'
+    button = '[blog_parts id="4172"]'
+    slots = cfg["button_slots"]
+    if not isinstance(slots, list) or not 1 <= len(slots) <= 2:
+        raise RuntimeError("one or two contextual Gulliver buttons required")
+    anchors = [str(x["before_heading"]) for x in slots]
+    copies = [str(x["copy"]) for x in slots]
+    if len(set(anchors)) != len(anchors) or len(set(copies)) != len(copies):
+        raise RuntimeError("duplicate anchors or copy")
+    if any(not copy or "<" in copy or ">" in copy for copy in copies):
+        raise RuntimeError("invalid CTA copy")
+    if current.count(banner) != 1:
+        raise RuntimeError("existing small Gulliver banner must remain exactly once")
+    if current.count(button) == len(slots):
+        if all(current.count(copy) == 1 for copy in copies):
+            return current, "ALREADY_PRESENT"
+        raise RuntimeError("Gulliver buttons exist with unexpected copy")
+    if current.count(button) != 0:
+        raise RuntimeError("article has a pre-existing Gulliver button; review manually")
+
+    heading_pattern = re.compile(
+        r'<!-- wp:heading(?: [^\n]*)? -->\s*<h2\b[^>]*>.*?</h2>\s*<!-- /wp:heading -->',
+        re.S
+    )
+    updated = current
+    inserted = []
+    for slot in slots:
+        heading = str(slot["before_heading"])
+        copy = str(slot["copy"])
+        if copy in updated:
+            raise RuntimeError("microcopy already present")
+        matches = [
+            m for m in heading_pattern.finditer(updated)
+            if html.unescape(re.sub(r"<[^>]+>", "", m.group(0)).strip()) == heading
+        ]
+        if len(matches) != 1:
+            raise RuntimeError(f"heading anchor count unexpected {heading!r}: {len(matches)}")
+        insert_at = matches[0].start()
+        shortcode_at = updated.index(banner)
+        # Do not stack the new button directly on an existing banner.
+        if abs(insert_at - shortcode_at) < 700:
+            raise RuntimeError("contextual button would be too close to the small banner")
+        injected = (
+            '<!-- wp:paragraph -->\n<p>' + html.escape(copy, quote=False) +
+            '</p>\n<!-- /wp:paragraph -->\n\n'
+            '<!-- wp:shortcode -->\n' + button + '\n<!-- /wp:shortcode -->'
+        )
+        updated = updated[:insert_at] + injected + "\n\n" + updated[insert_at:]
+        inserted.append(injected)
+
+    if updated.count(button) != len(slots) or updated.count(banner) != 1:
+        raise RuntimeError("button/banner count changed unexpectedly")
+    if updated.count(button) > 3:
+        raise RuntimeError("more than three Gulliver buttons")
+    if updated.count("<!-- wp:") != current.count("<!-- wp:") + len(slots)*2:
+        raise RuntimeError("unexpected Gutenberg block count")
+    if updated.count("<h2") != current.count("<h2") or updated.count("<h3") != current.count("<h3"):
+        raise RuntimeError("article headings were modified")
+    if re.findall(r"\bwp-image-\d+\b", updated) != re.findall(r"\bwp-image-\d+\b", current):
+        raise RuntimeError("inline WordPress media changed")
+    if re.findall(r"https?://[^\s\"<]+", updated) != re.findall(r"https?://[^\s\"<]+", current):
+        raise RuntimeError("article URLs changed")
+    for injected in reversed(inserted):
+        if updated.count(injected + "\n\n") != 1:
+            raise RuntimeError("inserted fragment is not unique")
+        updated = updated.replace(injected + "\n\n", "", 1)
+    if updated != current:
+        raise RuntimeError("not a pure addition; original content would be changed")
+    updated = current
+    for slot in slots:
+        heading = str(slot["before_heading"])
+        matches = [
+            m for m in heading_pattern.finditer(updated)
+            if html.unescape(re.sub(r"<[^>]+>", "", m.group(0)).strip()) == heading
+        ]
+        pos = matches[0].start()
+        block = ('<!-- wp:paragraph -->\n<p>' + html.escape(slot["copy"], quote=False) +
+                 '</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:shortcode -->\n' +
+                 button + '\n<!-- /wp:shortcode -->')
+        updated = updated[:pos] + block + "\n\n" + updated[pos:]
+    return updated, "UPDATE"
+
+
+def apply_published_gulliver_extra_buttons(cfg: dict[str, Any], auth: str):
+    """Safely add contextual affiliate buttons to a published post with an existing banner."""
+    post_id = int(cfg["post_id"])
+    before_counts = public_counts(auth)
+    original = fetch_post_by_id(post_id, auth)
+    old = raw_field(original, "content")
+    original_title = html.unescape(raw_field(original, "title"))
+    if (original.get("id"), original.get("slug"), original.get("status")) != (
+        post_id, cfg["slug"], "publish"
+    ):
+        raise RuntimeError("WordPress post ID/slug/status drifted")
+    if original_title != cfg["title"]:
+        raise RuntimeError("WordPress post title drifted")
+    if int(original.get("featured_media") or 0) != int(cfg["expected_featured_media"]):
+        raise RuntimeError("WordPress featured media drifted")
+    original_sha = hashlib.sha256(old.encode()).hexdigest()
+    if original_sha != cfg["expected_current_content_sha256"]:
+        if old.count('[blog_parts id="2843"]') == 1 and old.count('[blog_parts id="4172"]') == len(cfg["button_slots"]) and all(
+            old.count(str(x["copy"])) == 1 for x in cfg["button_slots"]
+        ):
+            updated, action = old, "ALREADY_PRESENT"
+        else:
+            raise RuntimeError("WordPress content has changed since the verified export; refuse overwrite")
+    else:
+        updated, action = build_published_gulliver_extra_buttons(old, cfg)
+
+    keys = ("id", "slug", "status", "featured_media", "categories", "author")
+    latest = fetch_post_by_id(post_id, auth)
+    if any(latest.get(k) != original.get(k) for k in keys) or (
+        html.unescape(raw_field(latest, "title")) != original_title or
+        raw_field(latest, "content") != old
+    ):
+        raise RuntimeError("WordPress edit occurred during the preflight")
+    wrote = False
+    report_dir = Path("reports") / f"{cfg['slug']}-gulliver-extra-20261104"
+    report_dir.mkdir(parents=True, exist_ok=True)
+    try:
+        if action == "UPDATE":
+            response = post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{post_id}", auth, {"content":updated})
+            wrote = True
+            if response.get("id") != post_id or response.get("slug") != cfg["slug"] or response.get("status") != "publish":
+                raise RuntimeError("WordPress response identity/status mismatch")
+        after = fetch_post_by_id(post_id, auth)
+        after_counts = public_counts(auth)
+        if any(after.get(k) != original.get(k) for k in keys):
+            raise RuntimeError("WordPress metadata changed during Gulliver CTA update")
+        if html.unescape(raw_field(after, "title")) != original_title or raw_field(after, "content") != updated:
+            raise RuntimeError("WordPress did not save exact target content")
+        if after_counts != before_counts:
+            raise RuntimeError("public post/page count changed unexpectedly")
+        result = {
+            "action": action, "post_id":post_id, "slug":cfg["slug"],
+            "title": original_title, "status": "publish",
+            "featured_media":after.get("featured_media"),
+            "banner_count":updated.count('[blog_parts id="2843"]'),
+            "button_count":updated.count('[blog_parts id="4172"]'),
+            "ctn_count": len(re.findall(r'\[blog_parts id="(?:2184|3788)"\]',updated)),
+            "old_sha256":original_sha,
+            "new_sha256":hashlib.sha256(updated.encode()).hexdigest(),
+            "wordpress_write_count":int(wrote)
+        }
+        (report_dir/"result.json").write_text(json.dumps(result,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+        (report_dir/"summary.md").write_text(
+            f"# Gulliver extra buttons: {cfg['slug']}\n\n"
+            f"- action: {action}\n- post_id: {post_id}\n- status: publish\n"
+            f"- banner_count: {result['banner_count']}\n- button_count: {result['button_count']}\n"
+            f"- ctn_count: {result['ctn_count']}\n- featured_media: {after.get('featured_media')}\n"
+            f"- before_sha: {original_sha}\n- after_sha: {result['new_sha256']}\n",
+            encoding="utf-8"
+        )
+        print("GULLIVER_EXTRA_BUTTON_VERIFIED", json.dumps(result,ensure_ascii=False),flush=True)
+        return result
+    except Exception:
+        if wrote:
+            try:
+                current = fetch_post_by_id(post_id, auth)
+                if raw_field(current,"content") == updated and all(
+                    current.get(k) == original.get(k) for k in keys
+                ):
+                    post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{post_id}",auth,{"content":old})
+                    print("GULLIVER_EXTRA_BUTTON_ROLLBACK",post_id,flush=True)
+                else:
+                    print("GULLIVER_EXTRA_BUTTON_ROLLBACK_SKIPPED_DRIFT",post_id,flush=True)
+            except Exception as rollback_error:
+                print("GULLIVER_EXTRA_BUTTON_ROLLBACK_FAILED",repr(rollback_error),flush=True)
+        raise
+
+
 def apply(config_path: Path):
     user = os.environ.get("TSURIKUE_WP_USER"); password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
     if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
     auth = auth_header(user, password)
     raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
+    if raw_cfg.get("operation") == "insert_gulliver_extra_buttons":
+        return apply_published_gulliver_extra_buttons(raw_cfg, auth)
     if raw_cfg.get("operation") == "insert_gulliver_context_ctas":
         return apply_published_gulliver_context_ctas(raw_cfg, auth)
     if raw_cfg.get("operation") == "replace_published_gulliver_banner":
