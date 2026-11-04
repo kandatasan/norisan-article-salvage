@@ -1,0 +1,31 @@
+{
+  "operation": "replace_published_affiliate_copy",
+  "post_id": 3945,
+  "slug": "lexus-lbx-used",
+  "title": "レクサスLBXの中古車は狙い目？新車との価格差・CPO・選び方を本音で解説",
+  "expected_featured_media": 1513,
+  "expected_current_content_sha256": "ca9eeb30297e297ef80532fc55e5270981b1ac08b9d98d8e9acb6133f9b6e216",
+  "expected_after_sha256": "9d5ccdd12e1fbed43c3b48f1ceff51ac6e6f585b2c9e92462f7bcd7c62cbecd0",
+  "replacements": [
+    {
+      "before": "ここで、欲しい装備が最初から付いた中古Relaxが出てくると一気に面白くなります。",
+      "after": "ここで、欲しいHUDやAdvanced Parkが付いた中古Relaxが見つかったら面白い。好きな装備を諦めず、予算も抑えられる可能性が出てきます。"
+    },
+    {
+      "before": "中古車サイトを開いていきなり安い順に並べるより、",
+      "after": "安さだけで選んでから内装色やHUDの有無で後悔するより、"
+    },
+    {
+      "before": "LBXの中古相場を見たら、Relaxの価格と装備を実際の在庫で比べてみよう。",
+      "after": "欲しい内装色や装備、予算を伝えて、ガリバーに中古Relaxの候補を探してもらおう。"
+    },
+    {
+      "before": "欲しい装備が決まったら、",
+      "after": "予算と欲しい装備を伝え、"
+    },
+    {
+      "before": "中古LBXの在庫を比較。",
+      "after": "未公開分も含めて探してもらおう。"
+    }
+  ]
+}
