@@ -24,7 +24,8 @@ TWO = [
 class GulliverExtraButtonTests(unittest.TestCase):
     def test_preserves_banner_ctn_links_and_existing_copy(self):
         cfg = {"button_slots": ONE}
-        new, action = build_published_gulliver_extra_buttons(BASE, cfg)
+        spaced = BASE.replace(h2("まとめ"), '<p>' + ("追加の比較情報。"*120) + '</p>\n' + h2("まとめ"))
+        new, action = build_published_gulliver_extra_buttons(spaced, cfg)
         self.assertEqual(action, "UPDATE")
         self.assertEqual(new.count('[blog_parts id="2843"]'), 1)
         self.assertEqual(new.count('[blog_parts id="4172"]'), 1)
