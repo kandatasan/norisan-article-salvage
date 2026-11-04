@@ -1,0 +1,12 @@
+{
+  "operation": "replace_published_gulliver_banner",
+  "old_shortcode": "[blog_parts id=\"2843\"]",
+  "new_shortcode": "[blog_parts id=\"4172\"]",
+  "slug": "lexus-ux-rival-suv",
+  "post_id": 4256,
+  "title": "レクサスUXのライバル車5台を比較！サイズ・安全装備・快適装備・中古相場",
+  "expected_featured_media": 2230,
+  "nearest_heading": "予算が同じなら、ここを揃えて見比べたい",
+  "old_copy": "予算を決めたら、実際の中古車を比較してみよう。",
+  "new_copy": "予算を決めたら、ガリバーでも中古車を比較してみよう。"
+}
