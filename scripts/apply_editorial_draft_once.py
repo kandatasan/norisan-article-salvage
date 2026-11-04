@@ -413,11 +413,140 @@ def apply_existing_table_cell_replacement(config_path: Path, cfg: dict[str, Any]
     print("TABLE_CELL_VERIFIED", json.dumps(result, ensure_ascii=False), flush=True)
     return result
 
+
+def build_published_affiliate_swap(current: str, cfg: dict[str, Any]) -> tuple[str, str]:
+    """Replace one verified banner shortcode with an existing managed button."""
+    old_sc = str(cfg["old_shortcode"])
+    new_sc = str(cfg["new_shortcode"])
+    if old_sc != '[blog_parts id="2843"]' or new_sc != '[blog_parts id="4172"]':
+        raise RuntimeError("only the verified Gulliver banner -> managed button swap is allowed")
+    old_count, new_count = current.count(old_sc), current.count(new_sc)
+    expected_heading = str(cfg["nearest_heading"])
+    if old_count == 0 and new_count == 1:
+        new_copy = str(cfg.get("new_copy") or "")
+        if new_copy and current.count(new_copy) != 1:
+            raise RuntimeError("already swapped but microcopy is inconsistent")
+        return current, "ALREADY_PRESENT"
+    if old_count != 1 or new_count != 0:
+        raise RuntimeError(f"unexpected Gulliver shortcode counts {old_count}/{new_count}")
+    at = current.index(old_sc)
+    headings = list(re.finditer(r"<h[23]\b[^>]*>.*?</h[23]>", current[:at], re.S))
+    if not headings:
+        raise RuntimeError("heading before Gulliver CTA not found")
+    nearest = html.unescape(re.sub(r"<[^>]+>", "", headings[-1].group(0)).strip())
+    if nearest != expected_heading:
+        raise RuntimeError(f"CTA section drifted: {nearest!r} != {expected_heading!r}")
+    old_copy = str(cfg.get("old_copy") or "")
+    new_copy = str(cfg.get("new_copy") or "")
+    if bool(old_copy) != bool(new_copy):
+        raise RuntimeError("microcopy old/new must be paired")
+    updated = current
+    if old_copy:
+        if current.count(old_copy) != 1 or new_copy in current:
+            raise RuntimeError("microcopy is missing or already changed")
+        copy_at = current.index(old_copy)
+        if not 0 < at - copy_at <= 350:
+            raise RuntimeError("microcopy is not immediately before the banner")
+        updated = updated.replace(old_copy, new_copy, 1)
+    updated = updated.replace(old_sc, new_sc, 1)
+    if updated.count(old_sc) != 0 or updated.count(new_sc) != 1:
+        raise RuntimeError("shortcode replacement did not produce exactly one managed button")
+    if updated.count("<!-- wp:") != current.count("<!-- wp:"):
+        raise RuntimeError("Gutenberg blocks unexpectedly modified")
+    if re.findall(r"\bwp-image-\d+\b", updated) != re.findall(r"\bwp-image-\d+\b", current):
+        raise RuntimeError("inline images unexpectedly changed")
+    if re.findall(r'https?://[^\s"<]+', updated) != re.findall(r'https?://[^\s"<]+', current):
+        raise RuntimeError("article URLs unexpectedly changed")
+    return updated, "UPDATE"
+
+
+def apply_published_affiliate_swap(cfg: dict[str, Any], auth: str):
+    """Content-only, guarded per-article Gulliver conversion improvement."""
+    pid = int(cfg["post_id"])
+    before_counts = public_counts(auth)
+    original = fetch_post_by_id(pid, auth)
+    title = html.unescape(raw_field(original, "title"))
+    if (original.get("id"), original.get("slug"), original.get("status")) != (
+        pid, cfg["slug"], "publish"
+    ):
+        raise RuntimeError("published affiliate target identity/status mismatch")
+    if title != cfg["title"]:
+        raise RuntimeError("title changed since the article was audited")
+    if int(original.get("featured_media") or 0) != int(cfg["expected_featured_media"]):
+        raise RuntimeError("featured media differs from the WordPress export")
+    keys = ("id", "slug", "status", "featured_media", "categories", "author")
+    old = raw_field(original, "content")
+    updated, action = build_published_affiliate_swap(old, cfg)
+    old_sha = hashlib.sha256(old.encode()).hexdigest()
+    new_sha = hashlib.sha256(updated.encode()).hexdigest()
+    report_dir = Path("reports") / (cfg["slug"] + "-gulliver-cta-20261104")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    (report_dir/"preflight.json").write_text(json.dumps({
+        "post_id": pid, "slug": cfg["slug"], "action": action,
+        "old_sha256": old_sha, "new_sha256": new_sha,
+        "old_banner_count": old.count(cfg["old_shortcode"]),
+        "new_button_count": updated.count(cfg["new_shortcode"])
+    }, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    latest = fetch_post_by_id(pid, auth)
+    if any(latest.get(k) != original.get(k) for k in keys) or (
+        html.unescape(raw_field(latest, "title")) != title or raw_field(latest, "content") != old
+    ):
+        raise RuntimeError("concurrent WordPress edit; refusing affiliate swap")
+    wrote = False
+    try:
+        if action == "UPDATE":
+            response = post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{pid}", auth, {"content": updated})
+            wrote = True
+            if response.get("id") != pid or response.get("status") != "publish":
+                raise RuntimeError("WordPress response changed post identity/status")
+        after = fetch_post_by_id(pid, auth)
+        after_counts = public_counts(auth)
+        if any(after.get(k) != original.get(k) for k in keys):
+            raise RuntimeError("WordPress metadata drifted during affiliate swap")
+        if html.unescape(raw_field(after, "title")) != title or raw_field(after, "content") != updated:
+            raise RuntimeError("WordPress did not save the exact targeted affiliate change")
+        if before_counts != after_counts:
+            raise RuntimeError("published post/page counts changed")
+        result = {
+            "action": action, "post_id": pid, "slug": cfg["slug"],
+            "status": "publish", "title": title,
+            "featured_media": original.get("featured_media"),
+            "old_sha256": old_sha, "new_sha256": new_sha,
+            "banner_count_after": updated.count(cfg["old_shortcode"]),
+            "managed_button_count_after": updated.count(cfg["new_shortcode"]),
+            "wordpress_write_count": int(action == "UPDATE")
+        }
+        (report_dir/"result.json").write_text(json.dumps(result, ensure_ascii=False, indent=2)+"\n", encoding="utf-8")
+        (report_dir/"summary.md").write_text(
+            f"# Gulliver CTA {cfg['slug']}\n\n- action: {action}\n- post_id: {pid}\n"
+            f"- status: publish\n- featured media: {original.get('featured_media')}\n"
+            f"- old banner: 1 → 0 (or already 0)\n- managed button: 0 → 1 (or already 1)\n"
+            f"- before: {old_sha}\n- after: {new_sha}\n", encoding="utf-8")
+        print("GULLIVER_CTA_VERIFIED", json.dumps(result, ensure_ascii=False), flush=True)
+        return result
+    except Exception:
+        if wrote:
+            try:
+                now = fetch_post_by_id(pid, auth)
+                if raw_field(now, "content") == updated and all(
+                    now.get(k) == original.get(k) for k in keys
+                ):
+                    post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{pid}", auth, {"content": old})
+                    print("GULLIVER_CTA_ROLLBACK", pid, flush=True)
+                else:
+                    print("GULLIVER_CTA_ROLLBACK_SKIPPED_DRIFT", pid, flush=True)
+            except Exception as error:
+                print("GULLIVER_CTA_ROLLBACK_FAILED", repr(error), flush=True)
+        raise
+
+
 def apply(config_path: Path):
     user = os.environ.get("TSURIKUE_WP_USER"); password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
     if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
     auth = auth_header(user, password)
     raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
+    if raw_cfg.get("operation") == "replace_published_gulliver_banner":
+        return apply_published_affiliate_swap(raw_cfg, auth)
     if raw_cfg.get("operation") == "insert_published_block":
         return apply_published_insertion(config_path, raw_cfg, auth)
     if raw_cfg.get("operation") == "replace_existing_table_cell":
