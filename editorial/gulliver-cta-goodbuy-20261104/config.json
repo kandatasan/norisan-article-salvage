@@ -1,0 +1,12 @@
+{
+  "operation": "replace_published_gulliver_banner",
+  "old_shortcode": "[blog_parts id=\"2843\"]",
+  "new_shortcode": "[blog_parts id=\"4172\"]",
+  "slug": "goodbuy",
+  "post_id": 3835,
+  "title": "レクサスを安く買う方法5選｜値引きなしでも購入負担を減らすコツ",
+  "expected_featured_media": 2231,
+  "nearest_heading": "方法5｜新車が予算を超えるなら、中古・CPOまで広げる",
+  "old_copy": "レクサスの在庫を探そう。",
+  "new_copy": "ガリバーでレクサスの中古車を探そう。"
+}
