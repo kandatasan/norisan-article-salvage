@@ -1,16 +1,16 @@
 {
-  "release": "xserver-v0.29-seo-pilot-20261025",
-  "source": "xserver-v0.28-20261025",
+  "release": "xserver-v0.29-seo-v02-static-20261104",
+  "source": "2026-10-30-miyagi-evidence-batch12-staging",
   "entrypoint": "/river-fish-atlas/river/",
   "sitemap": "/river-fish-atlas/sitemap.xml",
-  "number_of_indexable_data_groups": 273,
-  "number_of_sitemap_urls": 274,
+  "number_of_indexable_data_groups": 280,
+  "number_of_sitemap_urls": 281,
   "minimum_fish_label_count": 10,
-  "eligibility": "original historical national river survey fish bundle, non-not_fish recorded labels with https source_evidence, >= 10 labels",
+  "eligibility": "original 273 historical survey groups plus reviewed v02 A/B groups with >= 10 published fish labels",
   "verified_individual_physical_river_count": 0,
   "existing_json_unchanged": true,
   "current_wordpress_article_unchanged": true,
-  "browser_search_app_original_code_unchanged_except_visible_listing_link": true,
+  "browser_search_app_original_code_unchanged_except_visible_listing_link": false,
   "generated_pages": [
     {
       "river_id": "rn_ec533a708fc2522e7d5cb55b",
@@ -2468,6 +2468,119 @@
       "fish_name_labels": 28,
       "url": "https://tsurikue.com/river-fish-atlas/river/rn_337a6e6be8909871e1cb9a63/",
       "source_fish_json": "kyushu/rn_337a6e6be8909871e1cb9a63/fish.json"
+    },
+    {
+      "river_id": "official21_28d96c1e8fdb83f9b390c940",
+      "name": "長門川",
+      "watershed": "利根川",
+      "prefecture": "千葉県",
+      "fish_name_labels": 10,
+      "url": "https://tsurikue.com/river-fish-atlas/river/official21_28d96c1e8fdb83f9b390c940/",
+      "source_layer": "fish_source_connections_v02",
+      "evidence_classes": [
+        "B"
+      ],
+      "source_urls": [
+        "https://www.pref.chiba.lg.jp/suiho/shingikai/mizukankyou/documents/h230627_toushin.pdf"
+      ]
+    },
+    {
+      "river_id": "official21_64da4a1c96002510ecfa1d04",
+      "name": "谷沢川",
+      "watershed": "水系未確認（公式資料の川名）",
+      "prefecture": "東京都",
+      "fish_name_labels": 10,
+      "url": "https://tsurikue.com/river-fish-atlas/river/official21_64da4a1c96002510ecfa1d04/",
+      "source_layer": "fish_source_connections_v02",
+      "evidence_classes": [
+        "B"
+      ],
+      "source_urls": [
+        "https://www.kensetsu.metro.tokyo.lg.jp/documents/d/kensetsu/000028989"
+      ]
+    },
+    {
+      "river_id": "official21_d1ac78601b500e516e624955",
+      "name": "多摩川",
+      "watershed": "水系未確認（公式資料の川名）",
+      "prefecture": "東京都",
+      "fish_name_labels": 13,
+      "url": "https://tsurikue.com/river-fish-atlas/river/official21_d1ac78601b500e516e624955/",
+      "source_layer": "fish_source_connections_v02",
+      "evidence_classes": [
+        "A"
+      ],
+      "source_urls": [
+        "https://www.ifarc.metro.tokyo.lg.jp/survey/uploads/4474406c08d0b20c57b1886325d6348a.pdf"
+      ]
+    },
+    {
+      "river_id": "official21_3ccd84afac73833b2442c05d",
+      "name": "秋川",
+      "watershed": "水系未確認（公式資料の川名）",
+      "prefecture": "東京都",
+      "fish_name_labels": 11,
+      "url": "https://tsurikue.com/river-fish-atlas/river/official21_3ccd84afac73833b2442c05d/",
+      "source_layer": "fish_source_connections_v02",
+      "evidence_classes": [
+        "B"
+      ],
+      "source_urls": [
+        "https://www.kensetsu.metro.tokyo.lg.jp/documents/d/kensetsu/000007256"
+      ]
+    },
+    {
+      "river_id": "official21_bc5a9c724f81a9f3f0f09883",
+      "name": "安謝川",
+      "watershed": "水系未確認（公式資料の川名）",
+      "prefecture": "沖縄県",
+      "fish_name_labels": 24,
+      "url": "https://tsurikue.com/river-fish-atlas/river/official21_bc5a9c724f81a9f3f0f09883/",
+      "source_layer": "fish_source_connections_v02",
+      "evidence_classes": [
+        "A"
+      ],
+      "source_urls": [
+        "https://www.pref.okinawa.jp/fish/kenkyu/jigyohokoku-data/jihous56/76_128.pdf"
+      ]
+    },
+    {
+      "river_id": "official21_fdc6d47052822bd6ac413caa",
+      "name": "白石川",
+      "watershed": "阿武隈川",
+      "prefecture": "宮城県",
+      "fish_name_labels": 13,
+      "url": "https://tsurikue.com/river-fish-atlas/river/official21_fdc6d47052822bd6ac413caa/",
+      "source_layer": "fish_source_connections_v02",
+      "evidence_classes": [
+        "B"
+      ],
+      "source_urls": [
+        "https://www.pref.miyagi.jp/documents/35713/09_r3fy-2-sin3-3.pdf"
+      ]
+    },
+    {
+      "river_id": "official21_3dac2b39d935ca44769bbe2f",
+      "name": "松川",
+      "watershed": "阿武隈川",
+      "prefecture": "宮城県",
+      "fish_name_labels": 10,
+      "url": "https://tsurikue.com/river-fish-atlas/river/official21_3dac2b39d935ca44769bbe2f/",
+      "source_layer": "fish_source_connections_v02",
+      "evidence_classes": [
+        "B"
+      ],
+      "source_urls": [
+        "https://www.pref.miyagi.jp/documents/35713/09_r3fy-2-sin3-3.pdf"
+      ]
     }
-  ]
+  ],
+  "v02_supplemental_summary": {
+    "source_groups": 103,
+    "source_records": 375,
+    "individual_detail_pages": 7,
+    "aggregate_list_only_groups": 96,
+    "identity_policy": "exact existing navigation_target_id; no same-name river merging"
+  },
+  "browser_search_app_change": "detail page inventory cache key updated and expected detail page count changed from 273 to 280"
 }
