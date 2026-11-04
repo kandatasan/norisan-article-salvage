@@ -1,0 +1,12 @@
+{
+  "operation": "replace_published_gulliver_banner",
+  "old_shortcode": "[blog_parts id=\"2843\"]",
+  "new_shortcode": "[blog_parts id=\"4172\"]",
+  "slug": "lexus-nx-rival-suv",
+  "post_id": 4268,
+  "title": "レクサスNXのライバル車5台を比較！ハリアー・CX-5など安全装備・快適装備・価格の違い",
+  "expected_featured_media": 1596,
+  "nearest_heading": "中古車でそろえる条件",
+  "old_copy": "欲しい装備が決まったら、条件に合う中古SUVを探してみてください。",
+  "new_copy": "欲しい装備が決まったら、ガリバーでも条件に合う中古SUVを探してみてください。"
+}
