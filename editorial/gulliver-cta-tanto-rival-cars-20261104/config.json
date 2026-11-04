@@ -1,0 +1,12 @@
+{
+  "operation": "replace_published_gulliver_banner",
+  "old_shortcode": "[blog_parts id=\"2843\"]",
+  "new_shortcode": "[blog_parts id=\"4172\"]",
+  "slug": "tanto-rival-cars",
+  "post_id": 4264,
+  "title": "タントのライバル4台を比較！N-BOX・スペーシア・ルークス・デリカミニの装備と価格",
+  "expected_featured_media": 3954,
+  "nearest_heading": "中古を買うなら、新車と同じ装備と思わない",
+  "old_copy": "予算と欲しい装備が決まったら、実際に買える中古車を比べてみよう。",
+  "new_copy": "予算と欲しい装備が決まったら、ガリバーでも中古車を比べてみよう。"
+}
