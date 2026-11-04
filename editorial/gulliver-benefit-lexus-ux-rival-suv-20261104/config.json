@@ -1,0 +1,27 @@
+{
+  "operation": "replace_published_affiliate_copy",
+  "post_id": 4256,
+  "slug": "lexus-ux-rival-suv",
+  "title": "レクサスUXのライバル車5台を比較！サイズ・安全装備・快適装備・中古相場",
+  "expected_featured_media": 2230,
+  "expected_current_content_sha256": "cb09ee93652cd0f7f0cbe2ae108dacde2410c2fe4e841f540e12db2aa868eb5e",
+  "expected_after_sha256": "6b41dc5564f18d561c1fc2d7fefaf039f43a3a8ae74ad46fbfb4513fea89736f",
+  "replacements": [
+    {
+      "before": "気になる車種が決まっているなら、中古のUXとライバル5車種の在庫を先に見てみよう。",
+      "after": "UXかライバル車か迷ったら、予算と重視する装備を伝えて候補を探してもらう方法もあります。"
+    },
+    {
+      "before": "価格表より、実際の在庫を並べた方が答えは見えてきます。",
+      "after": "紹介された候補の年式・装備・支払総額を揃えて比べると、答えが見えてきます。"
+    },
+    {
+      "before": "予算を決めたら、ガリバーでも中古車を比較してみよう。",
+      "after": "予算と譲れない装備を伝えて、希望に合うSUVを探してもらおう。"
+    },
+    {
+      "before": "気になる車があれば、装備と保証もチェック。",
+      "after": "紹介された車は、年式・装備・保証・支払総額まで確認してから決めよう。"
+    }
+  ]
+}

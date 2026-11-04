@@ -865,11 +865,161 @@ def apply_published_gulliver_extra_buttons(cfg: dict[str, Any], auth: str):
         raise
 
 
+
+def build_published_affiliate_copy_replacements(current: str, cfg: dict[str, Any]) -> str:
+    """A text-only, fixed-before/after revision of published WordPress content."""
+    edits = cfg["replacements"]
+    if not isinstance(edits, list) or not 1 <= len(edits) <= 8:
+        raise RuntimeError("affiliate copy revision requires 1-8 explicit replacements")
+    result = current
+    old_values = set()
+    new_values = set()
+    for index, edit in enumerate(edits):
+        before = str(edit["before"])
+        after = str(edit["after"])
+        if not before or not after or before == after:
+            raise RuntimeError(f"empty/unchanged affiliate copy edit {index}")
+        if any(char in before + after for char in "<>&[]"):
+            raise RuntimeError(f"affiliate copy edit {index} contains HTML or shortcode syntax")
+        if before in old_values or after in new_values:
+            raise RuntimeError("duplicate affiliate copy replacement")
+        old_values.add(before); new_values.add(after)
+        if result.count(before) != 1 or after in result:
+            raise RuntimeError(f"affiliate copy source drifted, edit {index}")
+        result = result.replace(before, after, 1)
+    # Every edit must be reversible as an exact text-only change.
+    reversed_result = result
+    for edit in reversed(edits):
+        if reversed_result.count(edit["after"]) != 1:
+            raise RuntimeError("affiliate copy reverse-match is not unique")
+        reversed_result = reversed_result.replace(edit["after"], edit["before"], 1)
+    if reversed_result != current:
+        raise RuntimeError("affiliate copy is not a pure, reversible replacement")
+    # WordPress block structure, all HTML tags (and attributes), links and ads are immutable.
+    if re.findall(r"<[^>]*>", result, flags=re.S) != re.findall(r"<[^>]*>", current, flags=re.S):
+        raise RuntimeError("affiliate copy unexpectedly modified HTML or Gutenberg blocks")
+    if re.findall(r'\[blog_parts id=["\x27]\d+["\x27]\]', result) != re.findall(
+        r'\[blog_parts id=["\x27]\d+["\x27]\]', current
+    ):
+        raise RuntimeError("affiliate shortcodes changed")
+    if hashlib.sha256(result.encode()).hexdigest() != cfg["expected_after_sha256"]:
+        raise RuntimeError("affiliate copy target hash does not match reviewed version")
+    return result
+
+
+def apply_published_affiliate_copy_replacements(cfg: dict[str, Any], auth: str):
+    """One safe published WordPress update, only if its exact audited body is still live."""
+    post_id = int(cfg["post_id"])
+    counts_before = public_counts(auth)
+    original = fetch_post_by_id(post_id, auth)
+    expected_status = "publish"
+    title = html.unescape(raw_field(original, "title"))
+    if (original.get("id"), original.get("slug"), original.get("status")) != (
+        post_id, cfg["slug"], expected_status
+    ):
+        raise RuntimeError("affiliate copy target ID/slug/status mismatch")
+    if title != cfg["title"]:
+        raise RuntimeError("affiliate copy target title mismatch")
+    if int(original.get("featured_media") or 0) != int(cfg["expected_featured_media"]):
+        raise RuntimeError("affiliate copy target featured media mismatch")
+    old = raw_field(original, "content")
+    old_sha = hashlib.sha256(old.encode()).hexdigest()
+    if old_sha == cfg["expected_after_sha256"]:
+        # Repeated Actions runs are read-only; verify the intended copy exists.
+        if not all(old.count(edit["after"]) == 1 for edit in cfg["replacements"]):
+            raise RuntimeError("already-applied article does not contain expected copy")
+        updated, action = old, "ALREADY_PRESENT"
+    elif old_sha == cfg["expected_current_content_sha256"]:
+        updated = build_published_affiliate_copy_replacements(old, cfg)
+        action = "UPDATE"
+    else:
+        raise RuntimeError("published article changed since the reviewed copy; refuse overwrite")
+
+    keys = ("id", "slug", "status", "featured_media", "categories", "author")
+    latest = fetch_post_by_id(post_id, auth)
+    if any(latest.get(key) != original.get(key) for key in keys) or (
+        html.unescape(raw_field(latest, "title")) != title or raw_field(latest, "content") != old
+    ):
+        raise RuntimeError("WordPress article changed during affiliate copy preflight")
+
+    report_dir = Path("reports") / (cfg["slug"] + "-gulliver-copy-20261104")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    wrote = False
+    try:
+        if action == "UPDATE":
+            response = post_json(
+                f"{SITE_URL}/wp-json/wp/v2/posts/{post_id}", auth, {"content": updated}
+            )
+            wrote = True
+            if (response.get("id"), response.get("slug"), response.get("status")) != (
+                post_id, cfg["slug"], expected_status
+            ):
+                raise RuntimeError("WordPress affiliate copy response did not preserve identity")
+        after = fetch_post_by_id(post_id, auth)
+        counts_after = public_counts(auth)
+        if any(after.get(key) != original.get(key) for key in keys):
+            raise RuntimeError("article metadata changed during affiliate copy update")
+        if html.unescape(raw_field(after, "title")) != title:
+            raise RuntimeError("article title changed during affiliate copy update")
+        if raw_field(after, "content") != updated:
+            raise RuntimeError("saved article differs from exact reviewed affiliate copy")
+        if counts_before != counts_after:
+            raise RuntimeError("published post/page count unexpectedly changed")
+        if hashlib.sha256(raw_field(after, "content").encode()).hexdigest() != cfg["expected_after_sha256"]:
+            raise RuntimeError("WordPress final affiliate copy hash mismatch")
+        if action == "UPDATE":
+            rendered = (after.get("content") or {}).get("rendered", "")
+            # Replacements in microcopy can be split by markup; raw content is the source of truth.
+            if not rendered:
+                raise RuntimeError("WordPress rendered content empty")
+        result = {
+            "action": action, "post_id": post_id, "slug": cfg["slug"], "status": expected_status,
+            "title": title, "featured_media": after.get("featured_media"),
+            "copy_replacements": len(cfg["replacements"]),
+            "gulliver_banner_count": updated.count('[blog_parts id="2843"]'),
+            "gulliver_button_count": updated.count('[blog_parts id="4172"]'),
+            "old_sha256": old_sha,
+            "new_sha256": cfg["expected_after_sha256"],
+            "wordpress_write_count": int(wrote),
+            "published_before": counts_before, "published_after": counts_after,
+        }
+        (report_dir/"result.json").write_text(
+            json.dumps(result, ensure_ascii=False, indent=2)+"\n", encoding="utf-8"
+        )
+        (report_dir/"summary.md").write_text(
+            f"# Gulliver benefit/copy update: {cfg['slug']}\n\n"
+            f"- action: {action}\n- post_id: {post_id}\n- status: publish\n"
+            f"- copy replacements: {len(cfg['replacements'])}\n"
+            f"- small banner: {result['gulliver_banner_count']}, buttons: {result['gulliver_button_count']}\n"
+            f"- featured_media: {after.get('featured_media')}\n"
+            f"- source_sha: {old_sha}\n- saved_sha: {result['new_sha256']}\n",
+            encoding="utf-8"
+        )
+        print("GULLIVER_COPY_VERIFIED", json.dumps(result, ensure_ascii=False), flush=True)
+        return result
+    except Exception:
+        if wrote:
+            try:
+                now = fetch_post_by_id(post_id, auth)
+                if raw_field(now, "content") == updated and all(
+                    now.get(key) == original.get(key) for key in keys
+                ):
+                    post_json(f"{SITE_URL}/wp-json/wp/v2/posts/{post_id}", auth, {"content": old})
+                    print("GULLIVER_COPY_ROLLBACK", post_id, flush=True)
+                else:
+                    print("GULLIVER_COPY_ROLLBACK_SKIPPED_DRIFT", post_id, flush=True)
+            except Exception as rollback_error:
+                print("GULLIVER_COPY_ROLLBACK_FAILED", repr(rollback_error), flush=True)
+        raise
+
+
 def apply(config_path: Path):
     user = os.environ.get("TSURIKUE_WP_USER"); password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
     if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
     auth = auth_header(user, password)
     raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
+    if raw_cfg.get("operation") == "replace_published_affiliate_copy":
+        return apply_published_affiliate_copy_replacements(raw_cfg, auth)
     if raw_cfg.get("operation") == "insert_gulliver_extra_buttons":
         return apply_published_gulliver_extra_buttons(raw_cfg, auth)
     if raw_cfg.get("operation") == "insert_gulliver_context_ctas":
