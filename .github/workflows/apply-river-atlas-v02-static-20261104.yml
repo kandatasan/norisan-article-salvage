@@ -1,0 +1,67 @@
+name: Apply river atlas v02 static widget
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/apply_river_atlas_v02_static_20261104.py'
+      - 'river-fish/xserver-git/test_wordpress_widget_v02_static.py'
+      - '.github/workflows/apply-river-atlas-v02-static-20261104.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/apply_river_atlas_v02_static_20261104.py'
+      - 'river-fish/xserver-git/test_wordpress_widget_v02_static.py'
+      - '.github/workflows/apply-river-atlas-v02-static-20261104.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: river-atlas-v02-wordpress-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate-and-preflight:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify surgical replacement and executable target
+        run: |
+          python river-fish/xserver-git/test_wordpress_widget_v02_static.py
+          python - <<'PY'
+          import importlib.util,pathlib
+          p=pathlib.Path('scripts/apply_river_atlas_v02_static_20261104.py')
+          s=importlib.util.spec_from_file_location('wp_v02',p)
+          m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
+          pathlib.Path('/tmp/river-atlas-v02-widget.js').write_text(m.target_script())
+          PY
+          node --check /tmp/river-atlas-v02-widget.js
+      - name: Inspect current article and production readiness without writing
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_river_atlas_v02_static_20261104.py check
+
+  apply-and-verify:
+    if: github.event_name == 'push'
+    needs: validate-and-preflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply only after production static assets are verified
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/apply_river_atlas_v02_static_20261104.py apply
