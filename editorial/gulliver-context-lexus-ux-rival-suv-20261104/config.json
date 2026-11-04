@@ -1,0 +1,15 @@
+{
+  "operation": "insert_gulliver_context_ctas",
+  "post_id": 4256,
+  "slug": "lexus-ux-rival-suv",
+  "title": "レクサスUXのライバル車5台を比較！サイズ・安全装備・快適装備・中古相場",
+  "expected_featured_media": 2230,
+  "expected_current_content_sha256": "f3fa5a1cf45a2093ed80a3e20367ce782c57d8ad5cd5d01ecf6e84bb4c2e4439",
+  "banner_before_heading": "安全装備は「付いているか」だけでなく、何を支援するかで比較",
+  "button_slots": [
+    {
+      "before_heading": "UXとライバル5車種のサイズを比較",
+      "copy": "気になる車種が決まっているなら、中古のUXとライバル5車種の在庫を先に見てみよう。"
+    }
+  ]
+}
