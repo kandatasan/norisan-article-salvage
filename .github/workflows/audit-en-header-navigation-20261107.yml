@@ -1,0 +1,62 @@
+name: Audit English header navigation (read only)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-header-navigation-20261107.yml']
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-header-navigation-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate Xserver using pinned key
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Inspect menu locations, categories and English landing (no writes)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          cd "$HOME/tsurikue.com/public_html"
+          test -f wp-config.php
+          wp eval '
+          echo "CURRENT_THEME " . get_stylesheet() . PHP_EOL;
+          echo "REGISTERED_LOCATIONS " . wp_json_encode(get_registered_nav_menus(), JSON_UNESCAPED_UNICODE) . PHP_EOL;
+          echo "ASSIGNED_LOCATIONS " . wp_json_encode(get_nav_menu_locations(), JSON_UNESCAPED_UNICODE) . PHP_EOL;
+          foreach (wp_get_nav_menus() as $menu) {
+              echo "MENU " . wp_json_encode(array("id"=>$menu->term_id,"name"=>$menu->name,"slug"=>$menu->slug),JSON_UNESCAPED_UNICODE) . PHP_EOL;
+              $items=wp_get_nav_menu_items($menu->term_id);
+              if (!is_array($items)) { continue; }
+              foreach($items as $item) {
+                  echo "MENU_ITEM " . wp_json_encode(array("menu_id"=>$menu->term_id,"id"=>$item->ID,"title"=>$item->title,"url"=>$item->url,"type"=>$item->type,"object"=>$item->object,"object_id"=>$item->object_id,"parent"=>$item->menu_item_parent,"order"=>$item->menu_order),JSON_UNESCAPED_UNICODE) . PHP_EOL;
+              }
+          }
+          foreach (array("en","english-travel") as $slug) {
+              $page = get_page_by_path($slug);
+              $category = get_category_by_slug($slug);
+              echo "EXISTING_SLUG " . wp_json_encode(array("slug"=>$slug,"page"=>$page ? array("id"=>$page->ID,"status"=>$page->post_status) : null,"category"=>$category ? array("id"=>$category->term_id,"name"=>$category->name) : null),JSON_UNESCAPED_UNICODE) . PHP_EOL;
+          }
+          foreach(array(4375,4380) as $id) {
+              $p=get_post($id);
+              echo "ENGLISH_POST " . wp_json_encode(array("id"=>$id,"status"=>$p ? $p->post_status : "missing","categories"=>$p ? wp_get_post_categories($id) : array()),JSON_UNESCAPED_UNICODE) . PHP_EOL;
+          }
+          '
+          echo WORDPRESS_WRITE_COUNT=0
+          SH
