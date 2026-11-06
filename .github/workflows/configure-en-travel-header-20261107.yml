@@ -1,0 +1,91 @@
+name: Configure English Travel category and mobile header safely
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/wp-english-navigation/**'
+      - '.github/workflows/configure-en-travel-header-20261107.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/configure-en-travel-header-20261107.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint and safe local tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/wp-english-navigation/tsurikue-en-landing.php
+          php -l ops/wp-english-navigation/install.php
+          php -l ops/wp-english-navigation/tests/language-smoke.php
+          php ops/wp-english-navigation/tests/language-smoke.php
+          grep -q 'tsurikue_en_articles' ops/wp-english-navigation/landing.html
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate server with pinned SSH host fingerprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Stage exactly three files outside web root
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'mkdir -p "$HOME/.tsurikue-en-navigation-20261107-stage"'
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/wp-english-navigation/{install.php,landing.html,tsurikue-en-landing.php} "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-en-navigation-20261107-stage/"
+      - name: Guard and apply English Travel page, category and two mobile nav links
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          stage="$HOME/.tsurikue-en-navigation-20261107-stage"
+          target="$root/wp-content/mu-plugins/tsurikue-en-landing.php"
+          plugin_installed=0
+          clean_up() {
+              code=$?
+              if (( code != 0 && plugin_installed == 1 )); then
+                  echo 'EN_NAV_PLUGIN_ROLLBACK_ATTEMPTED=yes'
+                  rm -f "$target"
+              fi
+              exit "$code"
+          }
+          trap clean_up EXIT
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$root/wp-content/mu-plugins/tsurikue-en-routes.php"
+          test ! -e "$target" && test ! -L "$target"
+          for f in install.php landing.html tsurikue-en-landing.php; do
+              test -f "$stage/$f" && test ! -L "$stage/$f"
+          done
+          php -l "$stage/install.php"
+          php -l "$stage/tsurikue-en-landing.php"
+          mkdir -p "$root/wp-content/mu-plugins"
+          install -m 0644 "$stage/tsurikue-en-landing.php" "$target"
+          plugin_installed=1
+          cd "$root"
+          export TSURIKUE_EN_NAV_SNAPSHOT="$HOME/.tsurikue-en-navigation-20261107-snapshot.json"
+          wp eval-file "$stage/install.php"
+          plugin_installed=2
+          echo EN_NAV_SETUP_COMPLETED=yes
+          echo JAPANESE_POST_CONTENT_Writes=0
+          SH
