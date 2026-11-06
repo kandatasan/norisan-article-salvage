@@ -1,0 +1,71 @@
+name: Audit English translation sources (read only)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-translation-sources-20261107.yml']
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-translation-sources-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up verified SSH host fingerprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Inspect 4 original posts and images plus English duplicates (GET only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i "$HOME/.ssh/xserver_deploy_key" -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          cd "$HOME/tsurikue.com/public_html"
+          test -f wp-config.php
+          wp eval '
+          $slugs=array("matsue-vogel-park","okunoshima-rabbit-island","tottori-drive","kochi-1night-2days-drive");
+          foreach ($slugs as $slug) {
+              $posts=get_posts(array("name"=>$slug,"post_type"=>"post","post_status"=>"any","posts_per_page"=>3));
+              if (count($posts)!==1) { echo "SOURCE_WARNING " . $slug . " matches=" . count($posts) . PHP_EOL; continue; }
+              $p=$posts[0]; $body=$p->post_content;
+              $medias=array();
+              if (preg_match_all("~<!-- wp:image\\s+({[^>]*})\\s*-->\\s*<figure[^>]*>.*?<img[^>]+>~s", $body, $m, PREG_SET_ORDER)) {
+                  foreach ($m as $match) {
+                      $block=json_decode($match[1],true);
+                      preg_match("~\\bsrc=[\\x27\\x22]([^\\x27\\x22]+)~", $match[0], $src);
+                      $medias[]=array("id"=>(int)($block["id"]??0),"url"=>$src[1]??"");
+                  }
+              }
+              $html_images=array();
+              if (preg_match_all("~<img\\b[^>]+>~i",$body,$img_tags)) {
+                  foreach ($img_tags[0] as $img_tag) {
+                      preg_match("~\\bsrc=[\\x27\\x22]([^\\x27\\x22]+)~i",$img_tag,$src);
+                      preg_match("~class=[\\x27\\x22][^\\x27\\x22]*wp-image-([0-9]+)~i",$img_tag,$id);
+                      if (count($html_images)<36) { $html_images[]=array("id"=>(int)($id[1]??0),"url"=>$src[1]??""); }
+                  }
+              }
+              echo "SOURCE " . wp_json_encode(array("id"=>$p->ID,"slug"=>$p->post_name,"status"=>$p->post_status,"title"=>get_the_title($p),"categories"=>wp_get_post_categories($p->ID),"featured_media"=>(int)get_post_thumbnail_id($p->ID),"body_bytes"=>strlen($body),"sha256"=>hash("sha256",$body),"gutenberg_images"=>$medias,"html_images"=>$html_images),JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) . PHP_EOL;
+          }
+          $english_posts=get_posts(array("post_type"=>"post","post_status"=>"any","posts_per_page"=>100,"meta_query"=>array("relation"=>"OR",array("key"=>"_dummy","compare"=>"NOT EXISTS")),"s"=>"english"));
+          foreach ($english_posts as $p) {
+              if (strpos($p->post_name,"english")!==false || strpos($p->post_name,"en-")===0) {
+                  echo "ENGLISH_EXISTING " . wp_json_encode(array("id"=>$p->ID,"slug"=>$p->post_name,"status"=>$p->post_status),JSON_UNESCAPED_UNICODE) . PHP_EOL;
+              }
+          }
+          '
+          echo WP_READ_ONLY=yes
+          SH
