@@ -1,0 +1,58 @@
+name: Inspect WP multilingual prerequisites on Xserver (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-xserver-plugins-20261107.yml']
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-xserver-plugins-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify SSH identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: List relevant WordPress plugin directories only (read-only)
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i "$HOME/.ssh/xserver_deploy_key" -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          printf 'WP_ROOT_PRESENT=yes\n'
+          if test -d "$root/wp-content/plugins"; then
+              printf 'PLUGIN_DIR_PRESENT=yes\n'
+              find "$root/wp-content/plugins" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | grep -Ei 'polylang|translatepress|wpml|multilang|weglot|seo|yoast|rank-math|sitemap' || true
+          fi
+          if test -d "$root/wp-content/mu-plugins"; then
+              printf 'MU_PLUGIN_DIR_PRESENT=yes\n'
+              find "$root/wp-content/mu-plugins" -mindepth 1 -maxdepth 1 -type f -printf '%f\n' | grep -Ei 'lang|seo|hreflang|redirect|wp-' || true
+          else
+              printf 'MU_PLUGIN_DIR_PRESENT=no\n'
+          fi
+          if command -v wp >/dev/null 2>&1; then
+              printf 'WP_CLI_PRESENT=yes\n'
+              (cd "$root" && wp option get permalink_structure --skip-plugins --skip-themes 2>/dev/null) || true
+              (cd "$root" && wp plugin list --status=active --field=name --skip-themes 2>/dev/null | grep -Ei 'polylang|translatepress|wpml|multilang|weglot|seo|yoast|rank-math' ) || true
+          else
+              printf 'WP_CLI_PRESENT=no\n'
+          fi
+          printf 'SSH_WORDPRESS_WRITE_COUNT=0\n'
+          SH
