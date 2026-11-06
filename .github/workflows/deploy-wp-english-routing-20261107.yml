@@ -82,9 +82,8 @@ jobs:
           for id in 2647 2664; do
               test "$(wp post get "$id" --field=post_status)" = 'publish'
           done
-          for id in 4375 4380; do
-              test "$(wp post get "$id" --field=post_status)" = 'draft'
-          done
+          test "$(wp post get 4375 --field=post_status)" = 'publish'
+          test "$(wp post get 4380 --field=post_status)" = 'draft'
           before_count="$(wp post list --post_type=post --post_status=publish --format=count)"
           wp option get rewrite_rules --format=json > "$backup"
           test -s "$backup"
@@ -100,9 +99,11 @@ jobs:
               $key = "^en/" . preg_quote($pair["en_path"], "/") . "/?$";
               if (!isset($rules[$key])) { throw new RuntimeException("Missing rewrite rule for " . $pair["en_path"]); }
           }
-          if (get_permalink(2647) !== "https://tsurikue.com/orizuru-tower/") { throw new RuntimeException("Japanese Orizuru URL changed"); }
-          if (get_permalink(2664) !== "https://tsurikue.com/yamaguchi-drive/") { throw new RuntimeException("Japanese Yamaguchi URL changed"); }
-          if (tsurikue_en_pair_is_live(tsurikue_en_pairs()[0]) || tsurikue_en_pair_is_live(tsurikue_en_pairs()[1])) { throw new RuntimeException("English drafts unexpectedly public"); }
+          if (wp_parse_url(get_permalink(2647), PHP_URL_PATH) !== "/orizuru-tower/") { throw new RuntimeException("Japanese Orizuru path changed"); }
+          if (wp_parse_url(get_permalink(2664), PHP_URL_PATH) !== "/yamaguchi-drive/") { throw new RuntimeException("Japanese Yamaguchi path changed"); }
+          if (!tsurikue_en_pair_is_live(tsurikue_en_pairs()[0])) { throw new RuntimeException("Published English Orizuru pair missing"); }
+          if (tsurikue_en_pair_is_live(tsurikue_en_pairs()[1])) { throw new RuntimeException("English Yamaguchi draft unexpectedly public"); }
+          if (get_permalink(4375) !== "https://tsurikue.com/en/orizuru-tower/") { throw new RuntimeException("Canonical English Orizuru link mismatch"); }
           if (tsurikue_en_post_link("unused", get_post(4375)) !== "https://tsurikue.com/en/orizuru-tower/") { throw new RuntimeException("English Orizuru route mismatch"); }
           if (tsurikue_en_post_link("unused", get_post(4380)) !== "https://tsurikue.com/en/yamaguchi-road-trip/") { throw new RuntimeException("English Yamaguchi route mismatch"); }
           echo "WORDPRESS_ROUTE_PILOT_VALIDATED=1\n";
@@ -111,7 +112,8 @@ jobs:
           test "$before_count" = "$after_count"
           echo 'ENGLISH_ROUTE_PILOT_INSTALLED=yes'
           echo 'JAPANESE_PERMALINKS_UNCHANGED=yes'
-          echo 'ENGLISH_POSTS_REMAIN_DRAFT=yes'
+          echo 'ENGLISH_ORIZURU_REMAINS_PUBLISHED=yes'
+          echo 'ENGLISH_YAMAGUCHI_REMAINS_DRAFT=yes'
           echo 'WORDPRESS_POST_WRITE_COUNT=0'
           echo 'WORDPRESS_PUBLISH_COUNT=0'
           SH
