@@ -1,4 +1,4 @@
-name: Configure English Travel category and mobile header safely
+name: Configure English Travel category and mobile header safely (order fix)
 on:
   pull_request:
     branches: [main]
