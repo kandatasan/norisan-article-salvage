@@ -1,0 +1,24 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "kurahashi-island-english",
+  "title": "Kurahashi Island Day Trip from Hiroshima: Seaside Views, Sashimi & a Quiet Beach",
+  "salvage_marker": "<!-- tsurikue-source:kurahashijima-autumn-drive; source-id=3882; language=en -->",
+  "editorial_marker": "<!-- tsurikue-editorial:kurahashi-island-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 3881,
+  "expected_media": {
+    "3867": "/wp-content/uploads/2026/09/img_8450.jpg",
+    "3868": "/wp-content/uploads/2026/09/img_8448.jpg",
+    "3869": "/wp-content/uploads/2026/09/img_8452.jpg",
+    "3872": "/wp-content/uploads/2026/09/img_8465.jpg",
+    "3873": "/wp-content/uploads/2026/09/img_8453.jpg",
+    "3874": "/wp-content/uploads/2026/09/img_8459.jpg",
+    "3877": "/wp-content/uploads/2026/09/img_8466.jpg",
+    "3878": "/wp-content/uploads/2026/09/img_8457.jpg",
+    "3879": "/wp-content/uploads/2026/09/img_8463.jpg",
+    "3880": "/wp-content/uploads/2026/09/img_8462.jpg",
+    "3881": "/wp-content/uploads/2026/09/img_8464.jpg",
+    "3884": "/wp-content/uploads/2026/09/img_8456-edited.jpg"
+  }
+}
