@@ -31,11 +31,25 @@ jobs:
               except Exception as exc:
                   print('PROBE '+label+' network_error='+repr(exc))
                   continue
-              html_tag=(re.search(r'<html\\b[^>]*>',body,re.I) or [''])[0]
-              tags=re.findall(r'<link\\b[^>]*>',body,re.I)
-              langs=[x for x in tags if re.search(r'hreflang\\s*=',x,re.I)]
-              canon=[x for x in tags if re.search(r'rel=["\\\']canonical["\\\']',x,re.I)]
+              from html.parser import HTMLParser
+              class MetaTags(HTMLParser):
+                  def __init__(self):
+                      super().__init__()
+                      self.lang=''
+                      self.canonical=[]
+                      self.hreflang=[]
+                  def handle_starttag(self, tag, attrs):
+                      attrs=dict(attrs)
+                      if tag=='html': self.lang=attrs.get('lang','')
+                      if tag=='link':
+                          if 'canonical' in (attrs.get('rel') or '').split(): self.canonical.append(attrs.get('href',''))
+                          if attrs.get('hreflang'): self.hreflang.append({'lang':attrs.get('hreflang'),'url':attrs.get('href')})
+              meta=MetaTags()
+              meta.feed(body)
+              html_tag=meta.lang
+              canon=meta.canonical
+              langs=meta.hreflang
               switch='tsurikue-en-language-switch' in body
-              print('PROBE '+json.dumps({'label':label,'status':status,'final_url':final,'html_tag':html_tag[:250],'canonical':canon[:3],'hreflang':langs[:5],'language_switch_visible':switch,'body_bytes':len(body)},ensure_ascii=False))
+              print('PROBE '+json.dumps({'label':label,'status':status,'final_url':final,'html_lang':html_tag,'canonical':canon[:3],'hreflang':langs[:5],'language_switch_visible':switch,'body_bytes':len(body)},ensure_ascii=False))
           print('WORDPRESS_WRITE_COUNT=0')
           PY
