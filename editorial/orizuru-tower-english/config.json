@@ -1,0 +1,27 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "orizuru-tower-english",
+  "title": "Is Hiroshima Orizuru Tower Worth ¥2,200? A Local's Honest Review",
+  "salvage_marker": "<!-- tsurikue-source:orizuru-tower; language=en -->",
+  "editorial_marker": "<!-- tsurikue-editorial:orizuru-tower-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 801,
+  "expected_media": {
+    "719": "/wp-content/uploads/2026/05/img_1603.jpg",
+    "739": "/wp-content/uploads/2026/05/img_1620.jpg",
+    "743": "/wp-content/uploads/2026/05/img_1628.jpg",
+    "749": "/wp-content/uploads/2026/05/img_1648.jpg",
+    "751": "/wp-content/uploads/2026/05/img_1654.jpg",
+    "758": "/wp-content/uploads/2026/05/img_1667.jpg",
+    "766": "/wp-content/uploads/2026/05/img_1683.jpg",
+    "779": "/wp-content/uploads/2026/05/img_1720.jpg",
+    "781": "/wp-content/uploads/2026/05/img_1730.jpg",
+    "785": "/wp-content/uploads/2026/05/img_1707.jpg",
+    "788": "/wp-content/uploads/2026/05/img_1735.jpg",
+    "793": "/wp-content/uploads/2026/05/img_1721.jpg",
+    "794": "/wp-content/uploads/2026/05/img_1729.jpg",
+    "801": "/wp-content/uploads/2026/05/img_1728.jpg",
+    "802": "/wp-content/uploads/2026/05/img_1731.jpg"
+  }
+}
