@@ -1,0 +1,21 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "matsue-vogel-park-english",
+  "title": "Matsue Vogel Park Review: Five Hours with Toucans, Penguins & Flowers",
+  "salvage_marker": "<!-- tsurikue-source:matsue-vogel-park; source-id=3438; language=en -->",
+  "editorial_marker": "<!-- tsurikue-editorial:matsue-vogel-park-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 3425,
+  "expected_media": {
+    "1849": "/wp-content/uploads/2026/05/img_5136.jpg",
+    "3425": "/wp-content/uploads/2026/09/img_5160.jpg",
+    "3427": "/wp-content/uploads/2026/09/img_5144.jpg",
+    "3428": "/wp-content/uploads/2026/09/img_5153.jpg",
+    "3429": "/wp-content/uploads/2026/09/img_8010.jpg",
+    "3430": "/wp-content/uploads/2026/09/img_5120.jpg",
+    "3431": "/wp-content/uploads/2026/09/img_8011.jpg",
+    "3433": "/wp-content/uploads/2026/09/img_5158.jpg",
+    "3435": "/wp-content/uploads/2026/09/img_5129.jpg"
+  }
+}
