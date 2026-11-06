@@ -30,7 +30,7 @@ function tsurikue_en_pair_for_post($post_id) {
 }
 
 function tsurikue_en_url_for_pair($pair) {
-    return home_url('/en/' . $pair['en_path'] . '/');
+    return set_url_scheme(home_url('/en/' . $pair['en_path'] . '/'), 'https');
 }
 
 function tsurikue_en_add_rewrites() {
@@ -66,6 +66,21 @@ function tsurikue_en_redirect_canonical($redirect, $requested) {
 }
 add_filter('redirect_canonical', 'tsurikue_en_redirect_canonical', 20, 2);
 
+/** One canonical English URL only: redirect old native English slug on published posts. */
+function tsurikue_en_redirect_native_slug() {
+    if (!is_singular('post')) { return; }
+    $post = get_queried_object();
+    if (!($post instanceof WP_Post) || $post->post_status !== 'publish') { return; }
+    $pair = tsurikue_en_pair_for_post($post->ID);
+    if (!$pair || (int) $post->ID !== $pair['en_id']) { return; }
+    $path = wp_parse_url(isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '', PHP_URL_PATH);
+    if (is_string($path) && rtrim($path, '/') === '/' . $pair['en_slug']) {
+        wp_safe_redirect(tsurikue_en_url_for_pair($pair), 301);
+        exit;
+    }
+}
+add_action('template_redirect', 'tsurikue_en_redirect_native_slug', 1);
+
 function tsurikue_en_pair_is_live($pair) {
     $ja = get_post($pair['ja_id']);
     $en = get_post($pair['en_id']);
@@ -83,7 +98,7 @@ function tsurikue_en_current_live_pair() {
 function tsurikue_en_hreflang_head() {
     $pair = tsurikue_en_current_live_pair();
     if (!$pair) { return; }
-    $ja_url = get_permalink($pair['ja_id']);
+    $ja_url = set_url_scheme(get_permalink($pair['ja_id']), 'https');
     $en_url = tsurikue_en_url_for_pair($pair);
     if (!$ja_url) { return; }
     echo "\n" . '<link rel="alternate" hreflang="ja" href="' . esc_url($ja_url) . '" />' . "\n";
@@ -115,7 +130,7 @@ function tsurikue_en_content_language_switch($content) {
         $target = tsurikue_en_url_for_pair($pair);
     } else {
         $label = '日本語で読む (Japanese version)';
-        $target = get_permalink($pair['ja_id']);
+        $target = set_url_scheme(get_permalink($pair['ja_id']), 'https');
     }
     $html = '<nav class="tsurikue-en-language-switch" aria-label="Article language">'
         . '<p><a href="' . esc_url($target) . '" hreflang="' . ($id === $pair['ja_id'] ? 'en' : 'ja') . '">'
