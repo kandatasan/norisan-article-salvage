@@ -1,0 +1,21 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "yamaguchi-roadtrip-english",
+  "title": "Yamaguchi Road Trip from Hiroshima: 2 Days to Tsunoshima & Motonosumi",
+  "salvage_marker": "<!-- tsurikue-source:yamaguchi-drive; language=en; traveled=2023-09 -->",
+  "editorial_marker": "<!-- tsurikue-editorial:yamaguchi-roadtrip-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 1032,
+  "expected_media": {
+    "1014": "/wp-content/uploads/2026/05/img_2150.jpg",
+    "1016": "/wp-content/uploads/2026/05/img_2140.jpg",
+    "1018": "/wp-content/uploads/2026/05/img_2148.jpg",
+    "1021": "/wp-content/uploads/2026/05/img_2142.jpg",
+    "1022": "/wp-content/uploads/2026/05/img_2147.jpg",
+    "1023": "/wp-content/uploads/2026/05/img_2149.jpg",
+    "1024": "/wp-content/uploads/2026/05/img_2153.jpg",
+    "1025": "/wp-content/uploads/2026/05/img_2146.jpg",
+    "1032": "/wp-content/uploads/2026/05/img_2138.jpg"
+  }
+}
