@@ -123,6 +123,24 @@ try {
     if (is_wp_error($drawer_item)) { throw new RuntimeException('drawer item failed: ' . $drawer_item->get_error_message()); }
     $new_menu_items[] = (int) $drawer_item;
 
+    // Core menu insertion does not guarantee the requested position.
+    // Assign all positions explicitly, preserving the four original category links.
+    $desired_header_ids = array_merge(tsurikue_en_nav_ids($header_before), array((int) $head_item));
+    $old_drawer_ids = tsurikue_en_nav_ids($drawer_before);
+    $desired_drawer_ids = array_merge(
+        array_slice($old_drawer_ids, 0, 4),
+        array((int) $drawer_item),
+        array_slice($old_drawer_ids, 4)
+    );
+    foreach (array(21 => $desired_header_ids, 20 => $desired_drawer_ids) as $menu_id => $ordered_ids) {
+        foreach ($ordered_ids as $index => $id) {
+            $result = wp_update_post(array('ID' => (int) $id, 'menu_order' => $index + 1), true);
+            if (is_wp_error($result)) {
+                throw new RuntimeException('unable to set navigation order for item ' . $id . ': ' . $result->get_error_message());
+            }
+        }
+    }
+
     $now_header = tsurikue_en_nav_menu_items(21);
     $now_drawer = tsurikue_en_nav_menu_items(20);
     tsurikue_en_nav_assert(array_slice(tsurikue_en_nav_labels($now_header), 0, 5) === array('おでかけ','釣り','グルメ','クルマ','EN'), 'mobile header order invalid');
@@ -145,6 +163,10 @@ try {
 } catch (Throwable $e) {
     // Rollback only the entities created above; preserve all previously existing menus and articles.
     foreach (array_reverse($new_menu_items) as $id) { wp_delete_post($id, true); }
+    // Revert the original navigation positions, including any shifting WordPress did.
+    foreach (array_merge($header_before, $drawer_before) as $old) {
+        wp_update_post(array('ID' => (int) $old->ID, 'menu_order' => (int) $old->menu_order), true);
+    }
     if ($new_page) { wp_delete_post($new_page, true); }
     wp_set_post_categories(4375, $before_cat_4375, false);
     wp_set_post_categories(4380, $before_cat_4380, false);
