@@ -1,0 +1,115 @@
+name: Deploy two-pair English routing safely to Xserver
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-wp-english-routing-20261107.yml'
+      - 'ops/wp-english-routing/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-wp-english-routing-20261107.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP tests and safety lint
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/wp-english-routing/tsurikue-en-routes.php
+          php -l ops/wp-english-routing/tests/route-smoke.php
+          php ops/wp-english-routing/tests/route-smoke.php
+          test -f river-fish/xserver-git/verify_host_key.sh
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up pinned SSH connection
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Upload code only to remote HOME outside public web root
+        shell: bash
+        run: |
+          set -euo pipefail
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/wp-english-routing/tsurikue-en-routes.php "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-en-route-pilot-20261107-incoming.php"
+      - name: Safely install and test narrow route-only MU plugin
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i "$HOME/.ssh/xserver_deploy_key" -p 10022 -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          incoming="$HOME/.tsurikue-en-route-pilot-20261107-incoming.php"
+          target="$root/wp-content/mu-plugins/tsurikue-en-routes.php"
+          backup="$HOME/.tsurikue-en-pilot-20261107-rewrite-rules.json"
+          installed=0
+          cleanup() {
+              code=$?
+              if (( code != 0 && installed == 1 )); then
+                  echo 'Rolling back the English pilot plugin after failed validation.'
+                  rm -f "$target"
+                  (cd "$root" && wp rewrite flush --quiet) || true
+              fi
+              rm -f "$incoming"
+              exit "$code"
+          }
+          trap cleanup EXIT
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$incoming" && test ! -L "$incoming"
+          test ! -e "$target" && test ! -L "$target"
+          php -l "$incoming"
+          cd "$root"
+          test "$(wp option get permalink_structure --quiet)" = '/%postname%/'
+          for id in 2647 2664; do
+              test "$(wp post get "$id" --field=post_status --quiet)" = 'publish'
+          done
+          for id in 4375 4380; do
+              test "$(wp post get "$id" --field=post_status --quiet)" = 'draft'
+          done
+          before_count="$(wp post list --post_type=post --post_status=publish --format=count --quiet)"
+          wp option get rewrite_rules --format=json > "$backup"
+          test -s "$backup"
+          mkdir -p "$root/wp-content/mu-plugins"
+          test ! -e "$target"
+          install -m 0644 "$incoming" "$target"
+          installed=1
+          wp rewrite flush --quiet
+          wp eval '
+          $rules = get_option("rewrite_rules");
+          foreach (tsurikue_en_pairs() as $pair) {
+              $key = "^en/" . preg_quote($pair["en_path"], "/") . "/?$";
+              if (!isset($rules[$key])) { throw new RuntimeException("Missing rewrite rule for " . $pair["en_path"]); }
+          }
+          if (get_permalink(2647) !== "https://tsurikue.com/orizuru-tower/") { throw new RuntimeException("Japanese Orizuru URL changed"); }
+          if (get_permalink(2664) !== "https://tsurikue.com/yamaguchi-drive/") { throw new RuntimeException("Japanese Yamaguchi URL changed"); }
+          if (tsurikue_en_pair_is_live(tsurikue_en_pairs()[0]) || tsurikue_en_pair_is_live(tsurikue_en_pairs()[1])) { throw new RuntimeException("English drafts unexpectedly public"); }
+          if (tsurikue_en_post_link("unused", get_post(4375)) !== "https://tsurikue.com/en/orizuru-tower/") { throw new RuntimeException("English Orizuru route mismatch"); }
+          if (tsurikue_en_post_link("unused", get_post(4380)) !== "https://tsurikue.com/en/yamaguchi-road-trip/") { throw new RuntimeException("English Yamaguchi route mismatch"); }
+          echo "WORDPRESS_ROUTE_PILOT_VALIDATED=1\n";
+          '
+          after_count="$(wp post list --post_type=post --post_status=publish --format=count --quiet)"
+          test "$before_count" = "$after_count"
+          echo 'ENGLISH_ROUTE_PILOT_INSTALLED=yes'
+          echo 'JAPANESE_PERMALINKS_UNCHANGED=yes'
+          echo 'ENGLISH_POSTS_REMAIN_DRAFT=yes'
+          echo 'WORDPRESS_POST_WRITE_COUNT=0'
+          echo 'WORDPRESS_PUBLISH_COUNT=0'
+          SH
