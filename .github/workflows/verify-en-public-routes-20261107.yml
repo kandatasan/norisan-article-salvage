@@ -16,7 +16,7 @@ jobs:
           python - <<'PY'
           import re, ssl, urllib.request, urllib.error, json
           base='https://tsurikue.com'
-          cases=[('JA_ORIZURU','/orizuru-tower/'),('EN_ORIZURU','/en/orizuru-tower/'),('EN_OLD_SLUG','/orizuru-tower-english/'),('JA_YAMAGUCHI','/yamaguchi-drive/'),('EN_YAMAGUCHI_DRAFT','/en/yamaguchi-road-trip/')]
+          cases=[('EN_LANDING','/en/'),('EN_CATEGORY','/category/english-travel/'),('JA_HOME','/'),('JA_ORIZURU','/orizuru-tower/'),('EN_ORIZURU','/en/orizuru-tower/'),('EN_OLD_SLUG','/orizuru-tower-english/'),('JA_YAMAGUCHI','/yamaguchi-drive/'),('EN_YAMAGUCHI_DRAFT','/en/yamaguchi-road-trip/')]
           for label,path in cases:
               req=urllib.request.Request(base+path,headers={'User-Agent':'tsurikue-en-seo-readonly-check/1.0','Accept':'text/html','Cache-Control':'no-cache'})
               try:
@@ -50,6 +50,19 @@ jobs:
               canon=meta.canonical
               langs=meta.hreflang
               switch='tsurikue-en-language-switch' in body
-              print('PROBE '+json.dumps({'label':label,'status':status,'final_url':final,'html_lang':html_tag,'canonical':canon[:3],'hreflang':langs[:5],'language_switch_visible':switch,'body_bytes':len(body)},ensure_ascii=False))
+              report={'label':label,'status':status,'final_url':final,'html_lang':html_tag,'canonical':canon[:3],'hreflang':langs[:5],'language_switch_visible':switch,'en_menu_text':('English Travel' in body or '>EN<' in body),'list_cards':body.count('tsurikue-en-travel-card'),'body_bytes':len(body)}
+              print('PROBE '+json.dumps(report,ensure_ascii=False))
+              if label in ('EN_LANDING','EN_CATEGORY'):
+                  assert status==200 and html_tag.startswith('en'), 'English page/archive not indexable with correct HTML language: '+label
+              if label=='EN_LANDING':
+                  assert '/en/orizuru-tower/' in body and 'tsurikue-en-travel-card' in body, 'English landing lacks published article card'
+                  assert '[tsurikue_en_articles]' not in body, 'English landing listing shortcode not executed'
+              if label=='EN_YAMAGUCHI_DRAFT':
+                  assert status==404, 'Unpublished Yamaguchi English article became publicly readable'
+              if label=='JA_ORIZURU':
+                  assert status==200 and html_tag.startswith('ja'), 'Japanese original changed'
+              if label=='EN_ORIZURU':
+                  assert status==200 and html_tag.startswith('en'), 'English Orizuru route changed'
+
           print('WORDPRESS_WRITE_COUNT=0')
           PY
