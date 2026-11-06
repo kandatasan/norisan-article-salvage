@@ -28,8 +28,10 @@ $expected = array(
     4392 => array('ja' => 3730, 'path' => 'okunoshima-rabbit-island', 'slug' => 'okunoshima-rabbit-island-english'),
     4391 => array('ja' => 3438, 'path' => 'matsue-vogel-park', 'slug' => 'matsue-vogel-park-english'),
     4393 => array('ja' => 2658, 'path' => 'tottori-road-trip', 'slug' => 'tottori-drive-english'),
+    4402 => array('ja' => 3384, 'path' => 'kochi-road-trip', 'slug' => 'kochi-roadtrip-english'),
+    4403 => array('ja' => 3882, 'path' => 'kurahashi-island', 'slug' => 'kurahashi-island-english'),
 );
-assert_same(5, count(tsurikue_en_pairs()), 'number of English pairs');
+assert_same(7, count(tsurikue_en_pairs()), 'number of English pairs');
 tsurikue_en_add_rewrites();
 foreach (tsurikue_en_pairs() as $pair) {
     $entry = $expected[$pair['en_id']] ?? null;
