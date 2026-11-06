@@ -1,0 +1,20 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "okunoshima-rabbit-island-english",
+  "title": "Rabbit Island (Okunoshima): Rabbits, Wartime Ruins & Our Autumn Visit",
+  "salvage_marker": "<!-- tsurikue-source:okunoshima-rabbit-island; source-id=3730; language=en -->",
+  "editorial_marker": "<!-- tsurikue-editorial:okunoshima-rabbit-island-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 3735,
+  "expected_media": {
+    "3731": "/wp-content/uploads/2026/09/img_8250.jpg",
+    "3732": "/wp-content/uploads/2026/09/img_8252.jpg",
+    "3733": "/wp-content/uploads/2026/09/img_8248.jpg",
+    "3734": "/wp-content/uploads/2026/09/img_8247.jpg",
+    "3735": "/wp-content/uploads/2026/09/img_8243.jpg",
+    "3737": "/wp-content/uploads/2026/09/img_8246.jpg",
+    "3741": "/wp-content/uploads/2026/09/img_5542.jpg",
+    "3742": "/wp-content/uploads/2026/09/img_5543.jpg"
+  }
+}
