@@ -1,0 +1,57 @@
+name: Audit Orizuru English media and draft 20261107
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/audit-orizuru-en-media-20261107.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/audit-orizuru-en-media-20261107.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  read-only:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check recent WordPress media and English draft (GET only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, json, os, hashlib, urllib.parse, urllib.request
+          user=os.environ["TSURIKUE_WP_USER"]
+          pwd=os.environ["TSURIKUE_WP_APP_PASSWORD"]
+          auth=base64.b64encode((user+":"+pwd).encode()).decode()
+          def get(endpoint,params):
+              q=urllib.parse.urlencode(params)
+              req=urllib.request.Request("https://tsurikue.com/wp-json/wp/v2/"+endpoint+"?"+q,headers={"Authorization":"Basic "+auth,"Accept":"application/json","User-Agent":"tsurikue-orz-en-readonly-audit"})
+              with urllib.request.urlopen(req, timeout=45) as resp:
+                  return json.load(resp)
+          p=get("posts/4375",{"context":"edit","_fields":"id,slug,status,content,title,featured_media"})
+          body=(p.get("content") or {}).get("raw") or ""
+          print("POST_ID",p["id"])
+          print("POST_SLUG",p["slug"])
+          print("POST_STATUS",p["status"])
+          print("POST_TITLE",(p.get("title") or {}).get("raw"))
+          print("POST_FEATURED_MEDIA",p.get("featured_media"))
+          print("POST_CONTENT_SHA256",hashlib.sha256(body.encode()).hexdigest())
+          print("POST_HAS_EN_MARKER","tsurikue-editorial:orizuru-tower-english:v1" in body)
+          matches=[]
+          for page in (1,2):
+              rows=get("media",{"context":"edit","per_page":100,"page":page,"orderby":"date","order":"desc","media_type":"image","_fields":"id,date,slug,source_url,media_details,title"})
+              if not rows:break
+              for r in rows:
+                  name=urllib.parse.unquote(urllib.parse.urlsplit(r.get("source_url") or "").path.rsplit("/",1)[-1]).lower()
+                  if any(k in name for k in ["9082","9090","9092"]):
+                      matches.append({"id":r.get("id"),"filename":name,"url":r.get("source_url"),"date":r.get("date"),"width":(r.get("media_details") or {}).get("width"),"height":(r.get("media_details") or {}).get("height")})
+          print("TARGET_MEDIA_MATCHES",json.dumps(matches,ensure_ascii=False))
+          print("WORDPRESS_WRITE_COUNT",0)
+          PY
