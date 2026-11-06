@@ -76,17 +76,19 @@ jobs:
           test -f "$incoming" && test ! -L "$incoming"
           test ! -e "$target" && test ! -L "$target"
           php -l "$incoming"
+          echo "English pilot preflight: checking WordPress article statuses and permalink structure."
           cd "$root"
-          test "$(wp option get permalink_structure --quiet)" = '/%postname%/'
+          test "$(wp option get permalink_structure)" = '/%postname%/'
           for id in 2647 2664; do
-              test "$(wp post get "$id" --field=post_status --quiet)" = 'publish'
+              test "$(wp post get "$id" --field=post_status)" = 'publish'
           done
           for id in 4375 4380; do
-              test "$(wp post get "$id" --field=post_status --quiet)" = 'draft'
+              test "$(wp post get "$id" --field=post_status)" = 'draft'
           done
-          before_count="$(wp post list --post_type=post --post_status=publish --format=count --quiet)"
+          before_count="$(wp post list --post_type=post --post_status=publish --format=count)"
           wp option get rewrite_rules --format=json > "$backup"
           test -s "$backup"
+          echo "Rewrite rules backup saved outside document root."
           mkdir -p "$root/wp-content/mu-plugins"
           test ! -e "$target"
           install -m 0644 "$incoming" "$target"
@@ -105,7 +107,7 @@ jobs:
           if (tsurikue_en_post_link("unused", get_post(4380)) !== "https://tsurikue.com/en/yamaguchi-road-trip/") { throw new RuntimeException("English Yamaguchi route mismatch"); }
           echo "WORDPRESS_ROUTE_PILOT_VALIDATED=1\n";
           '
-          after_count="$(wp post list --post_type=post --post_status=publish --format=count --quiet)"
+          after_count="$(wp post list --post_type=post --post_status=publish --format=count)"
           test "$before_count" = "$after_count"
           echo 'ENGLISH_ROUTE_PILOT_INSTALLED=yes'
           echo 'JAPANESE_PERMALINKS_UNCHANGED=yes'
