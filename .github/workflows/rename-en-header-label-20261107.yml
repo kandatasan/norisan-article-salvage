@@ -1,0 +1,66 @@
+name: Rename English header label (one time)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/wp-english-navigation/rename-en-to-english-20261107.php'
+      - '.github/workflows/rename-en-header-label-20261107.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/rename-en-header-label-20261107.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check PHP syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/wp-english-navigation/rename-en-to-english-20261107.php
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Xserver SSH with pinned identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Stage only target rename script outside webroot
+        shell: bash
+        run: |
+          set -euo pipefail
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/wp-english-navigation/rename-en-to-english-20261107.php "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-rename-en-header-20261107.php"
+      - name: Verify state and change exactly one menu label
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          stage="$HOME/.tsurikue-rename-en-header-20261107.php"
+          cleanup() { rm -f "$stage"; }
+          trap cleanup EXIT
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$stage" && test ! -L "$stage"
+          php -l "$stage"
+          cd "$root"
+          wp eval-file "$stage"
+          echo MENU_HEADER_LABEL_RENAME_EXECUTED=yes
+          SH
