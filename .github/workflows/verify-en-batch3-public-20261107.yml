@@ -1,0 +1,73 @@
+name: Verify English travel batch3 routing and publication safety
+on:
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/verify-en-batch3-public-20261107.yml']
+  push:
+    branches: [main]
+    paths: ['.github/workflows/verify-en-batch3-public-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Check English hub, published pairs and three unpublished routes (GET only)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,urllib.request,urllib.error
+          from html.parser import HTMLParser
+          base='https://tsurikue.com'
+          cases=[
+            ('EN_HOME','/en/',200,'en'),
+            ('JP_ORIZURU','/orizuru-tower/',200,'ja'),
+            ('EN_ORIZURU','/en/orizuru-tower/',200,'en'),
+            ('JP_YAMAGUCHI','/yamaguchi-drive/',200,'ja'),
+            ('EN_YAMAGUCHI','/en/yamaguchi-road-trip/',200,'en'),
+            ('JP_RABBIT','/okunoshima-rabbit-island/',200,'ja'),
+            ('JP_MATSUE','/matsue-vogel-park/',200,'ja'),
+            ('JP_TOTTORI','/tottori-drive/',200,'ja'),
+            ('DRAFT_RABBIT','/en/okunoshima-rabbit-island/',404,'ja'),
+            ('DRAFT_MATSUE','/en/matsue-vogel-park/',404,'ja'),
+            ('DRAFT_TOTTORI','/en/tottori-road-trip/',404,'ja')
+          ]
+          class Meta(HTMLParser):
+              def __init__(self):
+                  super().__init__();self.language='';self.canonical=[];self.alt=[]
+              def handle_starttag(self,tag,attributes):
+                  a=dict(attributes)
+                  if tag=='html':self.language=a.get('lang','')
+                  if tag=='link':
+                      if 'canonical' in (a.get('rel') or '').split(): self.canonical.append(a.get('href',''))
+                      if a.get('hreflang'):self.alt.append({'lang':a.get('hreflang'),'url':a.get('href','')})
+          for label,path,expected_status,expected_lang in cases:
+              request=urllib.request.Request(base+path,headers={'User-Agent':'tsurikue-en-batch3-readonly/1.0','Accept':'text/html','Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(request,timeout=30) as response:
+                      status=response.status;final=response.geturl();html=response.read(350000).decode('utf-8','replace')
+              except urllib.error.HTTPError as response:
+                  status=response.code;final=response.geturl();html=response.read(100000).decode('utf-8','replace')
+              parsed=Meta();parsed.feed(html)
+              info={'label':label,'status':status,'final':final,'lang':parsed.language,'canonical':parsed.canonical[:2],'alternates':parsed.alt[:4]}
+              if label=='EN_HOME':
+                  info['english_cards']=html.count('tsurikue-en-travel-card')
+                  for wanted in ('/en/orizuru-tower/','/en/yamaguchi-road-trip/'):
+                      assert wanted in html, 'English homepage missing a published article '+wanted
+                  for hidden in ('/en/okunoshima-rabbit-island/','/en/matsue-vogel-park/','/en/tottori-road-trip/'):
+                      assert hidden not in html, 'draft appeared in English homepage '+hidden
+              print('EN_PUBLIC_CHECK '+json.dumps(info,ensure_ascii=False))
+              assert status==expected_status, label+' HTTP status mismatch'
+              assert parsed.language.startswith(expected_lang), label+' html lang mismatch'
+              if status==200:
+                  assert parsed.canonical==[base+path], label+' canonical mismatch'
+              if label.startswith('DRAFT_'):
+                  assert status==404, label+' draft unexpectedly public'
+              if label in ('EN_ORIZURU','JP_ORIZURU','EN_YAMAGUCHI','JP_YAMAGUCHI'):
+                  alt={x['lang']:x['url'] for x in parsed.alt}
+                  assert alt.get('ja') and alt.get('en'),label+' missing reciprocal hreflang'
+          print('EN_BATCH3_PUBLIC_VERIFICATION=PASS')
+          print('WORDPRESS_WRITE_COUNT=0')
+          PY
