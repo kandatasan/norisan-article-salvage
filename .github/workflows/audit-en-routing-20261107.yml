@@ -1,0 +1,49 @@
+name: Audit WordPress multilingual routing (read only)
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-routing-20261107.yml']
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/audit-en-routing-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  audit:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Inspect WordPress locale routes, plugins and target (GET only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, urllib.parse, urllib.request, urllib.error, json, os, hashlib
+          a=base64.b64encode((os.environ['TSURIKUE_WP_USER']+':'+os.environ['TSURIKUE_WP_APP_PASSWORD']).encode()).decode()
+          def get(path,params=None):
+            u='https://tsurikue.com/wp-json/wp/v2/'+path
+            if params:u+='?'+urllib.parse.urlencode(params)
+            req=urllib.request.Request(u,headers={'Authorization':'Basic '+a,'Accept':'application/json','User-Agent':'tsurikue-wp-en-route-audit/1.0'},method='GET')
+            try:
+              with urllib.request.urlopen(req,timeout=45) as r: return json.load(r)
+            except urllib.error.HTTPError as e: return {'error_http':e.code}
+          cfg=get('settings')
+          print('SETTINGS',json.dumps({k:cfg.get(k) for k in ('language','timezone','permalink_structure','siteurl','home','error_http')},ensure_ascii=False))
+          plugs=get('plugins',{'per_page':100})
+          if isinstance(plugs,list):print('PLUGINS',json.dumps([{'name':p.get('name'),'plugin':p.get('plugin'),'status':p.get('status')} for p in plugs],ensure_ascii=False))
+          else:print('PLUGINS',json.dumps(plugs,ensure_ascii=False))
+          pages=get('pages',{'context':'edit','slug':'en','status':'any','_fields':'id,slug,status,parent,link,title,template'})
+          print('PAGES_EN',json.dumps(pages,ensure_ascii=False))
+          cats=get('categories',{'slug':'en','_fields':'id,slug,name,parent'})
+          print('CATEGORIES_EN',json.dumps(cats,ensure_ascii=False))
+          p=get('posts/4375',{'context':'edit','_fields':'id,slug,status,type,link,categories,content,title,featured_media,meta'})
+          if not isinstance(p,dict) or p.get('id')!=4375:raise RuntimeError('target WordPress post unavailable')
+          body=(p.get('content') or {}).get('raw','')
+          print('POST',json.dumps({'id':p.get('id'),'slug':p.get('slug'),'status':p.get('status'),'link':p.get('link'),'categories':p.get('categories'),'content_sha256':hashlib.sha256(body.encode()).hexdigest(),'has_english_note':'A note from a Hiroshima local' in body,'image_count':body.count('<!-- wp:image'),'meta_keys':sorted((p.get('meta') or {}).keys())},ensure_ascii=False))
+          source=get('posts/2647',{'context':'edit','_fields':'id,slug,status,link,title'})
+          print('SOURCE',json.dumps(source,ensure_ascii=False))
+          print('WORDPRESS_WRITE_COUNT 0')
+          PY
