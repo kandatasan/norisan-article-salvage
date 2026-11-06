@@ -37,7 +37,7 @@ jobs:
           cd "$HOME/tsurikue.com/public_html"
           test -f wp-config.php
           wp eval '
-          $slugs=array("matsue-vogel-park","okunoshima-rabbit-island","tottori-drive","kochi-1night-2days-drive");
+          $slugs=array("matsue-vogel-park","okunoshima-rabbit-island","tottori-drive","kochi-1night-2days-drive","kurahashijima-autumn-drive");
           foreach ($slugs as $slug) {
               $posts=get_posts(array("name"=>$slug,"post_type"=>"post","post_status"=>"any","posts_per_page"=>3));
               if (count($posts)!==1) { echo "SOURCE_WARNING " . $slug . " matches=" . count($posts) . PHP_EOL; continue; }
@@ -60,7 +60,7 @@ jobs:
               }
               echo "SOURCE " . wp_json_encode(array("id"=>$p->ID,"slug"=>$p->post_name,"status"=>$p->post_status,"title"=>get_the_title($p),"categories"=>wp_get_post_categories($p->ID),"featured_media"=>(int)get_post_thumbnail_id($p->ID),"body_bytes"=>strlen($body),"sha256"=>hash("sha256",$body),"gutenberg_images"=>$medias,"html_images"=>$html_images),JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) . PHP_EOL;
           }
-          $english_posts=get_posts(array("post_type"=>"post","post_status"=>"any","posts_per_page"=>100,"meta_query"=>array("relation"=>"OR",array("key"=>"_dummy","compare"=>"NOT EXISTS")),"s"=>"english"));
+          $english_posts=get_posts(array("post_type"=>"post","post_status"=>"any","posts_per_page"=>100,"s"=>"english"));
           foreach ($english_posts as $p) {
               if (strpos($p->post_name,"english")!==false || strpos($p->post_name,"en-")===0) {
                   echo "ENGLISH_EXISTING " . wp_json_encode(array("id"=>$p->ID,"slug"=>$p->post_name,"status"=>$p->post_status),JSON_UNESCAPED_UNICODE) . PHP_EOL;
