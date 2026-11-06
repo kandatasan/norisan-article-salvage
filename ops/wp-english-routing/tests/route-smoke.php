@@ -13,14 +13,36 @@ $GLOBALS['rewrites']=[];
 function add_rewrite_rule($match, $target, $where) { $GLOBALS['rewrites'][$match]=$target; }
 require __DIR__ . '/../tsurikue-en-routes.php';
 function assert_same($expected,$actual,$label) { if ($actual !== $expected) { throw new Exception($label . ': '.var_export($actual,true)); } }
-assert_same(2,count(tsurikue_en_pairs()),'expected two pairs');
+assert_same(5,count(tsurikue_en_pairs()),'expected five pairs');
 assert_same('https://tsurikue.com/en/orizuru-tower/',tsurikue_en_post_link('old',new WP_Post(4375)),'English canonical Orizuru');
 assert_same('https://tsurikue.com/en/yamaguchi-road-trip/',tsurikue_en_post_link('old',new WP_Post(4380)),'English canonical Yamaguchi');
+assert_same('https://tsurikue.com/en/okunoshima-rabbit-island/',tsurikue_en_post_link('old',new WP_Post(4392)),'English canonical Okunoshima');
+assert_same('https://tsurikue.com/en/matsue-vogel-park/',tsurikue_en_post_link('old',new WP_Post(4391)),'English canonical Matsue');
+assert_same('https://tsurikue.com/en/tottori-road-trip/',tsurikue_en_post_link('old',new WP_Post(4393)),'English canonical Tottori');
 assert_same('https://tsurikue.com/yamaguchi-drive/',tsurikue_en_post_link('https://tsurikue.com/yamaguchi-drive/',new WP_Post(2664)),'Japanese route unchanged');
 assert_same('old',tsurikue_en_post_link('old',new WP_Post(99)),'unrelated content unchanged');
 tsurikue_en_add_rewrites();
 assert_same('index.php?post_type=post&name=orizuru-tower-english',$GLOBALS['rewrites']['^en/orizuru\\-tower/?$'],'Orizuru rewrite');
-assert_same('index.php?post_type=post&name=yamaguchi-roadtrip-english',$GLOBALS['rewrites']['^en/yamaguchi\\-road\\-trip/?$'],'Yamaguchi rewrite');
+assert_same('index.php?post_type=post&name=yamaguchi-roadtrip-english',$GLOBALS['rewrites']['^en/yamaguchi\\-road\\-trip/?
+assert_same(false,tsurikue_en_redirect_canonical('https://tsurikue.com/orizuru-tower-english/','https://tsurikue.com/en/orizuru-tower/'),'English redirect suppressed');
+assert_same('https://tsurikue.com/random/',tsurikue_en_redirect_canonical('https://tsurikue.com/random/','https://tsurikue.com/random/'),'unknown route untouched');
+echo "Pilot route tests OK\n";
+],'Yamaguchi rewrite');
+assert_same('index.php?post_type=post&name=okunoshima-rabbit-island-english',$GLOBALS['rewrites']['^en/okunoshima\\-rabbit\\-island/?
+assert_same(false,tsurikue_en_redirect_canonical('https://tsurikue.com/orizuru-tower-english/','https://tsurikue.com/en/orizuru-tower/'),'English redirect suppressed');
+assert_same('https://tsurikue.com/random/',tsurikue_en_redirect_canonical('https://tsurikue.com/random/','https://tsurikue.com/random/'),'unknown route untouched');
+echo "Pilot route tests OK\n";
+],'Okunoshima rewrite');
+assert_same('index.php?post_type=post&name=matsue-vogel-park-english',$GLOBALS['rewrites']['^en/matsue\\-vogel\\-park/?
+assert_same(false,tsurikue_en_redirect_canonical('https://tsurikue.com/orizuru-tower-english/','https://tsurikue.com/en/orizuru-tower/'),'English redirect suppressed');
+assert_same('https://tsurikue.com/random/',tsurikue_en_redirect_canonical('https://tsurikue.com/random/','https://tsurikue.com/random/'),'unknown route untouched');
+echo "Pilot route tests OK\n";
+],'Matsue rewrite');
+assert_same('index.php?post_type=post&name=tottori-drive-english',$GLOBALS['rewrites']['^en/tottori\\-road\\-trip/?
+assert_same(false,tsurikue_en_redirect_canonical('https://tsurikue.com/orizuru-tower-english/','https://tsurikue.com/en/orizuru-tower/'),'English redirect suppressed');
+assert_same('https://tsurikue.com/random/',tsurikue_en_redirect_canonical('https://tsurikue.com/random/','https://tsurikue.com/random/'),'unknown route untouched');
+echo "Pilot route tests OK\n";
+],'Tottori rewrite');
 assert_same(false,tsurikue_en_redirect_canonical('https://tsurikue.com/orizuru-tower-english/','https://tsurikue.com/en/orizuru-tower/'),'English redirect suppressed');
 assert_same('https://tsurikue.com/random/',tsurikue_en_redirect_canonical('https://tsurikue.com/random/','https://tsurikue.com/random/'),'unknown route untouched');
 echo "Pilot route tests OK\n";
