@@ -55,4 +55,15 @@ jobs:
               printf 'WP_CLI_PRESENT=no\n'
           fi
           printf 'SSH_WORDPRESS_WRITE_COUNT=0\n'
+          printf 'EN_PILOT_MU_PLUGIN_PRESENT='
+          if test -e "$root/wp-content/mu-plugins/tsurikue-en-routes.php"; then echo yes; else echo no; fi
+          printf 'WORDPRESS_PERMALINK_STRUCTURE='
+          (cd "$root" && wp option get permalink_structure)
+          (cd "$root" && wp eval '
+          foreach ([2647,2664,4375,4380] as $id) {
+              $p = get_post($id);
+              if (!$p) { echo "POST_AUDIT id=" . $id . " NOT_FOUND" . PHP_EOL; continue; }
+              echo "POST_AUDIT id=" . $id . " type=" . $p->post_type . " slug=" . $p->post_name . " status=" . $p->post_status . " permalink=" . get_permalink($id) . PHP_EOL;
+          }
+          ')
           SH
