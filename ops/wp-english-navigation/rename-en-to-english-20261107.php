@@ -23,7 +23,7 @@ function tsurikue_english_menu_labels($items) {
 $locations = get_nav_menu_locations();
 tsurikue_english_menu_assert((int) ($locations['sp_head_menu'] ?? 0) === 21, 'mobile header location changed');
 tsurikue_english_menu_assert((int) ($locations['nav_sp_menu'] ?? 0) === 20, 'drawer location changed');
-tsurikue_english_menu_assert((int) get_post_status(4385) !== 0 && get_post_status(4385) === 'publish', 'English landing page is not published');
+tsurikue_english_menu_assert(get_post_status(4385) === 'publish', 'English landing page is not published');
 $en_page = get_page_by_path('en');
 tsurikue_english_menu_assert($en_page instanceof WP_Post && (int) $en_page->ID === 4385, '/en/ page mismatch');
 
