@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Tsurikue English pilot routes
- * Description: Narrow bilingual routing for two approved travel article pairs.
- * Version: 0.1.0
+ * Description: Narrow bilingual routing for five approved travel article pairs.
+ * Version: 0.2.0
  *
  * MU plugin: do not translate, edit or republish Japanese content.
  * The routes only become public when the corresponding English posts are published.
@@ -17,6 +17,9 @@ function tsurikue_en_pairs() {
     return array(
         array('ja_id' => 2647, 'en_id' => 4375, 'en_path' => 'orizuru-tower', 'en_slug' => 'orizuru-tower-english'),
         array('ja_id' => 2664, 'en_id' => 4380, 'en_path' => 'yamaguchi-road-trip', 'en_slug' => 'yamaguchi-roadtrip-english'),
+        array('ja_id' => 3730, 'en_id' => 4392, 'en_path' => 'okunoshima-rabbit-island', 'en_slug' => 'okunoshima-rabbit-island-english'),
+        array('ja_id' => 3438, 'en_id' => 4391, 'en_path' => 'matsue-vogel-park', 'en_slug' => 'matsue-vogel-park-english'),
+        array('ja_id' => 2658, 'en_id' => 4393, 'en_path' => 'tottori-road-trip', 'en_slug' => 'tottori-drive-english'),
     );
 }
 
