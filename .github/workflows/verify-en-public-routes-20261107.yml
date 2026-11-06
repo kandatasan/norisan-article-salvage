@@ -1,0 +1,41 @@
+name: Verify live English URL, canonical, and hreflang
+on:
+  push:
+    branches: [main]
+    paths: ['.github/workflows/verify-en-public-routes-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check public URLs and SEO tags (read only)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import re, ssl, urllib.request, urllib.error, json
+          base='https://tsurikue.com'
+          cases=[('JA_ORIZURU','/orizuru-tower/'),('EN_ORIZURU','/en/orizuru-tower/'),('EN_OLD_SLUG','/orizuru-tower-english/'),('JA_YAMAGUCHI','/yamaguchi-drive/'),('EN_YAMAGUCHI_DRAFT','/en/yamaguchi-road-trip/')]
+          for label,path in cases:
+              req=urllib.request.Request(base+path,headers={'User-Agent':'tsurikue-en-seo-readonly-check/1.0','Accept':'text/html','Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(req,timeout=35) as resp:
+                      body=resp.read(600000).decode('utf-8','replace')
+                      final=resp.geturl()
+                      status=resp.status
+              except urllib.error.HTTPError as exc:
+                  body=exc.read(100000).decode('utf-8','replace')
+                  final=exc.geturl()
+                  status=exc.code
+              except Exception as exc:
+                  print('PROBE '+label+' network_error='+repr(exc))
+                  continue
+              html_tag=(re.search(r'<html\\b[^>]*>',body,re.I) or [''])[0]
+              tags=re.findall(r'<link\\b[^>]*>',body,re.I)
+              langs=[x for x in tags if re.search(r'hreflang\\s*=',x,re.I)]
+              canon=[x for x in tags if re.search(r'rel=["\\\']canonical["\\\']',x,re.I)]
+              switch='tsurikue-en-language-switch' in body
+              print('PROBE '+json.dumps({'label':label,'status':status,'final_url':final,'html_tag':html_tag[:250],'canonical':canon[:3],'hreflang':langs[:5],'language_switch_visible':switch,'body_bytes':len(body)},ensure_ascii=False))
+          print('WORDPRESS_WRITE_COUNT=0')
+          PY
