@@ -5,7 +5,8 @@ $GLOBALS['actions'] = [];
 $GLOBALS['filters'] = [];
 function add_action($name, $call, $priority = 10) { $GLOBALS['actions'][$name][] = $call; }
 function add_filter($name, $call, $priority = 10, $args = 1) { $GLOBALS['filters'][$name][] = $call; }
-function home_url($path) { return 'https://tsurikue.com' . $path; }
+function home_url($path) { return 'http://tsurikue.com' . $path; }
+function set_url_scheme($url,$scheme='https') { return preg_replace('~^https?://~', $scheme.'://', $url); }
 class WP_Post { public $ID; public $post_status; public function __construct($id,$status='draft') {$this->ID=$id;$this->post_status=$status;} }
 function wp_parse_url($url, $part) { return parse_url($url,$part); }
 $GLOBALS['rewrites']=[];
