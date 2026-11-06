@@ -1,0 +1,28 @@
+name: Test bilingual WordPress pilot routes
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/wp-english-routing/**'
+      - '.github/workflows/test-wp-english-routing.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/wp-english-routing/**'
+      - '.github/workflows/test-wp-english-routing.yml'
+permissions:
+  contents: read
+jobs:
+  php-unit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax and routing smoke tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -v
+          php -l ops/wp-english-routing/tsurikue-en-routes.php
+          php -l ops/wp-english-routing/tests/route-smoke.php
+          php ops/wp-english-routing/tests/route-smoke.php
