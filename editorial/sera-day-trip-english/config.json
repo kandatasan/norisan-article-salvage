@@ -1,5 +1,5 @@
 {
-  "operation": "create",
+  "operation": "update",
   "status": "draft",
   "categories": [
     49
@@ -16,5 +16,7 @@
     "1958": "/wp-content/uploads/2026/05/IMG_6818.jpeg",
     "1963": "/wp-content/uploads/2026/05/IMG_9870.jpeg",
     "1964": "/wp-content/uploads/2026/05/IMG_6820.jpeg"
-  }
+  },
+  "post_id": 4417,
+  "expected_current_content_sha256": "723da0883e1410d2adbd43ebff680dda41912bd3e8cbbd4d70931846293066b7"
 }
