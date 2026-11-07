@@ -1,0 +1,22 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "sakaiminato-mizuki-road-english",
+  "title": "Mizuki Shigeru Road Guide: Kitaro Trains, Yokai Statues & a Spooky Warehouse",
+  "salvage_marker": "<!-- tsurikue-source:sakaiminato-station-sightseeing; source-id=4138; language=en; firsthand=yes -->",
+  "editorial_marker": "<!-- tsurikue-editorial:sakaiminato-mizuki-road-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 4143,
+  "expected_media": {
+    "4143": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-01.jpg",
+    "4144": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-02.jpg",
+    "4145": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-03.jpg",
+    "4146": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-04.jpg",
+    "4147": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-05.jpg",
+    "4148": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-06.jpg",
+    "4149": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-07.jpg"
+  }
+}
