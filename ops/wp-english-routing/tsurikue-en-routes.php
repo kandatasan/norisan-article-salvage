@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Tsurikue English pilot routes
- * Description: Narrow bilingual routing for sixteen approved travel article pairs.
- * Version: 0.6.0
+ * Description: Narrow bilingual routing for nineteen approved travel article pairs.
+ * Version: 0.7.0
  *
  * MU plugin: do not translate, edit or republish Japanese content.
  * The routes only become public when the corresponding English posts are published.
@@ -31,6 +31,9 @@ function tsurikue_en_pairs() {
         array('ja_id' => 2437, 'en_id' => 4425, 'en_path' => 'motonosumi-shrine', 'en_slug' => 'motonosumi-shrine-english'),
         array('ja_id' => 2941, 'en_id' => 4426, 'en_path' => 'saijo-sake-street', 'en_slug' => 'saijo-sake-street-english'),
         array('ja_id' => 3507, 'en_id' => 4424, 'en_path' => 'kurashiki-bikan-quarter', 'en_slug' => 'kurashiki-bikan-quarter-english'),
+        array('ja_id' => 3633, 'en_id' => 4432, 'en_path' => 'karato-market', 'en_slug' => 'karato-market-english'),
+        array('ja_id' => 4138, 'en_id' => 4433, 'en_path' => 'sakaiminato-mizuki-road', 'en_slug' => 'sakaiminato-mizuki-road-english'),
+        array('ja_id' => 3483, 'en_id' => 4434, 'en_path' => 'tamatsukuri-onsen-footbath', 'en_slug' => 'tamatsukuri-onsen-footbath-english'),
     );
 }
 
