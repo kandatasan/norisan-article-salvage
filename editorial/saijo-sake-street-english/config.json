@@ -1,0 +1,22 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "saijo-sake-street-english",
+  "title": "Saijo Sake Brewery Street: A Local's Walk Among 7 Breweries Near Hiroshima",
+  "salvage_marker": "<!-- tsurikue-source:saijo-sakagura-dori; source-id=2941; language=en; firsthand=multiple-visits -->",
+  "editorial_marker": "<!-- tsurikue-editorial:saijo-sake-street-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 2934,
+  "expected_media": {
+    "2931": "/wp-content/uploads/2026/08/fc700358-a71d-4829-bb05-4bc601d9ce0f.jpg",
+    "2932": "/wp-content/uploads/2026/08/befe8465-2627-4832-981d-d8f1193e7f4d.jpg",
+    "2934": "/wp-content/uploads/2026/08/836f3f0b-cdbe-44ea-a1f9-056ac719f316.jpg",
+    "2935": "/wp-content/uploads/2026/08/039624f5-5844-429f-9fda-4780cdfbdada.jpg",
+    "2936": "/wp-content/uploads/2026/08/img_2203.jpg",
+    "2937": "/wp-content/uploads/2026/08/img_2216.jpg",
+    "2940": "/wp-content/uploads/2026/08/84925020-bffa-4718-bbd2-f9c1ef2a9ad2.jpg"
+  }
+}
