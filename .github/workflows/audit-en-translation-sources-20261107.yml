@@ -28,7 +28,7 @@ jobs:
           printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
           chmod 600 "$HOME/.ssh/xserver_deploy_key"
           bash river-fish/xserver-git/verify_host_key.sh
-      - name: Inspect 4 original posts and images plus English duplicates (GET only)
+      - name: Inspect Mu Valley and Etajima tourism article photos, plus published English posts (GET only)
         shell: bash
         run: |
           set -euo pipefail
@@ -37,7 +37,7 @@ jobs:
           cd "$HOME/tsurikue.com/public_html"
           test -f wp-config.php
           wp eval '
-          $slugs=array("matsue-vogel-park","okunoshima-rabbit-island","tottori-drive","kochi-1night-2days-drive","kurahashijima-autumn-drive");
+          $slugs=array("muvalley","human-beach-nagase","etajima-sightseeing","uminos-spa-resort","kochi-1night-2days-drive","kurahashijima-autumn-drive");
           foreach ($slugs as $slug) {
               $posts=get_posts(array("name"=>$slug,"post_type"=>"post","post_status"=>"any","posts_per_page"=>3));
               if (count($posts)!==1) { echo "SOURCE_WARNING " . $slug . " matches=" . count($posts) . PHP_EOL; continue; }
