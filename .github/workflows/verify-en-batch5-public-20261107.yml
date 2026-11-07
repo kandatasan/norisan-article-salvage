@@ -1,0 +1,68 @@
+name: Verify ten English Travel pairs over HTTPS (read only)
+on:
+  pull_request:
+    branches: [main]
+    paths: ['.github/workflows/verify-en-batch5-public-20261107.yml']
+  push:
+    branches: [main]
+    paths: ['.github/workflows/verify-en-batch4-public-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Check seven published and three draft English routes (GET only)
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,urllib.request,urllib.error
+          from html.parser import HTMLParser
+          root='https://tsurikue.com'
+          en_published=['/en/orizuru-tower/','/en/yamaguchi-road-trip/','/en/okunoshima-rabbit-island/','/en/matsue-vogel-park/','/en/tottori-road-trip/','/en/kochi-road-trip/','/en/kurahashi-island/']
+          jp_published=['/orizuru-tower/','/yamaguchi-drive/','/okunoshima-rabbit-island/','/matsue-vogel-park/','/tottori-drive/','/kochi-1night-2days-drive/','/kurahashijima-autumn-drive/','/muvalley/','/human-beach-nagase/','/etajima-sightseeing/']
+          en_drafts=['/en/mikawa-mu-valley/','/en/nagase-beach/','/en/etajima-island/']
+          cases=[('EN_HUB','/en/',200,'en')]
+          cases += [('EN',x,200,'en') for x in en_published]
+          cases += [('JA',x,200,'ja') for x in jp_published]
+          cases += [('DRAFT',x,404,'ja') for x in en_drafts]
+          class Meta(HTMLParser):
+              def __init__(self):
+                  super().__init__();self.lang='';self.canonical=[];self.alts=[]
+              def handle_starttag(self,tag,attrs):
+                  a=dict(attrs)
+                  if tag=='html': self.lang=a.get('lang','')
+                  if tag=='link':
+                      if 'canonical' in (a.get('rel') or '').split(): self.canonical.append(a.get('href',''))
+                      if a.get('hreflang'): self.alts.append((a.get('hreflang'),a.get('href')))
+          for kind,path,expected,language in cases:
+              req=urllib.request.Request(root+path,headers={'User-Agent':'Tsurikue-English-pilot-verifier/1.0','Accept':'text/html','Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(req,timeout=28) as x:
+                      status=x.status;final=x.geturl();body=x.read(400000).decode('utf-8','replace')
+              except urllib.error.HTTPError as x:
+                  status=x.code;final=x.geturl();body=x.read(100000).decode('utf-8','replace')
+              m=Meta();m.feed(body)
+              info={'kind':kind,'path':path,'status':status,'final':final,'html_lang':m.lang,'canonical':m.canonical[:2],'hreflang':m.alts[:4]}
+              if kind=='EN_HUB':
+                  info['article_cards']=body.count('tsurikue-en-travel-card')
+                  assert info['article_cards']>=7, 'English hub missing published travel cards'
+                  for url in en_published:
+                      assert url in body, 'Hub missing published article '+url
+                  for url in en_drafts:
+                      assert url not in body, 'Draft leaked into hub: '+url
+              print('EN_BATCH5_LIVE_CHECK '+json.dumps(info,ensure_ascii=False))
+              assert status==expected,kind+' '+path+' HTTP status mismatch'
+              if status==200:
+                  assert m.lang.startswith(language),path+' incorrect HTML language'
+                  assert m.canonical==[root+path],path+' canonical mismatch'
+              if kind in ('EN','JA') and path not in ('/muvalley/','/human-beach-nagase/','/etajima-sightseeing/'):
+                  x=dict(m.alts)
+                  assert 'en' in x and 'ja' in x,path+' missing reciprocal language alternates'
+              if kind=='DRAFT':
+                  assert status==404,path+' not-private draft'
+          print('EN_BATCH5_PUBLIC_VERIFICATION=PASS')
+          print('WORDPRESS_WRITE_COUNT=0')
+          PY
