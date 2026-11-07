@@ -1,0 +1,21 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "kurashiki-bikan-quarter-english",
+  "title": "Kurashiki Bikan Historical Quarter: Parfaits, Denim Shops & Our Funny Canal Walk",
+  "salvage_marker": "<!-- tsurikue-source:kurashiki-bikan-chiku; source-id=3507; language=en; firsthand=summer-walk -->",
+  "editorial_marker": "<!-- tsurikue-editorial:kurashiki-bikan-quarter-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 3504,
+  "expected_media": {
+    "3499": "/wp-content/uploads/2026/09/img_7655.jpg",
+    "3501": "/wp-content/uploads/2026/09/img_7650.jpg",
+    "3502": "/wp-content/uploads/2026/09/img_7646.jpg",
+    "3503": "/wp-content/uploads/2026/09/img_7645.jpg",
+    "3504": "/wp-content/uploads/2026/09/img_7652.jpg",
+    "3506": "/wp-content/uploads/2026/09/img_7654.jpg"
+  }
+}
