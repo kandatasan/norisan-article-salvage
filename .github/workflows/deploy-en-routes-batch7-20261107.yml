@@ -111,7 +111,7 @@ jobs:
               if(!$p||$p->post_name!==$slug||!in_array($p->post_status,array("draft","publish","future"),true)||wp_get_post_categories($id)!==array(49)){
                 throw new RuntimeException("existing Sera English identity/category/status mismatch ".$id);
               }
-              echo "EN_BATCH7_EXISTING_SERA_STATUS_".$id."=".$p->post_status."\\n";
+              echo "EN_BATCH7_EXISTING_SERA_STATUS_".$id."=".$p->post_status.PHP_EOL;
             }
             echo "EN_BATCH7_PREFLIGHT_OK=yes\n";
           '
