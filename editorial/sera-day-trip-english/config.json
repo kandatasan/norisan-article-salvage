@@ -1,0 +1,20 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "sera-day-trip-english",
+  "title": "Sera Day Trip from Hiroshima: Flower Fields, Farm Gelato & Dream Bridge",
+  "salvage_marker": "<!-- tsurikue-source:sera-sightseeing; source-id=1955; language=en; firsthand=yes -->",
+  "editorial_marker": "<!-- tsurikue-editorial:sera-day-trip-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 1958,
+  "expected_media": {
+    "1916": "/wp-content/uploads/2026/05/IMG_6807.jpeg",
+    "1919": "/wp-content/uploads/2026/05/IMG_3928.jpeg",
+    "1958": "/wp-content/uploads/2026/05/IMG_6818.jpeg",
+    "1963": "/wp-content/uploads/2026/05/IMG_9870.jpeg",
+    "1964": "/wp-content/uploads/2026/05/IMG_6820.jpeg"
+  }
+}
