@@ -1,0 +1,25 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "karato-market-english",
+  "title": "Karato Market Shimonoseki: Best Sushi to Try, Weekend Hours & Our Seafood Lunch",
+  "salvage_marker": "<!-- tsurikue-source:karato-market; source-id=3633; language=en; firsthand=yes -->",
+  "editorial_marker": "<!-- tsurikue-editorial:karato-market-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 1111,
+  "expected_media": {
+    "979": "/wp-content/uploads/2026/05/img_2075.jpg",
+    "980": "/wp-content/uploads/2026/05/img_2076.jpg",
+    "981": "/wp-content/uploads/2026/05/img_2079.jpg",
+    "983": "/wp-content/uploads/2026/05/img_2078.jpg",
+    "992": "/wp-content/uploads/2026/05/img_2074.jpg",
+    "1083": "/wp-content/uploads/2026/05/img_2324.jpg",
+    "1086": "/wp-content/uploads/2026/05/img_2321.jpg",
+    "1092": "/wp-content/uploads/2026/05/img_2320.jpg",
+    "1109": "/wp-content/uploads/2026/05/img_2325.jpg",
+    "1111": "/wp-content/uploads/2026/05/img_2322.jpg"
+  }
+}
