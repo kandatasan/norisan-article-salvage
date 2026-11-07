@@ -1,4 +1,4 @@
-name: Deploy four new English travel routes safely (batch7)
+name: Deploy four new English travel routes safely (batch7 status-aware)
 on:
   pull_request:
     branches: [main]
@@ -106,13 +106,18 @@ jobs:
             foreach(array(4375,4380,4391,4392,4393,4402,4403,4408,4409,4410) as $id){
               if(get_post_status($id)!=="publish"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("old published English changed ".$id);}
             }
-            foreach(array(4417,4418) as $id){
-              if(get_post_status($id)!=="draft"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("Sera English draft changed ".$id);}
+            foreach(array(4417=>"sera-day-trip-english",4418=>"sera-kogen-farm-english") as $id=>$slug){
+              $p=get_post($id);
+              if(!$p||$p->post_name!==$slug||!in_array($p->post_status,array("draft","publish","future"),true)||wp_get_post_categories($id)!==array(49)){
+                throw new RuntimeException("existing Sera English identity/category/status mismatch ".$id);
+              }
+              echo "EN_BATCH7_EXISTING_SERA_STATUS_".$id."=".$p->post_status.PHP_EOL;
             }
             echo "EN_BATCH7_PREFLIGHT_OK=yes\n";
           '
           before_posts=$(wp eval 'echo (int)wp_count_posts("post")->publish;')
           before_pages=$(wp eval 'echo (int)wp_count_posts("page")->publish;')
+          sera_status_before=$(wp eval 'echo wp_json_encode(array(4417=>get_post_status(4417),4418=>get_post_status(4418)));')
           install -m 0600 "$target" "$backup"
           test -s "$backup"
           temp="$target.batch7.$$.new"
@@ -143,13 +148,20 @@ jobs:
             foreach(array(4375,4380,4391,4392,4393,4402,4403,4408,4409,4410) as $id){
               if(get_post_status($id)!=="publish"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("old English published post drift ".$id);}
             }
-            foreach(array(4417,4418,4424,4425,4426,4427) as $id){
-              if(get_post_status($id)!=="draft"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("English draft became public ".$id);}
+            foreach(array(4424,4425,4426,4427) as $id){
+              if(get_post_status($id)!=="draft"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("new English draft became public ".$id);}
+            }
+            foreach(array(4417=>"sera-day-trip-english",4418=>"sera-kogen-farm-english") as $id=>$slug){
+              $p=get_post($id);
+              if(!$p||$p->post_name!==$slug||!in_array($p->post_status,array("draft","publish","future"),true)||wp_get_post_categories($id)!==array(49)){
+                throw new RuntimeException("existing Sera English changed unexpectedly ".$id);
+              }
             }
             echo "EN_BATCH7_16_PAIRS_VERIFIED=yes\n";
           '
           test "$before_posts" = "$(wp eval 'echo (int)wp_count_posts("post")->publish;')" || exit 16
           test "$before_pages" = "$(wp eval 'echo (int)wp_count_posts("page")->publish;')" || exit 16
+          test "$sera_status_before" = "$(wp eval 'echo wp_json_encode(array(4417=>get_post_status(4417),4418=>get_post_status(4418)));')" || { echo 'ERROR: existing Sera post status changed during deployment'; exit 20; }
           for path in tsunoshima-bridge motonosumi-shrine saijo-sake-street kurashiki-bikan-quarter; do
             code=$(curl --max-time 25 --silent --show-error --location --output /dev/null --write-out '%{http_code}' "https://tsurikue.com/en/$path/")
             test "$code" = 404 || { echo "ERROR: private draft $path returned $code, expected 404"; exit 17; }
