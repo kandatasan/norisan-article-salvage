@@ -1,0 +1,15 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "nagase-beach-etajima-english",
+  "title": "Human Beach Nagase on Etajima: A Quiet Beach Near Hiroshima (and My Razor Clam Obsession)",
+  "salvage_marker": "<!-- tsurikue-source:human-beach-nagase; source-id=2125; language=en -->",
+  "editorial_marker": "<!-- tsurikue-editorial:nagase-beach-etajima-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 2128,
+  "expected_media": {
+    "2128": "/wp-content/uploads/2026/06/IMG_0322-1024x768.jpeg",
+    "2129": "/wp-content/uploads/2026/06/IMG_0325-1024x768.jpeg",
+    "2130": "/wp-content/uploads/2026/06/IMG_0326-1024x768.jpeg"
+  }
+}

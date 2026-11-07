@@ -1,0 +1,15 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "etajima-island-guide-english",
+  "title": "Etajima Island Day Trip from Hiroshima: Seaside Cafés, Local Food & Quiet Beaches",
+  "salvage_marker": "<!-- tsurikue-source:etajima-sightseeing; source-id=1887; language=en; source=multiple-firsthand-trips -->",
+  "editorial_marker": "<!-- tsurikue-editorial:etajima-island-guide-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 2128,
+  "expected_media": {
+    "2079": "/wp-content/uploads/2026/06/IMG_0348-1024x768.jpeg",
+    "2128": "/wp-content/uploads/2026/06/IMG_0322-1024x768.jpeg",
+    "2129": "/wp-content/uploads/2026/06/IMG_0325-1024x768.jpeg"
+  }
+}
