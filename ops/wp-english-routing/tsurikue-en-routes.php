@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Tsurikue English pilot routes
- * Description: Narrow bilingual routing for ten approved travel article pairs.
- * Version: 0.4.0
+ * Description: Narrow bilingual routing for twelve approved travel article pairs.
+ * Version: 0.5.0
  *
  * MU plugin: do not translate, edit or republish Japanese content.
  * The routes only become public when the corresponding English posts are published.
@@ -25,6 +25,8 @@ function tsurikue_en_pairs() {
         array('ja_id' => 2408, 'en_id' => 4409, 'en_path' => 'mikawa-mu-valley', 'en_slug' => 'mikawa-mu-valley-english'),
         array('ja_id' => 2125, 'en_id' => 4410, 'en_path' => 'nagase-beach', 'en_slug' => 'nagase-beach-etajima-english'),
         array('ja_id' => 1887, 'en_id' => 4408, 'en_path' => 'etajima-island', 'en_slug' => 'etajima-island-guide-english'),
+        array('ja_id' => 1955, 'en_id' => 4417, 'en_path' => 'sera-day-trip', 'en_slug' => 'sera-day-trip-english'),
+        array('ja_id' => 1996, 'en_id' => 4418, 'en_path' => 'sera-kogen-farm', 'en_slug' => 'sera-kogen-farm-english'),
     );
 }
 
