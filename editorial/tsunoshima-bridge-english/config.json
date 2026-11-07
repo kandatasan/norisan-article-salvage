@@ -1,0 +1,23 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "tsunoshima-bridge-english",
+  "title": "Tsunoshima Bridge & Island Guide: Best Photo Spots, Lighthouse and Our Road Trip",
+  "salvage_marker": "<!-- tsurikue-source:tsunoshima; source-id=2479; language=en; traveled=2023-09 -->",
+  "editorial_marker": "<!-- tsurikue-editorial:tsunoshima-bridge-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 2494,
+  "expected_media": {
+    "2494": "/wp-content/uploads/2026/07/IMG_1993.jpeg",
+    "2496": "/wp-content/uploads/2026/07/IMG_1995.jpeg",
+    "2499": "/wp-content/uploads/2026/07/IMG_2001.jpeg",
+    "2500": "/wp-content/uploads/2026/07/IMG_2022.jpeg",
+    "2502": "/wp-content/uploads/2026/07/IMG_2031.jpeg",
+    "2505": "/wp-content/uploads/2026/07/IMG_2035.jpeg",
+    "2510": "/wp-content/uploads/2026/07/IMG_2047.jpeg",
+    "2513": "/wp-content/uploads/2026/07/IMG_2056.jpeg"
+  }
+}
