@@ -1,0 +1,24 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "motonosumi-shrine-english",
+  "title": "Motonosumi Shrine Guide: 123 Red Torii Gates, Our Visit & 2026 Access Closures",
+  "salvage_marker": "<!-- tsurikue-source:motonosumi; source-id=2437; language=en; traveled=2023-09 -->",
+  "editorial_marker": "<!-- tsurikue-editorial:motonosumi-shrine-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 2440,
+  "expected_media": {
+    "2440": "/wp-content/uploads/2026/07/IMG_1905.jpeg",
+    "2441": "/wp-content/uploads/2026/07/IMG_1906.jpeg",
+    "2445": "/wp-content/uploads/2026/07/IMG_1936.jpeg",
+    "2446": "/wp-content/uploads/2026/07/IMG_1937.jpeg",
+    "2447": "/wp-content/uploads/2026/07/IMG_1930.jpeg",
+    "2449": "/wp-content/uploads/2026/07/IMG_1938.jpeg",
+    "2450": "/wp-content/uploads/2026/07/IMG_1926.jpeg",
+    "2453": "/wp-content/uploads/2026/07/IMG_1935.jpeg",
+    "2454": "/wp-content/uploads/2026/07/IMG_1915.jpeg"
+  }
+}
