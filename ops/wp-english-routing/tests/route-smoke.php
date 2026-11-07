@@ -33,8 +33,10 @@ $expected = array(
     4409 => array('ja' => 2408, 'path' => 'mikawa-mu-valley', 'slug' => 'mikawa-mu-valley-english'),
     4410 => array('ja' => 2125, 'path' => 'nagase-beach', 'slug' => 'nagase-beach-etajima-english'),
     4408 => array('ja' => 1887, 'path' => 'etajima-island', 'slug' => 'etajima-island-guide-english'),
+    4417 => array('ja' => 1955, 'path' => 'sera-day-trip', 'slug' => 'sera-day-trip-english'),
+    4418 => array('ja' => 1996, 'path' => 'sera-kogen-farm', 'slug' => 'sera-kogen-farm-english'),
 );
-assert_same(10, count(tsurikue_en_pairs()), 'number of English pairs');
+assert_same(12, count(tsurikue_en_pairs()), 'number of English pairs');
 tsurikue_en_add_rewrites();
 foreach (tsurikue_en_pairs() as $pair) {
     $entry = $expected[$pair['en_id']] ?? null;
@@ -62,4 +64,4 @@ foreach (tsurikue_en_pairs() as $pair) {
 assert_same('old', tsurikue_en_post_link('old', new WP_Post(999)), 'unrelated post untouched');
 assert_same('https://tsurikue.com/tottori-drive/', tsurikue_en_post_link('https://tsurikue.com/tottori-drive/', new WP_Post(2658)), 'Japanese path untouched');
 assert_same('https://tsurikue.com/unrelated/', tsurikue_en_redirect_canonical('https://tsurikue.com/unrelated/', 'https://tsurikue.com/unrelated/'), 'unrelated canonical untouched');
-echo "English five-route tests OK\n";
+echo "English twelve-route tests OK\n";
