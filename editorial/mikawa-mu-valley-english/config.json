@@ -1,0 +1,30 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "mikawa-mu-valley-english",
+  "title": "Mikawa Mu Valley Review: An Underground RPG Adventure for Adults Near Hiroshima",
+  "salvage_marker": "<!-- tsurikue-source:muvalley; source-id=2408; language=en; traveled=2023-09 -->",
+  "editorial_marker": "<!-- tsurikue-editorial:mikawa-mu-valley-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 2411,
+  "expected_media": {
+    "2411": "/wp-content/uploads/2026/07/IMG_1805-1024x768.jpeg",
+    "2412": "/wp-content/uploads/2026/07/IMG_1800-1024x563.jpeg",
+    "2413": "/wp-content/uploads/2026/07/IMG_1803.jpeg",
+    "2416": "/wp-content/uploads/2026/07/IMG_1807-1024x768.jpeg",
+    "2418": "/wp-content/uploads/2026/07/IMG_1845-1024x769.jpeg",
+    "2419": "/wp-content/uploads/2026/07/IMG_1808-1024x768.jpeg",
+    "2420": "/wp-content/uploads/2026/07/IMG_1835-768x1024.jpeg",
+    "2421": "/wp-content/uploads/2026/07/IMG_1836-1024x769.jpeg",
+    "2422": "/wp-content/uploads/2026/07/IMG_1840-1024x768.jpeg",
+    "2423": "/wp-content/uploads/2026/07/IMG_1804-768x1024.jpeg",
+    "2424": "/wp-content/uploads/2026/07/IMG_1849-1024x768.jpeg",
+    "2425": "/wp-content/uploads/2026/07/IMG_1853-1024x802.jpeg",
+    "2426": "/wp-content/uploads/2026/07/IMG_1855-1024x768.jpeg",
+    "2427": "/wp-content/uploads/2026/07/IMG_1858-1024x769.jpeg",
+    "2429": "/wp-content/uploads/2026/07/IMG_1857-1024x733.jpeg",
+    "2430": "/wp-content/uploads/2026/07/IMG_1862-1024x768.jpeg",
+    "2431": "/wp-content/uploads/2026/07/IMG_1863-1024x683.jpeg",
+    "2432": "/wp-content/uploads/2026/07/IMG_1864-1024x768.jpeg"
+  }
+}
