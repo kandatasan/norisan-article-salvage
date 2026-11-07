@@ -5,7 +5,7 @@ on:
     paths: ['.github/workflows/verify-en-batch5-public-20261107.yml']
   push:
     branches: [main]
-    paths: ['.github/workflows/verify-en-batch4-public-20261107.yml']
+    paths: ['.github/workflows/verify-en-batch5-public-20261107.yml']
 permissions:
   contents: read
 jobs:
