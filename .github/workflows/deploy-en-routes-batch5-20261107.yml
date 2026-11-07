@@ -1,0 +1,115 @@
+name: Deploy three more English travel routes safely (batch5)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/wp-english-routing/**'
+      - '.github/workflows/deploy-en-routes-batch5-20261107.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-en-routes-batch5-20261107.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP lint and ten-route regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/wp-english-routing/tsurikue-en-routes.php
+          php -l ops/wp-english-routing/tests/route-smoke.php
+          php -l ops/wp-english-routing/add-batch5-categories.php
+          php ops/wp-english-routing/tests/route-smoke.php
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Verify pinned Xserver identity and retrieve exact seven-route baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+          git show 7794933cdff1a2ce6e0cd6fdbea700b896b85a72:ops/wp-english-routing/tsurikue-en-routes.php > /tmp/tsurikue-en-seven-routes-baseline.php
+          php -l /tmp/tsurikue-en-seven-routes-baseline.php
+      - name: Stage only approved files outside document root
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'mkdir -p "$HOME/.tsurikue-en-batch5-stage-20261107"'
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" /tmp/tsurikue-en-seven-routes-baseline.php "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-en-batch5-stage-20261107/baseline.php"
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/wp-english-routing/tsurikue-en-routes.php ops/wp-english-routing/add-batch5-categories.php "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-en-batch5-stage-20261107/"
+      - name: Verify old site and atomically deploy ten routes with rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          stage="$HOME/.tsurikue-en-batch5-stage-20261107"
+          target="$root/wp-content/mu-plugins/tsurikue-en-routes.php"
+          backup="$HOME/.tsurikue-en-batch5-before-20261107.php"
+          changed=0
+          rollback() {
+              code=$?
+              if (( code != 0 && changed == 1 )); then
+                  echo 'EN_BATCH5_PLUGIN_ROLLBACK_ATTEMPTED=yes'
+                  install -m 0644 "$backup" "$target" || true
+                  (cd "$root" && wp rewrite flush --quiet) || true
+                  (cd "$root" && wp eval 'foreach(array(4408,4409,4410) as $id){if(get_post_status($id)==="draft"){wp_set_post_categories($id,array(1),false);}}') || true
+              fi
+              exit "$code"
+          }
+          trap rollback EXIT
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$target" && test ! -L "$target" && test -s "$target"
+          test -f "$stage/baseline.php" && test -f "$stage/tsurikue-en-routes.php" && test -f "$stage/add-batch5-categories.php"
+          php -l "$stage/tsurikue-en-routes.php"
+          php -l "$stage/add-batch5-categories.php"
+          cmp -s "$target" "$stage/baseline.php" || { echo 'ERROR: live routes differ from audited seven-pair baseline'; exit 12; }
+          test ! -e "$backup" || { echo 'ERROR: previous backup exists; refusing replay'; exit 13; }
+          cd "$root"
+          test "$(wp option get permalink_structure)" = '/%postname%/'
+          wp eval '
+          if(!function_exists("tsurikue_en_pairs")||count(tsurikue_en_pairs())!==7){throw new RuntimeException("seven-route baseline missing");}
+          foreach(array(2408=>"muvalley",2125=>"human-beach-nagase",1887=>"etajima-sightseeing") as $id=>$slug){
+              $p=get_post($id);if(!$p||$p->post_status!=="publish"||$p->post_name!==$slug){throw new RuntimeException("Japanese source mismatch ".$id);}
+          }
+          foreach(array(4409=>"mikawa-mu-valley-english",4410=>"nagase-beach-etajima-english",4408=>"etajima-island-guide-english") as $id=>$slug){
+              $p=get_post($id);if(!$p||$p->post_status!=="draft"||$p->post_name!==$slug||wp_get_post_categories($id)!==array(1)){throw new RuntimeException("new English draft mismatch ".$id);}
+          }
+          foreach(array(4375,4380,4391,4392,4393,4402,4403) as $id){
+              if(get_post_status($id)!=="publish"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("existing English post changed ".$id);}
+          }
+          $cat=get_category_by_slug("english-travel");
+          if(!$cat || (int)$cat->term_id!==49){throw new RuntimeException("English Travel category changed");}
+          echo "EN_BATCH5_PREFLIGHT_OK=yes\n";
+          '
+          install -m 0600 "$target" "$backup"
+          test -s "$backup"
+          tmp="$target.batch5.$$.new"
+          install -m 0644 "$stage/tsurikue-en-routes.php" "$tmp"
+          mv -f "$tmp" "$target"
+          changed=1
+          wp rewrite flush --quiet
+          wp eval-file "$stage/add-batch5-categories.php"
+          echo 'EN_BATCH5_DEPLOYED=yes'
+          echo 'EN_BATCH5_NEW_POST_PUBLICATIONS=0'
+          SH
