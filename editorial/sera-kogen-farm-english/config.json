@@ -1,0 +1,21 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "sera-kogen-farm-english",
+  "title": "Sera Kogen Farm Review: Spring Flowers & Photography Tips from Hiroshima",
+  "salvage_marker": "<!-- tsurikue-source:serakankounokotsu; source-id=1996; language=en; firsthand=spring -->",
+  "editorial_marker": "<!-- tsurikue-editorial:sera-kogen-farm-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 1958,
+  "expected_media": {
+    "1958": "/wp-content/uploads/2026/05/IMG_6818.jpeg",
+    "1963": "/wp-content/uploads/2026/05/IMG_9870.jpeg",
+    "2005": "/wp-content/uploads/2026/06/IMG_9871-1.jpeg",
+    "2006": "/wp-content/uploads/2026/06/IMG_9807.jpeg",
+    "2007": "/wp-content/uploads/2026/06/IMG_9896.jpeg",
+    "2008": "/wp-content/uploads/2026/06/IMG_9872.jpeg"
+  }
+}
