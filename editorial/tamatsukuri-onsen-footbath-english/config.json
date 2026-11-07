@@ -1,0 +1,22 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "categories": [
+    49
+  ],
+  "slug": "tamatsukuri-onsen-footbath-english",
+  "title": "Tamatsukuri Onsen Free Footbaths: A Very Hot Soak & Take-Home Spring Water",
+  "salvage_marker": "<!-- tsurikue-source:tamatsukuri-onsen-footbath; source-id=3483; language=en; firsthand=yes -->",
+  "editorial_marker": "<!-- tsurikue-editorial:tamatsukuri-onsen-footbath-english:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 3496,
+  "expected_media": {
+    "3471": "/wp-content/uploads/2026/09/img_7013.jpg",
+    "3476": "/wp-content/uploads/2026/09/img_7015.jpg",
+    "3477": "/wp-content/uploads/2026/09/img_7017.jpg",
+    "3478": "/wp-content/uploads/2026/09/img_7018.jpg",
+    "3479": "/wp-content/uploads/2026/09/img_7019.jpg",
+    "3484": "/wp-content/uploads/2026/09/img_7014.jpg",
+    "3496": "/wp-content/uploads/2026/09/IMG_7002.jpeg"
+  }
+}
