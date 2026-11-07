@@ -1,0 +1,140 @@
+name: Deploy two Sera English routes safely (batch6)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/wp-english-routing/**'
+      - '.github/workflows/deploy-en-routes-batch6-20261107.yml'
+  push:
+    branches: [main]
+    paths: ['.github/workflows/deploy-en-routes-batch6-20261107.yml']
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP lint and twelve-pair regression
+        run: |
+          php -l ops/wp-english-routing/tsurikue-en-routes.php
+          php -l ops/wp-english-routing/tests/route-smoke.php
+          php ops/wp-english-routing/tests/route-smoke.php
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Pin exact live baseline and SSH host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh"; chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+          git show e43bfac8f0cced6adb3d9cd1788ad60f4e3e4f9b:ops/wp-english-routing/tsurikue-en-routes.php > /tmp/tsurikue-en-ten-baseline.php
+          php -l /tmp/tsurikue-en-ten-baseline.php
+      - name: Stage only required files outside document root
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'mkdir -p "$HOME/.tsurikue-en-batch6-stage-20261107"'
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" /tmp/tsurikue-en-ten-baseline.php "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-en-batch6-stage-20261107/baseline.php"
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/wp-english-routing/tsurikue-en-routes.php "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-en-batch6-stage-20261107/"
+      - name: Safe live preflight, atomic installation, regression, rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          stage="$HOME/.tsurikue-en-batch6-stage-20261107"
+          target="$root/wp-content/mu-plugins/tsurikue-en-routes.php"
+          backup="$HOME/.tsurikue-en-batch6-before-20261107.php"
+          changed=0
+          rollback() {
+            code=$?
+            if (( code != 0 && changed == 1 )); then
+              echo 'EN_BATCH6_ROLLBACK_ATTEMPTED=yes'
+              install -m 0644 "$backup" "$target" || true
+              (cd "$root" && wp rewrite flush --quiet) || true
+            fi
+            exit "$code"
+          }
+          trap rollback EXIT
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$target" && test ! -L "$target" && test -s "$target"
+          test -f "$stage/baseline.php" && test -f "$stage/tsurikue-en-routes.php"
+          php -l "$stage/tsurikue-en-routes.php"
+          cmp -s "$target" "$stage/baseline.php" || { echo 'ERROR: live ten-route plugin differs from baseline'; exit 12; }
+          test ! -e "$backup" || { echo 'ERROR: backup already exists'; exit 13; }
+          cd "$root"
+          test "$(wp option get permalink_structure)" = '/%postname%/'
+          wp eval '
+            if(!function_exists("tsurikue_en_pairs") || count(tsurikue_en_pairs())!==10){throw new RuntimeException("ten-route baseline missing");}
+            $cat=get_category_by_slug("english-travel");
+            if(!($cat instanceof WP_Term) || (int)$cat->term_id!==49){throw new RuntimeException("category mismatch");}
+            foreach(array(1955=>"sera-sightseeing",1996=>"serakankounokotsu") as $id=>$slug){
+              $p=get_post($id);if(!$p||$p->post_status!=="publish"||$p->post_name!==$slug){throw new RuntimeException("Japanese source mismatch ".$id);}
+            }
+            foreach(array(4417=>"sera-day-trip-english",4418=>"sera-kogen-farm-english") as $id=>$slug){
+              $p=get_post($id);
+              if(!$p||$p->post_status!=="draft"||$p->post_name!==$slug||wp_get_post_categories($id)!==array(49)||(int)get_post_thumbnail_id($id)!==1958){throw new RuntimeException("draft mismatch ".$id);}
+            }
+            foreach(array(4375,4380,4391,4392,4393,4402,4403,4408,4409,4410) as $id){
+              if(get_post_status($id)!=="publish"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("published English changed ".$id);}
+            }
+            echo "EN_BATCH6_PREFLIGHT_OK=yes\n";
+          '
+          old_posts=$(wp eval 'echo (int)wp_count_posts("post")->publish;')
+          old_pages=$(wp eval 'echo (int)wp_count_posts("page")->publish;')
+          install -m 0600 "$target" "$backup"
+          test -s "$backup"
+          temp="$target.batch6.$$.new"
+          install -m 0644 "$stage/tsurikue-en-routes.php" "$temp"
+          mv -f "$temp" "$target"
+          changed=1
+          wp rewrite flush --quiet
+          wp eval '
+            if(!function_exists("tsurikue_en_pairs")||count(tsurikue_en_pairs())!==12){throw new RuntimeException("twelve-route plugin missing");}
+            $rules=get_option("rewrite_rules");
+            foreach(array(4417=>array(1955,"sera-day-trip","sera-day-trip-english"),4418=>array(1996,"sera-kogen-farm","sera-kogen-farm-english")) as $id=>$entry){
+              $pair=tsurikue_en_pair_for_post($id);
+              if(!$pair||$pair["ja_id"]!==$entry[0]||$pair["en_path"]!==$entry[1]||$pair["en_slug"]!==$entry[2]){throw new RuntimeException("pair mismatch ".$id);}
+              $en=get_post($id);$ja=get_post($entry[0]);
+              if($en->post_status!=="draft"||$ja->post_status!=="publish"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("status changed ".$id);}
+              if(tsurikue_en_post_link("",$en)!=="https://tsurikue.com/en/".$entry[1]."/"){throw new RuntimeException("permalink error ".$id);}
+              $key="^en/".preg_quote($entry[1],"/")."/?$";
+              if(($rules[$key]??null)!=="index.php?post_type=post&name=".$entry[2]){throw new RuntimeException("rewrite missing ".$id);}
+              if(wp_parse_url(get_permalink($ja->ID),PHP_URL_PATH)!=="/".$ja->post_name."/"){throw new RuntimeException("Japanese URL changed ".$id);}
+            }
+            foreach(array(4375,4380,4391,4392,4393,4402,4403,4408,4409,4410) as $id){
+              if(get_post_status($id)!=="publish"||wp_get_post_categories($id)!==array(49)){throw new RuntimeException("existing English changed ".$id);}
+            }
+            echo "EN_BATCH6_TWELVE_ROUTES_VERIFIED=yes\n";
+          '
+          test "$old_posts" = "$(wp eval 'echo (int)wp_count_posts("post")->publish;')" || exit 16
+          test "$old_pages" = "$(wp eval 'echo (int)wp_count_posts("page")->publish;')" || exit 16
+          for path in sera-day-trip sera-kogen-farm; do
+            code=$(curl --max-time 25 --silent --show-error --location --output /dev/null --write-out '%{http_code}' "https://tsurikue.com/en/$path/")
+            test "$code" = 404 || { echo "ERROR: private draft $path returned $code, expected 404"; exit 17; }
+          done
+          for path in orizuru-tower etajima-island; do
+            code=$(curl --max-time 25 --silent --show-error --location --output /dev/null --write-out '%{http_code}' "https://tsurikue.com/en/$path/")
+            test "$code" = 200 || { echo "ERROR: existing English page $path returned $code, expected 200"; exit 18; }
+          done
+          echo 'EN_BATCH6_DEPLOYED_AND_TESTED=yes'
+          echo 'EN_BATCH6_NEW_PUBLICATIONS=0'
+          echo 'EN_BATCH6_JAPANESE_POST_WRITES=0'
+          SH
