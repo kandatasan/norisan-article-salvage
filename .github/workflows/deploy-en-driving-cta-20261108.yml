@@ -1,0 +1,147 @@
+name: Add driving licence guidance to English rental-car links
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/wp-english-driving-cta/**'
+      - '.github/workflows/deploy-en-driving-cta-20261108.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/deploy-en-driving-cta-20261108.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint and isolated scoped rendering tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/wp-english-driving-cta/tsurikue-en-driving-cta.php
+          php -l ops/wp-english-driving-cta/tests/notice-smoke.php
+          php ops/wp-english-driving-cta/tests/notice-smoke.php
+  install:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate pinned Xserver SSH host
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Stage new plugin outside document root
+        shell: bash
+        run: |
+          set -euo pipefail
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/wp-english-driving-cta/tsurikue-en-driving-cta.php "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-en-driving-cta-20261108.php"
+      - name: Guard live posts and install only the new MU plugin with rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          stage="$HOME/.tsurikue-en-driving-cta-20261108.php"
+          target="$root/wp-content/mu-plugins/tsurikue-en-driving-cta.php"
+          installed=0
+          finish() {
+              code=$?
+              if (( code != 0 && installed == 1 )); then
+                  rm -f "$target"
+                  echo 'EN_DRIVING_CTA_PLUGIN_ROLLBACK_ATTEMPTED=yes'
+              fi
+              rm -f "$stage"
+              exit "$code"
+          }
+          trap finish EXIT
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$root/wp-content/mu-plugins/tsurikue-en-routes.php"
+          test -f "$root/wp-content/mu-plugins/tsurikue-en-landing.php"
+          test -f "$stage" && test ! -L "$stage"
+          test ! -e "$target" && test ! -L "$target"
+          php -l "$stage"
+          cd "$root"
+          before_posts="$(wp post list --post_type=post --post_status=publish --format=count)"
+          before_pages="$(wp post list --post_type=page --post_status=publish --format=count)"
+          wp eval '
+          $targets=array(
+            4375=>"orizuru-tower-english",4380=>"yamaguchi-roadtrip-english",
+            4393=>"tottori-drive-english",4402=>"kochi-roadtrip-english",
+            4403=>"kurahashi-island-english",4408=>"etajima-island-guide-english",
+            4409=>"mikawa-mu-valley-english",4417=>"sera-day-trip-english",
+            4425=>"motonosumi-shrine-english",4427=>"tsunoshima-bridge-english"
+          );
+          foreach($targets as $id=>$slug){
+              $p=get_post($id);
+              if(!$p || $p->post_type!=="post" || $p->post_name!==$slug){
+                  throw new RuntimeException("Expected English post changed: ".$id);
+              }
+              if(!has_category("english-travel",$id) ||
+                 substr_count($p->post_content,"https://www.discovercars.com/?a_aid=tsurikue")!==1){
+                  throw new RuntimeException("Target category or affiliate drift: ".$id);
+              }
+              if(strpos($p->post_content,"data-tsurikue-en-driving")!==false){
+                  throw new RuntimeException("Notice already present in stored content: ".$id);
+              }
+              echo "EN_CTA_TARGET ".wp_json_encode(array("id"=>$id,"slug"=>$slug,"status"=>$p->post_status)).PHP_EOL;
+          }
+          foreach(array(4391,4392,4410,4418,4424,4426,4432,4433,4434) as $id){
+              $p=get_post($id);
+              if($p && strpos($p->post_content,"https://www.discovercars.com/?a_aid=tsurikue")!==false){
+                  throw new RuntimeException("Unexpected affiliate in non-rental article: ".$id);
+              }
+          }
+          echo "EN_DRIVING_CTA_PREFLIGHT=PASS\n";
+          '
+          temp="$target.new.$$"
+          install -m 0644 "$stage" "$temp"
+          mv -f "$temp" "$target"
+          installed=1
+          wp eval '
+          if(!function_exists("tsurikue_en_driving_decorate")){
+              throw new RuntimeException("MU plugin not loaded");
+          }
+          foreach(array(4375,4380,4393,4402,4403,4408,4409,4417,4425,4427) as $id){
+              $p=get_post($id);
+              $raw=$p->post_content;
+              $out=tsurikue_en_driving_decorate($raw);
+              if($raw===$out ||
+                 substr_count($out,"data-tsurikue-en-driving=\"v1\"")!==1 ||
+                 substr_count($out,"tsurikue-en-rental-button")!==1 ||
+                 substr_count($out,"https://www.discovercars.com/?a_aid=tsurikue")!==1 ||
+                 strpos($out,"www.npa.go.jp/english/")===false ||
+                 tsurikue_en_driving_decorate($out)!==$out){
+                  throw new RuntimeException("Licence CTA render incorrect: ".$id);
+              }
+              echo "EN_CTA_RENDER_CHECK ".wp_json_encode(array("id"=>$id,"status"=>$p->post_status,"notice_count"=>1,"button_count"=>1)).PHP_EOL;
+          }
+          foreach(array(4391,4392,4410,4418,4424,4426,4432,4433,4434) as $id){
+              $p=get_post($id);
+              if($p && tsurikue_en_driving_decorate($p->post_content)!==$p->post_content){
+                  throw new RuntimeException("Non-rental English article changed: ".$id);
+              }
+          }
+          echo "EN_DRIVING_CTA_ALL_RENDER_CHECKS=PASS\n";
+          '
+          test "$(wp post list --post_type=post --post_status=publish --format=count)" = "$before_posts"
+          test "$(wp post list --post_type=page --post_status=publish --format=count)" = "$before_pages"
+          echo 'EN_DRIVING_CTA_MU_PLUGIN_INSTALLED=yes'
+          echo 'POST_CONTENT_WRITES=0'
+          echo 'AFFILIATE_URL_CHANGES=0'
+          echo 'WORDPRESS_PUBLISH_COUNT=0'
+          SH
