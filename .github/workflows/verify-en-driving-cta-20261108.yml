@@ -1,0 +1,74 @@
+name: Verify English licence notice and rental buttons over HTTPS
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-en-driving-cta-20261108.yml'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/verify-en-driving-cta-20261108.yml'
+permissions:
+  contents: read
+jobs:
+  verify:
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Read-only live checks on all published rental articles and unaffected pages
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json,re,urllib.request,urllib.error
+          root='https://tsurikue.com'
+          targeted=[
+            '/en/orizuru-tower/',
+            '/en/yamaguchi-road-trip/',
+            '/en/tottori-road-trip/',
+            '/en/kochi-road-trip/',
+            '/en/kurahashi-island/',
+            '/en/etajima-island/',
+            '/en/mikawa-mu-valley/',
+            '/en/sera-day-trip/',
+            '/en/motonosumi-shrine/'
+          ]
+          unaffected=[
+            '/en/matsue-vogel-park/',
+            '/en/okunoshima-rabbit-island/',
+            '/en/nagase-beach/',
+            '/en/sera-kogen-farm/',
+            '/kochi-1night-2days-drive/',
+            '/muvalley/',
+            '/en/'
+          ]
+          def get(path):
+              req=urllib.request.Request(root+path,headers={'User-Agent':'Tsurikue-English-driving-CTA-live-audit/1.0','Accept':'text/html','Cache-Control':'no-cache'})
+              try:
+                  with urllib.request.urlopen(req,timeout=25) as resp:
+                      return resp.status,resp.geturl(),resp.read(450000).decode('utf-8','replace')
+              except urllib.error.HTTPError as e:
+                  return e.code,e.geturl(),e.read(90000).decode('utf-8','replace')
+          for path in targeted+unaffected+['/en/tsunoshima-bridge/']:
+              status,final,html=get(path)
+              notice=html.count('data-tsurikue-en-driving="v1"')
+              button=html.count('tsurikue-en-rental-button')
+              link=html.count('https://www.discovercars.com/?a_aid=tsurikue')
+              info={'path':path,'status':status,'final':final,'notice':notice,'button':button,'affiliate_link':link}
+              print('DRIVING_CTA_LIVE_CHECK '+json.dumps(info,ensure_ascii=False))
+              if path in targeted:
+                  assert status==200, path+' not HTTP 200'
+                  assert notice==1 and button==1 and link==1, path+' licence notice/button/affiliate count failed'
+                  assert '1949 Geneva Convention' in html, path+' missing driving eligibility detail'
+                  assert 'www.npa.go.jp/english/bureau/traffic/' in html, path+' missing official link'
+                  assert html.index('data-tsurikue-en-driving="v1"') < html.index('https://www.discovercars.com/?a_aid=tsurikue'),path+' note after affiliate'
+                  assert re.search(r'<a\b[^>]*class="tsurikue-en-rental-button"[^>]*href="https://www\.discovercars\.com/\?a_aid=tsurikue"[^>]*>',html),path+' button not on the affiliate anchor'
+              elif path in unaffected:
+                  assert status==200,path+' unaffected public page status changed'
+                  assert notice==0 and button==0,path+' unexpected injected CTA'
+              else:
+                  assert status==404,path+' draft became public'
+                  assert notice==0 and button==0,'draft exposed licence CTA'
+          print('EN_DRIVING_CTA_PUBLIC_VERIFICATION=PASS')
+          print('WORDPRESS_WRITE_COUNT=0')
+          PY
