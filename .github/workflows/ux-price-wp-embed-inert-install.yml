@@ -1,0 +1,61 @@
+name: UX price WordPress inactive embed install
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/wordpress/**'
+      - '.github/workflows/ux-price-wp-embed-inert-install.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/wordpress/**'
+      - '.github/workflows/ux-price-wp-embed-inert-install.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ux-price-wp-embed-install
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Fail-closed plugin and deployment script tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/lexus-ux-price-checker/wordpress/tsurikue-ux-price-embed.php
+          php -l ops/lexus-ux-price-checker/wordpress/tests/test_embed.php
+          php ops/lexus-ux-price-checker/wordpress/tests/test_embed.php
+          bash -n ops/lexus-ux-price-checker/wordpress/install_inert.sh
+          grep -Fq 'TSURIKUE_UX_PRICE_ENABLED' ops/lexus-ux-price-checker/wordpress/tsurikue-ux-price-embed.php
+  install-disabled:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate Xserver using pinned SSH host key
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Install disabled plugin only without post writes
+        shell: bash
+        run: bash ops/lexus-ux-price-checker/wordpress/install_inert.sh
+      - name: Confirm inert install in Actions summary
+        if: success()
+        shell: bash
+        run: |
+          echo 'UX inactive MU-plugin installed; TSURIKUE_UX_PRICE_ENABLED remains undefined.' >> "$GITHUB_STEP_SUMMARY"
+          echo 'WordPress post contents were not edited; iframe is not activated.' >> "$GITHUB_STEP_SUMMARY"
