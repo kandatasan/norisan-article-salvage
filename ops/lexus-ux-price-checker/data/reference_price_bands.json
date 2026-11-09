@@ -9,8 +9,8 @@
   ],
   "price_basis": "total",
   "source_label": "一般中古車の掲載例（CPO除外）",
-  "source_count": 13,
-  "sampling_note": "限定的な掲載例のみ。全国市場の代表標本ではなく、掲載の継続や同一車両の重複などを最終確認していない。",
+  "source_count": 27,
+  "sampling_note": "2026-11-09に一般中古車情報45件を監査し27件を候補として残した。前回13件との横断重複は未完了。研究用プレビュー、全国代表相場ではない。",
   "band_method": "掲載支払総額の第1～第3四分位を10万円単位で外側へ丸めた参考範囲。中央値併記。走行・色による補正なし。",
   "cohorts": [
     {
@@ -46,6 +46,50 @@
       "upper_man": 420,
       "market_segment": "general_market",
       "quality": "research_only_sparse_samples"
+    },
+    {
+      "model": "200",
+      "grade": "fs",
+      "year": 2019,
+      "mileage_start_km": "any",
+      "color": "any",
+      "sample_size": 6,
+      "observed_years": [
+        2019,
+        2019
+      ],
+      "lower_man": 270,
+      "median_man": 295.5,
+      "upper_man": 310,
+      "market_segment": "general_market",
+      "sample_description": "2019年式UX200 F SPORT、限定的な一般中古車6台の観測例。走行1〜7万km混在。CPO・旧キャッシュを除外。",
+      "quality": "research_only_recent_review"
+    },
+    {
+      "model": "250h",
+      "grade": "c",
+      "year": 2021,
+      "mileage_start_km": "any",
+      "color": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2021,
+        2021
+      ],
+      "lower_man": 330,
+      "median_man": 353,
+      "upper_man": 370,
+      "market_segment": "general_market",
+      "sample_description": "2021年式UX250h version C、限定的な一般中古車5台の観測例。走行1.6〜4.2万km混在。CPO・旧キャッシュを除外。",
+      "quality": "research_only_recent_review"
     }
+  ],
+  "new_observation_candidate_count": 27,
+  "historical_sample_count_unreconciled": 13,
+  "publication_blockers": [
+    "市場代表性および一万km帯の標本不足",
+    "前回調査との重複未解消",
+    "収集・再利用条件と調査日の再確認",
+    "販売条件・地域・装備の差の未調整"
   ]
 }
