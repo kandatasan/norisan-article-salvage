@@ -1,0 +1,119 @@
+name: Lexus UX price Xserver isolated preview
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/**'
+      - '.github/workflows/ux-price-xserver-ci-preview.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/**'
+      - '.github/workflows/ux-price-xserver-ci-preview.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ux-price-xserver-ci-preview
+  cancel-in-progress: false
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify research-only gate and UI
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json, pathlib
+          p=pathlib.Path('ops/lexus-ux-price-checker')
+          h=(p/'index.html').read_text()
+          j=json.loads((p/'data/reference_price_bands.json').read_text())
+          assert 'id="general-price"' in h and 'id="cpo-price"' in h
+          assert h.count('https://px.a8.net/svt/ejp?a8mat=')==1
+          assert 'name="robots" content="noindex' in h
+          assert "['localhost','127.0.0.1'].includes(location.hostname)" in h
+          assert j['publication_reviewed'] is False and j['research_preview_only'] is True
+          assert j['price_basis']=='total'
+          assert set(j['markets_included'])=={'general_market','lexus_cpo'}
+          for v in j['cohorts']:
+              assert v['lower_man']<=v['median_man']<=v['upper_man']
+              assert v['market_segment'] in ('general_market','lexus_cpo')
+          print('UX_RESEARCH_ONLY_GATE=PASS')
+          PY
+          sed -n '/<script>/,/<\/script>/p' ops/lexus-ux-price-checker/index.html | sed '1d;$d' > /tmp/ux-price-script.js
+          node --check /tmp/ux-price-script.js
+  deploy-preview:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: verify
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Xserver SSH host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Transfer only UX HTML and JSON to isolated staging
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          opts="-p 10022 -i $HOME/.ssh/xserver_deploy_key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          candidate=".tsurikue-ux-price-ci-$GITHUB_RUN_ID"
+          ssh $opts "$remote" bash -s -- "$candidate" <<'REMOTE'
+          set -euo pipefail
+          name="$1"
+          [[ "$name" =~ ^\.tsurikue-ux-price-ci-[0-9]+$ ]] || exit 1
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test ! -e "$HOME/$name" && test ! -L "$HOME/$name"
+          mkdir -p "$HOME/$name/data"
+          REMOTE
+          rsync -az -e "ssh $opts" --include='/index.html' --include='/data/' --include='/data/reference_price_bands.json' --exclude='*' ops/lexus-ux-price-checker/ "$remote:$candidate/"
+          ssh $opts "$remote" bash -s -- "$candidate" <<'REMOTE'
+          set -euo pipefail
+          name="$1"
+          [[ "$name" =~ ^\.tsurikue-ux-price-ci-[0-9]+$ ]] || exit 1
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          candidate="$HOME/$name"
+          stage="$root/ux-price-checker-ci-preview"
+          backup="$HOME/.tsurikue-ux-ci-old-$name"
+          marker=".tsurikue-ux-price-managed"
+          test -f "$candidate/index.html" && test -f "$candidate/data/reference_price_bands.json"
+          php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || $d["publication_reviewed"]!==false || $d["research_preview_only"]!==true)exit(1);' "$candidate/data/reference_price_bands.json"
+          test ! -L "$candidate" && test ! -L "$stage"
+          printf 'ux-preview\n' > "$candidate/$marker"
+          cat > "$candidate/.htaccess" <<'HT'
+          <IfModule mod_headers.c>
+          Header always set X-Robots-Tag "noindex, nofollow"
+          </IfModule>
+          HT
+          if [[ -e "$stage" ]]; then
+            test -d "$stage" && test -f "$stage/$marker" || { echo 'Unmanaged preview folder; stop'; exit 2; }
+            test ! -e "$backup" && test ! -L "$backup"
+            mv "$stage" "$backup"
+          fi
+          mv "$candidate" "$stage" || { test ! -e "$backup" || mv "$backup" "$stage"; exit 3; }
+          echo 'UX_PREVIEW_SSH=PASS'
+          REMOTE
+      - name: Verify HTTPS matches GitHub source
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --max-time 25 --retry 2 'https://tsurikue.com/ux-price-checker-ci-preview/index.html' -o /tmp/ux-checker-preview.html
+          cmp /tmp/ux-checker-preview.html ops/lexus-ux-price-checker/index.html
+          curl -fsSL --max-time 25 --retry 2 'https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json' -o /tmp/ux-checker-preview.json
+          cmp /tmp/ux-checker-preview.json ops/lexus-ux-price-checker/data/reference_price_bands.json
+          echo 'UX_PREVIEW_HTTPS=PASS'
