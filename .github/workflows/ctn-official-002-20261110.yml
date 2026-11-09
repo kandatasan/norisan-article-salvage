@@ -1,0 +1,58 @@
+name: Install scoped A8 official CTN 002 buttons in 19 published car posts
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_official_002_20261110.py'
+      - 'scripts/ctn_official_002_public_qa_20261110.py'
+      - 'scripts/ctn_official_002_browser_qa_20261110.py'
+      - '.github/workflows/ctn-official-002-20261110.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_official_002_20261110.py'
+      - 'scripts/ctn_official_002_public_qa_20261110.py'
+      - 'scripts/ctn_official_002_browser_qa_20261110.py'
+      - '.github/workflows/ctn-official-002-20261110.yml'
+permissions:
+  contents: read
+jobs:
+  preflight-and-deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax validation
+        run: python -m py_compile scripts/ctn_official_002_20261110.py scripts/ctn_official_002_public_qa_20261110.py scripts/ctn_official_002_browser_qa_20261110.py
+      - name: Authenticated WordPress read-only preflight (19 CTA + 4 unchanged)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_official_002_20261110.py check
+      - name: Guarded 19-post content-only update and REST verification
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_official_002_20261110.py apply
+      - name: Read-only public HTML verification of all 23 posts
+        if: github.event_name == 'push'
+        run: python scripts/ctn_official_002_public_qa_20261110.py
+      - name: Install Playwright and Chromium for rendered visual verification
+        if: github.event_name == 'push'
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify button mobile and desktop screenshots (3 pages x 2 widths)
+        if: github.event_name == 'push'
+        run: python scripts/ctn_official_002_browser_qa_20261110.py
+      - name: Archive deployment, public and visual QA
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-official-002-20261110
+          path: reports/ctn-official-002-20261110/
+          if-no-files-found: warn
