@@ -1,0 +1,44 @@
+name: CTN 23-post natural flow and paragraph-rhythm updates
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_natural_flow_20261110.py'
+      - '.github/workflows/ctn-natural-flow-20261110.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_natural_flow_20261110.py'
+      - '.github/workflows/ctn-natural-flow-20261110.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  safe-apply:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Python syntax
+        run: python -m py_compile scripts/ctn_natural_flow_20261110.py
+      - name: Read live WordPress and preflight all 23 posts (no writes)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_natural_flow_20261110.py check
+      - name: Update only exact verified posts and verify them individually
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ctn_natural_flow_20261110.py apply
+      - name: Archive immutable edit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-natural-flow-20261110
+          path: reports/ctn-natural-flow-20261110/
+          if-no-files-found: warn
