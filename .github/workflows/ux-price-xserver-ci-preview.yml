@@ -43,6 +43,7 @@ jobs:
               assert v['market_segment'] in ('general_market','lexus_cpo')
           print('UX_RESEARCH_ONLY_GATE=PASS')
           PY
+          python ops/lexus-ux-price-checker/tests/test_release.py
           sed -n '/<script>/,/<\/script>/p' ops/lexus-ux-price-checker/index.html | sed '1d;$d' > /tmp/ux-price-script.js
           node --check /tmp/ux-price-script.js
   deploy-preview:

@@ -12,7 +12,7 @@
 <body>
 <main><section class="ux" aria-label="レクサスUX中古車の相場目安">
 <h1>レクサスUXの中古車相場価格</h1>
-<p class="meta" style="margin:-5px 0 10px">掲載車両の価格を参考にした目安。一般中古車と認定中古車を比較できます。</p>
+<p class="meta" style="margin:-5px 0 10px">ネット掲載の価格を参考にした目安。一般中古車とCPOを別々に比較できます。</p>
 <div class="grid">
   <div class="field full"><label for="grade">グレード</label><select id="grade"></select></div>
   <div class="field"><label for="year">年式</label><select id="year"></select></div>
@@ -20,12 +20,20 @@
   <div class="field full"><label for="color">カラー</label><select id="color"></select></div>
 </div>
 <div class="result" id="result" role="status" aria-live="polite">
-  <p class="kicker">中古車の参考価格帯（支払総額）</p>
-  <div class="marketrow"><div class="markethead">一般中古車</div><div class="marketprice" id="general-price">集計中</div><p class="marketnote" id="general-note">参考価格を調査しています</p></div>
-  <div class="marketrow"><div class="markethead">レクサスCPO <span class="sub">認定中古車</span></div><div class="marketprice" id="cpo-price">集計中</div><p class="marketnote" id="cpo-note">参考価格を調査しています</p></div>
+  <p class="kicker">中古車の参考価格帯（支払総額・少数の掲載例）</p>
+  <div class="marketrow">
+    <div class="markethead">一般中古車</div>
+    <div class="marketprice" id="general-price">集計中</div>
+    <p class="marketnote" id="general-note">参考価格を調査しています</p>
+  </div>
+  <div class="marketrow">
+    <div class="markethead">レクサスCPO <span class="sub">認定中古車</span></div>
+    <div class="marketprice" id="cpo-price">集計中</div>
+    <p class="marketnote" id="cpo-note">参考価格を調査しています</p>
+  </div>
   <p class="meta" id="meta">該当条件の掲載価格を調査しています。</p>
 </div>
-<p class="reference"><strong>価格について：</strong>公開中の掲載価格を参考に別々に集計。認定中古車は保証・整備条件が異なります。調査日・件数・条件によって価格は変動し、査定額ではありません。</p>
+<p class="reference"><strong>価格について：</strong>販売中の少数掲載例から独自試算した中央値と中央50％の範囲。保証・装備・地域によって差があります。年式やグレードが一致しない場合はその旨を表示します。相場全体を代表するものではなく、買取査定額でもありません。</p>
 <div class="cta-wrap">
   <p class="adlabel">PR｜ガリバー</p>
   <p class="cta-head">まだネットに出る前の、お得なUXが見つかるかも？</p>
@@ -54,39 +62,52 @@ const params=new URLSearchParams(location.search);const pModel=params.get('model
 if([...g.options].some(o=>o.value===pModel+':'+pGrade))g.value=pModel+':'+pGrade;else g.value='250h:c';
 for(const [el,name] of [[y,'year'],[k,'mileage'],[c,'color']]){const v=params.get(name);if(v&&[...el.options].some(o=>o.value===v))el.value=v}
 if(!params.has('year'))y.value='2021';
-function syncYears(){const [model,id]=g.value.split(':');const start=models.find(m=>m[0]===model)?.[3].find(z=>z[0]===id)?.[2]||2018;[...y.options].forEach(o=>{o.disabled=o.value!=='any'&&+o.value<start});if(y.selectedOptions[0]?.disabled)y.value='any'}
+function syncYears(){const [model,id]=g.value.split(':');const start=models.find(m=>m[0]===model)?.[3].find(z=>z[0]===id)?.[2]||2018;const endYear=({200:2023,'250h':2023,'300h':2026,'300e':2026})[model]||2026;[...y.options].forEach(o=>{o.disabled=o.value!=='any'&&(+o.value<start||+o.value>endYear)});if(y.selectedOptions[0]?.disabled)y.value='any'}
 // Only show preview figures on local test host. URL flags do not bypass publication review on the public site.
 const isLocalTest=['localhost','127.0.0.1'].includes(location.hostname);
 let sourceLabel='';let sampleDate='';let isPreview=false;
 function fmt(n){return Math.round(n).toLocaleString('ja-JP')}
 function matchingBand(model,grade,yr,mileage,segment){
- const targetYear=yr==='any'?'any':Number(yr),targetMileage=mileage==='any'?'any':Number(mileage);
- const options=bands.filter(b=>b.market_segment===segment&&b.model===model&&
-    (grade==='all'?b.grade==='all':b.grade===grade)&&
-    (b.year==='any'||b.year===targetYear)&&
-    (b.mileage_start_km==='any'||b.mileage_start_km===targetMileage)&&
-    (targetYear==='any'||b.year!=='any'));
- const score=b=>((b.grade===grade&&grade!=='all')?2:0)+((b.year!=='any')?4:0)+((b.mileage_start_km!=='any')?1:0);
- options.sort((a,b)=>score(b)-score(a));return options[0];
+  const targetYear=yr==='any'?null:Number(yr);
+  const targetMileage=mileage==='any'?null:Number(mileage);
+  const candidates=bands.filter(b=>{
+    if(b.market_segment!==segment||b.model!==model) return false;
+    if(b.grade!==grade&&b.grade!=='all') return false;
+    if(grade==='all'&&b.grade!=='all') return false;
+    if(b.mileage_start_km!=='any'&&b.mileage_start_km!==targetMileage) return false;
+    const [minYear,maxYear]=b.observed_years;
+    if(targetYear===null) return b.year==='any';
+    if(b.year!=='any') return b.year===targetYear;
+    // Fallback limited to neighbouring registration years, not the full model history.
+    return minYear<=targetYear && targetYear<=maxYear && maxYear-minYear<=1;
+  });
+  // Exact year/grade beats same-year all-grade; only then use a two-year all-grade range.
+  const score=b=>(b.year!=='any'?10:0)+(b.grade===grade&&grade!=='all'?4:0)+(b.mileage_start_km!=='any'?2:0)-(b.observed_years[1]-b.observed_years[0]);
+  candidates.sort((a,b)=>score(b)-score(a) || b.sample_size-a.sample_size);
+  return candidates[0];
 }
 function render(){
   syncYears();
-  const [model,grade]=g.value.split(':');const yr=y.value,mileage=k.value,color=c.value;
+  const [model,grade]=g.value.split(':'),yr=y.value,mileage=k.value,color=c.value;
   const general=matchingBand(model,grade,yr,mileage,'general_market');
   const cpo=matchingBand(model,grade,yr,mileage,'lexus_cpo');
   function showMarket(b,priceId,noteId){
     const price=$(priceId),note=$(noteId);
-    if(!b){price.textContent='集計中';price.classList.add('is-empty');note.textContent='同条件のデータ不足';return;}
+    if(!b){price.textContent='集計中';price.classList.add('is-empty');note.textContent='同条件の掲載例が不足しています';return;}
     price.classList.remove('is-empty');
     price.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
-    const cautions=[];
-    if(mileage!=='any'&&b.mileage_start_km==='any')cautions.push('走行距離は未反映');
-    if(color!=='any')cautions.push('カラー差は未反映');
-    note.textContent=`中央値 約${fmt(b.median_man)}万円・${b.sample_size}件${cautions.length?'／'+cautions.join('・'):''}`;
+    const caveats=[];
+    const [m,selectedGrade]=g.value.split(':');
+    if(yr!=='any'&&b.year==='any')caveats.push(`年式${b.observed_years[0]}〜${b.observed_years[1]}年`);
+    if(yr==='any')caveats.push(`年式${b.observed_years[0]}〜${b.observed_years[1]}年`);
+    if(selectedGrade!=='all'&&b.grade==='all')caveats.push('グレード混在');
+    if(mileage!=='any'&&b.mileage_start_km==='any')caveats.push('走行距離未反映');
+    if(color!=='any')caveats.push('カラー未反映');
+    note.textContent=`中央値約${fmt(b.median_man)}万円・${b.sample_size}件`+(caveats.length?'／'+caveats.join('・'):'');
   }
   showMarket(general,'general-price','general-note');
   showMarket(cpo,'cpo-price','cpo-note');
-  $('meta').textContent=(general||cpo)?`${isPreview?'研究用プレビュー／':''}${sampleDate||'調査日未設定'}調査。一般中古車とCPOは別集計。`:'一致する価格データを収集中です。';
+  $('meta').textContent=(general||cpo)?`${isPreview?'調査プレビュー／':''}${sampleDate||'調査日不明'}時点の少数掲載例。全国市場を代表する統計ではありません。`:'条件に合う掲載例を調査中です。価格は変動します。';
 }
 [g,y,k,c].forEach(el=>el.addEventListener('change',render));syncYears();render();
 fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('no data');return r.json()}).then(data=>{
@@ -99,9 +120,10 @@ fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)
   isPreview=!approved;
   bands=(Array.isArray(data.cohorts)?data.cohorts:[]).filter(b=>
     models.some(m=>m[0]===b.model&&m[3].some(x=>x[0]===b.grade)) &&
-    (Number.isInteger(b.year)&&b.year>=2018&&b.year<=2026) &&
+    ((b.year==='any')||(Number.isInteger(b.year)&&b.year>=2018&&b.year<=2026)) &&
     (b.mileage_start_km==='any'||(Number.isInteger(b.mileage_start_km)&&b.mileage_start_km>=0&&b.mileage_start_km%10000===0)) &&
     Number.isInteger(b.sample_size)&&b.sample_size>=5 &&
+    Array.isArray(b.observed_years)&&b.observed_years.length===2&&b.observed_years.every(Number.isInteger)&&b.observed_years[0]<=b.observed_years[1]&&
     [b.lower_man,b.median_man,b.upper_man].every(v=>Number.isFinite(v)&&v>0) &&
     b.lower_man<=b.median_man && b.median_man<=b.upper_man &&
     ['general_market','lexus_cpo'].includes(b.market_segment) && Array.isArray(b.observed_years)&&b.observed_years.length===2);
