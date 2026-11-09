@@ -7,6 +7,8 @@
 if (!defined('ABSPATH')) { exit; }
 
 add_filter('the_content', static function ($html) {
+    // Fail closed until the price data, A8 destination and production URL pass review.
+    if (!defined('TSURIKUE_UX_PRICE_ENABLED') || TSURIKUE_UX_PRICE_ENABLED !== true) { return $html; }
     if (!is_singular('post') || !in_the_loop() || !is_main_query()) { return $html; }
     $post = get_post();
     if (!$post || $post->post_status !== 'publish' || !is_string($html)) { return $html; }
