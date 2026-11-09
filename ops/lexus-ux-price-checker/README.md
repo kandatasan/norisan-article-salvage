@@ -1,48 +1,35 @@
-# つりくえ！ レクサスUX中古車相場価格 v0.4
+# つりくえ！ UX中古車相場ツール v0.6（調査用プレビュー）
 
-## 画面・機能
-- 4項目のみ：グレード（UX200 / 250h / 300h / 300e、全8種類の特別仕様車等）・年式（2018〜2026年、1年刻み）・走行（1万km幅）・ボディカラー（大分類）
-- グレードの発売年前の年式を選べないようにする。初度登録年と発売・生産年のズレを考慮し、上限側は強制制限しない。
-- 利用許諾済みレコードのみの四分位価格帯・支払総額中央値（最低5件）。45日を超えて古いデータは表示しない。
-- 価格データがないときは、架空の相場を表示せずGoogleの条件付き検索に誘導。
-- 利用者が自分で見つけた掲載車3台以上の支払総額を入力して、手元で中央値を計算する任意の折りたたみ機能を追加（入力は送信されない）。
-- 広告と明示したガリバーの既存A8自由テキストリンクを設置。非公開在庫の有無や割安さを保証しない。
+## 目的
+UX記事の途中で4条件を選んで、大まかな価格帯をサクッと見る。詳細な車探しは外部の中古車サイトに任せる。ツール直下に「ネットに出る前の、お得なUXが見つかるかも？」という期待を入口にしてガリバーA8へ案内する。広告の先での非公開在庫の有無・割安さは保証しない。
 
-## 特別仕様車・年式（レクサス公式発表）
-- UX200: Blue Edition(2020), Urban Elegance(2020), F SPORT Style Blue(2021), F SPORT Emotional Explorer(2022), Graceful Explorer(2022)
-- UX250h: Brown Edition(2020), Urban Elegance(2020), F SPORT Style Blue(2021), Elegant Black(2021), F SPORT Emotional Explorer(2022), Graceful Explorer(2022)
-- UX300h: F SPORT Emotional Explorer(2024), Graceful Explorer(2024), Shining Essence(2026・追加設定グレード)
-- UX300e: version C, version L(2020〜)
+## 状態
+- 画面・プルダウン：動作。年式1年、走行1万km、カラーざっくり、UX200/250h/300h/300e＋特別仕様車。
+- 38件の調査のうちCPO掲載例36件から、**個票非公開の集計済み価格帯**を作成。販売価格は支払総額。2件の一般市場はCPOと混在しない。
+- 価格の幅：少数データの観測最小・最大を25万円刻みで外側へ丸める。中央値は実データの中央値。全国相場の推定値ではない。
+- 件数不足の年式・グレード・走行距離は調査中とする。年式の近隣±1年のデータを含む場合、該当する年式・グレード・走行・色のズレを表示。**少数データを見た目のためだけに増やさない。**
+- CPOは一般中古車より保証・整備条件が異なることがある。相場全体の代表値として公開しない。
 
-## データ受け入れ条件
-`data/ux-prices.json` の `license_status=approved`, `public_display_allowed=true`, `price_basis=total` と、`updated_at` が45日以内である必要がある。`records` の各要素：
-`model` (200/250h/300h/300e), `grade` (base/c/fs/l/特別仕様車ID), `year` (初度登録年), `mileage_km` (整数), `color` (white/black/silver/blue/red/other), `total_price_yen` (支払総額・円), `permission_status=approved`, `price_basis=total`, `source_url` (http(s) URL)。
-カタログのメーカー希望小売価格は中古車の掲載販売価格とは異なる。混同しないこと。
+## 公開制限（重要）
+- `data/reference_price_bands.json` は `publication_reviewed=false`, `research_preview_only=true`。公開環境では価格非表示。
+- ローカルの `http://localhost:PORT/index.html?preview=1` だけ調査集計を表示。サーバー設置で URL パラメータのみで安全ゲートが外れる設計ではない。
+- 本番公開前：抽出方法、調査件数の偏り、利用規約、広告の最終遷移先、WordPressの現行構造と埋め込み表示を監査。
+- グーネットやカーセンサーの個別掲載情報、写真、本文の転載をしない。自動スクレイピング禁止。個別資料は同梱しない。
+- 価格帯の集計値まで無条件に自由利用と断言するものではない。今は研究・プレビュー専用。
 
-## 公開までの保留事項
-- グーネット等からの無断スクレイピング・転載はしない。
-- 運営元プロトコーポレーションの「自動車データベース」など、契約に基づくBtoC表示許諾を得る。使用料金と許諾範囲は未確認。
-- 外部API・データ供給契約が成立しない限り「条件別の中古車相場金額を自動表示する機能」は稼働しない。現行は条件付き検索＋任意手入力比較機能。
-- 既存A8自由テキストの広告条件、公開前車両情報への導線が遷移先で利用できることを確認。
-- GitHub main・WordPress現状をチェックした後、PR→監査→ステージング検証→本番公開する。河川図鑑の既存自動デプロイ先に混ぜない。
+## ファイル
+- `index.html`：4条件と相場表示、ガリバーCTA（既存A8自由テキスト）
+- `data/reference_price_bands.json`：36件のCPOから算出した集計情報のみ（個票なし）
+- `data/` 内に価格データ更新の原本は置かない。
 
-## 公式出典
-- https://cpo.lexus.jp/catalog/ux.html
-- https://global.toyota/jp/newsroom/lexus/31088353.html
-- https://global.toyota/jp/newsroom/lexus/32097951.html
-- https://global.toyota/jp/newsroom/lexus/33759881.html
-- https://global.toyota/jp/newsroom/lexus/35872760.html
-- https://global.toyota/jp/newsroom/lexus/37532287.html
-- https://global.toyota/jp/newsroom/lexus/41712619.html
-- https://global.toyota/jp/newsroom/lexus/44513119.html
-- https://global.toyota/jp/newsroom/lexus/40218670.html
-- https://global.toyota/jp/newsroom/lexus/34009601.html
-- https://www.proto-g.co.jp/product/mobility/cardb/
+## ガリバー訴求
+ガリバー公式の非公開情報紹介には「ウェブサイトへの掲載準備中であっても、希望条件に合えば先行案内する」旨の説明あり。非公開が割安の保証とは言っていない。
+- https://221616.com/faq/help8/
 - https://221616.com/services/hikokai/
-## v0.4 試算・集計ルール
-- グレード・初度登録年・走行距離（1万km帯）で絞り、5件以上の許諾済み支払総額から25%点〜75%点（Q1〜Q3）を価格帯として表示する。上下は10万円単位に丸め、中央値も併記。
-- 5〜19件：少数データの参考値。20件以上：通常の参考価格帯。4件以下：相場は非表示。
-- データに `market_segment=lexus_cpo` または `general_market` が必要。個票にも同じ区分を要求し、認定中古車と一般在庫の混在を防ぐ。
-- 色の指定に該当する価格が5件未満の場合は色を問わず再集計（画面上で注意）。
-- 2026-11-09予備調査の38件は許諾未確認の調査専用であり、本番の価格DBへ投入禁止。調査メモは `RESEARCH_20261109.md` を参照。
-- ブラウザ試験は外部掲載データではなく、権限フラグ付きの**テストデータ**による。WordPress公開・本番サーバー配信はまだ実施していない。
+- https://221616.com/search/proposal221616/unpub/
+
+## テスト（例）
+`python -m http.server 8765 --directory .` → `http://localhost:8765/index.html?preview=1`
+年式を指定すると、その年の掲載例がゼロの場合は価格を非表示。カラー差の数値補正は現時点で行わず、その旨を明記する。
+
+本番サイト、WordPress、既存記事へは未反映。GitHub PRはドラフトのままにする。
