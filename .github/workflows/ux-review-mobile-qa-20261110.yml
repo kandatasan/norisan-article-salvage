@@ -1,0 +1,68 @@
+name: UX review post-publication mobile and desktop QA (read-only)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/ux-review-mobile-qa-20261110.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Chromium and Playwright
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify rendered site at mobile and desktop widths
+        run: |
+          python - <<'PY'
+          import json, pathlib, asyncio
+          from playwright.async_api import async_playwright
+          URL="https://tsurikue.com/lexus-ux-review/"
+          OUT=pathlib.Path("reports/ux-review-mobile-qa-20261110")
+          OUT.mkdir(parents=True,exist_ok=True)
+          async def main():
+            audit=[]
+            async with async_playwright() as p:
+              browser=await p.chromium.launch(headless=True)
+              for width,height in [(375,812),(1280,800)]:
+                page=await browser.new_page(viewport={"width":width,"height":height},device_scale_factor=1)
+                response=await page.goto(URL,wait_until="domcontentloaded",timeout=60000)
+                await page.wait_for_timeout(2500)
+                if response is None or response.status!=200:
+                  raise RuntimeError(f"HTTP_NOT_OK_{width}_{response.status if response else 'null'}")
+                heading=page.get_by_role("heading",name="乗っていて気に入った3つのところ")
+                if await heading.count()!=1:raise RuntimeError(f"REWRITE_NOT_VISIBLE_{width}")
+                text=await page.locator("body").inner_text()
+                for word in ("利便性","616万円","山陰","角島","中古のUX250h","買ってよかった"):
+                  if word not in text:raise RuntimeError(f"EXPECTED_TEXT_MISSING_{width}_{word}")
+                imgs=[]
+                for id in (2508,2223,2197):
+                  im=page.locator(f"img.wp-image-{id}")
+                  if await im.count()!=1:raise RuntimeError(f"IMAGE_MISSING_{width}_{id}")
+                  info=await im.evaluate("(e)=>({src:e.currentSrc,loaded:e.complete&&e.naturalWidth>0})")
+                  imgs.append({"id":id,**info})
+                  if not info["loaded"]:raise RuntimeError(f"IMAGE_NOT_LOADED_{width}_{id}")
+                dims=await page.evaluate("({viewport:window.innerWidth,document:document.documentElement.scrollWidth})")
+                if dims["document"] > dims["viewport"]+6:
+                  raise RuntimeError(f"HORIZONTAL_OVERFLOW_{width}_{dims}")
+                target=OUT/f"ux-review-{width}px.png"
+                await page.screenshot(path=str(target),full_page=True)
+                audit.append({"width":width,"http":response.status,"images":imgs,"dimensions":dims,"screenshot":str(target)})
+                await page.close()
+              await browser.close()
+            (OUT/"public-qa.json").write_text(json.dumps(audit,ensure_ascii=False,indent=2))
+            print("UX_REVIEW_PUBLIC_MOBILE_DESKTOP_QA_OK",json.dumps([{k:v for k,v in d.items() if k!="images"} for d in audit],ensure_ascii=False))
+          asyncio.run(main())
+          PY
+      - name: Upload screenshot and audit report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-review-mobile-qa-20261110
+          path: reports/ux-review-mobile-qa-20261110/
+          if-no-files-found: warn
