@@ -88,7 +88,6 @@ def transform(pid,orig):
             rep='\n\n'+TOP+'\n\n'+g.group(2)+'\n\n'+BOTTOM+'\n\n' if i in keep and pid not in MOVE else ''
             new=new[:g.start()]+rep+new[g.end():]
         new=DIRECT.sub('',new)
-        new=re.sub(r'<!-- wp:paragraph -->\s*<p>\s*</p>\s*<!-- /wp:paragraph -->\s*','',new)
         if pid in MOVE:
             want=MOVE[pid]
             h=re.search(r'<!-- wp:heading(?: \{[^\n]*\})? -->\s*<h[23][^>]*>'+re.escape(want)+r'</h[23]>\s*<!-- /wp:heading -->',new)
