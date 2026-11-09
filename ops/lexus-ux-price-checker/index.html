@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>レクサスUXの中古車相場価格｜つりくえ！ v0.3</title>
+<title>レクサスUXの中古車相場価格｜つりくえ！ v0.4</title>
 <style>
 :root{color-scheme:light;--ink:#1c2d39;--sub:#5e717c;--line:#d9e1e5;--bg:#fff;--soft:#f5f8f9;--accent:#254d62}
 *{box-sizing:border-box}html,body{margin:0;padding:0}body{font:14px/1.55 -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:var(--bg)}
@@ -28,7 +28,7 @@ button,a{touch-action:manipulation}button:focus-visible,select:focus-visible,a:f
 <button class="go" type="submit">この条件の相場を確認</button>
 </form>
 <div class="price" id="result" role="status" aria-live="polite">
-<p class="price-header">中古車の参考価格（支払総額）</p>
+<p class="price-header">中古車の参考価格帯（支払総額）</p>
 <p class="price-value" id="price">— 万円</p>
 <p class="price-note" id="status">掲載価格データは未取得です。実際の掲載車を検索できます。</p>
 </div>
@@ -101,6 +101,7 @@ button,a{touch-action:manipulation}button:focus-visible,select:focus-visible,a:f
   }
 
   const median = a => {let i=(a.length-1)/2;return (a[Math.floor(i)]+a[Math.ceil(i)])/2;};
+  const quantile = (a,p) => {const i=(a.length-1)*p;const lo=Math.floor(i),hi=Math.min(lo+1,a.length-1);return a[lo]*(1-(i-lo))+a[hi]*(i-lo);};
   const kmRange = v => {if(v==='any')return null;if(v.endsWith('-up'))return [100000,Infinity];return v.split('-').map(Number)};
   function updateLookup(){
     const [model,id]=grade.value.split(':');
@@ -123,18 +124,21 @@ button,a{touch-action:manipulation}button:focus-visible,select:focus-visible,a:f
     let relaxColor=false;
     if(color.value!=='any'){
       const exact=base.filter(r=>r.color===color.value);
-      if(exact.length>=3)found=exact;
+      if(exact.length>=5)found=exact;
       else relaxColor=true;
     }
     const sorted=found.map(r=>r.total_price_yen).sort((a,b)=>a-b);
     const price=$('#price'), status=$('#status');
-    if(sorted.length>=3){
-      price.textContent=n(median(sorted))+' 万円';
-      const low=n(sorted[0]),high=n(sorted[sorted.length-1]);
-      status.textContent=`掲載参考価格 ${low}〜${high}万円／対象 ${sorted.length}台${relaxColor?'（色を問わず集計）':''}。売却査定額ではありません。`;
+    if(sorted.length>=5){
+      const q1=Math.floor(quantile(sorted,.25)/100000)*10;
+      const q3=Math.ceil(quantile(sorted,.75)/100000)*10;
+      const mid=(Math.round(median(sorted)/10000)).toLocaleString('ja-JP');
+      price.textContent=`${q1.toLocaleString('ja-JP')}万〜${q3.toLocaleString('ja-JP')}万円`;
+      const caution=sorted.length<20?'少数データの参考値／':'';
+      status.textContent=`${caution}中央値 約${mid}万円／対象 ${sorted.length}台${relaxColor?'（色を問わず集計）':''}。売却査定額ではありません。`;
     } else {
       price.textContent='— 万円';
-      status.textContent=rows.length===0?'掲載価格データは未取得です。実際の掲載車を検索できます。':'この条件は集計件数が足りません（最低3台）。';
+      status.textContent=rows.length===0?'掲載価格データは未取得です。実際の掲載車を検索できます。':'この条件は集計件数が足りません（最低5台）。';
     }
     updateLookup();
   }
@@ -158,13 +162,14 @@ button,a{touch-action:manipulation}button:focus-visible,select:focus-visible,a:f
       const data=await response.json();updatedAt=typeof data.updated_at==='string'?data.updated_at:'';
       sourceName=typeof data.source_name==='string'?data.source_name:'';
       const current= new Date();const last=new Date(updatedAt+'T00:00:00+09:00');
-      const age=(current-last)/86400000;const enabled=data.license_status==='approved'&&data.price_basis==='total'&&data.public_display_allowed===true&&Number.isFinite(age)&&age>=0&&age<=45;
+      const age=(current-last)/86400000;const allowedSegments=['lexus_cpo','general_market'];
+      const enabled=data.license_status==='approved'&&data.price_basis==='total'&&data.public_display_allowed===true&&allowedSegments.includes(data.market_segment)&&Number.isFinite(age)&&age>=0&&age<=45;
       const allowedModels=new Set(G.map(g=>g[1]));
       rows=(enabled&&Array.isArray(data.records)?data.records:[]).filter(r=>
         allowedModels.has(r.model) && G.find(g=>g[1]===r.model)[4].some(x=>x[0]===r.grade) &&
         Number.isInteger(r.year)&&r.year>=2018&&r.year<=2026&&Number.isFinite(r.mileage_km)&&r.mileage_km>=0&&
         Number.isFinite(r.total_price_yen)&&r.total_price_yen>0&&colors.some(c=>c[0]===r.color&&c[0]!=='any')&&
-        r.permission_status==='approved'&&r.price_basis==='total'&&/^https?:\/\//.test(r.source_url||''));
+        r.permission_status==='approved'&&r.price_basis==='total'&&r.market_segment===data.market_segment&&/^https?:\/\//.test(r.source_url||''));
       if(enabled&&updatedAt)$('#date').textContent='価格データ：'+(sourceName?sourceName+'／':'')+'更新 '+updatedAt+'。';
       output();
     }catch{rows=[];output();}
