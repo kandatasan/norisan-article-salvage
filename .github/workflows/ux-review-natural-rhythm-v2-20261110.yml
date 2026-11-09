@@ -1,0 +1,89 @@
+name: UX review second-pass natural voice and soft breaks
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ux_review_natural_rhythm_v2_20261110.py'
+      - '.github/workflows/ux-review-natural-rhythm-v2-20261110.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ux_review_natural_rhythm_v2_20261110.py'
+      - '.github/workflows/ux-review-natural-rhythm-v2-20261110.yml'
+permissions:
+  contents: read
+jobs:
+  guarded-update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax test
+        run: python -m py_compile scripts/ux_review_natural_rhythm_v2_20261110.py
+      - name: Live WordPress preflight (read only)
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_review_natural_rhythm_v2_20261110.py check
+      - name: Guarded edit of post 2870 (merged main only)
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_review_natural_rhythm_v2_20261110.py apply
+      - name: Install Playwright for smartphone and desktop verification
+        if: github.event_name == 'push'
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify public rendering, photo loading and soft breaks
+        if: github.event_name == 'push'
+        run: |
+          python - <<'PY'
+          import asyncio, json, pathlib
+          from playwright.async_api import async_playwright
+          out=pathlib.Path("reports/ux-review-natural-rhythm-v2-20261110")
+          out.mkdir(parents=True,exist_ok=True)
+          async def verify():
+            summary=[]
+            async with async_playwright() as p:
+              browser=await p.chromium.launch(headless=True)
+              for width in (375,1280):
+                page=await browser.new_page(viewport={"width":width,"height":812})
+                res=await page.goto("https://tsurikue.com/lexus-ux-review/",wait_until="domcontentloaded",timeout=60000)
+                await page.wait_for_timeout(2200)
+                assert res is not None and res.status==200,(width,"HTTP")
+                assert await page.get_by_role("heading",name="1万km以上乗ってつけたレクサスUXの評価").count()==1,(width,"OLD_CONTENT_VISIBLE")
+                article=page.locator(".post_content")
+                if await article.count()!=1:article=page.locator("article")
+                paragraphs=article.locator("p")
+                count=await paragraphs.count()
+                softbreaks=await article.locator("p br").count()
+                assert count>=20,(width,"PARAGRAPHS_MISSING",count)
+                assert softbreaks>=25,(width,"SOFT_BREAKS_MISSING",softbreaks)
+                for photo in (2508,2223,2197):
+                  img=article.locator(f"img.wp-image-{photo}")
+                  assert await img.count()==1,(width,"PHOTO_MISSING",photo)
+                  loaded=await img.evaluate("(e)=>e.complete&&e.naturalWidth>0")
+                  assert loaded,(width,"PHOTO_LOAD_FAIL",photo)
+                dims=await page.evaluate("({vp:innerWidth,doc:document.documentElement.scrollWidth})")
+                assert dims["doc"]<=dims["vp"]+6,(width,"HORIZONTAL_OVERFLOW",dims)
+                path=out/f"ux-review-v2-{width}px.png"
+                await page.screenshot(path=str(path),full_page=True)
+                summary.append({"width":width,"http":res.status,"paragraphs":count,"softbreaks":softbreaks,"dimensions":dims})
+                await page.close()
+              await browser.close()
+            (out/"public-qa.json").write_text(json.dumps(summary,ensure_ascii=False,indent=2)+"\n")
+            print("UX_REVIEW_V2_PUBLIC_QA_OK",json.dumps(summary,ensure_ascii=False),flush=True)
+          asyncio.run(verify())
+          PY
+      - name: Upload verification and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-review-natural-rhythm-v2-20261110
+          path: reports/ux-review-natural-rhythm-v2-20261110/
+          if-no-files-found: warn
