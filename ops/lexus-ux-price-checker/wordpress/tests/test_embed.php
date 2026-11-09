@@ -8,6 +8,10 @@ function in_the_loop() { return true; }
 function is_main_query() { return true; }
 function get_post() { return $GLOBALS['post']; }
 require dirname(__DIR__) . '/tsurikue-ux-price-embed.php';
+$GLOBALS['post']=(object)array('ID'=>2948,'post_name'=>'lexus-ux-used','post_status'=>'publish');
+$before_enabled='<h2>レクサス認定中古車CPOという選択肢</h2>';
+if ($GLOBALS['filter']($before_enabled)!==$before_enabled) { throw new RuntimeException('Plugin must be inert unless explicitly enabled'); }
+define('TSURIKUE_UX_PRICE_ENABLED', true);
 $cases = array(
     array('id'=>2948,'slug'=>'lexus-ux-used','h'=>'レクサス認定中古車CPOという選択肢'),
     array('id'=>3601,'slug'=>'lexus-ux250h-used-vs-ux300h','h'=>'UX300hはちゃんと良くなっている｜試乗して感じた違い'),
