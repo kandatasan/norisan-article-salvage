@@ -4,16 +4,16 @@
 - Xserverに共通の静的HTML `index.html` と価格JSON `data/reference_price_bands.json` を置く。MySQL・PHP・WordPress DBは不要。
 - WordPressの記事は同じURLを iframe で表示する。記事ごとの初期選択はクエリパラメータ `model` / `grade` / `year` / `mileage` / `color` で変更。
 - JSはユーザー入力から計算可能な価格を検索し、一般中古車とCPOを2段で表示。生データは公開せず、掲載価格の小規模な集計結果のみJSONで保持。
-- ガリバーA8自由テキスト広告は`PR`明記。公開前の未公開在庫や価格の保証をしない。
+- **相場ツールは広告非搭載。** ガリバー等のアフィリエイトボタンはWordPress記事本文に個別配置し、ツールのHTML・JSONへは含めない。
 
 ## WordPressのカスタムHTMLブロック例（本番公開後のみ）
 ```html
 <iframe
   title="レクサスUXの中古車相場（一般中古車とCPO）"
   src="https://tsurikue.com/ux-price-checker/?model=250h&amp;grade=c&amp;year=2021"
-  width="100%" height="860" loading="lazy"
+  width="100%" height="620" loading="lazy"
   referrerpolicy="strict-origin-when-cross-origin"
-  style="display:block;width:100%;max-width:100%;height:860px;border:0;border-radius:12px;"
+  style="display:block;width:100%;max-width:100%;height:620px;border:0;border-radius:12px;"
 ></iframe>
 ```
 
@@ -28,15 +28,16 @@
 - WordPress・河川図鑑・テーマには一切触れず、`--delete`を使わない。
 - `publication_reviewed=false`のためXserverで見ても価格は非表示。ローカルの`localhost/?preview=1`だけ価格確認可能。
 - **本番用`/ux-price-checker/`への自動公開は未実装**。品質監査後に別PRで安全な公開・バックアップ・復旧手順を追加する。
-- 公開するときはA8転送先・現在の成果条件と、価格データの市場偏り・網羅性・集計日・出典を必ず監査する。
+- 公開するときは、価格データの市場偏り・網羅性・集計日・出典を必ず監査する。記事側の別設置広告の転送先・成果条件はその記事の公開時に確認する。
 
 ## 未完了の品質要件
 - 現在グレード×年式別5コホートしかなく、ほとんどの検索条件は集計中。
 - 過去13件と追加27件の重複再確認、CPOの複数条件の網羅率改善。
-- 実スマホで埋め込みの高さ・アフィリエイト遷移を確認。
+- 実スマホで埋め込みの高さを確認。別設置アフィリエイトは記事側で独立監査。
 - 本番公開前にWordPress対象記事のpost ID／slug／statusと既存本文の位置を一意に特定する。
 
 ## スマホ表示の監査（2026-11-09）
-- iframe 545pxはCTAが画面外へはみ出すことが判明した。埋め込み高さは当面860pxを採用。UXツールでResizeObserver等による自動高さ連携を後日実装する場合はWP側にも差分テストが必要。
-- 320〜600pxの5画面幅で、一般／CPO 2段とA8ボタンの可視性をローカル検証済み。ただしサーバー配信後の実端末Safari検証は未完。
-- **プレビューは価格安全ゲートOFFのまま**。WordPressへの埋め込みは、価格監査・A8リンク確認・Xserverでの本番公開URL/HTTPS確認後に限る。
+- 広告付き版では860px必要だったが、広告を除去した新しいツールは320〜600px幅で約544〜582px。
+- WordPress埋め込みの推奨高さを**620px**へ変更。実端末Safariによる最終検証は別途必要。
+- ツール内部にアフィリエイトコードを置かず、記事のPRブロックとは独立した更新・確認を行う。
+- **価格データの本番公開ゲートは未許可のまま**。Xserver隔離プレビューと記事公開を混同しない。
