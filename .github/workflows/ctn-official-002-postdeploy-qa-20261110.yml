@@ -1,0 +1,44 @@
+name: CTN official 002 postdeploy public and browser read-only QA
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_official_002_postdeploy_qa_20261110.py'
+      - '.github/workflows/ctn-official-002-postdeploy-qa-20261110.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_official_002_postdeploy_qa_20261110.py'
+      - '.github/workflows/ctn-official-002-postdeploy-qa-20261110.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  read-only-qa:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check Python
+        run: python -m py_compile scripts/ctn_official_002_postdeploy_qa_20261110.py scripts/ctn_official_002_browser_qa_20261110.py
+      - name: Confirm all 19 CTA and four non-CTA public posts (GET only)
+        run: python scripts/ctn_official_002_postdeploy_qa_20261110.py
+      - name: Install Chromium
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Check button display and mobile and desktop screenshot
+        run: python scripts/ctn_official_002_browser_qa_20261110.py
+      - name: Archive read-only audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-official-002-postdeploy-qa
+          path: |
+            reports/ctn-official-002-postdeploy-20261110/
+            reports/ctn-official-002-20261110/screenshots/
+            reports/ctn-official-002-20261110/browser.json
+          if-no-files-found: warn
