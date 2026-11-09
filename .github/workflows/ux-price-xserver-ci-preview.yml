@@ -13,7 +13,6 @@ on:
       - '.github/workflows/ux-price-xserver-ci-preview.yml'
 permissions:
   contents: read
-  issues: write
 concurrency:
   group: ux-price-xserver-ci-preview
   cancel-in-progress: false
@@ -121,13 +120,18 @@ jobs:
           cmp /tmp/ux-checker-preview.json ops/lexus-ux-price-checker/data/reference_price_bands.json
           echo 'UX_PREVIEW_HTTPS=PASS'
 
-      - name: Record preview delivery result on merged UX PR
+      - name: Record preview result in Actions job summary
         if: always()
         shell: bash
         env:
-          GH_TOKEN: ${{ github.token }}
           CURRENT_JOB_STATUS: ${{ job.status }}
         run: |
           set -euo pipefail
-          body="UX_PRICE_PREVIEW_DEPLOY_AUDIT: status=${CURRENT_JOB_STATUS}; main_sha=${GITHUB_SHA}; preview=https://tsurikue.com/ux-price-checker-ci-preview/index.html; production_and_WordPress_not_changed=true"
-          gh issue comment 867 --repo "$GITHUB_REPOSITORY" --body "$body"
+          echo "UX_PRICE_PREVIEW_DEPLOY_AUDIT: status=${CURRENT_JOB_STATUS}; main_sha=${GITHUB_SHA}; preview=https://tsurikue.com/ux-price-checker-ci-preview/index.html; production_and_WordPress_not_changed=true"
+          {
+            echo "## UX Xserver isolated preview release"
+            echo "Status: ${CURRENT_JOB_STATUS}"
+            echo "Main SHA: ${GITHUB_SHA}"
+            echo "URL: https://tsurikue.com/ux-price-checker-ci-preview/index.html"
+            echo "Production and WordPress unchanged: true"
+          } >> "${GITHUB_STEP_SUMMARY}"
