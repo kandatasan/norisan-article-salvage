@@ -19,11 +19,12 @@
   <div class="field full"><label for="color">カラー</label><select id="color"></select></div>
 </div>
 <div class="result" id="result" role="status" aria-live="polite">
-  <p class="kicker">一般中古車の参考価格帯（支払総額）</p><p class="sample-label" id="sample-label"></p>
+  <p class="kicker">中古車の参考価格帯（支払総額）</p><p class="sample-label" id="sample-label"></p>
   <p class="amount" id="amount">調査中</p>
   <p class="meta" id="meta">実際の価格データを確認しています。</p>
+  <p class="meta" id="breakdown"></p>
 </div>
-<p class="reference"><strong>価格について：</strong>一般中古車（レクサスCPO除外）の公開掲載価格から試算。全国相場や買取額を保証する数字ではありません。</p>
+<p class="reference"><strong>価格について：</strong>一般中古車とレクサスCPOをそれぞれ調査。保証や整備内容が異なるため中央値は単純合算しません。調査例は限定的で全国相場や買取査定額ではありません。</p>
 <div class="cta-wrap">
   <p class="adlabel">PR｜ガリバー</p>
   <p class="cta-head">まだネットに出る前の、お得なUXが見つかるかも？</p>
@@ -56,46 +57,47 @@ function syncYears(){const [model,id]=g.value.split(':');const start=models.find
 const isLocalTest=['localhost','127.0.0.1'].includes(location.hostname);
 let sourceLabel='';let sampleDate='';let isPreview=false;
 function fmt(n){return Math.round(n).toLocaleString('ja-JP')}
-function matchingBand(model,grade,yr,mileage){
-  const targetYear=yr==='any'?'any':Number(yr);
-  const targetMileage=mileage==='any'?'any':Number(mileage);
-  const candidates=bands.filter(b=>{
-    if(b.model!==model)return false;
-    if(grade==='all'){if(b.grade!=='all')return false;}else if(b.grade!==grade)return false;
-    if(b.year!=='any'&&b.year!==targetYear)return false;
-    if(b.mileage_start_km!=='any'&&b.mileage_start_km!==targetMileage)return false;
-    // Do not use all-year model averages as a substitute for a year with zero observed listings.
-    if(targetYear!=='any' && b.year==='any')return false;
-    return true;
-  });
-  candidates.sort((a,b)=> ((b.grade===grade&&grade!=='all')?2:0)+((b.year!=='any')?4:0)+((b.mileage_start_km!=='any')?1:0)
-                            -(((a.grade===grade&&grade!=='all')?2:0)+((a.year!=='any')?4:0)+((a.mileage_start_km!=='any')?1:0)));
-  return candidates[0];
+function matchingBand(model,grade,yr,mileage,segment){
+ const targetYear=yr==='any'?'any':Number(yr),targetMileage=mileage==='any'?'any':Number(mileage);
+ const options=bands.filter(b=>b.market_segment===segment&&b.model===model&&
+    (grade==='all'?b.grade==='all':b.grade===grade)&&
+    (b.year==='any'||b.year===targetYear)&&
+    (b.mileage_start_km==='any'||b.mileage_start_km===targetMileage)&&
+    (targetYear==='any'||b.year!=='any'));
+ const score=b=>((b.grade===grade&&grade!=='all')?2:0)+((b.year!=='any')?4:0)+((b.mileage_start_km!=='any')?1:0);
+ options.sort((a,b)=>score(b)-score(a));return options[0];
 }
 function render(){
-  syncYears();
-  const [model,grade]=g.value.split(':');const yr=y.value,mileage=k.value,color=c.value;
-  const b=matchingBand(model,grade,yr,mileage);
-  const amount=$('amount'),meta=$('meta'),label=$('sample-label');
-  if(!b){
-    amount.textContent='集計中'; label.textContent='';
-    meta.textContent='この条件は調査例が不足しています。';return;
-  }
-  amount.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
-  label.textContent=(isPreview?'【調査用プレビュー】':'')+sourceLabel;
-  const scope=[];
-  if(yr!=='any' && (b.observed_years[0]!==Number(yr)||b.observed_years[1]!==Number(yr))) scope.push(`参考年式 ${b.observed_years[0]}〜${b.observed_years[1]}年`);
-  if(grade!=='all'&&b.grade==='all')scope.push('グレード差は未反映');
-  if(mileage!=='any'&&b.mileage_start_km==='any')scope.push('走行距離別データ不足のため年式・グレード全体');
-  if(color!=='any')scope.push('カラー差は未反映');
-  meta.textContent=`中央値 約${fmt(b.median_man)}万円｜${b.sample_size}件｜${sampleDate}調査。${scope.join('／')}${scope.length?'。':''}`;
+ syncYears();const [model,grade]=g.value.split(':'),yr=y.value,mileage=k.value,color=c.value;
+ const general=matchingBand(model,grade,yr,mileage,'general_market'),
+       cpo=matchingBand(model,grade,yr,mileage,'lexus_cpo');
+ const amount=$('amount'),meta=$('meta'),label=$('sample-label'),sub=$('breakdown');
+ sub.textContent='';
+ if(!general&&!cpo){amount.textContent='集計中';label.textContent='';meta.textContent='この条件は調査例が不足しています。';return;}
+ const present=[general,cpo].filter(Boolean);
+ if(present.length===2){
+   amount.textContent=`${fmt(Math.min(general.lower_man,cpo.lower_man))}万〜${fmt(Math.max(general.upper_man,cpo.upper_man))}万円`;
+   label.textContent=(isPreview?'【研究用】':'')+'一般中古車＋CPOの参考帯の外側の幅';
+   meta.textContent=`${sampleDate}調査。※両群の中央値は合算していません。`;
+   sub.textContent=`一般：${fmt(general.lower_man)}〜${fmt(general.upper_man)}万円（中央値${fmt(general.median_man)}万円・${general.sample_size}件）／CPO：${fmt(cpo.lower_man)}〜${fmt(cpo.upper_man)}万円（中央値${fmt(cpo.median_man)}万円・${cpo.sample_size}件）`;
+ } else {
+   const b=present[0],kind=b.market_segment==='lexus_cpo'?'CPO':'一般中古車';
+   amount.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
+   label.textContent=(isPreview?'【研究用】':'')+kind+'の参考価格帯';
+   meta.textContent=`中央値 約${fmt(b.median_man)}万円｜${b.sample_size}件｜${sampleDate}調査。`;
+   sub.textContent=b.market_segment==='lexus_cpo'?'一般中古車の同条件データは集計中。':'CPOの同条件データは集計中。';
+ }
+ const notes=[];
+ if(mileage!=='any'&&present.some(b=>b.mileage_start_km==='any'))notes.push('走行距離別のデータ不足（指定条件を反映していません）');
+ if(color!=='any')notes.push('カラー差は未反映');
+ if(notes.length)meta.textContent+=' '+notes.join('／')+'。';
 }
 [g,y,k,c].forEach(el=>el.addEventListener('change',render));syncYears();render();
 fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('no data');return r.json()}).then(data=>{
   const date=new Date(data.updated_at+'T00:00:00+09:00'),age=(Date.now()-date.getTime())/86400000;
   const approved=data.publication_reviewed===true&&data.research_preview_only===false;
   const allowed=approved||(isLocalTest&&new URLSearchParams(location.search).get('preview')==='1');
-  if(!allowed || data.price_basis!=='total' || data.market_segment!=='general_market' || !Array.isArray(data.excluded_segments) || !data.excluded_segments.includes('lexus_cpo') || !Number.isFinite(age) || age<0 || age>60) return;
+  if(!allowed || data.price_basis!=='total' || data.market_segment!=='segmented_general_and_cpo' || !Array.isArray(data.markets_included) || !data.markets_included.includes('general_market') || !data.markets_included.includes('lexus_cpo') || !Number.isFinite(age) || age<0 || age>60) return;
   sourceLabel=data.source_label;
   sampleDate=data.updated_at;
   isPreview=!approved;
@@ -106,7 +108,7 @@ fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)
     Number.isInteger(b.sample_size)&&b.sample_size>=5 &&
     [b.lower_man,b.median_man,b.upper_man].every(v=>Number.isFinite(v)&&v>0) &&
     b.lower_man<=b.median_man && b.median_man<=b.upper_man &&
-    b.market_segment==='general_market' && Array.isArray(b.observed_years)&&b.observed_years.length===2);
+    ['general_market','lexus_cpo'].includes(b.market_segment) && Array.isArray(b.observed_years)&&b.observed_years.length===2);
   render();
 }).catch(()=>render());
 
