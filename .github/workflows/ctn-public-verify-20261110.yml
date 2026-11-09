@@ -1,0 +1,35 @@
+name: Read-only public render QA after CTN 23-post update
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_public_verify_20261110.py'
+      - '.github/workflows/ctn-public-verify-20261110.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ctn_public_verify_20261110.py'
+      - '.github/workflows/ctn-public-verify-20261110.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  public-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax validation
+        run: python -m py_compile scripts/ctn_public_verify_20261110.py
+      - name: GET only public pages 23/23
+        run: python scripts/ctn_public_verify_20261110.py
+      - name: Archive public render audit
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ctn-public-render-20261110
+          path: reports/ctn-natural-flow-20261110/public-render.json
+          if-no-files-found: warn
