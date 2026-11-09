@@ -1,0 +1,43 @@
+name: UX review one-post read-aloud rewrite (guarded)
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/ux_review_readaloud_20261110.py'
+      - '.github/workflows/ux-review-readaloud-20261110.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/ux_review_readaloud_20261110.py'
+      - '.github/workflows/ux-review-readaloud-20261110.yml'
+permissions:
+  contents: read
+jobs:
+  editorial-review:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Syntax check
+        run: python -m py_compile scripts/ux_review_readaloud_20261110.py
+      - name: Read-only authenticated WP preflight
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_review_readaloud_20261110.py check
+      - name: Publish single verified article (only on merged main)
+        if: github.event_name == 'push'
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        run: python scripts/ux_review_readaloud_20261110.py apply
+      - name: Upload audit records
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ux-review-readaloud-20261110
+          path: reports/ux-review-readaloud-20261110/
+          if-no-files-found: warn
