@@ -7,9 +7,12 @@ assert data['publication_reviewed'] is False and data['research_preview_only'] i
 assert data['price_basis']=='total'
 assert set(data['markets_included'])=={'general_market','lexus_cpo'}
 assert html.count('id="general-price"')==1 and html.count('id="cpo-price"')==1
-assert html.count('https://px.a8.net/svt/ejp?a8mat=')==1
-assert html.count('https://www15.a8.net/0.gif?a8mat=')==1
-assert 'rel="sponsored nofollow noopener"' in html
+assert 'px.a8.net' not in html
+assert 'www15.a8.net' not in html
+assert 'ガリバー' not in html
+assert 'PR｜' not in html
+assert 'class="cta"' not in html
+
 assert "maxYear-minYear<=1" in html
 assert len(data['cohorts'])>=20
 keys=set()
