@@ -56,7 +56,7 @@ EXTRA={
 }
 HTML=r'<!-- wp:html -->\s*<div class="[^"]*(?:tsq-ctn-last-20261014|tsq-ctn-primary-20261014|tsq-cta-microcopy)[^"]*"[^>]*>[^<]*(?:<span[^>]*>[^<]*</span>|<wbr>|<strong[^>]*>[^<]*</strong>|[^<])*</div>\s*<!-- /wp:html -->'
 SC=r'<!-- wp:shortcode -->\s*\[blog_parts id="(?:2184|3788|2846)"\]\s*<!-- /wp:shortcode -->'
-TRIPLE=re.compile('('+HTML+')\s*('+SC+')\s*('+HTML+')',re.S)
+TRIPLE=re.compile('('+HTML+r')\s*('+SC+r')\s*('+HTML+')',re.S)
 BUTTON=re.compile(SC,re.S)
 DIRECT=re.compile(r'(?:<br\s*/?>)?(?:今の車の)?査定額を(?:見ておく|比べる)なら、\s*<a\s+[^>]*href="https://px\.a8\.net/svt/ejp\?a8mat=3Z8YF4\+7VEGL6\+5I4S\+5YRHE"[^>]*>[^<]+</a>\s*<img\b[^>]*src="https://www19\.a8\.net/0\.gif\?a8mat=3Z8YF4\+7VEGL6\+5I4S\+5YRHE"[^>]*>',re.I)
 TOP='<!-- wp:html -->\n<div class="tsq-ctn-cta-20261110 top" style="text-align:center;margin:1.1em auto .35em;font-weight:700;font-size:clamp(14px,3.8vw,16px);line-height:1.55">お試しだけでもOK！</div>\n<!-- /wp:html -->'
@@ -96,6 +96,10 @@ def transform(pid,orig):
             nxt=re.search(r'<!-- wp:heading(?: \{[^\n]*\})? -->',new[h.end():])
             if not nxt:raise RuntimeError(str(pid)+": no next heading")
             at=h.end()+nxt.start()
+            if pid==2517:
+                marker='<!-- wp:paragraph -->\n<p>もし最初のディーラー査定350万円だけで判断していたら、かなり損をしていた可能性があります。</p>\n<!-- /wp:paragraph -->'
+                if new.count(marker)!=1:raise RuntimeError('2517: exact insertion anchor missing')
+                at=new.index(marker)+len(marker)
             extra='\n\n'+'\n\n'.join(pblock(z) for z in EXTRA[pid])+'\n\n'+TOP+'\n\n'+saved[0]+'\n\n'+BOTTOM+'\n\n'
             new=new[:at]+extra+new[at:]
     if len(BUTTON.findall(new))!=len(KEEPS[pid]):raise RuntimeError(str(pid)+": CTN number mismatch")
