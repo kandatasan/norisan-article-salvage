@@ -2,413 +2,50 @@
   "updated_at": "2026-11-09",
   "publication_reviewed": false,
   "research_preview_only": true,
-  "source_method": "manual_aggregates_from_public_listings",
-  "market_segment": "lexus_cpo",
+  "source_method": "manually_reviewed_public_listing_examples",
+  "market_segment": "general_market",
+  "excluded_segments": [
+    "lexus_cpo"
+  ],
   "price_basis": "total",
-  "source_label": "レクサス認定中古車（CPO）の掲載例",
-  "source_url": "https://cpo.lexus.jp/catalog/ux.html",
-  "source_count": 36,
-  "sampling_note": "2026-11-09時点の限定的な掲載例。網羅調査ではなく全国相場の推定ではありません。",
-  "band_method": "少数の掲載例の観測最小・最大を外側25万円刻みへ丸めた参考範囲。中央値は掲載例から算出。",
+  "source_label": "一般中古車の掲載例（CPO除外）",
+  "source_count": 13,
+  "sampling_note": "限定的な掲載例のみ。全国市場の代表標本ではなく、掲載の継続や同一車両の重複などを最終確認していない。",
+  "band_method": "掲載支払総額の第1～第3四分位を10万円単位で外側へ丸めた参考範囲。中央値併記。走行・色による補正なし。",
   "cohorts": [
     {
-      "model": "200",
-      "grade": "all",
-      "year": "any",
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 9,
-      "observed_years": [
-        2021,
-        2023
-      ],
-      "observed_mileage_km": [
-        13000,
-        78000
-      ],
-      "lower_man": 325,
-      "median_man": 380.6,
-      "upper_man": 450,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "200",
-      "grade": "all",
-      "year": 2022,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 9,
-      "observed_years": [
-        2021,
-        2023
-      ],
-      "observed_mileage_km": [
-        13000,
-        78000
-      ],
-      "lower_man": 325,
-      "median_man": 380.6,
-      "upper_man": 450,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "200",
-      "grade": "all",
-      "year": 2023,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 6,
-      "observed_years": [
-        2022,
-        2023
-      ],
-      "observed_mileage_km": [
-        13000,
-        78000
-      ],
-      "lower_man": 325,
-      "median_man": 404.0,
-      "upper_man": 450,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "200",
-      "grade": "all",
-      "year": "any",
-      "mileage_start_km": 10000,
-      "color": "any",
-      "sample_size": 5,
-      "observed_years": [
-        2021,
-        2023
-      ],
-      "observed_mileage_km": [
-        13000,
-        17000
-      ],
-      "lower_man": 325,
-      "median_man": 352.3,
-      "upper_man": 450,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "250h",
-      "grade": "all",
-      "year": "any",
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 6,
-      "observed_years": [
-        2022,
-        2023
-      ],
-      "observed_mileage_km": [
-        12000,
-        58000
-      ],
-      "lower_man": 400,
-      "median_man": 453.0,
-      "upper_man": 475,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "250h",
-      "grade": "all",
-      "year": 2022,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 6,
-      "observed_years": [
-        2022,
-        2023
-      ],
-      "observed_mileage_km": [
-        12000,
-        58000
-      ],
-      "lower_man": 400,
-      "median_man": 453.0,
-      "upper_man": 475,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "250h",
-      "grade": "all",
-      "year": 2023,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 6,
-      "observed_years": [
-        2022,
-        2023
-      ],
-      "observed_mileage_km": [
-        12000,
-        58000
-      ],
-      "lower_man": 400,
-      "median_man": 453.0,
-      "upper_man": 475,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "all",
-      "year": "any",
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 14,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        5000,
-        27000
-      ],
-      "lower_man": 450,
-      "median_man": 514.0,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "l",
-      "year": "any",
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 8,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        6000,
-        27000
-      ],
-      "lower_man": 450,
-      "median_man": 499.2,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "all",
-      "year": 2024,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 14,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        5000,
-        27000
-      ],
-      "lower_man": 450,
-      "median_man": 514.0,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "l",
-      "year": 2024,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 8,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        6000,
-        27000
-      ],
-      "lower_man": 450,
-      "median_man": 499.2,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "all",
-      "year": 2025,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 14,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        5000,
-        27000
-      ],
-      "lower_man": 450,
-      "median_man": 514.0,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "l",
-      "year": 2025,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 8,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        6000,
-        27000
-      ],
-      "lower_man": 450,
-      "median_man": 499.2,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "all",
-      "year": "any",
-      "mileage_start_km": 10000,
-      "color": "any",
-      "sample_size": 5,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        11000,
-        19000
-      ],
-      "lower_man": 450,
-      "median_man": 485.4,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300h",
-      "grade": "all",
-      "year": "any",
-      "mileage_start_km": 20000,
-      "color": "any",
-      "sample_size": 5,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        21000,
-        27000
-      ],
-      "lower_man": 450,
-      "median_man": 521.7,
-      "upper_man": 575,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
       "model": "300e",
-      "grade": "all",
-      "year": "any",
+      "grade": "l",
+      "year": 2021,
       "mileage_start_km": "any",
       "color": "any",
       "sample_size": 7,
       "observed_years": [
         2021,
-        2025
+        2021
       ],
-      "observed_mileage_km": [
-        3000,
-        25000
-      ],
-      "lower_man": 325,
-      "median_man": 507.3,
-      "upper_man": 650,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
+      "lower_man": 240,
+      "median_man": 287.8,
+      "upper_man": 300,
+      "market_segment": "general_market",
+      "quality": "research_only_sparse_samples"
     },
     {
-      "model": "300e",
-      "grade": "l",
-      "year": "any",
+      "model": "250h",
+      "grade": "graceful",
+      "year": 2023,
       "mileage_start_km": "any",
       "color": "any",
-      "sample_size": 5,
+      "sample_size": 6,
       "observed_years": [
-        2022,
-        2025
+        2023,
+        2023
       ],
-      "observed_mileage_km": [
-        3000,
-        25000
-      ],
-      "lower_man": 325,
-      "median_man": 559.1,
-      "upper_man": 650,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300e",
-      "grade": "all",
-      "year": 2024,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 5,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        3000,
-        10000
-      ],
-      "lower_man": 475,
-      "median_man": 559.1,
-      "upper_man": 650,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
-    },
-    {
-      "model": "300e",
-      "grade": "all",
-      "year": 2025,
-      "mileage_start_km": "any",
-      "color": "any",
-      "sample_size": 5,
-      "observed_years": [
-        2024,
-        2025
-      ],
-      "observed_mileage_km": [
-        3000,
-        10000
-      ],
-      "lower_man": 475,
-      "median_man": 559.1,
-      "upper_man": 650,
-      "lower_method": "observed_extremes_rounded_outward_25man",
-      "market_segment": "lexus_cpo"
+      "lower_man": 400,
+      "median_man": 408.2,
+      "upper_man": 420,
+      "market_segment": "general_market",
+      "quality": "research_only_sparse_samples"
     }
   ]
 }
