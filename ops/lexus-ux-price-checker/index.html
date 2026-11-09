@@ -4,178 +4,112 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>レクサスUXの中古車相場価格｜つりくえ！ v0.4</title>
+<title>レクサスUXの中古車相場価格｜つりくえ！</title>
 <style>
-:root{color-scheme:light;--ink:#1c2d39;--sub:#5e717c;--line:#d9e1e5;--bg:#fff;--soft:#f5f8f9;--accent:#254d62}
-*{box-sizing:border-box}html,body{margin:0;padding:0}body{font:14px/1.55 -apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:var(--ink);background:var(--bg)}
-main{max-width:490px;margin:auto;padding:10px}.ux-widget{border:1px solid var(--line);border-radius:12px;background:var(--bg);padding:16px 15px;box-shadow:0 2px 10px rgba(17,45,63,.035)}
-h1{font-size:18px;line-height:1.45;letter-spacing:-.02em;margin:0 0 13px;font-weight:800}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.field{min-width:0}.field.wide{grid-column:1/-1}.field label{display:block;font-size:12px;font-weight:700;margin:0 0 4px}.field select{appearance:none;width:100%;height:42px;border:1px solid #cbd6dc;border-radius:8px;background:#fff url('data:image/svg+xml,%3Csvg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%235b707d" stroke-width="2"%3E%3Cpath d="m6 9 6 6 6-6"/%3E%3C/svg%3E') right 9px center / 16px no-repeat;padding:0 30px 0 10px;color:var(--ink);font:inherit;text-overflow:ellipsis;min-width:0}
-button,a{touch-action:manipulation}button:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #8abfc9;outline-offset:2px}.go{margin-top:12px;width:100%;height:42px;background:var(--accent);color:#fff;border:0;border-radius:8px;font:inherit;font-weight:800;cursor:pointer}.go:hover{background:#1d3c50}
-.price{background:var(--soft);border-radius:9px;padding:11px 12px;margin-top:11px;min-height:74px}.price-header{font-size:11px;color:var(--sub);margin:0 0 3px}.price-value{font-size:20px;line-height:1.4;font-weight:800;letter-spacing:-.025em;margin:0}.price-note{font-size:11px;color:var(--sub);margin:3px 0 0}.price-note[hidden]{display:none}.lookup{display:block;text-align:center;margin:10px 0 0;font-size:12px;color:#28617b;text-decoration:underline;text-underline-offset:3px}.promo{border-top:1px solid var(--line);padding-top:11px;margin-top:13px}.promo p{font-size:12px;margin:0 0 4px}.promo a{font-weight:750;color:#1b5b79;text-underline-offset:3px}.disclosure{display:block;font-size:10.5px;color:var(--sub);margin-top:6px}.manual{margin-top:10px;border-top:1px solid var(--line);padding-top:10px}.manual summary{font-weight:700;font-size:12px;color:#1b5b79;cursor:pointer}.manual label{font-size:11px;color:var(--sub);display:block;margin:8px 0 4px}.manual textarea{width:100%;height:58px;resize:vertical;border:1px solid #cbd6dc;border-radius:8px;padding:7px 9px;font:inherit;font-size:13px}.manual .manout{margin-top:5px;font-size:12px;font-weight:700}.details{font-size:10.5px;color:var(--sub);margin:11px 0 0}.details a{color:inherit;text-decoration:underline;text-underline-offset:2px}#status{font-size:11px;color:var(--sub)}@media(max-width:359px){main{padding:5px}.ux-widget{padding:13px 10px}.grid{gap:7px}.field select{font-size:12px;padding-left:7px}.price-value{font-size:18px}}
+:root{font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;color:#21333e;background:#fff;font-size:14px}*{box-sizing:border-box}body{margin:0}main{max-width:560px;margin:auto;padding:8px}.ux{border:1px solid #d9e1e5;border-radius:13px;padding:15px;background:#fff}.ux h1{font-size:17px;margin:0 0 12px;line-height:1.45}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field.full{grid-column:span 2}.field label{display:block;font-size:11px;font-weight:700;color:#465c67;margin-bottom:4px}.field select{width:100%;font-size:13px;height:41px;border-radius:7px;border:1px solid #ccd8de;background:#fff;padding:0 9px;color:#21333e;text-overflow:ellipsis}.field select:focus-visible,.cta:focus-visible{outline:3px solid #8bb7d3;outline-offset:2px}.result{margin:13px 0 0;background:#f4f7f8;padding:11px 12px;border-radius:9px}.kicker{color:#56717f;font-size:11px;font-weight:700;margin:0}.amount{font-size:24px;line-height:1.4;letter-spacing:-.04em;font-weight:850;margin:2px 0}.sample-label{font-size:10.5px;color:#45606f;margin:2px 0 1px;font-weight:650}.meta{font-size:11px;line-height:1.6;color:#60747f;margin:0}.reference{margin:8px 2px 0;color:#647782;font-size:10.5px;line-height:1.55}.reference strong{color:#455d69}.cta-wrap{margin-top:12px;border-top:1px solid #e0e6e9;padding-top:12px}.adlabel{color:#677781;font-size:10px;font-weight:700;margin:0 0 4px}.cta-head{font-size:14px;font-weight:800;margin:0 0 4px}.cta-copy{font-size:12px;line-height:1.6;margin:0 0 9px}.cta{display:block;background:#28536a;color:#fff;text-align:center;text-decoration:none;font-size:14px;font-weight:750;border-radius:8px;padding:10px}.note{font-size:10.5px;line-height:1.6;color:#667882;margin:7px 0 0}@media(max-width:340px){.ux{padding:12px}.grid{gap:6px}.field select{font-size:12px;padding-left:5px}.amount{font-size:21px}}
 </style>
 </head>
 <body>
-<main>
-<section class="ux-widget" aria-label="レクサスUX 中古車相場価格チェック">
+<main><section class="ux" aria-label="レクサスUX中古車の相場目安">
 <h1>レクサスUXの中古車相場価格</h1>
-<form id="search" autocomplete="off">
 <div class="grid">
- <div class="field wide"><label for="grade">グレード</label><select id="grade" name="grade" required></select></div>
- <div class="field"><label for="year">年式</label><select id="year" name="year"></select></div>
- <div class="field"><label for="mileage">走行距離</label><select id="mileage" name="mileage"></select></div>
- <div class="field wide"><label for="color">ボディカラー（ざっくり）</label><select id="color" name="color"></select></div>
+  <div class="field full"><label for="grade">グレード</label><select id="grade"></select></div>
+  <div class="field"><label for="year">年式</label><select id="year"></select></div>
+  <div class="field"><label for="km">走行距離</label><select id="km"></select></div>
+  <div class="field full"><label for="color">カラー</label><select id="color"></select></div>
 </div>
-<button class="go" type="submit">この条件の相場を確認</button>
-</form>
-<div class="price" id="result" role="status" aria-live="polite">
-<p class="price-header">中古車の参考価格帯（支払総額）</p>
-<p class="price-value" id="price">— 万円</p>
-<p class="price-note" id="status">掲載価格データは未取得です。実際の掲載車を検索できます。</p>
+<div class="result" id="result" role="status" aria-live="polite">
+  <p class="kicker">中古車の参考価格帯（支払総額）</p><p class="sample-label" id="sample-label"></p>
+  <p class="amount" id="amount">調査中</p>
+  <p class="meta" id="meta">実際の価格データを確認しています。</p>
 </div>
-<a class="lookup" id="lookup" href="https://www.google.com/search?q=%E3%83%AC%E3%82%AF%E3%82%B5%E3%82%B9UX%20%E4%B8%AD%E5%8F%A4%E8%BB%8A%20%E6%94%AF%E6%89%95%E7%B7%8F%E9%A1%8D" target="_blank" rel="noopener noreferrer">選んだ条件で掲載中のUXを探す ↗</a>
-<details class="manual"><summary>見つけた車の価格を3台以上で比較する</summary>
-<label for="prices-manual">支払総額を万円単位で入力（1行につき1台・例：298.5）</label>
-<textarea id="prices-manual" inputmode="decimal" placeholder="価格を1行に1件ずつ入力"></textarea>
-<p id="manual-result" class="manout" role="status" aria-live="polite">入力した金額だけで中央値を計算します（相場保証ではありません）。</p></details>
-<div class="promo">
-<p><strong>サイト掲載前のUXも候補に入れてみる？</strong></p>
-<p>ガリバーでは公開前の車両を紹介してもらえる場合があります。<a href="https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY" target="_blank" rel="sponsored nofollow noopener">希望条件のUXを相談する ↗</a></p>
-<span class="disclosure">PR／アフィリエイト広告。公開前在庫の有無・価格は保証されません。</span>
-<img width="1" height="1" alt="" style="display:none" src="https://www15.a8.net/0.gif?a8mat=4B65SD+8DUSHE+9QU+NVHCY">
+<p class="reference"><strong>価格について：</strong>公開された販売価格を参考に独自集計した目安。掲載車の条件や調査日によって変わり、買取査定額とは異なります。</p>
+<div class="cta-wrap">
+  <p class="adlabel">PR｜ガリバー</p>
+  <p class="cta-head">まだネットに出る前の、お得なUXが見つかるかも？</p>
+  <p class="cta-copy">ガリバーなら、一般公開前の車両を紹介してもらえる場合もあります。</p>
+  <a class="cta" href="https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY" rel="sponsored nofollow noopener" target="_blank">ガリバーで希望のUXを相談する</a>
+  <p class="note">※ご相談の申込みには希望条件・連絡先などの入力が必要です。後日、電話・メールで連絡が入る場合があります。未公開在庫の有無・価格の安さは保証されません。</p>
+  <img src="https://www15.a8.net/0.gif?a8mat=4B65SD+8DUSHE+9QU+NVHCY" width="1" height="1" alt="" style="display:none">
 </div>
-<p class="details">グレードは<a href="https://cpo.lexus.jp/catalog/ux.html" target="_blank" rel="noopener noreferrer">レクサス公式資料</a>を参照。参考価格は許諾済みの販売価格のみ集計。表示額は買取査定額ではありません。<span id="date"></span></p>
-</section>
-</main>
+</section></main>
 <script>
-(() => {
-  'use strict';
-  const G = [
-    ['UX200', '200', 2018, 2023, [
-      ['all','全グレード'],['base','標準仕様'],['c','version C'],['fs','F SPORT'],['l','version L'],
-      ['blue','特別仕様車 Blue Edition'],['urban','特別仕様車 Urban Elegance'],['style-blue','特別仕様車 F SPORT Style Blue'],
-      ['emotional','特別仕様車 F SPORT Emotional Explorer'],['graceful','特別仕様車 Graceful Explorer']
-    ]],
-    ['UX250h','250h',2018,2023,[
-      ['all','全グレード'],['base','標準仕様'],['c','version C'],['fs','F SPORT'],['l','version L'],
-      ['brown','特別仕様車 Brown Edition'],['urban','特別仕様車 Urban Elegance'],['style-blue','特別仕様車 F SPORT Style Blue'],
-      ['elegant','特別仕様車 Elegant Black'],['emotional','特別仕様車 F SPORT Emotional Explorer'],['graceful','特別仕様車 Graceful Explorer']
-    ]],
-    ['UX300h','300h',2024,2026,[
-      ['all','全グレード'],['base','標準仕様'],['c','version C'],['fs','F SPORT'],['l','version L'],
-      ['emotional','特別仕様車 F SPORT Emotional Explorer'],['graceful','特別仕様車 Graceful Explorer'],['shining','追加設定 Shining Essence']
-    ]],
-    ['UX300e','300e',2020,2026,[['all','全グレード'],['c','version C'],['l','version L']]]
-  ];
-  const launchYear = {200:{all:2018,base:2018,c:2018,fs:2018,l:2018,blue:2020,urban:2020,'style-blue':2021,emotional:2022,graceful:2022},'250h':{all:2018,base:2018,c:2018,fs:2018,l:2018,brown:2020,urban:2020,'style-blue':2021,elegant:2021,emotional:2022,graceful:2022},'300h':{all:2024,base:2024,c:2024,fs:2024,l:2024,emotional:2024,graceful:2024,shining:2026},'300e':{all:2020,c:2020,l:2020}};
-  const colors = [
-    ['any','指定なし・色は問わない'],['white','ホワイト系'],['black','ブラック系'],
-    ['silver','シルバー・グレー系'],['blue','ブルー系'],['red','レッド・オレンジ系'],
-    ['other','その他・ツートーン']
-  ];
-  const $ = s => document.querySelector(s);
-  const grade = $('#grade'), year = $('#year'), km = $('#mileage'), color = $('#color');
-  const param = new URLSearchParams(location.search);
-  let rows = [], updatedAt = '';
-  let sourceName = '';
-  for (const [modelName,model,,,grades] of G) {
-    const group=document.createElement('optgroup'); group.label=modelName;
-    for(const [id,name] of grades){const o=document.createElement('option');o.value=model+':'+id;o.textContent=modelName+' '+name;group.append(o);}
-    grade.append(group);
-  }
-  const add = (sel,v,label) => {const o=document.createElement('option');o.value=v;o.textContent=label;sel.append(o)};
-  add(year,'any','指定なし');for(let y=2026;y>=2018;y--)add(year,String(y),y+'年');
-  add(km,'any','指定なし');for(let i=0;i<10;i++){let a=i*10000,b=(i+1)*10000-1;add(km,a+'-'+(b+1),(i===0?'0':i+'万')+'〜'+(i+1)+'万km未満');}add(km,'100000-up','10万km以上');
-  for(const [v,t] of colors)add(color,v,t);
-  const modelParam=param.get('model');const gradeParam=param.get('grade');
-  const selection=[...grade.options].find(o=>o.value===gradeParam || (o.value.startsWith(modelParam+':')&&o.value.endsWith(':all')));
-  grade.value=selection?.value||'250h:all';
-  for(const [el,k] of [[year,'year'],[km,'mileage'],[color,'color']]){
-    const requested=param.get(k);if([...el.options].some(o=>o.value===requested))el.value=requested;
-  }
-  const n = x => (Math.round(x/1000)/10).toLocaleString('ja-JP',{maximumFractionDigits:1});
-  function syncYear(){
-    const parts=grade.value.split(':');
-    const debut=launchYear[parts[0]]?.[parts[1]]||2018;
-    [...year.options].forEach(o => {o.disabled=o.value!=='any' && Number(o.value)<debut;});
-    if(year.selectedOptions[0]?.disabled)year.value='any';
-  }
-
-  const median = a => {let i=(a.length-1)/2;return (a[Math.floor(i)]+a[Math.ceil(i)])/2;};
-  const quantile = (a,p) => {const i=(a.length-1)*p;const lo=Math.floor(i),hi=Math.min(lo+1,a.length-1);return a[lo]*(1-(i-lo))+a[hi]*(i-lo);};
-  const kmRange = v => {if(v==='any')return null;if(v.endsWith('-up'))return [100000,Infinity];return v.split('-').map(Number)};
-  function updateLookup(){
-    const [model,id]=grade.value.split(':');
-    const g=G.find(x=>x[1]===model);const exactName=g?.[4].find(x=>x[0]===id)?.[1]||'';
-    const words=['レクサス','UX'+model];
-    if(id!=='all'&&id!=='base')words.push(exactName.replace('特別仕様車 ','').replace('追加設定 ',''));
-    if(year.value!=='any')words.push(year.value+'年');
-    if(km.value!=='any')words.push(km.selectedOptions[0].textContent);
-    if(color.value!=='any')words.push(color.selectedOptions[0].textContent.replace('系',''));
-    words.push('中古車','支払総額');
-    $('#lookup').href='https://www.google.com/search?q='+encodeURIComponent(words.join(' '));
-  }
-  function output(){
-    syncYear();
-    const [model,id]=grade.value.split(':'); const range=kmRange(km.value);
-    const base=rows.filter(r=>r.model===model&&(id==='all'||r.grade===id)&&
-       (year.value==='any'||r.year===+year.value)&&
-       (!range||(r.mileage_km>=range[0]&&r.mileage_km<range[1])));
-    let found=base;
-    let relaxColor=false;
-    if(color.value!=='any'){
-      const exact=base.filter(r=>r.color===color.value);
-      if(exact.length>=5)found=exact;
-      else relaxColor=true;
-    }
-    const sorted=found.map(r=>r.total_price_yen).sort((a,b)=>a-b);
-    const price=$('#price'), status=$('#status');
-    if(sorted.length>=5){
-      const q1=Math.floor(quantile(sorted,.25)/100000)*10;
-      const q3=Math.ceil(quantile(sorted,.75)/100000)*10;
-      const mid=(Math.round(median(sorted)/10000)).toLocaleString('ja-JP');
-      price.textContent=`${q1.toLocaleString('ja-JP')}万〜${q3.toLocaleString('ja-JP')}万円`;
-      const caution=sorted.length<20?'少数データの参考値／':'';
-      status.textContent=`${caution}中央値 約${mid}万円／対象 ${sorted.length}台${relaxColor?'（色を問わず集計）':''}。売却査定額ではありません。`;
-    } else {
-      price.textContent='— 万円';
-      status.textContent=rows.length===0?'掲載価格データは未取得です。実際の掲載車を検索できます。':'この条件は集計件数が足りません（最低5台）。';
-    }
-    updateLookup();
-  }
-  $('#search').addEventListener('submit',e=>{e.preventDefault();output();});
-  [grade,year,km,color].forEach(el=>el.addEventListener('change',()=>{syncYear();updateLookup();}));
-  document.querySelector('#prices-manual').addEventListener('input',function(){
-    const parts=this.value.split(/[\n,，、;；]+/).map(x=>x.trim()).filter(Boolean);
-    const valid=parts.map(x=>/^\d+(?:\.\d{1,2})?$/.test(x)?Number(x):NaN);
-    const target=document.querySelector('#manual-result');
-    if(valid.some(x=>!Number.isFinite(x)||x<1||x>10000)){
-      target.textContent='数字だけを万円単位で入力してください。';return;
-    }
-    if(valid.length<3){target.textContent='あと'+(3-valid.length)+'台入力すると、中央値を表示できます。';return;}
-    const a=valid.sort((x,y)=>x-y);
-    target.textContent='入力'+a.length+'台の中央値 '+(Math.round(median(a)*10)/10).toLocaleString('ja-JP')+'万円／範囲 '+a[0]+'〜'+a[a.length-1]+'万円（入力分のみ）';
+(()=>{'use strict';
+const models=[
+ ['200','UX200',2018,[['all','全グレード',2018],['base','標準仕様',2018],['c','version C',2018],['fs','F SPORT',2018],['l','version L',2018],['blue','Blue Edition',2020],['urban','Urban Elegance',2020],['style-blue','F SPORT Style Blue',2021],['emotional','F SPORT Emotional Explorer',2022],['graceful','Graceful Explorer',2022]]],
+ ['250h','UX250h',2018,[['all','全グレード',2018],['base','標準仕様',2018],['c','version C',2018],['fs','F SPORT',2018],['l','version L',2018],['brown','Brown Edition',2020],['urban','Urban Elegance',2020],['style-blue','F SPORT Style Blue',2021],['elegant','Elegant Black',2021],['emotional','F SPORT Emotional Explorer',2022],['graceful','Graceful Explorer',2022]]],
+ ['300h','UX300h',2024,[['all','全グレード',2024],['base','標準仕様',2024],['c','version C',2024],['fs','F SPORT',2024],['l','version L',2024],['emotional','F SPORT Emotional Explorer',2024],['graceful','Graceful Explorer',2024],['shining','Shining Essence',2026]]],
+ ['300e','UX300e',2020,[['all','全グレード',2020],['c','version C',2020],['l','version L',2020]]]
+];
+const $=id=>document.getElementById(id),g=$('grade'),y=$('year'),k=$('km'),c=$('color');
+let bands=[];let latest='';
+for(const [model,name,,grades] of models){const optgroup=document.createElement('optgroup');optgroup.label=name;for(const [id,caption] of grades){const o=document.createElement('option');o.value=model+':'+id;o.textContent=name+' '+caption;optgroup.append(o)}g.append(optgroup)}
+const option=(select,value,label)=>{const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o)};
+option(y,'any','指定なし');for(let yr=2026;yr>=2018;yr--)option(y,String(yr),yr+'年');
+option(k,'any','指定なし');for(let i=0;i<10;i++)option(k,String(i*10000),`${i}万〜${i+1}万km未満`);option(k,'100000','10万km以上');
+for(const [id,name] of [['any','指定なし'],['white','ホワイト系'],['black','ブラック系'],['silver','シルバー・グレー系'],['blue','ブルー系'],['red','レッド・オレンジ系'],['other','その他・ツートーン']])option(c,id,name);
+const params=new URLSearchParams(location.search);const pModel=params.get('model')||'250h',pGrade=params.get('grade')||'all';
+if([...g.options].some(o=>o.value===pModel+':'+pGrade))g.value=pModel+':'+pGrade;else g.value='250h:all';
+for(const [el,name] of [[y,'year'],[k,'mileage'],[c,'color']]){const v=params.get(name);if(v&&[...el.options].some(o=>o.value===v))el.value=v}
+function syncYears(){const [model,id]=g.value.split(':');const start=models.find(m=>m[0]===model)?.[3].find(z=>z[0]===id)?.[2]||2018;[...y.options].forEach(o=>{o.disabled=o.value!=='any'&&+o.value<start});if(y.selectedOptions[0]?.disabled)y.value='any'}
+// Only show preview figures on local test host. URL flags do not bypass publication review on the public site.
+const isLocalTest=['localhost','127.0.0.1'].includes(location.hostname);
+let sourceLabel='';let sampleDate='';let isPreview=false;
+function fmt(n){return Math.round(n).toLocaleString('ja-JP')}
+function matchingBand(model,grade,yr,mileage){
+  const targetYear=yr==='any'?'any':Number(yr);
+  const targetMileage=mileage==='any'?'any':Number(mileage);
+  const candidates=bands.filter(b=>{
+    if(b.model!==model)return false;
+    if(b.grade!=='all'&&b.grade!==grade)return false;
+    if(b.year!=='any'&&b.year!==targetYear)return false;
+    if(b.mileage_start_km!=='any'&&b.mileage_start_km!==targetMileage)return false;
+    // Do not use all-year model averages as a substitute for a year with zero observed listings.
+    if(targetYear!=='any' && b.year==='any')return false;
+    return true;
   });
-  async function load(){
-    try{
-      const response=await fetch('./data/ux-prices.json',{cache:'no-store'});
-      if(!response.ok)throw new Error('load failed');
-      const data=await response.json();updatedAt=typeof data.updated_at==='string'?data.updated_at:'';
-      sourceName=typeof data.source_name==='string'?data.source_name:'';
-      const current= new Date();const last=new Date(updatedAt+'T00:00:00+09:00');
-      const age=(current-last)/86400000;const allowedSegments=['lexus_cpo','general_market'];
-      const enabled=data.license_status==='approved'&&data.price_basis==='total'&&data.public_display_allowed===true&&allowedSegments.includes(data.market_segment)&&Number.isFinite(age)&&age>=0&&age<=45;
-      const allowedModels=new Set(G.map(g=>g[1]));
-      rows=(enabled&&Array.isArray(data.records)?data.records:[]).filter(r=>
-        allowedModels.has(r.model) && G.find(g=>g[1]===r.model)[4].some(x=>x[0]===r.grade) &&
-        Number.isInteger(r.year)&&r.year>=2018&&r.year<=2026&&Number.isFinite(r.mileage_km)&&r.mileage_km>=0&&
-        Number.isFinite(r.total_price_yen)&&r.total_price_yen>0&&colors.some(c=>c[0]===r.color&&c[0]!=='any')&&
-        r.permission_status==='approved'&&r.price_basis==='total'&&r.market_segment===data.market_segment&&/^https?:\/\//.test(r.source_url||''));
-      if(enabled&&updatedAt)$('#date').textContent='価格データ：'+(sourceName?sourceName+'／':'')+'更新 '+updatedAt+'。';
-      output();
-    }catch{rows=[];output();}
+  candidates.sort((a,b)=> ((b.grade===grade&&grade!=='all')?2:0)+((b.year!=='any')?4:0)+((b.mileage_start_km!=='any')?1:0)
+                            -(((a.grade===grade&&grade!=='all')?2:0)+((a.year!=='any')?4:0)+((a.mileage_start_km!=='any')?1:0)));
+  return candidates[0];
+}
+function render(){
+  syncYears();
+  const [model,grade]=g.value.split(':');const yr=y.value,mileage=k.value,color=c.value;
+  const b=matchingBand(model,grade,yr,mileage);
+  const amount=$('amount'),meta=$('meta'),label=$('sample-label');
+  if(!b){
+    amount.textContent='集計中'; label.textContent='';
+    meta.textContent='この条件は調査例が不足しています。';return;
   }
-  syncYear();updateLookup();load();
+  amount.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
+  label.textContent=(isPreview?'【調査用プレビュー】':'')+sourceLabel;
+  const scope=[];
+  if(yr!=='any' && (b.observed_years[0]!==Number(yr)||b.observed_years[1]!==Number(yr))) scope.push(`参考年式 ${b.observed_years[0]}〜${b.observed_years[1]}年`);
+  if(grade!=='all'&&b.grade==='all')scope.push('グレード差は未反映');
+  if(mileage!=='any'&&b.mileage_start_km==='any')scope.push('走行距離差は未反映');
+  if(color!=='any')scope.push('カラー差は未反映');
+  meta.textContent=`中央値 約${fmt(b.median_man)}万円｜${b.sample_size}件｜${sampleDate}調査。${scope.join('／')}${scope.length?'。':''}`;
+}
+[g,y,k,c].forEach(el=>el.addEventListener('change',render));syncYears();render();
+fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('no data');return r.json()}).then(data=>{
+  const date=new Date(data.updated_at+'T00:00:00+09:00'),age=(Date.now()-date.getTime())/86400000;
+  const approved=data.publication_reviewed===true&&data.research_preview_only===false;
+  const allowed=approved||(isLocalTest&&new URLSearchParams(location.search).get('preview')==='1');
+  if(!allowed || data.price_basis!=='total' || data.market_segment!=='lexus_cpo' || !Number.isFinite(age) || age<0 || age>60) return;
+  sourceLabel=data.source_label;
+  sampleDate=data.updated_at;
+  isPreview=!approved;
+  bands=(Array.isArray(data.cohorts)?data.cohorts:[]).filter(b=>
+    models.some(m=>m[0]===b.model&&m[3].some(x=>x[0]===b.grade)) &&
+    (b.year==='any'||(Number.isInteger(b.year)&&b.year>=2018&&b.year<=2026)) &&
+    (b.mileage_start_km==='any'||(Number.isInteger(b.mileage_start_km)&&b.mileage_start_km>=0&&b.mileage_start_km%10000===0)) &&
+    Number.isInteger(b.sample_size)&&b.sample_size>=5 &&
+    [b.lower_man,b.median_man,b.upper_man].every(v=>Number.isFinite(v)&&v>0) &&
+    b.lower_man<=b.median_man && b.median_man<=b.upper_man &&
+    b.market_segment==='lexus_cpo' && Array.isArray(b.observed_years)&&b.observed_years.length===2);
+  render();
+}).catch(()=>render());
+
 })();
 </script>
-</body>
-</html>
+</body></html>
