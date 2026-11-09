@@ -3,14 +3,12 @@
   "publication_reviewed": false,
   "research_preview_only": true,
   "source_method": "manually_reviewed_public_listing_examples",
-  "market_segment": "general_market",
-  "excluded_segments": [
-    "lexus_cpo"
-  ],
+  "market_segment": "segmented_general_and_cpo",
+  "excluded_segments": [],
   "price_basis": "total",
-  "source_label": "一般中古車の掲載例（CPO除外）",
+  "source_label": "一般中古車とCPOの少数掲載例",
   "source_count": 27,
-  "sampling_note": "2026-11-09に一般中古車情報45件を監査し27件を候補として残した。前回13件との横断重複は未完了。研究用プレビュー、全国代表相場ではない。",
+  "sampling_note": "CPOも調査対象に戻した。ただし一般販売車とCPOを無条件に混ぜず、標本により区分ごとの価格帯を表示。調査日は2026年11月9日。",
   "band_method": "掲載支払総額の第1～第3四分位を10万円単位で外側へ丸めた参考範囲。中央値併記。走行・色による補正なし。",
   "cohorts": [
     {
@@ -82,6 +80,25 @@
       "market_segment": "general_market",
       "sample_description": "2021年式UX250h version C、限定的な一般中古車5台の観測例。走行1.6〜4.2万km混在。CPO・旧キャッシュを除外。",
       "quality": "research_only_recent_review"
+    },
+    {
+      "model": "300h",
+      "grade": "l",
+      "year": 2024,
+      "mileage_start_km": "any",
+      "color": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2024,
+        2024
+      ],
+      "lower_man": 470,
+      "median_man": 485.4,
+      "upper_man": 500,
+      "market_segment": "lexus_cpo",
+      "sample_description": "CPO UX300h version L 2024年式の掲載例5件、走行距離は混在",
+      "quality": "research_only_sparse_samples",
+      "audited_on": "2026-11-09"
     }
   ],
   "new_observation_candidate_count": 27,
@@ -90,6 +107,16 @@
     "市場代表性および一万km帯の標本不足",
     "前回調査との重複未解消",
     "収集・再利用条件と調査日の再確認",
-    "販売条件・地域・装備の差の未調整"
-  ]
+    "販売条件・地域・装備の差の未調整",
+    "一般中古車・CPOの標本構成比未確認のため合算中央値は算出しない"
+  ],
+  "markets_included": [
+    "general_market",
+    "lexus_cpo"
+  ],
+  "source_count_by_segment": {
+    "general_market": 27,
+    "lexus_cpo": 36
+  },
+  "display_policy": "segments_separate; combined_median_requires_representative_source_data"
 }
