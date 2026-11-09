@@ -21,7 +21,7 @@ foreach ($cases as $c) {
     $html='<p>最初の文章</p><h2>'.$c['h'].'</h2><p>次の文章</p>';
     $out=$GLOBALS['filter']($html);
     if (substr_count($out,'data-tsurikue-ux-price-widget')!==1) { throw new RuntimeException('Missing widget: '.$c['slug']); }
-    if (strpos($out,'height:860px')===false) { throw new RuntimeException('Iframe cropped'); }
+    if (strpos($out,'height:620px')===false) { throw new RuntimeException('Tool-only iframe height mismatch'); }
     if (strpos($out,'data-tsurikue-ux-price-widget')>strpos($out,'<h2>')) { throw new RuntimeException('Wrong insertion point'); }
     if ($out!==$GLOBALS['filter']($out)) { throw new RuntimeException('Duplicate on repeat'); }
     if (substr_count($out, '<p>次の文章</p>')!==1) { throw new RuntimeException('Post damaged'); }

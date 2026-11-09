@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tsurikue UX Price Checker Embed
  * Description: Adds the shared UX price checker to two exact purchase-intent articles; no stored post edits.
- * Version: 0.1.0
+ * Version: 0.2.0
  */
 if (!defined('ABSPATH')) { exit; }
 
@@ -32,7 +32,7 @@ add_filter('the_content', static function ($html) {
     $embed = '<div data-tsurikue-ux-price-widget="1" class="tsurikue-ux-price-embed" style="margin:28px 0 30px;clear:both">'
            . '<iframe title="レクサスUX中古車の参考価格・一般中古車とCPOを比較" src="' . $src . '" '
            . 'loading="lazy" referrerpolicy="strict-origin-when-cross-origin" '
-           . 'style="display:block;width:100%;height:860px;border:0;border-radius:12px;" '
+           . 'style="display:block;width:100%;height:620px;border:0;border-radius:12px;" '
            . 'aria-label="レクサスUXの中古車参考価格"></iframe></div>';
     return substr($html, 0, $position) . $embed . substr($html, $position);
 }, 20);

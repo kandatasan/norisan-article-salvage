@@ -16,10 +16,13 @@ root="$HOME/tsurikue.com/public_html"
 candidate="$HOME/$name"
 target="$root/wp-content/mu-plugins/tsurikue-ux-price-embed.php"
 installed=0
+replaced=0
+backup="$HOME/.tsurikue-ux-embed-previous-$GITHUB_RUN_ID.php"
 finish() {
     code=$?
-    if (( code != 0 && installed == 1 )); then
+    if (( code != 0 && (installed == 1 || replaced == 1) )); then
         rm -f "$target"
+        if (( replaced == 1 )); then mv "$backup" "$target"; fi
         echo "UX_INERT_PLUGIN_ROLLBACK_ATTEMPTED=yes"
     fi
     rm -f "$candidate"
@@ -46,8 +49,19 @@ before="$(wp eval 'echo hash("sha256",get_post(2948)->post_content).":".hash("sh
 test ! -L "$target"
 if [[ -e "$target" ]]; then
     test -f "$target"
-    cmp -s "$target" "$candidate" || { echo "Existing UX embed differs; refusing overwrite"; exit 15; }
-    echo "UX_INERT_PLUGIN_ALREADY_INSTALLED=PASS"
+    if cmp -s "$target" "$candidate"; then
+        echo "UX_INERT_PLUGIN_ALREADY_INSTALLED=PASS"
+    else
+        # Only upgrade the exact previously reviewed 0.1.0 blob; never replace unknown files.
+        old_sha="$(php -r '$b=file_get_contents($argv[1]); echo sha1("blob ".strlen($b).chr(0).$b);' "$target")"
+        [[ "$old_sha" == 6c2fb9b81ef1ddfb38ffb66692c7db0b4b9ca77f ]] || { echo "Existing UX embed has unrecognized content; refusing overwrite"; exit 15; }
+        test ! -e "$backup" && test ! -L "$backup"
+        mv "$target" "$backup"
+        replaced=1
+        install -m 0644 "$candidate" "$target"
+        installed=1
+        echo "UX_INERT_PLUGIN_KNOWN_VERSION_UPGRADE=PASS"
+    fi
 else
     install -m 0644 "$candidate" "$target"
     installed=1
