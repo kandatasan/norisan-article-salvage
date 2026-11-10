@@ -1,0 +1,587 @@
+{
+  "recorded_at": "2026-11-11",
+  "display_status": "research_provenance_only",
+  "metric": "支払総額万円",
+  "notes": [
+    "媒体をまたぐ同一車両の重複除外は販売店＋年式＋走行距離を照合。実在庫は随時変動する。",
+    "各データは価格帯の参考。掲載ページの全文や画像を転載しない。",
+    "CPOの一般販売サイト掲載分はCPOとして扱い、一般市場に混ぜない。"
+  ],
+  "archived_all_grade_cohorts": [
+    {
+      "model": "200",
+      "grade": "all",
+      "year": 2023,
+      "mileage_start_km": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2023,
+        2023
+      ],
+      "observed_km_span": [
+        13000,
+        26000
+      ],
+      "lower_man": 380,
+      "median_man": 421.4,
+      "upper_man": 430,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "200",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2019,
+        2020
+      ],
+      "observed_km_span": [
+        10000,
+        70000
+      ],
+      "lower_man": 260,
+      "median_man": 293.8,
+      "upper_man": 310,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "2019-2020"
+    },
+    {
+      "model": "200",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 6,
+      "observed_years": [
+        2022,
+        2023
+      ],
+      "observed_km_span": [
+        13000,
+        78000
+      ],
+      "lower_man": 360,
+      "median_man": 404,
+      "upper_man": 430,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "2022-2023"
+    },
+    {
+      "model": "200",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 8,
+      "observed_years": [
+        2019,
+        2022
+      ],
+      "observed_km_span": [
+        10000,
+        70000
+      ],
+      "lower_man": 260,
+      "median_man": 295.5,
+      "upper_man": 320,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "200",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 9,
+      "observed_years": [
+        2021,
+        2023
+      ],
+      "observed_km_span": [
+        13000,
+        78000
+      ],
+      "lower_man": 340,
+      "median_man": 380.6,
+      "upper_man": 430,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "250h",
+      "grade": "all",
+      "year": 2021,
+      "mileage_start_km": "any",
+      "sample_size": 8,
+      "observed_years": [
+        2021,
+        2021
+      ],
+      "observed_km_span": [
+        16000,
+        42000
+      ],
+      "lower_man": 340,
+      "median_man": 371.7,
+      "upper_man": 380,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "250h",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2019,
+        2020
+      ],
+      "observed_km_span": [
+        37000,
+        107000
+      ],
+      "lower_man": 270,
+      "median_man": 279.9,
+      "upper_man": 330,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "2019-2020"
+    },
+    {
+      "model": "250h",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 11,
+      "observed_years": [
+        2020,
+        2021
+      ],
+      "observed_km_span": [
+        16000,
+        107000
+      ],
+      "lower_man": 300,
+      "median_man": 353,
+      "upper_man": 380,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "2020-2021"
+    },
+    {
+      "model": "250h",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 6,
+      "observed_years": [
+        2022,
+        2023
+      ],
+      "observed_km_span": [
+        12000,
+        58000
+      ],
+      "lower_man": 450,
+      "median_man": 453,
+      "upper_man": 460,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "2022-2023"
+    },
+    {
+      "model": "250h",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 15,
+      "observed_years": [
+        2019,
+        2023
+      ],
+      "observed_km_span": [
+        10000,
+        107000
+      ],
+      "lower_man": 320,
+      "median_man": 363.5,
+      "upper_man": 380,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "300h",
+      "grade": "all",
+      "year": 2024,
+      "mileage_start_km": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2024,
+        2024
+      ],
+      "observed_km_span": [
+        16000,
+        42000
+      ],
+      "lower_man": 400,
+      "median_man": 426.9,
+      "upper_man": 460,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "300h",
+      "grade": "all",
+      "year": 2024,
+      "mileage_start_km": "any",
+      "sample_size": 8,
+      "observed_years": [
+        2024,
+        2024
+      ],
+      "observed_km_span": [
+        9000,
+        27000
+      ],
+      "lower_man": 480,
+      "median_man": 499.2,
+      "upper_man": 530,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "300h",
+      "grade": "all",
+      "year": 2025,
+      "mileage_start_km": "any",
+      "sample_size": 6,
+      "observed_years": [
+        2025,
+        2025
+      ],
+      "observed_km_span": [
+        5000,
+        23000
+      ],
+      "lower_man": 510,
+      "median_man": 547.5,
+      "upper_man": 560,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "300h",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 14,
+      "observed_years": [
+        2024,
+        2025
+      ],
+      "observed_km_span": [
+        5000,
+        27000
+      ],
+      "lower_man": 480,
+      "median_man": 514,
+      "upper_man": 550,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "2024-2025"
+    },
+    {
+      "model": "300h",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2024,
+        2024
+      ],
+      "observed_km_span": [
+        16000,
+        42000
+      ],
+      "lower_man": 400,
+      "median_man": 426.9,
+      "upper_man": 460,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "300e",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2024,
+        2025
+      ],
+      "observed_km_span": [
+        3000,
+        10000
+      ],
+      "lower_man": 500,
+      "median_man": 559.1,
+      "upper_man": 610,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "2024-2025"
+    },
+    {
+      "model": "300e",
+      "grade": "all",
+      "year": "any",
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2021,
+        2025
+      ],
+      "observed_km_span": [
+        3000,
+        25000
+      ],
+      "lower_man": 420,
+      "median_man": 507.3,
+      "upper_man": 590,
+      "market_segment": "lexus_cpo",
+      "quality": "nonrepresentative_manual_observations",
+      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact_or_all"
+    }
+  ],
+  "verified_grade_specific_examples": [
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "レクサス専門店 OSINC.",
+      "km": 45000,
+      "total_man": 279.9,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g003/index.html?PTN=1&YMAX=2020&YMIN=2020"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "ガリバー木更津金田店",
+      "km": 81000,
+      "total_man": 253.8,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g003/index.html?PTN=1&YMAX=2020&YMIN=2020"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "ガリバー草津南店",
+      "km": 40000,
+      "total_man": 292.8,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g003/index.html?PTN=1&YMAX=2020&YMIN=2020"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "ネクステージ札幌手稲店",
+      "km": 41000,
+      "total_man": 339.9,
+      "source": "https://www.goo-net.com/usedcar/brand-LEXUS/car-UX/grade-19-10052004/"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "SUV LAND神戸",
+      "km": 15000,
+      "total_man": 352.9,
+      "source": "https://www.goo-net.com/usedcar/brand-LEXUS/car-UX/grade-19-10052004/"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "ネクステージ江南店",
+      "km": 31000,
+      "total_man": 315.9,
+      "source": "https://www.goo-net.com/usedcar/brand-LEXUS/car-UX/grade-19-10052004/"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "WECARS飯塚店",
+      "km": 43000,
+      "total_man": 322.9,
+      "source": "https://www.goo-net.com/usedcar/brand-LEXUS/car-UX/grade-19-10052004/"
+    },
+    {
+      "market": "lexus_cpo",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "レクサス高槻",
+      "km": 34000,
+      "total_man": 347.9,
+      "source": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Pmn=300&Pmx=350&Ymn=2020&Ymx=2020"
+    },
+    {
+      "market": "lexus_cpo",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "レクサスCPO横浜戸塚",
+      "km": 41000,
+      "total_man": 344.5,
+      "source": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Pmn=300&Pmx=350&Ymn=2020&Ymx=2020"
+    },
+    {
+      "market": "lexus_cpo",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "レクサス山王",
+      "km": 49000,
+      "total_man": 340.1,
+      "source": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Pmn=300&Pmx=350&Ymn=2020&Ymx=2020"
+    },
+    {
+      "market": "lexus_cpo",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "レクサス等々力",
+      "km": 42000,
+      "total_man": 312.2,
+      "source": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Pmn=300&Pmx=350&Ymn=2020&Ymx=2020"
+    },
+    {
+      "market": "lexus_cpo",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "レクサス山王",
+      "km": 15000,
+      "total_man": 371.9,
+      "source": "https://cpo.lexus.jp/cposearch/detail?Id=1470115202601"
+    },
+    {
+      "market": "lexus_cpo",
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "dealer": "レクサス福岡西",
+      "km": 45000,
+      "total_man": 297.3,
+      "source": "https://www.carsensor.net/usedcar/detail/AU7422431387/index.html"
+    }
+  ],
+  "derived_cohorts": [
+    {
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2020,
+        2020
+      ],
+      "observed_km_span": [
+        15000,
+        81000
+      ],
+      "lower_man": 280,
+      "median_man": 315.9,
+      "upper_man": 340,
+      "market_segment": "general_market",
+      "quality": "2026_11_11_grade_specific_listing_traceable_small_sample",
+      "source_scope": "2026-11-11に販売店・年式・走行距離・支払総額を照合した掲載例。車両個体は店・走行距離で一次照合。少数・代表標本ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_grade_sampling_20261111.json"
+    },
+    {
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "mileage_start_km": "any",
+      "sample_size": 6,
+      "observed_years": [
+        2020,
+        2020
+      ],
+      "observed_km_span": [
+        15000,
+        49000
+      ],
+      "lower_man": 310,
+      "median_man": 342.3,
+      "upper_man": 350,
+      "market_segment": "lexus_cpo",
+      "quality": "2026_11_11_grade_specific_listing_traceable_small_sample",
+      "source_scope": "2026-11-11に販売店・年式・走行距離・支払総額を照合した掲載例。車両個体は店・走行距離で一次照合。少数・代表標本ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_grade_sampling_20261111.json"
+    }
+  ]
+}
