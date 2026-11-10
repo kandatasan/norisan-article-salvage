@@ -11,7 +11,7 @@
 </head>
 <body>
 <main><section class="ux" aria-label="レクサスUX中古車の相場目安">
-<h1>レクサスUXの中古車相場価格</h1>
+<h1>レクサスUXの中古車参考価格</h1>
 <p class="meta" style="margin:-5px 0 10px">ネット掲載の価格を参考にした目安。一般中古車とCPOを別々に比較できます。</p>
 <div class="grid">
   <div class="field full"><label for="grade">グレード</label><select id="grade"></select></div>
@@ -33,7 +33,7 @@
   </div>
   <p class="meta" id="meta">該当条件の掲載価格を調査しています。</p>
 </div>
-<p class="reference"><strong>価格について：</strong>販売中の少数掲載例から独自試算した中央値と中央50％の範囲。保証・装備・地域によって差があります。年式やグレードが一致しない場合はその旨を表示します。相場全体を代表するものではなく、買取査定額でもありません。</p>
+<p class="reference"><strong>価格について：</strong>販売中の少数掲載例から独自試算した中央値と中央50％の範囲。保証・装備・地域によって差があります。年式やグレードが一致しない場合はその旨を表示します。市場全体を代表するものではなく、買取査定額でもありません。年式・グレード・走行距離が一致しない例も含まれます。</p>
 </section></main>
 <script>
 (()=>{'use strict';
@@ -104,7 +104,7 @@ function render(){
 [g,y,k,c].forEach(el=>el.addEventListener('change',render));syncYears();render();
 fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('no data');return r.json()}).then(data=>{
   const date=new Date(data.updated_at+'T00:00:00+09:00'),age=(Date.now()-date.getTime())/86400000;
-  const approved=data.publication_reviewed===true&&data.research_preview_only===false;
+  const approved=data.publication_reviewed===true&&data.research_preview_only===false&&data.limited_sample_release===true;
   const allowed=approved||(isLocalTest&&new URLSearchParams(location.search).get('preview')==='1');
   if(!allowed || data.price_basis!=='total' || data.market_segment!=='segmented_general_and_cpo' || !Array.isArray(data.markets_included) || !data.markets_included.includes('general_market') || !data.markets_included.includes('lexus_cpo') || !Number.isFinite(age) || age<0 || age>60) return;
   sourceLabel=data.source_label;

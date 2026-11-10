@@ -35,7 +35,8 @@ jobs:
           assert 'px.a8.net' not in h and 'www15.a8.net' not in h and 'ガリバー' not in h
           assert 'name="robots" content="noindex' in h
           assert "['localhost','127.0.0.1'].includes(location.hostname)" in h
-          assert j['publication_reviewed'] is False and j['research_preview_only'] is True
+          assert j['publication_reviewed'] is True and j['research_preview_only'] is False
+          assert j['limited_sample_release'] is True
           assert j['price_basis']=='total'
           assert set(j['markets_included'])=={'general_market','lexus_cpo'}
           for v in j['cohorts']:
@@ -97,7 +98,7 @@ jobs:
           backup="$HOME/.tsurikue-ux-ci-old-$name"
           marker=".tsurikue-ux-price-managed"
           test -f "$candidate/index.html" && test -f "$candidate/data/reference_price_bands.json"
-          php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || $d["publication_reviewed"]!==false || $d["research_preview_only"]!==true)exit(1);' "$candidate/data/reference_price_bands.json"
+          php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || $d["publication_reviewed"]!==true || $d["research_preview_only"]!==false || ($d["limited_sample_release"]??false)!==true)exit(1);' "$candidate/data/reference_price_bands.json"
           test ! -L "$candidate" && test ! -L "$stage"
           printf 'ux-preview\n' > "$candidate/$marker"
           cat > "$candidate/.htaccess" <<'HT'
