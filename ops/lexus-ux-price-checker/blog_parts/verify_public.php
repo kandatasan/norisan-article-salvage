@@ -18,7 +18,7 @@ $json=ABSPATH.'ux-price-checker/data/reference_price_bands.json';
 if(!is_file($json))throw new RuntimeException('Production JSON missing');
 $j=json_decode(file_get_contents($json),true);
 if(!$j || ($j['publication_reviewed']??false)!==true || ($j['limited_sample_release']??false)!==true
-  || count($j['cohorts']??[])<9) throw new RuntimeException('Production JSON invalid');
+  || count($j['cohorts']??[])<11) throw new RuntimeException('Production JSON invalid');
 $html_file=ABSPATH.'ux-price-checker/index.html';
 if(!is_file($html_file))throw new RuntimeException('Production HTML missing');
 $tool_html=file_get_contents($html_file);
@@ -36,7 +36,7 @@ foreach($j['cohorts'] as $cohort){
   if(($cohort['market_segment']??'')==='general_market')$general++;
   if(($cohort['market_segment']??'')==='lexus_cpo')$cpo++;
 }
-if($general<6 || $cpo<3)throw new RuntimeException('UX market source segment missing');
+if($general<8 || $cpo<3)throw new RuntimeException('UX market source segment missing');
 foreach($j['cohorts'] as $c) {
  if(($c['grade']??'')==='all')throw new RuntimeException('Pooled all-grade cohort improperly published');
 }
