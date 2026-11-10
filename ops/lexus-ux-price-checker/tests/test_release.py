@@ -15,7 +15,13 @@ assert 'ガリバー' not in html
 assert 'PR｜' not in html
 assert 'class="cta"' not in html
 
-assert "maxYear-minYear<=1" in html
+assert "maxYear-minYear<=4" in html
+assert 'id="color"' not in html
+assert "c=$('color')" not in html
+assert 'カラー未反映' not in html
+assert '複数年式の参考値' in html
+assert all('color' not in cohort for cohort in data['cohorts'])
+assert data.get('display_facets')==['grade','year','mileage']
 assert len(data['cohorts'])>=20
 keys=set()
 for b in data['cohorts']:
