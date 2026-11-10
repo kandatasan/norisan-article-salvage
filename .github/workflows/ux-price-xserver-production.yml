@@ -42,9 +42,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker-ci-preview/index.html -o /tmp/ux-preview-index.html
+          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 "https://tsurikue.com/ux-price-checker-ci-preview/index.html?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-preview-index.html
           cmp /tmp/ux-preview-index.html ops/lexus-ux-price-checker/index.html
-          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json -o /tmp/ux-preview-data.json
+          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 "https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-preview-data.json
           cmp /tmp/ux-preview-data.json ops/lexus-ux-price-checker/data/reference_price_bands.json
           echo 'UX_PRICE_PRODUCTION_PREFLIGHT_HTTPS=PASS'
   deploy:

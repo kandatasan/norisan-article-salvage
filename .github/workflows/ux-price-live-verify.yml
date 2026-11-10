@@ -31,9 +31,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL --retry 3 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker/index.html -o /tmp/ux-live-index.html
+          curl -fsSL --retry 3 --retry-delay 5 --max-time 30 "https://tsurikue.com/ux-price-checker/index.html?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-live-index.html
           cmp /tmp/ux-live-index.html ops/lexus-ux-price-checker/index.html
-          curl -fsSL --retry 3 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker/data/reference_price_bands.json -o /tmp/ux-live-data.json
+          curl -fsSL --retry 3 --retry-delay 5 --max-time 30 "https://tsurikue.com/ux-price-checker/data/reference_price_bands.json?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-live-data.json
           cmp /tmp/ux-live-data.json ops/lexus-ux-price-checker/data/reference_price_bands.json
           echo 'UX_PRODUCTION_EXACT_HTTPS=PASS'
       - name: Authenticate Xserver pinned ED25519 SSH host

@@ -7,8 +7,8 @@ remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
 key="$HOME/.ssh/xserver_deploy_key"
 opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
 stage=".tsurikue-ux-price-release-$GITHUB_RUN_ID"
-curl -fsSL --max-time 30 --retry 3 --retry-delay 3 https://tsurikue.com/ux-price-checker-ci-preview/index.html -o /tmp/ux-price-preview.html
-curl -fsSL --max-time 30 --retry 3 --retry-delay 3 https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json -o /tmp/ux-price-preview.json
+curl -fsSL --max-time 30 --retry 3 --retry-delay 3 "https://tsurikue.com/ux-price-checker-ci-preview/index.html?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-price-preview.html
+curl -fsSL --max-time 30 --retry 3 --retry-delay 3 "https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-price-preview.json
 cmp /tmp/ux-price-preview.html "$src/index.html"
 cmp /tmp/ux-price-preview.json "$src/data/reference_price_bands.json"
 echo UX_PRICE_STAGING_PARITY=PASS
@@ -73,9 +73,9 @@ fi
 echo UX_PRICE_PRODUCTION_SWITCH=PASS
 REMOTE
 set +e
-curl -fsSL --max-time 30 --retry 2 https://tsurikue.com/ux-price-checker/index.html -o /tmp/ux-price-production.html &&
+curl -fsSL --max-time 30 --retry 2 "https://tsurikue.com/ux-price-checker/index.html?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-price-production.html &&
 cmp -s /tmp/ux-price-production.html "$src/index.html" &&
-curl -fsSL --max-time 30 --retry 2 https://tsurikue.com/ux-price-checker/data/reference_price_bands.json -o /tmp/ux-price-production.json &&
+curl -fsSL --max-time 30 --retry 2 "https://tsurikue.com/ux-price-checker/data/reference_price_bands.json?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-price-production.json &&
 cmp -s /tmp/ux-price-production.json "$src/data/reference_price_bands.json"
 verified=$?
 set -e

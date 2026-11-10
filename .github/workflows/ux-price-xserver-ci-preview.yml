@@ -105,6 +105,7 @@ jobs:
           cat > "$candidate/.htaccess" <<'HT'
           <IfModule mod_headers.c>
           Header always set X-Robots-Tag "noindex, nofollow"
+          Header always set Cache-Control "no-cache, max-age=0, must-revalidate"
           </IfModule>
           HT
           if [[ -e "$stage" ]]; then
@@ -119,10 +120,11 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL --max-time 25 --retry 2 'https://tsurikue.com/ux-price-checker-ci-preview/index.html' -o /tmp/ux-checker-preview.html
+          curl -fsSL --max-time 25 --retry 2 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/index.html?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-checker-preview.html
           cmp /tmp/ux-checker-preview.html ops/lexus-ux-price-checker/index.html
-          curl -fsSL --max-time 25 --retry 2 'https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json' -o /tmp/ux-checker-preview.json
+          curl -fsSL --max-time 25 --retry 2 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-checker-preview.json
           cmp /tmp/ux-checker-preview.json ops/lexus-ux-price-checker/data/reference_price_bands.json
+          echo "UX_PREVIEW_CACHED_HTML_BYPASS=PASS"
           echo 'UX_PREVIEW_HTTPS=PASS'
 
       - name: Record preview result in Actions job summary
