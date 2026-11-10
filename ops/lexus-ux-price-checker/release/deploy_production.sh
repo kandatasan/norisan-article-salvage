@@ -37,7 +37,7 @@ test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
 test -d "$candidate" && test ! -L "$candidate"
 test -f "$candidate/index.html" && test -f "$candidate/data/reference_price_bands.json"
 test ! -L "$dest" && test ! -e "$backup"
-php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<9)exit(1);' "$candidate/data/reference_price_bands.json"
+php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<11)exit(1);' "$candidate/data/reference_price_bands.json"
 grep -Fq 'id="general-price"' "$candidate/index.html"
 grep -Fq 'id="cpo-price"' "$candidate/index.html"
 # v0.17 grade-specific price integrity: never reuse all-grade pool for F SPORT/base.
@@ -45,7 +45,7 @@ grep -Fq "if(b.grade==='all'||b.grade!==grade) return false;" "$candidate/index.
 ! grep -Fq '全グレード' "$candidate/index.html"
 php -r '$d=json_decode(file_get_contents($argv[1]),true);foreach($d["cohorts"] as $c){if(($c["grade"]??"")==="all")exit(9);}if(($d["archived_pooled_cohort_count"]??0)<17)exit(10);' "$candidate/data/reference_price_bands.json"
 grep -Fq '中央値約' "$candidate/index.html"
-php -r '$d=json_decode(file_get_contents($argv[1]),true);$has=function($m,$g,$y,$seg)use($d){foreach($d["cohorts"] as $c){if($c["model"]===$m&&$c["grade"]===$g&&$c["year"]===$y&&$c["market_segment"]===$seg&&($c["sample_size"]??0)>=5)return true;}return false;};if(!$has("250h","fs",2019,"general_market")||!$has("250h","fs",2021,"general_market")||!$has("300h","fs",2024,"lexus_cpo")||!$has("250h","c",2020,"general_market")||!$has("250h","c",2020,"lexus_cpo"))exit(1);' "$candidate/data/reference_price_bands.json"
+php -r '$d=json_decode(file_get_contents($argv[1]),true);$has=function($m,$g,$y,$seg)use($d){foreach($d["cohorts"] as $c){if($c["model"]===$m&&$c["grade"]===$g&&$c["year"]===$y&&$c["market_segment"]===$seg&&($c["sample_size"]??0)>=5)return true;}return false;};if(!$has("250h","fs",2019,"general_market")||!$has("250h","fs",2021,"general_market")||!$has("300h","fs",2024,"lexus_cpo")||!$has("250h","c",2020,"general_market")||!$has("250h","c",2020,"lexus_cpo")||!$has("250h","c",2019,"general_market")||!$has("250h","fs",2020,"general_market"))exit(1);' "$candidate/data/reference_price_bands.json"
 # Compact user-approved UI; keep disclosure before the selector and remove old long explanation.
 grep -Fq 'レクサスUX 中古相場チェックツール' "$candidate/index.html"
 grep -Fq '※価格は参考程度です。' "$candidate/index.html"
