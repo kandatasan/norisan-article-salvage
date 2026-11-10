@@ -25,6 +25,14 @@ assert 'id="color"' not in html
 assert "c=$('color')" not in html
 assert 'カラー未反映' not in html
 assert '複数年式の参考値' in html
+assert "if(b.grade!==grade) return false;" in html
+assert "グレード別データ不足" not in html or "このグレードの掲載例不足" in html
+assert '中央値約' in html
+assert data.get('grade_specific_display_policy') == 'selected_grade_strict_exact; all_grade_only_when_all_grade_selected; no_generic_or_msrp_fudge'
+assert any(c['model']=='250h' and c['grade']=='fs' and c['year']==2021 and c['market_segment']=='general_market' and c['sample_size']==5 for c in data['cohorts'])
+assert any(c['model']=='250h' and c['grade']=='fs' and c['year']==2019 and c['market_segment']=='general_market' and c['sample_size']==5 for c in data['cohorts'])
+assert any(c['model']=='300h' and c['grade']=='fs' and c['year']==2024 and c['market_segment']=='lexus_cpo' and c['sample_size']==7 for c in data['cohorts'])
+assert not any(c['model']=='200' and c['grade']=='all' and c['year']==2019 and c['market_segment']=='general_market' for c in data['cohorts'])
 assert all('color' not in cohort for cohort in data['cohorts'])
 assert data.get('display_facets')==['grade','year','mileage']
 assert len(data['cohorts'])>=20

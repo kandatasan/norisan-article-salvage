@@ -62,8 +62,9 @@ function matchingBand(model,grade,yr,mileage,segment){
   const targetMileage=mileage==='any'?null:Number(mileage);
   const candidates=bands.filter(b=>{
     if(b.market_segment!==segment||b.model!==model) return false;
-    if(b.grade!==grade&&b.grade!=='all') return false;
-    if(grade==='all'&&b.grade!=='all') return false;
+    // Never reuse pooled all-grade observations as a grade-specific price.
+    // A selected grade must match the listing cohort exactly.
+    if(b.grade!==grade) return false;
     if(b.mileage_start_km!=='any'&&b.mileage_start_km!==targetMileage) return false;
     const [minYear,maxYear]=b.observed_years;
     if(targetYear===null) return b.year==='any';
@@ -84,7 +85,15 @@ function render(){
   const cpo=matchingBand(model,grade,yr,mileage,'lexus_cpo');
   function showMarket(b,priceId,noteId){
     const price=$(priceId),note=$(noteId);
-    if(!b){price.textContent='集計中';price.classList.add('is-empty');note.textContent='同条件の掲載例が不足しています';return;}
+    if(!b){
+      price.textContent='集計中';
+      price.classList.add('is-empty');
+      const [selectedModel,selectedGrade]=g.value.split(':');
+      const segment=priceId==='general-price'?'general_market':'lexus_cpo';
+      const hasPooled=selectedGrade!=='all' && !!matchingBand(selectedModel,'all',y.value,k.value,segment);
+      note.textContent=hasPooled?'このグレードの掲載例不足（全グレードに参考値あり）':'この条件の掲載例が不足しています';
+      return;
+    }
     price.classList.remove('is-empty');
     price.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
     const caveats=[];
@@ -92,9 +101,9 @@ function render(){
     const years=b.observed_years;
     if(years[1]>years[0])caveats.push(`複数年式の参考値（${years[0]}〜${years[1]}年）`);
     else if(yr==='any')caveats.push(`${years[0]}年式の参考値`);
-    if(selectedGrade!=='all'&&b.grade==='all')caveats.push('グレード混在');
+    if(selectedGrade==='all')caveats.push('複数グレードの参考値');
     if(mileage!=='any'&&b.mileage_start_km==='any')caveats.push('走行距離未反映');
-    note.textContent=`${b.sample_size}件の掲載例`+(caveats.length?'／'+caveats.join('・'):'');
+    note.textContent=`中央値約${fmt(b.median_man)}万円・${b.sample_size}件`+(caveats.length?'／'+caveats.join('・'):'');
   }
   showMarket(general,'general-price','general-note');
   showMarket(cpo,'cpo-price','cpo-note');
