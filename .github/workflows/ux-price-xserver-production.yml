@@ -10,7 +10,7 @@ on:
     branches: [main]
     paths:
       - 'ops/lexus-ux-price-checker/release/**'
-      - 'ops/lexus-ux-price-checker/blog_parts/publish_part.php'
+      - 'ops/lexus-ux-price-checker/blog_parts/verify_public.php'
       - '.github/workflows/ux-price-xserver-production.yml'
 permissions:
   contents: read
@@ -29,6 +29,8 @@ jobs:
         run: |
           set -euo pipefail
           python ops/lexus-ux-price-checker/tests/test_release.py
+          node ops/lexus-ux-price-checker/tests/test_search.js
+          node ops/lexus-ux-price-checker/tests/test_grade_observations.js
           php -l ops/lexus-ux-price-checker/blog_parts/verify_public.php
           bash -n ops/lexus-ux-price-checker/release/deploy_production.sh
           grep -Fq 'Header always set Cache-Control "no-cache, max-age=0, must-revalidate"' ops/lexus-ux-price-checker/release/deploy_production.sh
