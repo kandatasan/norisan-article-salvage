@@ -68,7 +68,7 @@ jobs:
           opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
           stage=".tsurikue-ux-blogpart-$GITHUB_RUN_ID.php"
           scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/create_draft.php "$remote:$stage"
-          ssh $opts "$remote" bash -s -- "$stage" <<'REMOTE'
+          ssh $opts "$remote" bash -s -- "$stage" <<'REMOTE' | tee /tmp/ux-blogpart-result.txt
           set -euo pipefail
           stage="$1"
           [[ "$stage" =~ ^\.tsurikue-ux-blogpart-[0-9]+\.php$ ]] || exit 20
@@ -80,7 +80,17 @@ jobs:
           wp eval-file "$HOME/$stage"
           echo 'UX_SWELL_BLOGPART_DRAFT_AUDIT=PASS'
           REMOTE
-      - name: Record operations summary
+      - name: Report verified blog-part ID and status to PR audit
         if: success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
-          echo "UX SWELL blog part: created or verified as draft; existing posts and ads unchanged." >> "$GITHUB_STEP_SUMMARY"
+          set -euo pipefail
+          id="$(sed -n 's/^UX_SWELL_PART_ID=//p' /tmp/ux-blogpart-result.txt | tail -1)"
+          status="$(sed -n 's/^UX_SWELL_PART_STATUS=//p' /tmp/ux-blogpart-result.txt | tail -1)"
+          [[ "$id" =~ ^[0-9]+$ && "$status" == draft ]] || { echo 'Missing or non-draft WP state'; exit 1; }
+          echo "UX_SWELL_PART_ID=$id" >> "$GITHUB_STEP_SUMMARY"
+          echo "UX_SWELL_PART_STATUS=$status" >> "$GITHUB_STEP_SUMMARY"
+          echo "Shortcode: [blog_parts id=\"$id\"]" >> "$GITHUB_STEP_SUMMARY"
+          gh issue comment 885 --repo "$GITHUB_REPOSITORY" --body "UX_SWELL_PART_AUDIT: id=$id; status=$status; shortcode=[blog_parts id=\"$id\"]; production_tool_not_published=true; no_article_changes=true" || echo 'GitHub issue comment unavailable; check Actions summary.'
