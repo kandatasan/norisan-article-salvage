@@ -1,0 +1,67 @@
+name: Lexus UX price production post-release verification
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/verify_public.php'
+      - '.github/workflows/ux-price-live-verify.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax and guarded data
+        run: |
+          php -l ops/lexus-ux-price-checker/blog_parts/verify_public.php
+          python ops/lexus-ux-price-checker/tests/test_release.py
+  verify-live:
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 14
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm production URL bytes match GitHub source
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 3 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker/index.html -o /tmp/ux-live-index.html
+          cmp /tmp/ux-live-index.html ops/lexus-ux-price-checker/index.html
+          curl -fsSL --retry 3 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker/data/reference_price_bands.json -o /tmp/ux-live-data.json
+          cmp /tmp/ux-live-data.json ops/lexus-ux-price-checker/data/reference_price_bands.json
+          echo 'UX_PRODUCTION_EXACT_HTTPS=PASS'
+      - name: Authenticate Xserver pinned ED25519 SSH host
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Inspect live blog-part shortcode and reference dataset without edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          temp=".tsurikue-ux-live-check-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/verify_public.php "$remote:$temp"
+          ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE'
+          set -euo pipefail
+          temp="$1"
+          [[ "$temp" =~ ^\.tsurikue-ux-live-check-[0-9]+\.php$ ]] || exit 12
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
+          trap 'rm -f "$HOME/$temp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$temp"
+          REMOTE
