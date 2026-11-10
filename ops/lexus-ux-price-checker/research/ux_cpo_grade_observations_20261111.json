@@ -5,7 +5,7 @@
   "currency": "JPY_man",
   "pricing_basis": "支払総額（税込）",
   "data_quality": "dealer+year+grade+odometer+total_price identity cross-check; no chassis/VIN verification",
-  "snapshot_note": "販売中を保証するものではない。検索一覧は変動し、調査時の非無作為サンプル。価格は時点と店舗で異なる。F SPORT Emotional Explorerなど特別仕様は通常F SPORTへ混ぜない。商談中と表示された車両は今回は採用しない。",
+  "snapshot_note": "販売中を保証するものではない。検索一覧は変動し、調査時の非無作為サンプル。価格は時点と店舗で異なる。F SPORT Emotional Explorerなど特別仕様は通常F SPORTへ混ぜない。商談中と表示された車両は今回は採用しない。　2021年F SPORT CPOでは特別仕様のStyle Blue／Emotional Explorerを除外、通常F SPORTを採用。",
   "observations": [
     {
       "market_segment": "lexus_cpo",
@@ -331,9 +331,129 @@
       "reviewed_on": "2026-11-11",
       "identity_key": "300h-l-2024|レクサス福山|27000|457.7",
       "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサスＣＰＯ大阪中央",
+      "odometer_km": 31000,
+      "total_man": 445.4,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサスＣＰＯ大阪中央|31000|445.4",
+      "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサスＣＰＯ昭和",
+      "odometer_km": 13000,
+      "total_man": 429.3,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサスＣＰＯ昭和|13000|429.3",
+      "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサス相模原",
+      "odometer_km": 13000,
+      "total_man": 432.5,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサス相模原|13000|432.5",
+      "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサスＣＰＯ横浜戸塚",
+      "odometer_km": 19000,
+      "total_man": 410,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサスＣＰＯ横浜戸塚|19000|410",
+      "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサス植田",
+      "odometer_km": 34000,
+      "total_man": 390.1,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサス植田|34000|390.1",
+      "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサスＣＰＯ岩出",
+      "odometer_km": 44000,
+      "total_man": 386.6,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサスＣＰＯ岩出|44000|386.6",
+      "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサスＣＰＯ石巻",
+      "odometer_km": 24000,
+      "total_man": 379.3,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサスＣＰＯ石巻|24000|379.3",
+      "availability_claim": false
+    },
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "dealer": "レクサスＣＰＯ那覇",
+      "odometer_km": 36000,
+      "total_man": 361,
+      "source_url": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX&Ymn=2020&Ymx=2021",
+      "reviewed_on": "2026-11-11",
+      "identity_key": "250h-fs-2021|レクサスＣＰＯ那覇|36000|361",
+      "availability_claim": false
     }
   ],
   "derived_bands": [
+    {
+      "market_segment": "lexus_cpo",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2021,
+      "sample_size": 8,
+      "observed_km_span": [
+        13000,
+        44000
+      ],
+      "q25": 384.77500000000003,
+      "median": 400.05,
+      "q75": 430.1,
+      "lower_man": 380,
+      "upper_man": 440
+    },
     {
       "market_segment": "lexus_cpo",
       "model": "250h",
