@@ -395,5 +395,10 @@
       "aggregation": "central_50_percent",
       "year_filter_scope": "exact_or_all"
     }
-  ]
+  ],
+  "prior_raw_research_observation_counts": {
+    "general_market": 29,
+    "lexus_cpo": 36
+  },
+  "prior_counts_warning": "Historical research observation counts included pooled, overlapping, and not fully de-duplicated records; never interpret as sample size of currently published grade-specific bands."
 }
