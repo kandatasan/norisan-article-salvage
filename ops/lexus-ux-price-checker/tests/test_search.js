@@ -10,7 +10,7 @@ assert(!html.includes('id="general-price"')&&!html.includes('id="cpo-price"'));
 assert(!html.includes('px.a8.net')&&!html.includes('ガリバー'));
 const m=html.match(/function estimate\([^]*?\n\}(?=\nfunction render\(\))/);
 assert(m,'approximate estimator missing');
-const ctx={};vm.createContext(ctx);vm.runInContext(m[0],ctx);
+const ctx={clamp:(v,min,max)=>Math.max(min,Math.min(max,v))};vm.createContext(ctx);vm.runInContext(m[0],ctx);
 const est=(model,trim,y,km)=>ctx.estimate(model,trim,y,km,data.cohorts);
 const base=est('250h','c',2021,30000);
 assert(base&&base.gradeMatched===true&&base.cpoBased===false);
