@@ -47,9 +47,9 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      XSERVER_SSH_HOST: \${{ secrets.XSERVER_SSH_HOST }}
-      XSERVER_SSH_USER: \${{ secrets.XSERVER_SSH_USER }}
-      XSERVER_SSH_PRIVATE_KEY: \${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
     steps:
       - uses: actions/checkout@v4
       - name: Verify Xserver pinned SSH identity
