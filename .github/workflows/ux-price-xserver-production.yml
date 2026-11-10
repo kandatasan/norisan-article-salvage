@@ -1,10 +1,10 @@
-name: Lexus UX price guarded Xserver production and SWELL part
+name: Lexus UX price guarded Xserver production and read-only SWELL check
 on:
   pull_request:
     branches: [main]
     paths:
       - 'ops/lexus-ux-price-checker/release/**'
-      - 'ops/lexus-ux-price-checker/blog_parts/publish_part.php'
+      - 'ops/lexus-ux-price-checker/blog_parts/verify_public.php'
       - '.github/workflows/ux-price-xserver-production.yml'
   push:
     branches: [main]
@@ -29,7 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           python ops/lexus-ux-price-checker/tests/test_release.py
-          php -l ops/lexus-ux-price-checker/blog_parts/publish_part.php
+          php -l ops/lexus-ux-price-checker/blog_parts/verify_public.php
           bash -n ops/lexus-ux-price-checker/release/deploy_production.sh
           grep -Fq 'Header always set Cache-Control "no-cache, max-age=0, must-revalidate"' ops/lexus-ux-price-checker/release/deploy_production.sh
           test -f ops/lexus-ux-price-checker/index.html
@@ -69,7 +69,7 @@ jobs:
           bash river-fish/xserver-git/verify_host_key.sh
       - name: Switch only UX price static folder and verify HTTPS or rollback
         run: bash ops/lexus-ux-price-checker/release/deploy_production.sh
-  publish-blogpart:
+  verify-blogpart:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: deploy
     runs-on: ubuntu-latest
@@ -89,19 +89,19 @@ jobs:
           printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
           chmod 600 "$HOME/.ssh/xserver_deploy_key"
           bash river-fish/xserver-git/verify_host_key.sh
-      - name: Publish only blog part 4505, confirm shortcode, preserve articles
+      - name: Read-only verify existing SWELL blog part 4505 and production prices
         shell: bash
         run: |
           set -euo pipefail
           remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
           key="$HOME/.ssh/xserver_deploy_key"
           opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
-          temp=".tsurikue-ux-publish-$GITHUB_RUN_ID.php"
-          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/publish_part.php "$remote:$temp"
+          temp=".tsurikue-ux-liveverify-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/verify_public.php "$remote:$temp"
           ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE'
           set -euo pipefail
           temp="$1"
-          [[ "$temp" =~ ^\.tsurikue-ux-publish-[0-9]+\.php$ ]] || exit 12
+          [[ "$temp" =~ ^\.tsurikue-ux-liveverify-[0-9]+\.php$ ]] || exit 12
           root="$HOME/tsurikue.com/public_html"
           test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
           test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
@@ -115,5 +115,5 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          echo 'UX_PRICE_PUBLIC_HTML_JSON=PASS, UX_SWELL_BLOGPART_4505=publish, ARTICLES_UNCHANGED' >> "$GITHUB_STEP_SUMMARY"
-          gh issue comment 885 --repo "$GITHUB_REPOSITORY" --body "UX_PRICE_FINAL_RELEASE: status=PASS; site=https://tsurikue.com/ux-price-checker/; blogpart=4505; shortcode=[blog_parts id=\"4505\"]; affiliate_inside_tool=NO; articles_unchanged=YES" || echo 'Audit issue comment unavailable'
+          echo 'UX_PRICE_PUBLIC_HTML_JSON=PASS, UX_SWELL_BLOGPART_4505=verified_existing, ARTICLES_UNCHANGED' >> "$GITHUB_STEP_SUMMARY"
+          gh issue comment 885 --repo "$GITHUB_REPOSITORY" --body "UX_PRICE_FINAL_RELEASE: status=PASS; site=https://tsurikue.com/ux-price-checker/; blogpart=4505; blogpart_verified_readonly=YES; affiliate_inside_tool=NO; articles_unchanged=YES" || echo 'Audit issue comment unavailable'
