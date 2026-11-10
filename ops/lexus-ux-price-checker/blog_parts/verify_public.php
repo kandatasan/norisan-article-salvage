@@ -22,16 +22,21 @@ if(!$j || ($j['publication_reviewed']??false)!==true || ($j['limited_sample_rele
 $html_file=ABSPATH.'ux-price-checker/index.html';
 if(!is_file($html_file))throw new RuntimeException('Production HTML missing');
 $tool_html=file_get_contents($html_file);
+$has_single=strpos($tool_html,'id="price-range"')!==false &&
+ strpos($tool_html,'id="general-price"')===false && strpos($tool_html,'id="cpo-price"')===false;
+$has_dual=strpos($tool_html,'id="price-range"')===false &&
+ strpos($tool_html,'id="general-price"')!==false && strpos($tool_html,'id="cpo-price"')!==false &&
+ strpos($tool_html,"show('general_market','general-price','general-note')")!==false &&
+ strpos($tool_html,"show('lexus_cpo','cpo-price','cpo-note')")!==false &&
+ strpos($tool_html,"b.market_segment===segment")!==false;
 if(strpos($tool_html,'id="color"')!==false ||
    strpos($tool_html,'id="grade"')===false ||
    strpos($tool_html,'type="range" id="year"')===false ||
    strpos($tool_html,'type="range" id="km"')===false ||
-   strpos($tool_html,'id="price-range"')===false ||
    strpos($tool_html,'function estimate(')===false ||
    strpos($tool_html,'年式・走行距離は簡易計算')===false ||
-   strpos($tool_html,'id="general-price"')!==false ||
-   strpos($tool_html,'id="cpo-price"')!==false)
-  throw new RuntimeException('UX v0.20 production slider UI drift');
+   !($has_single || $has_dual))
+  throw new RuntimeException('UX production slider price UI drift');
 $general=0;$cpo=0;
 foreach($j['cohorts'] as $cohort){
   if(($cohort['market_segment']??'')==='general_market')$general++;
@@ -51,6 +56,7 @@ echo 'UX_LIVE_THREE_FIELDS=PASS'.PHP_EOL;
 echo 'UX_LIVE_COLOR_REMOVED=PASS'.PHP_EOL;
 echo 'UX_LIVE_GRADE_FALLBACK_LABELED=PASS'.PHP_EOL;
 echo 'UX_LIVE_ROUGH_SLIDERS=PASS'.PHP_EOL;
+echo 'UX_LIVE_CPO_DISPLAY=' . ($has_dual ? 'SEPARATE' : 'LEGACY_SINGLE') . PHP_EOL;
 echo 'UX_LIVE_RENDERED_IFRAME=PASS'.PHP_EOL;
 echo 'UX_LIVE_DATA_COHORTS='.count($j['cohorts']).PHP_EOL;
 echo 'UX_LIVE_AFFILIATE_IN_TOOL=NO'.PHP_EOL;
