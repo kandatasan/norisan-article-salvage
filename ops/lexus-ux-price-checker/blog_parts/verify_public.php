@@ -18,7 +18,7 @@ $json=ABSPATH.'ux-price-checker/data/reference_price_bands.json';
 if(!is_file($json))throw new RuntimeException('Production JSON missing');
 $j=json_decode(file_get_contents($json),true);
 if(!$j || ($j['publication_reviewed']??false)!==true || ($j['limited_sample_release']??false)!==true
-  || count($j['cohorts']??[])<20) throw new RuntimeException('Production JSON invalid');
+  || count($j['cohorts']??[])<10) throw new RuntimeException('Production JSON invalid');
 $html_file=ABSPATH.'ux-price-checker/index.html';
 if(!is_file($html_file))throw new RuntimeException('Production HTML missing');
 $tool_html=file_get_contents($html_file);
@@ -36,9 +36,20 @@ foreach($j['cohorts'] as $cohort){
   if(($cohort['market_segment']??'')==='general_market')$general++;
   if(($cohort['market_segment']??'')==='lexus_cpo')$cpo++;
 }
-if($general<10 || $cpo<8)throw new RuntimeException('UX market source segment missing');
+if($general<7 || $cpo<3)throw new RuntimeException('UX market source segment missing');
 echo 'UX_LIVE_GENERAL_PRICE_COHORTS='.$general.PHP_EOL;
 echo 'UX_LIVE_CPO_PRICE_COHORTS='.$cpo.PHP_EOL;
+foreach($j['cohorts'] as $cohort){
+  if(($cohort['grade']??null)==='all') throw new RuntimeException('Mixed-grade public cohort detected');
+}
+if(($j['price_cohort_class']??'')!=='grade_specific_only' ||
+   ($j['mixed_grade_cohorts_archived']??0)!==17)
+   throw new RuntimeException('Grade-only dataset policy mismatch');
+if(strpos($tool_html,"['all','全グレード'")!==false ||
+   strpos($tool_html,'全グレード')!==false ||
+   strpos($tool_html,'const defaultGrades=')===false)
+   throw new RuntimeException('UX grade-only selection or legacy iframe fallback invalid');
+echo 'UX_LIVE_ALL_GRADE_REMOVED=PASS'.PHP_EOL;
 echo 'UX_LIVE_THREE_FIELDS=PASS'.PHP_EOL;
 echo 'UX_LIVE_COLOR_REMOVED=PASS'.PHP_EOL;
 echo 'UX_LIVE_GENERAL_YEAR_FALLBACK=PASS'.PHP_EOL;
