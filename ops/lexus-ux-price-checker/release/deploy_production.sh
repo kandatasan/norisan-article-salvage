@@ -40,15 +40,18 @@ test ! -L "$dest" && test ! -e "$backup"
 php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<14)exit(1);' "$candidate/data/reference_price_bands.json"
 # The four independently sourced CPO exact grade/year bands must exist; reject any pooled grade.
 php -r '$d=json_decode(file_get_contents($argv[1]),true);$required=[["250h","fs",2021,8],["250h","fs",2023,6],["250h","l",2023,12],["300h","l",2024,7]];foreach($required as $r){$matches=array_values(array_filter($d["cohorts"],function($c)use($r){return ($c["model"]??"")===$r[0]&&($c["grade"]??"")===$r[1]&&($c["year"]??0)===$r[2]&&($c["market_segment"]??"")==="lexus_cpo"&&($c["sample_size"]??0)===$r[3]&&($c["research_audit_file"]??"")==="research/ux_cpo_grade_observations_20261111.json";}));if(count($matches)!==1)exit(5);}' "$candidate/data/reference_price_bands.json"
-grep -Fq 'id="price-range"' "$candidate/index.html"
+grep -Fq 'id="general-price"' "$candidate/index.html"
+grep -Fq 'id="cpo-price"' "$candidate/index.html"
 grep -Fq 'type="range" id="year"' "$candidate/index.html"
 grep -Fq 'type="range" id="km"' "$candidate/index.html"
-! grep -Fq 'id="general-price"' "$candidate/index.html"
-! grep -Fq 'id="cpo-price"' "$candidate/index.html"
-# New UX estimate is based only on verified specific-grade cohorts. Model fallback is labeled.
+! grep -Fq 'id="price-range"' "$candidate/index.html"
+# The general and certified used market observations must remain independently estimated.
 grep -Fq 'function estimate(' "$candidate/index.html"
 grep -Fq 'gradeMatched' "$candidate/index.html"
-grep -Fq 'sameModel' "$candidate/index.html"
+grep -Fq 'sameMarketModel' "$candidate/index.html"
+grep -Fq 'b.market_segment===segment' "$candidate/index.html"
+grep -Fq "show('general_market','general-price','general-note')" "$candidate/index.html"
+grep -Fq "show('lexus_cpo','cpo-price','cpo-note')" "$candidate/index.html"
 ! grep -Fq '全グレード' "$candidate/index.html"
 php -r '$d=json_decode(file_get_contents($argv[1]),true);foreach($d["cohorts"] as $c){if(($c["grade"]??"")==="all")exit(9);}if(($d["archived_pooled_cohort_count"]??0)<17)exit(10);' "$candidate/data/reference_price_bands.json"
 grep -Fq 'ざっくり購入価格（支払総額の目安）' "$candidate/index.html"
@@ -57,7 +60,7 @@ php -r '$d=json_decode(file_get_contents($argv[1]),true);$has=function($m,$g,$y,
 grep -Fq 'レクサスUX 中古相場チェックツール' "$candidate/index.html"
 grep -Fq '※価格は参考程度です。' "$candidate/index.html"
 ! grep -Fq '価格について：</strong>' "$candidate/index.html"
-# v0.20: grade selector, year slider and mileage slider; color was intentionally removed.
+# v0.20.1: the same three controls now show general and CPO prices in two rows.
 ! grep -Fq 'id="color"' "$candidate/index.html"
 grep -Fq '年式・走行距離は簡易計算' "$candidate/index.html"
 ! grep -Eiq 'px.a8.net|www15.a8.net' "$candidate/index.html"
