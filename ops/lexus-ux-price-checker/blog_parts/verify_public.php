@@ -19,6 +19,29 @@ if(!is_file($json))throw new RuntimeException('Production JSON missing');
 $j=json_decode(file_get_contents($json),true);
 if(!$j || ($j['publication_reviewed']??false)!==true || ($j['limited_sample_release']??false)!==true
   || count($j['cohorts']??[])<20) throw new RuntimeException('Production JSON invalid');
+$html_file=ABSPATH.'ux-price-checker/index.html';
+if(!is_file($html_file))throw new RuntimeException('Production HTML missing');
+$tool_html=file_get_contents($html_file);
+if(strpos($tool_html,'id="color"')!==false ||
+   strpos($tool_html,'id="grade"')===false ||
+   strpos($tool_html,'id="year"')===false ||
+   strpos($tool_html,'id="km"')===false ||
+   strpos($tool_html,'maxYear-minYear<=4')===false ||
+   strpos($tool_html,'複数年式の参考値')===false ||
+   strpos($tool_html,'id="general-price"')===false ||
+   strpos($tool_html,'id="cpo-price"')===false)
+  throw new RuntimeException('UX production three-field/fallback UI drift');
+$general=0;$cpo=0;
+foreach($j['cohorts'] as $cohort){
+  if(($cohort['market_segment']??'')==='general_market')$general++;
+  if(($cohort['market_segment']??'')==='lexus_cpo')$cpo++;
+}
+if($general<10 || $cpo<8)throw new RuntimeException('UX market source segment missing');
+echo 'UX_LIVE_GENERAL_PRICE_COHORTS='.$general.PHP_EOL;
+echo 'UX_LIVE_CPO_PRICE_COHORTS='.$cpo.PHP_EOL;
+echo 'UX_LIVE_THREE_FIELDS=PASS'.PHP_EOL;
+echo 'UX_LIVE_COLOR_REMOVED=PASS'.PHP_EOL;
+echo 'UX_LIVE_GENERAL_YEAR_FALLBACK=PASS'.PHP_EOL;
 echo 'UX_LIVE_RENDERED_IFRAME=PASS'.PHP_EOL;
 echo 'UX_LIVE_DATA_COHORTS='.count($j['cohorts']).PHP_EOL;
 echo 'UX_LIVE_AFFILIATE_IN_TOOL=NO'.PHP_EOL;
