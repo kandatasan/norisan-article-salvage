@@ -88,8 +88,10 @@ function render(){
     if(!b){
       price.textContent='集計中';
       price.classList.add('is-empty');
-      const gradeSelected=g.value.split(':')[1];
-      note.textContent=gradeSelected==='all'?'掲載例が不足しています':'グレード別データ不足（全グレードなら参考価格あり）';
+      const [selectedModel,selectedGrade]=g.value.split(':');
+      const segment=priceId==='general-price'?'general_market':'lexus_cpo';
+      const hasPooled=selectedGrade!=='all' && !!matchingBand(selectedModel,'all',y.value,k.value,segment);
+      note.textContent=hasPooled?'このグレードの掲載例不足（全グレードに参考値あり）':'この条件の掲載例が不足しています';
       return;
     }
     price.classList.remove('is-empty');
@@ -99,7 +101,7 @@ function render(){
     const years=b.observed_years;
     if(years[1]>years[0])caveats.push(`複数年式の参考値（${years[0]}〜${years[1]}年）`);
     else if(yr==='any')caveats.push(`${years[0]}年式の参考値`);
-    if(selectedGrade!=='all'&&b.grade==='all')caveats.push('グレード混在');
+    if(selectedGrade==='all')caveats.push('複数グレードの参考値');
     if(mileage!=='any'&&b.mileage_start_km==='any')caveats.push('走行距離未反映');
     note.textContent=`${b.sample_size}件の掲載例`+(caveats.length?'／'+caveats.join('・'):'');
   }
