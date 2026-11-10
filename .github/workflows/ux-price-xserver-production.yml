@@ -29,6 +29,7 @@ jobs:
         run: |
           set -euo pipefail
           python ops/lexus-ux-price-checker/tests/test_release.py
+          node ops/lexus-ux-price-checker/tests/test_grade_observations.js
           php -l ops/lexus-ux-price-checker/blog_parts/verify_public.php
           bash -n ops/lexus-ux-price-checker/release/deploy_production.sh
           grep -Fq 'Header always set Cache-Control "no-cache, max-age=0, must-revalidate"' ops/lexus-ux-price-checker/release/deploy_production.sh
@@ -42,10 +43,17 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 "https://tsurikue.com/ux-price-checker-ci-preview/index.html?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-preview-index.html
-          cmp /tmp/ux-preview-index.html ops/lexus-ux-price-checker/index.html
-          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 "https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-preview-data.json
-          cmp /tmp/ux-preview-data.json ops/lexus-ux-price-checker/data/reference_price_bands.json
+          matched=0
+          for attempt in $(seq 1 12); do
+            if curl -fsSL --max-time 25 --retry 1 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/index.html?ux_rev=${GITHUB_SHA}-${attempt}" -o /tmp/ux-preview-index.html &&
+               cmp -s /tmp/ux-preview-index.html ops/lexus-ux-price-checker/index.html &&
+               curl -fsSL --max-time 25 --retry 1 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json?ux_rev=${GITHUB_SHA}-${attempt}" -o /tmp/ux-preview-data.json &&
+               cmp -s /tmp/ux-preview-data.json ops/lexus-ux-price-checker/data/reference_price_bands.json; then
+               matched=1; break
+            fi
+            sleep 5
+          done
+          test "$matched" -eq 1 || { echo 'UX_PRICE_STAGING_PARITY=FAIL'; exit 10; }
           echo 'UX_PRICE_PRODUCTION_PREFLIGHT_HTTPS=PASS'
   deploy:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
