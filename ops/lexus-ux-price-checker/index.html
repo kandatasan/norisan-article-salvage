@@ -103,7 +103,7 @@ function render(){
     else if(yr==='any')caveats.push(`${years[0]}年式の参考値`);
     if(selectedGrade==='all')caveats.push('複数グレードの参考値');
     if(mileage!=='any'&&b.mileage_start_km==='any')caveats.push('走行距離未反映');
-    note.textContent=`${b.sample_size}件の掲載例`+(caveats.length?'／'+caveats.join('・'):'');
+    note.textContent=`中央値約${fmt(b.median_man)}万円・${b.sample_size}件`+(caveats.length?'／'+caveats.join('・'):'');
   }
   showMarket(general,'general-price','general-note');
   showMarket(cpo,'cpo-price','cpo-note');
