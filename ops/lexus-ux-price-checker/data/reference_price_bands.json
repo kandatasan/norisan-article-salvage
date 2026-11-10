@@ -433,6 +433,30 @@
     },
     {
       "model": "300h",
+      "grade": "fs",
+      "year": 2024,
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2024,
+        2024
+      ],
+      "observed_km_span": [
+        9000,
+        45000
+      ],
+      "lower_man": 480,
+      "median_man": 511.9,
+      "upper_man": 530,
+      "market_segment": "lexus_cpo",
+      "quality": "limited_grade_specific_lexus_cpo_dealer_listings",
+      "source_scope": "2026年11月レクサスCPO公式の2024年F SPORT・別ディーラー7台。支払総額を少数抽出、無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true
+    },
+    {
+      "model": "300h",
       "grade": "l",
       "year": 2024,
       "mileage_start_km": "any",
