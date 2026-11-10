@@ -9,7 +9,7 @@
     "lexus_cpo"
   ],
   "band_method": "各区分の観測価格の第1〜第3四分位を10万円単位で外側へ丸めた参考範囲。無作為抽出ではない。",
-  "source_label": "2026年11月11日までに確認したグレード別の少数掲載例",
+  "source_label": "2026年11月11日までのグレード別掲載例（レクサス公式CPO個票追加）",
   "publication_blockers": [],
   "cohorts": [
     {
@@ -34,6 +34,30 @@
       "source_scope": "掲載例の支払総額・無作為抽出ではない",
       "aggregation": "central_50_percent",
       "year_filter_scope": "exact_or_all"
+    },
+    {
+      "model": "250h",
+      "grade": "fs",
+      "year": 2019,
+      "mileage_start_km": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2019,
+        2019
+      ],
+      "observed_km_span": [
+        23000,
+        43000
+      ],
+      "lower_man": 340,
+      "median_man": 355.2,
+      "upper_man": 360,
+      "market_segment": "general_market",
+      "quality": "limited_five_distinct_grade_matched_listings",
+      "source_scope": "2019年UX250h F SPORTの別個体5件、旧Carsensor観測2件と2026年11月に再確認した車両3件。支払総額の少数掲載例",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true
     },
     {
       "model": "250h",
@@ -111,30 +135,6 @@
     {
       "model": "250h",
       "grade": "fs",
-      "year": 2019,
-      "mileage_start_km": "any",
-      "sample_size": 5,
-      "observed_years": [
-        2019,
-        2019
-      ],
-      "observed_km_span": [
-        23000,
-        43000
-      ],
-      "lower_man": 340,
-      "median_man": 355.2,
-      "upper_man": 360,
-      "market_segment": "general_market",
-      "quality": "limited_five_distinct_grade_matched_listings",
-      "source_scope": "2019年UX250h F SPORTの別個体5件、旧Carsensor観測2件と2026年11月に再確認した車両3件。支払総額の少数掲載例",
-      "aggregation": "central_50_percent",
-      "year_filter_scope": "exact",
-      "sample_grade_validated": true
-    },
-    {
-      "model": "250h",
-      "grade": "fs",
       "year": 2021,
       "mileage_start_km": "any",
       "sample_size": 5,
@@ -155,6 +155,79 @@
       "aggregation": "central_50_percent",
       "year_filter_scope": "exact",
       "sample_grade_validated": true
+    },
+    {
+      "model": "250h",
+      "grade": "fs",
+      "year": 2023,
+      "mileage_start_km": "any",
+      "sample_size": 6,
+      "observed_years": [
+        2023,
+        2023
+      ],
+      "observed_km_span": [
+        9000,
+        48000
+      ],
+      "lower_man": 460,
+      "median_man": 463.9,
+      "upper_man": 470,
+      "market_segment": "lexus_cpo",
+      "quality": "2026_11_11_lexus_official_CPO_grade_specific_listing_sample",
+      "source_scope": "レクサス公式CPO検索に掲載された販売店・年式・走行距離・支払総額を照合。個体識別は暫定（VIN未確認）、無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_cpo_grade_observations_20261111.json"
+    },
+    {
+      "model": "250h",
+      "grade": "l",
+      "year": 2023,
+      "mileage_start_km": "any",
+      "sample_size": 12,
+      "observed_years": [
+        2023,
+        2023
+      ],
+      "observed_km_span": [
+        5000,
+        35000
+      ],
+      "lower_man": 440,
+      "median_man": 462.25,
+      "upper_man": 480,
+      "market_segment": "lexus_cpo",
+      "quality": "2026_11_11_lexus_official_CPO_grade_specific_listing_sample",
+      "source_scope": "レクサス公式CPO検索に掲載された販売店・年式・走行距離・支払総額を照合。個体識別は暫定（VIN未確認）、無作為抽出ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_cpo_grade_observations_20261111.json"
+    },
+    {
+      "model": "300e",
+      "grade": "l",
+      "year": 2021,
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2021,
+        2021
+      ],
+      "observed_km_span": [
+        16000,
+        79000
+      ],
+      "lower_man": 240,
+      "median_man": 287.8,
+      "upper_man": 300,
+      "market_segment": "general_market",
+      "quality": "nonrepresentative_prior_audit",
+      "source_scope": "前回の独立した2021年version L観測7台・個票照合要",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact"
     },
     {
       "model": "300h",
@@ -185,50 +258,29 @@
       "grade": "l",
       "year": 2024,
       "mileage_start_km": "any",
-      "sample_size": 5,
+      "sample_size": 7,
       "observed_years": [
         2024,
         2024
       ],
       "observed_km_span": [
-        11000,
+        4000,
         27000
       ],
       "lower_man": 470,
-      "median_man": 485.4,
-      "upper_man": 500,
+      "median_man": 495.2,
+      "upper_man": 510,
       "market_segment": "lexus_cpo",
-      "quality": "nonrepresentative_manual_observations",
-      "source_scope": "掲載例の支払総額・無作為抽出ではない",
+      "quality": "2026_11_11_lexus_official_CPO_grade_specific_listing_sample",
+      "source_scope": "レクサス公式CPO検索に掲載された販売店・年式・走行距離・支払総額を照合。個体識別は暫定（VIN未確認）、無作為抽出ではない",
       "aggregation": "central_50_percent",
-      "year_filter_scope": "exact_or_all"
-    },
-    {
-      "model": "300e",
-      "grade": "l",
-      "year": 2021,
-      "mileage_start_km": "any",
-      "sample_size": 7,
-      "observed_years": [
-        2021,
-        2021
-      ],
-      "observed_km_span": [
-        16000,
-        79000
-      ],
-      "lower_man": 240,
-      "median_man": 287.8,
-      "upper_man": 300,
-      "market_segment": "general_market",
-      "quality": "nonrepresentative_prior_audit",
-      "source_scope": "前回の独立した2021年version L観測7台・個票照合要",
-      "aggregation": "central_50_percent",
-      "year_filter_scope": "exact"
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_cpo_grade_observations_20261111.json"
     }
   ],
   "limited_sample_release": true,
-  "publication_note": "全グレード混在の価格は公開集計から撤去。個別グレード・モデルの少数掲載例だけを表示。走行距離補正は未対応。",
+  "publication_note": "一般中古車とレクサスCPOを分け、個別グレードの少数掲載例のみ参考帯を表示。全グレード混在の値は使わない。走行距離は未補正。",
   "publication_caveats": [
     "一般中古車の監査候補29件（別集計UX300e7件）とCPO36件に偏りがあり、全国相場を代表しない",
     "同じ個体をグレード混在や近接年式などで複数コホートに再集計しており、22個の価格帯が22個の独立標本ではない",
@@ -238,7 +290,8 @@
     "グレードを個別指定した場合、全グレード混合集計を流用しない。特定グレードで5台未満は価格を表示せず、集計中とする",
     "旧UX200全グレード2019年の6件は実際にはF SPORTのみだったため、全グレード集計としては使用停止",
     "全グレードの混合集計17件は公開価格データから撤去。旧研究用集計はGitHubのresearchへ隔離。",
-    "2020年UX250h version Cは一般7台・レクサスCPO6台の独立掲載例から、区分別に参考値を計算。"
+    "2020年UX250h version Cは一般7台・レクサスCPO6台の独立掲載例から、区分別に参考値を計算。",
+    "2026-11-11公式CPOの3区分を調査。販売店・年式・走行距離・支払総額で重複を一次確認したが、車台番号/VINまでは照合できていない。現在の在庫を保証しない"
   ],
   "display_facets": [
     "grade",
@@ -248,7 +301,7 @@
   "fallback_policy": "same_model_only; selected_year_in_observed_span; observed_span_max_5_years; grade_all_only; explicit_mixed_year_and_mixed_grade_warning",
   "grade_specific_display_policy": "no_grade_all; exact_grade_only; no_same_price_fallback; exact_year_or_same_grade_observed_range",
   "archived_pooled_cohort_count": 17,
-  "active_specific_grade_cohort_count": 9,
+  "active_specific_grade_cohort_count": 11,
   "historical_source_count_by_segment": {
     "general_market": 29,
     "lexus_cpo": 36
