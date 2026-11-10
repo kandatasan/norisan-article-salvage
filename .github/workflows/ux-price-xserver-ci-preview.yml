@@ -47,6 +47,7 @@ jobs:
           python ops/lexus-ux-price-checker/tests/test_release.py
           sed -n '/<script>/,/<\/script>/p' ops/lexus-ux-price-checker/index.html | sed '1d;$d' > /tmp/ux-price-script.js
           node --check /tmp/ux-price-script.js
+          node ops/lexus-ux-price-checker/tests/test_search.js
           php -l ops/lexus-ux-price-checker/wordpress/tsurikue-ux-price-embed.php
           php -l ops/lexus-ux-price-checker/wordpress/tests/test_embed.php
           php ops/lexus-ux-price-checker/wordpress/tests/test_embed.php

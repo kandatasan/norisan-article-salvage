@@ -17,7 +17,6 @@
   <div class="field full"><label for="grade">グレード</label><select id="grade"></select></div>
   <div class="field"><label for="year">年式</label><select id="year"></select></div>
   <div class="field"><label for="km">走行距離</label><select id="km"></select></div>
-  <div class="field full"><label for="color">カラー</label><select id="color"></select></div>
 </div>
 <div class="result" id="result" role="status" aria-live="polite">
   <p class="kicker">中古車の参考価格帯（支払総額・少数の掲載例）</p>
@@ -33,7 +32,7 @@
   </div>
   <p class="meta" id="meta">該当条件の掲載価格を調査しています。</p>
 </div>
-<p class="reference"><strong>価格について：</strong>販売中の少数掲載例から独自試算した中央値と中央50％の範囲。保証・装備・地域によって差があります。年式やグレードが一致しない場合はその旨を表示します。市場全体を代表するものではなく、買取査定額でもありません。年式・グレード・走行距離が一致しない例も含まれます。</p>
+<p class="reference"><strong>価格について：</strong>過去に確認した少数掲載例の支払総額から独自試算。一般中古車とレクサスCPOは別集計です。年式・グレードが一致するデータがない場合、該当年を含む複数年式・複数グレードの参考値を明示して表示することがあります。走行距離は価格へ未反映のため、選んでも価格が変わらない場合があります。全国相場や査定額ではありません。</p>
 </section></main>
 <script>
 (()=>{'use strict';
@@ -43,16 +42,15 @@ const models=[
  ['300h','UX300h',2024,[['all','全グレード',2024],['base','標準仕様',2024],['c','version C',2024],['fs','F SPORT',2024],['l','version L',2024],['emotional','F SPORT Emotional Explorer',2024],['graceful','Graceful Explorer',2024],['shining','Shining Essence',2026]]],
  ['300e','UX300e',2020,[['all','全グレード',2020],['c','version C',2020],['l','version L',2020]]]
 ];
-const $=id=>document.getElementById(id),g=$('grade'),y=$('year'),k=$('km'),c=$('color');
+const $=id=>document.getElementById(id),g=$('grade'),y=$('year'),k=$('km');
 let bands=[];let latest='';
 for(const [model,name,,grades] of models){const optgroup=document.createElement('optgroup');optgroup.label=name;for(const [id,caption] of grades){const o=document.createElement('option');o.value=model+':'+id;o.textContent=name+' '+caption;optgroup.append(o)}g.append(optgroup)}
 const option=(select,value,label)=>{const o=document.createElement('option');o.value=value;o.textContent=label;select.append(o)};
 option(y,'any','指定なし');for(let yr=2026;yr>=2018;yr--)option(y,String(yr),yr+'年');
 option(k,'any','指定なし');for(let i=0;i<10;i++)option(k,String(i*10000),`${i}万〜${i+1}万km未満`);option(k,'100000','10万km以上');
-for(const [id,name] of [['any','指定なし'],['white','ホワイト系'],['black','ブラック系'],['silver','シルバー・グレー系'],['blue','ブルー系'],['red','レッド・オレンジ系'],['other','その他・ツートーン']])option(c,id,name);
 const params=new URLSearchParams(location.search);const pModel=params.get('model')||'250h',pGrade=params.get('grade')||'c';
 if([...g.options].some(o=>o.value===pModel+':'+pGrade))g.value=pModel+':'+pGrade;else g.value='250h:c';
-for(const [el,name] of [[y,'year'],[k,'mileage'],[c,'color']]){const v=params.get(name);if(v&&[...el.options].some(o=>o.value===v))el.value=v}
+for(const [el,name] of [[y,'year'],[k,'mileage']]){const v=params.get(name);if(v&&[...el.options].some(o=>o.value===v))el.value=v}
 if(!params.has('year'))y.value='2021';
 function syncYears(){const [model,id]=g.value.split(':');const start=models.find(m=>m[0]===model)?.[3].find(z=>z[0]===id)?.[2]||2018;const endYear=({200:2023,'250h':2023,'300h':2026,'300e':2026})[model]||2026;[...y.options].forEach(o=>{o.disabled=o.value!=='any'&&(+o.value<start||+o.value>endYear)});if(y.selectedOptions[0]?.disabled)y.value='any'}
 // Only show preview figures on local test host. URL flags do not bypass publication review on the public site.
@@ -70,17 +68,18 @@ function matchingBand(model,grade,yr,mileage,segment){
     const [minYear,maxYear]=b.observed_years;
     if(targetYear===null) return b.year==='any';
     if(b.year!=='any') return b.year===targetYear;
-    // Fallback limited to neighbouring registration years, not the full model history.
-    return minYear<=targetYear && targetYear<=maxYear && maxYear-minYear<=1;
+    // General-market coverage: keep only observations containing the selected year.
+    // A wider (up to 5-year) group is a *clearly labeled* model-only reference, not an exact match.
+    return minYear<=targetYear && targetYear<=maxYear && maxYear-minYear<=4;
   });
-  // Exact year/grade beats same-year all-grade; only then use a two-year all-grade range.
-  const score=b=>(b.year!=='any'?10:0)+(b.grade===grade&&grade!=='all'?4:0)+(b.mileage_start_km!=='any'?2:0)-(b.observed_years[1]-b.observed_years[0]);
+  // Exact year and grade take priority. If unavailable, prefer the narrowest time span.
+  const score=b=>(b.year!=='any'?100:0)+(b.grade===grade&&grade!=='all'?10:0)+(b.mileage_start_km!=='any'?2:0)-5*(b.observed_years[1]-b.observed_years[0]);
   candidates.sort((a,b)=>score(b)-score(a) || b.sample_size-a.sample_size);
   return candidates[0];
 }
 function render(){
   syncYears();
-  const [model,grade]=g.value.split(':'),yr=y.value,mileage=k.value,color=c.value;
+  const [model,grade]=g.value.split(':'),yr=y.value,mileage=k.value;
   const general=matchingBand(model,grade,yr,mileage,'general_market');
   const cpo=matchingBand(model,grade,yr,mileage,'lexus_cpo');
   function showMarket(b,priceId,noteId){
@@ -90,18 +89,18 @@ function render(){
     price.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
     const caveats=[];
     const [m,selectedGrade]=g.value.split(':');
-    if(yr!=='any'&&b.year==='any')caveats.push(`年式${b.observed_years[0]}〜${b.observed_years[1]}年`);
-    if(yr==='any')caveats.push(`年式${b.observed_years[0]}〜${b.observed_years[1]}年`);
+    const years=b.observed_years;
+    if(years[1]>years[0])caveats.push(`複数年式の参考値（${years[0]}〜${years[1]}年）`);
+    else if(yr==='any')caveats.push(`${years[0]}年式の参考値`);
     if(selectedGrade!=='all'&&b.grade==='all')caveats.push('グレード混在');
     if(mileage!=='any'&&b.mileage_start_km==='any')caveats.push('走行距離未反映');
-    if(color!=='any')caveats.push('カラー未反映');
     note.textContent=`中央値約${fmt(b.median_man)}万円・${b.sample_size}件`+(caveats.length?'／'+caveats.join('・'):'');
   }
   showMarket(general,'general-price','general-note');
   showMarket(cpo,'cpo-price','cpo-note');
   $('meta').textContent=(general||cpo)?`${isPreview?'調査プレビュー／':''}${sampleDate||'調査日不明'}時点の少数掲載例。全国市場を代表する統計ではありません。`:'条件に合う掲載例を調査中です。価格は変動します。';
 }
-[g,y,k,c].forEach(el=>el.addEventListener('change',render));syncYears();render();
+[g,y,k].forEach(el=>el.addEventListener('change',render));syncYears();render();
 fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('no data');return r.json()}).then(data=>{
   const date=new Date(data.updated_at+'T00:00:00+09:00'),age=(Date.now()-date.getTime())/86400000;
   const approved=data.publication_reviewed===true&&data.research_preview_only===false&&data.limited_sample_release===true;
