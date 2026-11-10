@@ -1,0 +1,93 @@
+name: UX buying-links SWELL blog part one-time draft creation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/create_ux_buying_links_once.php'
+      - '.github/workflows/ux-buying-links-blogpart-draft.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/create_ux_buying_links_once.php'
+      - '.github/workflows/ux-buying-links-blogpart-draft.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ux-buying-links-draft-creation
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate separate SWELL blog part and tracking
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/lexus-ux-price-checker/blog_parts/create_ux_buying_links_once.php
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('ops/lexus-ux-price-checker/blog_parts/create_ux_buying_links_once.php').read_text()
+          assert "'post_status'=>'draft'" in s
+          assert "'post_type'=>'blog_parts'" in s
+          assert 'data-tsurikue-ux-buying-links' in s
+          assert 'https://www.carsensor.net/usedcar/bLE/s021/index.html' in s
+          assert 'https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY' in s
+          assert 'https://www13.a8.net/0.gif?a8mat=4B65SD+8DUSHE+9QU+NVHCY' in s
+          assert 'ガリバーなら一般公開前の車両も探せる！' in s
+          assert '※希望条件・連絡先の入力が必要です。' in s
+          assert 'wp_delete_post((int)$id,true)' in s
+          assert 'wp_update_post' not in s
+          print('UX_BUYING_LINKS_SOURCE_AUDIT=PASS')
+          PY
+  create-draft:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Xserver pinned SSH identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Register draft only (dedup + exact tracking audit + rollback)
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          temp=".tsurikue-ux-buying-part-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/create_ux_buying_links_once.php "$remote:$temp"
+          ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE' | tee /tmp/ux-buying-result.txt
+          set -euo pipefail
+          temp="$1"
+          [[ "$temp" =~ ^\.tsurikue-ux-buying-part-[0-9]+\.php$ ]] || exit 13
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
+          trap 'rm -f "$HOME/$temp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$temp"
+          echo UX_BUYING_DRAFT_WP_COMMAND=PASS
+          REMOTE
+          id="$(sed -n 's/^UX_BUYING_BLOGPART_ID=//p' /tmp/ux-buying-result.txt | tail -1)"
+          state="$(sed -n 's/^UX_BUYING_BLOGPART_STATUS=//p' /tmp/ux-buying-result.txt | tail -1)"
+          outcome="$(sed -n 's/^UX_BUYING_BLOGPART_RESULT=//p' /tmp/ux-buying-result.txt | tail -1)"
+          [[ "$id" =~ ^[0-9]+$ && "$state" == 'draft' ]] || exit 21
+          [[ "$outcome" == 'CREATED_DRAFT' || "$outcome" == 'ALREADY_EXISTS' ]] || exit 22
+          echo "UX_BUYING_BLOGPART_ID=$id" >> "$GITHUB_STEP_SUMMARY"
+          echo "UX_BUYING_BLOGPART_STATUS=$state" >> "$GITHUB_STEP_SUMMARY"
+          echo "UX_BUYING_BLOGPART_SHORTCODE=[blog_parts id=\"$id\"]" >> "$GITHUB_STEP_SUMMARY"
+          echo "No live article content was modified." >> "$GITHUB_STEP_SUMMARY"
