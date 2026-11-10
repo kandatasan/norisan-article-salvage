@@ -25,6 +25,8 @@ assert.equal(f('250h','c',2021,'general_market').median_man,353);
 assert.equal(f('300h','fs',2024,'lexus_cpo').median_man,511.9);
 assert.equal(f('300h','l',2024,'lexus_cpo').median_man,495.2);
 assert.equal(f('300h','l',2024,'lexus_cpo').sample_size,7);
+assert.equal(f('250h','fs',2021,'lexus_cpo').median_man,400.05);
+assert.equal(f('250h','fs',2021,'lexus_cpo').sample_size,8);
 assert.equal(f('250h','fs',2023,'lexus_cpo').median_man,463.9);
 assert.equal(f('250h','fs',2023,'lexus_cpo').sample_size,6);
 assert.equal(f('250h','l',2023,'lexus_cpo').median_man,462.25);
