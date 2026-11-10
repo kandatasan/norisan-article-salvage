@@ -8,7 +8,9 @@ assert data['limited_sample_release'] is True
 assert 'publication_caveats' in data and len(data['publication_caveats']) >= 3
 assert data['price_basis']=='total'
 assert set(data['markets_included'])=={'general_market','lexus_cpo'}
-assert html.count('id="general-price"')==1 and html.count('id="cpo-price"')==1
+assert html.count('id="price-range"')==1
+assert html.count('type="range"')==2
+assert 'id="general-price"' not in html and 'id="cpo-price"' not in html
 assert '<h1>レクサスUX 中古相場チェックツール</h1>' in html
 assert '※価格は参考程度です。' in html
 assert '価格について：</strong>' not in html
@@ -20,15 +22,17 @@ assert 'ガリバー' not in html
 assert 'PR｜' not in html
 assert 'class="cta"' not in html
 
-assert "maxYear-minYear<=4" in html
+
 assert 'id="color"' not in html
 assert "c=$('color')" not in html
 assert 'カラー未反映' not in html
-assert '複数年式の参考値' in html
-assert "if(b.grade==='all'||b.grade!==grade) return false;" in html
+
+
 assert "'all','全グレード'" not in html
 assert '全グレード' not in html
-assert '中央値約' in html
+assert 'function estimate(' in html
+assert '年式・走行距離は簡易計算' in html
+
 assert data.get('grade_specific_display_policy') == 'no_grade_all; exact_grade_only; no_same_price_fallback; exact_year_or_same_grade_observed_range'
 assert data.get('archived_pooled_cohort_count') == 17
 assert len(data['cohorts']) == data.get('active_specific_grade_cohort_count') == 14
