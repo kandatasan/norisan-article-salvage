@@ -37,7 +37,9 @@ test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
 test -d "$candidate" && test ! -L "$candidate"
 test -f "$candidate/index.html" && test -f "$candidate/data/reference_price_bands.json"
 test ! -L "$dest" && test ! -e "$backup"
-php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<11)exit(1);' "$candidate/data/reference_price_bands.json"
+php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<14)exit(1);' "$candidate/data/reference_price_bands.json"
+# The four independently sourced CPO exact grade/year bands must exist; reject any pooled grade.
+php -r '$d=json_decode(file_get_contents($argv[1]),true);$required=[["250h","fs",2021,8],["250h","fs",2023,6],["250h","l",2023,12],["300h","l",2024,7]];foreach($required as $r){$matches=array_values(array_filter($d["cohorts"],function($c)use($r){return ($c["model"]??"")===$r[0]&&($c["grade"]??"")===$r[1]&&($c["year"]??0)===$r[2]&&($c["market_segment"]??"")==="lexus_cpo"&&($c["sample_size"]??0)===$r[3]&&($c["research_audit_file"]??"")==="research/ux_cpo_grade_observations_20261111.json";}));if(count($matches)!==1)exit(5);}' "$candidate/data/reference_price_bands.json"
 grep -Fq 'id="general-price"' "$candidate/index.html"
 grep -Fq 'id="cpo-price"' "$candidate/index.html"
 # v0.17 grade-specific price integrity: never reuse all-grade pool for F SPORT/base.
