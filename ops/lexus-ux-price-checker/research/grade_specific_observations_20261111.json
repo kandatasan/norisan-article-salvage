@@ -1,0 +1,227 @@
+{
+  "snapshot_date": "2026-11-11",
+  "purpose": "UX grade-specific public listing observations; no all-grade mixing",
+  "source_policy": "Indexed listing pages; prices may change or vehicles sell; details not independently re-opened",
+  "groups": [
+    {
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "market_segment": "general_market",
+      "records": [
+        {
+          "dealer": "グッドスピード MEGA SUV 南風原店",
+          "mileage_km": 40000,
+          "total_price_man": 268.8,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "SUV LAND 名古屋",
+          "mileage_km": 55790,
+          "total_price_man": 299.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "SUV LAND 豊橋",
+          "mileage_km": 26935,
+          "total_price_man": 299.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "SUV LAND 福岡",
+          "mileage_km": 64500,
+          "total_price_man": 302.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "SUV LAND 福岡",
+          "mileage_km": 49360,
+          "total_price_man": 304.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "SUV LAND 船橋習志野",
+          "mileage_km": 42070,
+          "total_price_man": 329.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "ネクステージ 草津店",
+          "mileage_km": 28209,
+          "total_price_man": 339.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        }
+      ],
+      "sample_size": 7,
+      "min_km": 26935,
+      "max_km": 64500,
+      "median_man": 302.9,
+      "q1_man": 299.9,
+      "q3_man": 317.4,
+      "rounded_iqr_lower_man": 290,
+      "rounded_iqr_upper_man": 320,
+      "duplicate_method": "same seller + same year + same grade + same mileage considered one; identical values at different sellers are not automatically duplicates",
+      "source_verification": "listing search results observed; individual vehicle detail permalink not verified",
+      "publication_recommendation": "grade-specific indicative reference only; does not represent nationwide market",
+      "incorporation": "new_grade_specific_candidate"
+    },
+    {
+      "model": "250h",
+      "grade": "c",
+      "year": 2020,
+      "market_segment": "general_market",
+      "records": [
+        {
+          "dealer": "ネクステージ 桑名店",
+          "mileage_km": 74580,
+          "total_price_man": 268.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "SUV LAND 札幌",
+          "mileage_km": 44956,
+          "total_price_man": 309.9,
+          "source_page": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "ネクステージ 江南店",
+          "mileage_km": 31000,
+          "total_price_man": 315.9,
+          "source_page": "https://www.goo-net.com/usedcar/brand-LEXUS/car-UX/grade-19-10052004/",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "ネクステージ 札幌手稲店",
+          "mileage_km": 41000,
+          "total_price_man": 339.9,
+          "source_page": "https://www.goo-net.com/usedcar/brand-LEXUS/car-UX/grade-19-10052004/",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "SUV LAND 神戸",
+          "mileage_km": 15000,
+          "total_price_man": 352.9,
+          "source_page": "https://www.goo-net.com/usedcar/brand-LEXUS/car-UX/grade-19-10052004/",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        }
+      ],
+      "sample_size": 5,
+      "min_km": 15000,
+      "max_km": 74580,
+      "median_man": 315.9,
+      "q1_man": 309.9,
+      "q3_man": 339.9,
+      "rounded_iqr_lower_man": 300,
+      "rounded_iqr_upper_man": 340,
+      "duplicate_method": "same seller + same year + same grade + same mileage considered one; identical values at different sellers are not automatically duplicates",
+      "source_verification": "listing search results observed; individual vehicle detail permalink not verified",
+      "publication_recommendation": "grade-specific indicative reference only; does not represent nationwide market",
+      "incorporation": "archived_comparison_only_existing_2020_cohort_preferred"
+    },
+    {
+      "model": "250h",
+      "grade": "graceful",
+      "year": 2023,
+      "market_segment": "lexus_cpo",
+      "records": [
+        {
+          "dealer": "レクサスCPO 金沢元町",
+          "mileage_km": 45000,
+          "total_price_man": 414.6,
+          "source_page": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX250h&Sort1=publishStartDate%2Fdesc",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "レクサス大津",
+          "mileage_km": 20000,
+          "total_price_man": 432.1,
+          "source_page": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX250h&Sort1=publishStartDate%2Fdesc",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "レクサス相模原",
+          "mileage_km": 25000,
+          "total_price_man": 433.8,
+          "source_page": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX250h&Sort1=publishStartDate%2Fdesc",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "レクサス大津",
+          "mileage_km": 24000,
+          "total_price_man": 442.1,
+          "source_page": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX250h&Sort1=publishStartDate%2Fdesc",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        },
+        {
+          "dealer": "レクサス福山",
+          "mileage_km": 25000,
+          "total_price_man": 448.6,
+          "source_page": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX250h&Sort1=publishStartDate%2Fdesc",
+          "repair_history": "reported_none_or_CPO",
+          "detail_url_verified": false
+        }
+      ],
+      "sample_size": 5,
+      "min_km": 20000,
+      "max_km": 45000,
+      "median_man": 433.8,
+      "q1_man": 432.1,
+      "q3_man": 442.1,
+      "rounded_iqr_lower_man": 430,
+      "rounded_iqr_upper_man": 450,
+      "duplicate_method": "same seller + same year + same grade + same mileage considered one; identical values at different sellers are not automatically duplicates",
+      "source_verification": "listing search results observed; individual vehicle detail permalink not verified",
+      "publication_recommendation": "grade-specific indicative reference only; does not represent nationwide market",
+      "incorporation": "new_grade_specific_candidate"
+    }
+  ],
+  "candidates_not_yet_aggregated": [
+    {
+      "model": "300h",
+      "grade": "c",
+      "year": 2025,
+      "market_segment": "lexus_cpo",
+      "records_count": 2,
+      "example_price_man": [
+        462.5,
+        489.4
+      ],
+      "reason": "2 observed; below five-sample threshold",
+      "source_page": "https://cpo.lexus.jp/cposearch/result_list?Cn=UX300h"
+    },
+    {
+      "model": "250h",
+      "grade": "base",
+      "year": "any",
+      "market_segment": "general_market",
+      "records_count": 0,
+      "reason": "No trustworthy grade-confirmed standalone base listing found; do not use pooled or F SPORT prices"
+    }
+  ],
+  "integration_note": "A separate merge already added 2020 UX250h version C general-market 7 observations and CPO 6. Do not overwrite those existing cohorts with the 5-observation snapshot in this file. Only add new 2019 version C general and 2023 Graceful Explorer CPO grades."
+}
