@@ -37,10 +37,10 @@
 <script>
 (()=>{'use strict';
 const models=[
- ['200','UX200',2018,[['all','全グレード',2018],['base','標準仕様',2018],['c','version C',2018],['fs','F SPORT',2018],['l','version L',2018],['blue','Blue Edition',2020],['urban','Urban Elegance',2020],['style-blue','F SPORT Style Blue',2021],['emotional','F SPORT Emotional Explorer',2022],['graceful','Graceful Explorer',2022]]],
- ['250h','UX250h',2018,[['all','全グレード',2018],['base','標準仕様',2018],['c','version C',2018],['fs','F SPORT',2018],['l','version L',2018],['brown','Brown Edition',2020],['urban','Urban Elegance',2020],['style-blue','F SPORT Style Blue',2021],['elegant','Elegant Black',2021],['emotional','F SPORT Emotional Explorer',2022],['graceful','Graceful Explorer',2022]]],
- ['300h','UX300h',2024,[['all','全グレード',2024],['base','標準仕様',2024],['c','version C',2024],['fs','F SPORT',2024],['l','version L',2024],['emotional','F SPORT Emotional Explorer',2024],['graceful','Graceful Explorer',2024],['shining','Shining Essence',2026]]],
- ['300e','UX300e',2020,[['all','全グレード',2020],['c','version C',2020],['l','version L',2020]]]
+ ['200','UX200',2018,[['base','標準仕様',2018],['c','version C',2018],['fs','F SPORT',2018],['l','version L',2018],['blue','Blue Edition',2020],['urban','Urban Elegance',2020],['style-blue','F SPORT Style Blue',2021],['emotional','F SPORT Emotional Explorer',2022],['graceful','Graceful Explorer',2022]]],
+ ['250h','UX250h',2018,[['base','標準仕様',2018],['c','version C',2018],['fs','F SPORT',2018],['l','version L',2018],['brown','Brown Edition',2020],['urban','Urban Elegance',2020],['style-blue','F SPORT Style Blue',2021],['elegant','Elegant Black',2021],['emotional','F SPORT Emotional Explorer',2022],['graceful','Graceful Explorer',2022]]],
+ ['300h','UX300h',2024,[['base','標準仕様',2024],['c','version C',2024],['fs','F SPORT',2024],['l','version L',2024],['emotional','F SPORT Emotional Explorer',2024],['graceful','Graceful Explorer',2024],['shining','Shining Essence',2026]]],
+ ['300e','UX300e',2020,[['c','version C',2020],['l','version L',2020]]]
 ];
 const $=id=>document.getElementById(id),g=$('grade'),y=$('year'),k=$('km');
 let bands=[];let latest='';
@@ -49,7 +49,11 @@ const option=(select,value,label)=>{const o=document.createElement('option');o.v
 option(y,'any','指定なし');for(let yr=2026;yr>=2018;yr--)option(y,String(yr),yr+'年');
 option(k,'any','指定なし');for(let i=0;i<10;i++)option(k,String(i*10000),`${i}万〜${i+1}万km未満`);option(k,'100000','10万km以上');
 const params=new URLSearchParams(location.search);const pModel=params.get('model')||'250h',pGrade=params.get('grade')||'c';
-if([...g.options].some(o=>o.value===pModel+':'+pGrade))g.value=pModel+':'+pGrade;else g.value='250h:c';
+const defaultGrades={'200':'fs','250h':'c','300h':'fs','300e':'l'};
+const requestedGrade=pGrade==='all'?(defaultGrades[pModel]||'c'):pGrade;
+if([...g.options].some(o=>o.value===pModel+':'+requestedGrade))g.value=pModel+':'+requestedGrade;
+else if([...g.options].some(o=>o.value===pModel+':'+(defaultGrades[pModel]||'')))g.value=pModel+':'+defaultGrades[pModel];
+else g.value='250h:c';
 for(const [el,name] of [[y,'year'],[k,'mileage']]){const v=params.get(name);if(v&&[...el.options].some(o=>o.value===v))el.value=v}
 if(!params.has('year'))y.value='2021';
 function syncYears(){const [model,id]=g.value.split(':');const start=models.find(m=>m[0]===model)?.[3].find(z=>z[0]===id)?.[2]||2018;const endYear=({200:2023,'250h':2023,'300h':2026,'300e':2026})[model]||2026;[...y.options].forEach(o=>{o.disabled=o.value!=='any'&&(+o.value<start||+o.value>endYear)});if(y.selectedOptions[0]?.disabled)y.value='any'}
@@ -65,6 +69,7 @@ function matchingBand(model,grade,yr,mileage,segment){
     // Never reuse pooled all-grade observations as a grade-specific price.
     // A selected grade must match the listing cohort exactly.
     if(b.grade!==grade) return false;
+    if(b.grade==='all') return false; // All-grade research remains archival only.
     if(b.mileage_start_km!=='any'&&b.mileage_start_km!==targetMileage) return false;
     const [minYear,maxYear]=b.observed_years;
     if(targetYear===null) return b.year==='any';
@@ -74,7 +79,7 @@ function matchingBand(model,grade,yr,mileage,segment){
     return minYear<=targetYear && targetYear<=maxYear && maxYear-minYear<=4;
   });
   // Exact year and grade take priority. If unavailable, prefer the narrowest time span.
-  const score=b=>(b.year!=='any'?100:0)+(b.grade===grade&&grade!=='all'?10:0)+(b.mileage_start_km!=='any'?2:0)-5*(b.observed_years[1]-b.observed_years[0]);
+  const score=b=>(b.year!=='any'?100:0)+(b.mileage_start_km!=='any'?2:0)-5*(b.observed_years[1]-b.observed_years[0]);
   candidates.sort((a,b)=>score(b)-score(a) || b.sample_size-a.sample_size);
   return candidates[0];
 }
@@ -88,20 +93,15 @@ function render(){
     if(!b){
       price.textContent='集計中';
       price.classList.add('is-empty');
-      const [selectedModel,selectedGrade]=g.value.split(':');
-      const segment=priceId==='general-price'?'general_market':'lexus_cpo';
-      const hasPooled=selectedGrade!=='all' && !!matchingBand(selectedModel,'all',y.value,k.value,segment);
-      note.textContent=hasPooled?'このグレードの掲載例不足（全グレードに参考値あり）':'この条件の掲載例が不足しています';
+      note.textContent='このグレード・年式の掲載例が不足しています';
       return;
     }
     price.classList.remove('is-empty');
     price.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
     const caveats=[];
-    const [m,selectedGrade]=g.value.split(':');
     const years=b.observed_years;
     if(years[1]>years[0])caveats.push(`複数年式の参考値（${years[0]}〜${years[1]}年）`);
     else if(yr==='any')caveats.push(`${years[0]}年式の参考値`);
-    if(selectedGrade==='all')caveats.push('複数グレードの参考値');
     if(mileage!=='any'&&b.mileage_start_km==='any')caveats.push('走行距離未反映');
     note.textContent=`中央値約${fmt(b.median_man)}万円・${b.sample_size}件`+(caveats.length?'／'+caveats.join('・'):'');
   }
