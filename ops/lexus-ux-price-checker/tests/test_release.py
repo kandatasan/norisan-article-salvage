@@ -3,7 +3,9 @@ import json
 root=Path(__file__).resolve().parents[1]
 html=(root/'index.html').read_text(encoding='utf-8')
 data=json.loads((root/'data/reference_price_bands.json').read_text(encoding='utf-8'))
-assert data['publication_reviewed'] is False and data['research_preview_only'] is True
+assert data['publication_reviewed'] is True and data['research_preview_only'] is False
+assert data['limited_sample_release'] is True
+assert 'publication_caveats' in data and len(data['publication_caveats']) >= 3
 assert data['price_basis']=='total'
 assert set(data['markets_included'])=={'general_market','lexus_cpo'}
 assert html.count('id="general-price"')==1 and html.count('id="cpo-price"')==1
