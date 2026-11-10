@@ -40,6 +40,9 @@ test ! -L "$dest" && test ! -e "$backup"
 php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<20)exit(1);' "$candidate/data/reference_price_bands.json"
 grep -Fq 'id="general-price"' "$candidate/index.html"
 grep -Fq 'id="cpo-price"' "$candidate/index.html"
+# v0.15 three-selector UX: never deploy stale color UI or unsupported multi-year fallback logic.
+! grep -Fq 'id="color"' "$candidate/index.html"
+grep -Fq 'maxYear-minYear<=4' "$candidate/index.html"
 ! grep -Eiq 'px.a8.net|www15.a8.net' "$candidate/index.html"
 printf '%s\n' 'ux-price-managed-v1' > "$candidate/.tsurikue-ux-price-managed"
 cat > "$candidate/.htaccess" <<'HT'
