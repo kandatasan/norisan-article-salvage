@@ -31,7 +31,8 @@ jobs:
           p=pathlib.Path('ops/lexus-ux-price-checker')
           h=(p/'index.html').read_text()
           j=json.loads((p/'data/reference_price_bands.json').read_text())
-          assert 'id="general-price"' in h and 'id="cpo-price"' in h
+          assert 'id="price-range"' in h and 'type="range" id="year"' in h and 'type="range" id="km"' in h
+          assert 'id="general-price"' not in h and 'id="cpo-price"' not in h
           assert 'px.a8.net' not in h and 'www15.a8.net' not in h and 'ガリバー' not in h
           assert 'name="robots" content="noindex' in h
           assert "['localhost','127.0.0.1'].includes(location.hostname)" in h
