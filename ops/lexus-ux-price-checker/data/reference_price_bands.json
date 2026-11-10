@@ -295,6 +295,30 @@
     {
       "model": "250h",
       "grade": "fs",
+      "year": 2019,
+      "mileage_start_km": "any",
+      "sample_size": 5,
+      "observed_years": [
+        2019,
+        2019
+      ],
+      "observed_km_span": [
+        23000,
+        43000
+      ],
+      "lower_man": 340,
+      "median_man": 355.2,
+      "upper_man": 360,
+      "market_segment": "general_market",
+      "quality": "limited_five_distinct_grade_matched_listings",
+      "source_scope": "2019年UX250h F SPORTの別個体5件、旧Carsensor観測2件と2026年11月に再確認した車両3件。支払総額の少数掲載例",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true
+    },
+    {
+      "model": "250h",
+      "grade": "fs",
       "year": 2021,
       "mileage_start_km": "any",
       "sample_size": 5,
