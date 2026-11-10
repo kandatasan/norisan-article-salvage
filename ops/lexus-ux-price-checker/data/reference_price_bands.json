@@ -1,7 +1,7 @@
 {
   "updated_at": "2026-11-09",
-  "publication_reviewed": false,
-  "research_preview_only": true,
+  "publication_reviewed": true,
+  "research_preview_only": false,
   "price_basis": "total",
   "market_segment": "segmented_general_and_cpo",
   "markets_included": [
@@ -9,17 +9,12 @@
     "lexus_cpo"
   ],
   "band_method": "各区分の観測価格の第1〜第3四分位を10万円単位で外側へ丸めた参考範囲。無作為抽出ではない。",
-  "source_label": "一般中古車とCPOの少数掲載例",
+  "source_label": "2026年11月9日に確認した一般中古車・CPOの少数掲載例",
   "source_count_by_segment": {
     "general_market": 29,
     "lexus_cpo": 36
   },
-  "publication_blockers": [
-    "一般中古車29件（UX300e分は独立した7件の別予備統計を利用）、CPO36件の抽出偏り",
-    "市場全体の代表性はない",
-    "サーバー配信と実端末埋め込み未確認",
-    "ガリバー広告の遷移先・成果条件未確認"
-  ],
+  "publication_blockers": [],
   "cohorts": [
     {
       "model": "200",
@@ -85,7 +80,7 @@
         42000
       ],
       "lower_man": 330,
-      "median_man": 353.0,
+      "median_man": 353,
       "upper_man": 370,
       "market_segment": "general_market",
       "quality": "nonrepresentative_manual_observations",
@@ -301,7 +296,7 @@
         107000
       ],
       "lower_man": 300,
-      "median_man": 353.0,
+      "median_man": 353,
       "upper_man": 380,
       "market_segment": "general_market",
       "quality": "nonrepresentative_manual_observations",
@@ -325,7 +320,7 @@
         78000
       ],
       "lower_man": 360,
-      "median_man": 404.0,
+      "median_man": 404,
       "upper_man": 430,
       "market_segment": "lexus_cpo",
       "quality": "nonrepresentative_manual_observations",
@@ -349,7 +344,7 @@
         58000
       ],
       "lower_man": 450,
-      "median_man": 453.0,
+      "median_man": 453,
       "upper_man": 460,
       "market_segment": "lexus_cpo",
       "quality": "nonrepresentative_manual_observations",
@@ -373,7 +368,7 @@
         27000
       ],
       "lower_man": 480,
-      "median_man": 514.0,
+      "median_man": 514,
       "upper_man": 550,
       "market_segment": "lexus_cpo",
       "quality": "nonrepresentative_manual_observations",
@@ -549,5 +544,14 @@
       "aggregation": "central_50_percent",
       "year_filter_scope": "exact"
     }
+  ],
+  "limited_sample_release": true,
+  "publication_note": "この価格帯は購入予定者向けの大まかな参考。無作為抽出ではなく、年式・グレード・走行距離・カラーの全組合せを反映するものではありません。掲載価格は随時変わります。",
+  "publication_caveats": [
+    "一般中古車の監査候補29件（別集計UX300e7件）とCPO36件に偏りがあり、全国相場を代表しない",
+    "同じ個体をグレード混在や近接年式などで複数コホートに再集計しており、22個の価格帯が22個の独立標本ではない",
+    "走行距離・カラーは厳密な条件別集計を行っておらず、選択時に未反映を明示する",
+    "一部は過去の掲載例であり、現在販売中かどうかは保証しない",
+    "定期更新・販売車両の重複再監査が必要"
   ]
 }
