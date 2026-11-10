@@ -11,15 +11,15 @@
 </head>
 <body>
 <main><section class="ux" aria-label="レクサスUX中古車の相場目安">
-<h1>レクサスUXの中古車参考価格</h1>
-<p class="meta" style="margin:-5px 0 10px">ネット掲載の価格を参考にした目安。一般中古車とCPOを別々に比較できます。</p>
+<h1>レクサスUX 中古相場チェックツール</h1>
+<p class="meta" style="margin:-5px 0 10px">※価格は参考程度です。</p>
 <div class="grid">
   <div class="field full"><label for="grade">グレード</label><select id="grade"></select></div>
   <div class="field"><label for="year">年式</label><select id="year"></select></div>
   <div class="field"><label for="km">走行距離</label><select id="km"></select></div>
 </div>
 <div class="result" id="result" role="status" aria-live="polite">
-  <p class="kicker">中古車の参考価格帯（支払総額・少数の掲載例）</p>
+  <p class="kicker">参考価格（支払総額）</p>
   <div class="marketrow">
     <div class="markethead">一般中古車</div>
     <div class="marketprice" id="general-price">集計中</div>
@@ -32,7 +32,7 @@
   </div>
   <p class="meta" id="meta">該当条件の掲載価格を調査しています。</p>
 </div>
-<p class="reference"><strong>価格について：</strong>過去に確認した少数掲載例の支払総額から独自試算。一般中古車とレクサスCPOは別集計です。年式・グレードが一致するデータがない場合、該当年を含む複数年式・複数グレードの参考値を明示して表示することがあります。走行距離は価格へ未反映のため、選んでも価格が変わらない場合があります。全国相場や査定額ではありません。</p>
+
 </section></main>
 <script>
 (()=>{'use strict';
@@ -94,11 +94,11 @@ function render(){
     else if(yr==='any')caveats.push(`${years[0]}年式の参考値`);
     if(selectedGrade!=='all'&&b.grade==='all')caveats.push('グレード混在');
     if(mileage!=='any'&&b.mileage_start_km==='any')caveats.push('走行距離未反映');
-    note.textContent=`中央値約${fmt(b.median_man)}万円・${b.sample_size}件`+(caveats.length?'／'+caveats.join('・'):'');
+    note.textContent=`${b.sample_size}件の掲載例`+(caveats.length?'／'+caveats.join('・'):'');
   }
   showMarket(general,'general-price','general-note');
   showMarket(cpo,'cpo-price','cpo-note');
-  $('meta').textContent=(general||cpo)?`${isPreview?'調査プレビュー／':''}${sampleDate||'調査日不明'}時点の少数掲載例。全国市場を代表する統計ではありません。`:'条件に合う掲載例を調査中です。価格は変動します。';
+  $('meta').textContent=(general||cpo)?`${isPreview?'調査プレビュー／':''}${sampleDate||'調査日不明'}時点の掲載例`:'条件に合う掲載例を調査中です。';
 }
 [g,y,k].forEach(el=>el.addEventListener('change',render));syncYears();render();
 fetch('./data/reference_price_bands.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw Error('no data');return r.json()}).then(data=>{
