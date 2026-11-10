@@ -28,14 +28,14 @@ assert '複数年式の参考値' in html
 assert "if(b.grade!==grade) return false;" in html
 assert "グレード別データ不足" not in html or "このグレードの掲載例不足" in html
 assert '中央値約' in html
-assert data.get('grade_specific_display_policy') == 'selected_grade_strict_exact; all_grade_only_when_all_grade_selected; no_generic_or_msrp_fudge'
+assert data.get('grade_specific_display_policy') == 'exact_grade_only; no_all_grade_option; no_pooled_fallback; no_fabricated_premium'
 assert any(c['model']=='250h' and c['grade']=='fs' and c['year']==2021 and c['market_segment']=='general_market' and c['sample_size']==5 for c in data['cohorts'])
 assert any(c['model']=='250h' and c['grade']=='fs' and c['year']==2019 and c['market_segment']=='general_market' and c['sample_size']==5 for c in data['cohorts'])
 assert any(c['model']=='300h' and c['grade']=='fs' and c['year']==2024 and c['market_segment']=='lexus_cpo' and c['sample_size']==7 for c in data['cohorts'])
-assert not any(c['model']=='200' and c['grade']=='all' and c['year']==2019 and c['market_segment']=='general_market' for c in data['cohorts'])
+assert all(c['grade']!='all' for c in data['cohorts'])
 assert all('color' not in cohort for cohort in data['cohorts'])
 assert data.get('display_facets')==['grade','year','mileage']
-assert len(data['cohorts'])>=20
+assert len(data['cohorts'])>=10
 keys=set()
 for b in data['cohorts']:
   assert b['market_segment'] in {'lexus_cpo','general_market'}
@@ -49,3 +49,17 @@ for b in data['cohorts']:
   assert key not in keys,key
   keys.add(key)
 print('UX_PRICE_GUARDED_RELEASE=PASS; sample_cohorts='+str(len(keys)))
+
+# No mixed-grade selectors or values may be served in the public UX tool.
+assert "['all','全グレード'" not in html
+assert '全グレード' not in html
+assert "const defaultGrades=" in html
+assert "pGrade==='all'" in html  # Legacy SWELL iframe URL is normalized.
+assert data.get('price_cohort_class')=='grade_specific_only'
+assert data.get('mixed_grade_cohorts_archived')==17
+assert all(c['grade']!='all' for c in data['cohorts'])
+assert sum(c['market_segment']=='general_market' for c in data['cohorts'])>=7
+assert sum(c['market_segment']=='lexus_cpo' for c in data['cohorts'])>=3
+assert any(c['model']=='250h' and c['grade']=='c' and c['year']==2019 and c['market_segment']=='general_market' and c['sample_size']==7 for c in data['cohorts'])
+assert any(c['model']=='250h' and c['grade']=='c' and c['year']==2020 and c['market_segment']=='general_market' and c['sample_size']==5 for c in data['cohorts'])
+assert any(c['model']=='250h' and c['grade']=='graceful' and c['year']==2023 and c['market_segment']=='lexus_cpo' and c['sample_size']==5 for c in data['cohorts'])
