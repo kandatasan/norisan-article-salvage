@@ -25,7 +25,8 @@ jobs:
           php -l ops/lexus-ux-price-checker/blog_parts/verify_public.php
           grep -Fq 'UX_LIVE_ROUGH_SLIDERS=PASS' ops/lexus-ux-price-checker/blog_parts/verify_public.php
           test -f ops/lexus-ux-price-checker/index.html
-          grep -Fq 'id="price-range"' ops/lexus-ux-price-checker/index.html
+          grep -Fq 'id="general-price"' ops/lexus-ux-price-checker/index.html
+          grep -Fq 'id="cpo-price"' ops/lexus-ux-price-checker/index.html
       - name: Verify Xserver SSH pinned identity
         shell: bash
         run: |
