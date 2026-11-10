@@ -31,6 +31,7 @@ jobs:
           python ops/lexus-ux-price-checker/tests/test_release.py
           php -l ops/lexus-ux-price-checker/blog_parts/publish_part.php
           bash -n ops/lexus-ux-price-checker/release/deploy_production.sh
+          grep -Fq 'Header always set Cache-Control "no-cache, max-age=0, must-revalidate"' ops/lexus-ux-price-checker/release/deploy_production.sh
           test -f ops/lexus-ux-price-checker/index.html
           test -f ops/lexus-ux-price-checker/data/reference_price_bands.json
           ! grep -Eq 'px.a8.net|www15.a8.net' ops/lexus-ux-price-checker/index.html
