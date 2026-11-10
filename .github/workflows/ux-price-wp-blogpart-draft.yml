@@ -1,4 +1,4 @@
-name: Lexus UX SWELL blog part guarded draft creation
+name: Lexus UX SWELL blog part source validation (registration already completed)
 on:
   pull_request:
     branches: [main]
@@ -12,10 +12,11 @@ on:
       - '.github/workflows/ux-price-wp-blogpart-draft.yml'
 permissions:
   contents: read
-  issues: write
 concurrency:
   group: ux-price-blogparts-draft
   cancel-in-progress: false
+ # Blog part 4505 was created and published on 2026-11-10. This workflow MUST NOT recreate it.
+ # Repeatable checks may lint the historical one-time registration source, but NEVER call wp eval-file.
 jobs:
   validate:
     runs-on: ubuntu-latest
@@ -40,98 +41,3 @@ jobs:
           assert "height:620px" in p
           print('UX_SWELL_DRAFT_SAFE=PASS')
           PY
-  inspect-pr:
-    if: github.event_name == 'pull_request'
-    needs: validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 12
-    env:
-      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
-      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
-      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Verify pinned Xserver SSH host
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
-          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
-          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
-          chmod 600 "$HOME/.ssh/xserver_deploy_key"
-          bash river-fish/xserver-git/verify_host_key.sh
-      - name: Read live WordPress blog-part ID, status and content flags
-        shell: bash
-        run: |
-          set -euo pipefail
-          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
-          key="$HOME/.ssh/xserver_deploy_key"
-          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
-          temp=".tsurikue-ux-verify-$GITHUB_RUN_ID.php"
-          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/verify_draft.php "$remote:$temp"
-          ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE'
-          set -euo pipefail
-          temp="$1"
-          [[ "$temp" =~ ^\.tsurikue-ux-verify-[0-9]+\.php$ ]] || exit 30
-          root="$HOME/tsurikue.com/public_html"
-          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
-          test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
-          trap 'rm -f "$HOME/$temp"' EXIT
-          cd "$root"
-          wp eval-file "$HOME/$temp"
-          REMOTE
-  create-draft:
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: validate
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    env:
-      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
-      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
-      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
-    steps:
-      - uses: actions/checkout@v4
-      - name: Authenticate pinned Xserver host
-        shell: bash
-        run: |
-          set -euo pipefail
-          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
-          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
-          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
-          chmod 600 "$HOME/.ssh/xserver_deploy_key"
-          bash river-fish/xserver-git/verify_host_key.sh
-      - name: Create single draft blog part with rollback and record ID
-        shell: bash
-        run: |
-          set -euo pipefail
-          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
-          key="$HOME/.ssh/xserver_deploy_key"
-          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
-          stage=".tsurikue-ux-blogpart-$GITHUB_RUN_ID.php"
-          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/create_draft.php "$remote:$stage"
-          ssh $opts "$remote" bash -s -- "$stage" <<'REMOTE' | tee /tmp/ux-blogpart-result.txt
-          set -euo pipefail
-          stage="$1"
-          [[ "$stage" =~ ^\.tsurikue-ux-blogpart-[0-9]+\.php$ ]] || exit 20
-          root="$HOME/tsurikue.com/public_html"
-          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
-          test -f "$HOME/$stage" && test ! -L "$HOME/$stage"
-          trap 'rm -f "$HOME/$stage"' EXIT
-          cd "$root"
-          wp eval-file "$HOME/$stage"
-          echo 'UX_SWELL_BLOGPART_DRAFT_AUDIT=PASS'
-          REMOTE
-      - name: Report verified blog-part ID and status to PR audit
-        if: success()
-        shell: bash
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          set -euo pipefail
-          id="$(sed -n 's/^UX_SWELL_PART_ID=//p' /tmp/ux-blogpart-result.txt | tail -1)"
-          status="$(sed -n 's/^UX_SWELL_PART_STATUS=//p' /tmp/ux-blogpart-result.txt | tail -1)"
-          [[ "$id" =~ ^[0-9]+$ && "$status" == draft ]] || { echo 'Missing or non-draft WP state'; exit 1; }
-          echo "UX_SWELL_PART_ID=$id" >> "$GITHUB_STEP_SUMMARY"
-          echo "UX_SWELL_PART_STATUS=$status" >> "$GITHUB_STEP_SUMMARY"
-          echo "Shortcode: [blog_parts id=\"$id\"]" >> "$GITHUB_STEP_SUMMARY"
-          gh issue comment 885 --repo "$GITHUB_REPOSITORY" --body "UX_SWELL_PART_AUDIT: id=$id; status=$status; shortcode=[blog_parts id=\"$id\"]; production_tool_not_published=true; no_article_changes=true" || echo 'GitHub issue comment unavailable; check Actions summary.'
