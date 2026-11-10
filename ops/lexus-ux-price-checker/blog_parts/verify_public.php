@@ -24,13 +24,14 @@ if(!is_file($html_file))throw new RuntimeException('Production HTML missing');
 $tool_html=file_get_contents($html_file);
 if(strpos($tool_html,'id="color"')!==false ||
    strpos($tool_html,'id="grade"')===false ||
-   strpos($tool_html,'id="year"')===false ||
-   strpos($tool_html,'id="km"')===false ||
-   strpos($tool_html,'maxYear-minYear<=4')===false ||
-   strpos($tool_html,'複数年式の参考値')===false ||
-   strpos($tool_html,'id="general-price"')===false ||
-   strpos($tool_html,'id="cpo-price"')===false)
-  throw new RuntimeException('UX production three-field/fallback UI drift');
+   strpos($tool_html,'type="range" id="year"')===false ||
+   strpos($tool_html,'type="range" id="km"')===false ||
+   strpos($tool_html,'id="price-range"')===false ||
+   strpos($tool_html,'function estimate(')===false ||
+   strpos($tool_html,'年式・走行距離は簡易計算')===false ||
+   strpos($tool_html,'id="general-price"')!==false ||
+   strpos($tool_html,'id="cpo-price"')!==false)
+  throw new RuntimeException('UX v0.20 production slider UI drift');
 $general=0;$cpo=0;
 foreach($j['cohorts'] as $cohort){
   if(($cohort['market_segment']??'')==='general_market')$general++;
@@ -41,13 +42,15 @@ foreach($j['cohorts'] as $c) {
  if(($c['grade']??'')==='all')throw new RuntimeException('Pooled all-grade cohort improperly published');
 }
 if(strpos($tool_html,'全グレード')!==false ||
- strpos($tool_html,"if(b.grade==='all'||b.grade!==grade) return false;")===false)
- throw new RuntimeException('All-grade choice or fallback remains in live UX UI');
+ strpos($tool_html,"b.grade!=='all'")===false ||
+ strpos($tool_html,'gradeMatched')===false)
+ throw new RuntimeException('All-grade or transparency guard missing in UX estimate');
 echo 'UX_LIVE_GENERAL_PRICE_COHORTS='.$general.PHP_EOL;
 echo 'UX_LIVE_CPO_PRICE_COHORTS='.$cpo.PHP_EOL;
 echo 'UX_LIVE_THREE_FIELDS=PASS'.PHP_EOL;
 echo 'UX_LIVE_COLOR_REMOVED=PASS'.PHP_EOL;
-echo 'UX_LIVE_GENERAL_YEAR_FALLBACK=PASS'.PHP_EOL;
+echo 'UX_LIVE_GRADE_FALLBACK_LABELED=PASS'.PHP_EOL;
+echo 'UX_LIVE_ROUGH_SLIDERS=PASS'.PHP_EOL;
 echo 'UX_LIVE_RENDERED_IFRAME=PASS'.PHP_EOL;
 echo 'UX_LIVE_DATA_COHORTS='.count($j['cohorts']).PHP_EOL;
 echo 'UX_LIVE_AFFILIATE_IN_TOOL=NO'.PHP_EOL;
