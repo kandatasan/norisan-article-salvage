@@ -8,9 +8,11 @@ assert data['limited_sample_release'] is True
 assert 'publication_caveats' in data and len(data['publication_caveats']) >= 3
 assert data['price_basis']=='total'
 assert set(data['markets_included'])=={'general_market','lexus_cpo'}
-assert html.count('id="price-range"')==1
+assert html.count('id="general-price"')==1 and html.count('id="cpo-price"')==1
+assert 'id="price-range"' not in html
 assert html.count('type="range"')==2
-assert 'id="general-price"' not in html and 'id="cpo-price"' not in html
+assert "show('general_market','general-price','general-note')" in html
+assert "show('lexus_cpo','cpo-price','cpo-note')" in html
 assert '<h1>レクサスUX 中古相場チェックツール</h1>' in html
 assert '※価格は参考程度です。' in html
 assert '価格について：</strong>' not in html
