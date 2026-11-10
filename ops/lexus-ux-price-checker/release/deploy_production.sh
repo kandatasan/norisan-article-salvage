@@ -40,21 +40,26 @@ test ! -L "$dest" && test ! -e "$backup"
 php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<14)exit(1);' "$candidate/data/reference_price_bands.json"
 # The four independently sourced CPO exact grade/year bands must exist; reject any pooled grade.
 php -r '$d=json_decode(file_get_contents($argv[1]),true);$required=[["250h","fs",2021,8],["250h","fs",2023,6],["250h","l",2023,12],["300h","l",2024,7]];foreach($required as $r){$matches=array_values(array_filter($d["cohorts"],function($c)use($r){return ($c["model"]??"")===$r[0]&&($c["grade"]??"")===$r[1]&&($c["year"]??0)===$r[2]&&($c["market_segment"]??"")==="lexus_cpo"&&($c["sample_size"]??0)===$r[3]&&($c["research_audit_file"]??"")==="research/ux_cpo_grade_observations_20261111.json";}));if(count($matches)!==1)exit(5);}' "$candidate/data/reference_price_bands.json"
-grep -Fq 'id="general-price"' "$candidate/index.html"
-grep -Fq 'id="cpo-price"' "$candidate/index.html"
-# v0.17 grade-specific price integrity: never reuse all-grade pool for F SPORT/base.
-grep -Fq "if(b.grade==='all'||b.grade!==grade) return false;" "$candidate/index.html"
+grep -Fq 'id="price-range"' "$candidate/index.html"
+grep -Fq 'type="range" id="year"' "$candidate/index.html"
+grep -Fq 'type="range" id="km"' "$candidate/index.html"
+! grep -Fq 'id="general-price"' "$candidate/index.html"
+! grep -Fq 'id="cpo-price"' "$candidate/index.html"
+# New UX estimate is based only on verified specific-grade cohorts. Model fallback is labeled.
+grep -Fq 'function estimate(' "$candidate/index.html"
+grep -Fq 'gradeMatched' "$candidate/index.html"
+grep -Fq 'sameModel' "$candidate/index.html"
 ! grep -Fq '全グレード' "$candidate/index.html"
 php -r '$d=json_decode(file_get_contents($argv[1]),true);foreach($d["cohorts"] as $c){if(($c["grade"]??"")==="all")exit(9);}if(($d["archived_pooled_cohort_count"]??0)<17)exit(10);' "$candidate/data/reference_price_bands.json"
-grep -Fq '中央値約' "$candidate/index.html"
+grep -Fq 'ざっくり購入価格（支払総額の目安）' "$candidate/index.html"
 php -r '$d=json_decode(file_get_contents($argv[1]),true);$has=function($m,$g,$y,$seg)use($d){foreach($d["cohorts"] as $c){if($c["model"]===$m&&$c["grade"]===$g&&$c["year"]===$y&&$c["market_segment"]===$seg&&($c["sample_size"]??0)>=5)return true;}return false;};if(!$has("250h","fs",2019,"general_market")||!$has("250h","fs",2021,"general_market")||!$has("300h","fs",2024,"lexus_cpo")||!$has("250h","c",2020,"general_market")||!$has("250h","c",2020,"lexus_cpo")||!$has("250h","c",2019,"general_market")||!$has("250h","fs",2020,"general_market"))exit(1);' "$candidate/data/reference_price_bands.json"
 # Compact user-approved UI; keep disclosure before the selector and remove old long explanation.
 grep -Fq 'レクサスUX 中古相場チェックツール' "$candidate/index.html"
 grep -Fq '※価格は参考程度です。' "$candidate/index.html"
 ! grep -Fq '価格について：</strong>' "$candidate/index.html"
-# v0.15 three-selector UX: never deploy stale color UI or unsupported multi-year fallback logic.
+# v0.20: grade selector, year slider and mileage slider; color was intentionally removed.
 ! grep -Fq 'id="color"' "$candidate/index.html"
-grep -Fq 'maxYear-minYear<=4' "$candidate/index.html"
+grep -Fq '年式・走行距離は簡易計算' "$candidate/index.html"
 ! grep -Eiq 'px.a8.net|www15.a8.net' "$candidate/index.html"
 printf '%s\n' 'ux-price-managed-v1' > "$candidate/.tsurikue-ux-price-managed"
 cat > "$candidate/.htaccess" <<'HT'
