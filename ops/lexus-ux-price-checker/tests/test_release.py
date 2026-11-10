@@ -31,7 +31,7 @@ assert '全グレード' not in html
 assert '中央値約' in html
 assert data.get('grade_specific_display_policy') == 'no_grade_all; exact_grade_only; no_same_price_fallback; exact_year_or_same_grade_observed_range'
 assert data.get('archived_pooled_cohort_count') == 17
-assert len(data['cohorts']) == data.get('active_specific_grade_cohort_count') == 11
+assert len(data['cohorts']) == data.get('active_specific_grade_cohort_count') == 12
 assert all(c['grade']!='all' for c in data['cohorts'])
 assert len([c for c in data['cohorts'] if c.get('research_audit_file')=='research/ux_cpo_grade_observations_20261111.json'])==3
 assert any(c['model']=='250h' and c['grade']=='fs' and c['year']==2021 and c['market_segment']=='general_market' and c['sample_size']==5 for c in data['cohorts'])
@@ -41,7 +41,7 @@ assert any(c['model']=='250h' and c['grade']=='c' and c['year']==2020 and c['mar
 assert any(c['model']=='250h' and c['grade']=='c' and c['year']==2020 and c['market_segment']=='lexus_cpo' and c['sample_size']==6 for c in data['cohorts'])
 assert all('color' not in cohort for cohort in data['cohorts'])
 assert data.get('display_facets')==['grade','year','mileage']
-assert len(data['cohorts'])>=11
+assert len(data['cohorts']) >= 12
 keys=set()
 for b in data['cohorts']:
   assert b['market_segment'] in {'lexus_cpo','general_market'}
