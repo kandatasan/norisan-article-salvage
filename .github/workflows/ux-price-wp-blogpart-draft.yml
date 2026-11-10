@@ -27,6 +27,7 @@ jobs:
         run: |
           set -euo pipefail
           php -l ops/lexus-ux-price-checker/blog_parts/create_draft.php
+          php -l ops/lexus-ux-price-checker/blog_parts/verify_draft.php
           python - <<'PY'
           from pathlib import Path
           p=Path('ops/lexus-ux-price-checker/blog_parts/create_draft.php').read_text()
@@ -39,6 +40,46 @@ jobs:
           assert "height:620px" in p
           print('UX_SWELL_DRAFT_SAFE=PASS')
           PY
+  inspect-pr:
+    if: github.event_name == 'pull_request'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify pinned Xserver SSH host
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Read live WordPress blog-part ID, status and content flags
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          temp=".tsurikue-ux-verify-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/verify_draft.php "$remote:$temp"
+          ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE'
+          set -euo pipefail
+          temp="$1"
+          [[ "$temp" =~ ^\.tsurikue-ux-verify-[0-9]+\.php$ ]] || exit 30
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
+          trap 'rm -f "$HOME/$temp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$temp"
+          REMOTE
   create-draft:
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     needs: validate
