@@ -38,6 +38,31 @@
     {
       "model": "250h",
       "grade": "c",
+      "year": 2019,
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2019,
+        2019
+      ],
+      "observed_km_span": [
+        26935,
+        64500
+      ],
+      "lower_man": 290,
+      "median_man": 302.9,
+      "upper_man": 320,
+      "market_segment": "general_market",
+      "quality": "2026_11_11_grade_specific_listing_traceable_small_sample",
+      "source_scope": "2026-11-11に複数販売店の年式・グレード・支払総額・走行距離を照合した別個体7件。無作為抽出ではなく走行距離を補正しない。",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_grade_sampling_20261111.json"
+    },
+    {
+      "model": "250h",
+      "grade": "c",
       "year": 2020,
       "mileage_start_km": "any",
       "sample_size": 7,
@@ -131,6 +156,31 @@
       "aggregation": "central_50_percent",
       "year_filter_scope": "exact",
       "sample_grade_validated": true
+    },
+    {
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2020,
+        2020
+      ],
+      "observed_km_span": [
+        20361,
+        100000
+      ],
+      "lower_man": 260,
+      "median_man": 297.4,
+      "upper_man": 330,
+      "market_segment": "general_market",
+      "quality": "2026_11_11_grade_specific_listing_traceable_small_sample",
+      "source_scope": "2026-11-11に複数販売店の年式・グレード・支払総額・走行距離を照合した別個体7件。無作為抽出ではなく走行距離を補正しない。",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_grade_sampling_20261111.json"
     },
     {
       "model": "250h",
@@ -238,7 +288,8 @@
     "グレードを個別指定した場合、全グレード混合集計を流用しない。特定グレードで5台未満は価格を表示せず、集計中とする",
     "旧UX200全グレード2019年の6件は実際にはF SPORTのみだったため、全グレード集計としては使用停止",
     "全グレードの混合集計17件は公開価格データから撤去。旧研究用集計はGitHubのresearchへ隔離。",
-    "2020年UX250h version Cは一般7台・レクサスCPO6台の独立掲載例から、区分別に参考値を計算。"
+    "2020年UX250h version Cは一般7台・レクサスCPO6台の独立掲載例から、区分別に参考値を計算。",
+    "2026年11月11日追補：2019年UX250h version C（一般7件）、2020年UX250h F SPORT（一般7件）を個別グレードとして追加。幅広い走行距離の掲載例であり価格補正はしていない。"
   ],
   "display_facets": [
     "grade",
@@ -248,7 +299,7 @@
   "fallback_policy": "same_model_only; selected_year_in_observed_span; observed_span_max_5_years; grade_all_only; explicit_mixed_year_and_mixed_grade_warning",
   "grade_specific_display_policy": "no_grade_all; exact_grade_only; no_same_price_fallback; exact_year_or_same_grade_observed_range",
   "archived_pooled_cohort_count": 17,
-  "active_specific_grade_cohort_count": 9,
+  "active_specific_grade_cohort_count": 11,
   "historical_source_count_by_segment": {
     "general_market": 29,
     "lexus_cpo": 36

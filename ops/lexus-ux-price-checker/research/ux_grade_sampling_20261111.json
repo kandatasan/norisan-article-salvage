@@ -5,7 +5,8 @@
   "notes": [
     "媒体をまたぐ同一車両の重複除外は販売店＋年式＋走行距離を照合。実在庫は随時変動する。",
     "各データは価格帯の参考。掲載ページの全文や画像を転載しない。",
-    "CPOの一般販売サイト掲載分はCPOとして扱い、一般市場に混ぜない。"
+    "CPOの一般販売サイト掲載分はCPOとして扱い、一般市場に混ぜない。",
+    "追補：2019年UX250h version Cと2020年UX250h F SPORTの一般中古車計14例。旧掲載例とのVIN照合はできないため販売店名・年式・走行距離で重複候補を除外。"
   ],
   "archived_all_grade_cohorts": [
     {
@@ -530,6 +531,146 @@
       "km": 45000,
       "total_man": 297.3,
       "source": "https://www.carsensor.net/usedcar/detail/AU7422431387/index.html"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "dealer": "SUV LAND 福岡",
+      "km": 49360,
+      "total_man": 304.9,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "dealer": "SUV LAND 福岡",
+      "km": 64500,
+      "total_man": 302.9,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "dealer": "ネクステージ草津店",
+      "km": 28209,
+      "total_man": 339.9,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "dealer": "グッドスピード MEGA SUV 南風原店",
+      "km": 40000,
+      "total_man": 268.8,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "dealer": "SUV LAND 名古屋",
+      "km": 55790,
+      "total_man": 299.9,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "dealer": "SUV LAND 豊橋",
+      "km": 26935,
+      "total_man": 299.9,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "dealer": "SUV LAND 船橋習志野",
+      "km": 42070,
+      "total_man": 329.9,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux?page=2"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "dealer": "レクサス専門店 OSINC.",
+      "km": 30000,
+      "total_man": 259.9,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g002/index.html"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "dealer": "ガリバー太田354バイパス店",
+      "km": 69000,
+      "total_man": 314.8,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g002/index.html"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "dealer": "トヨタカローラ南海 堺大野芝プラザ",
+      "km": 100000,
+      "total_man": 260.6,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g002/index.html"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "dealer": "日豊オート",
+      "km": 94000,
+      "total_man": 297.4,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g002/index.html"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "dealer": "ネクステージ博多SUV専門店",
+      "km": 36000,
+      "total_man": 349.9,
+      "source": "https://www.carsensor.net/usedcar/bLE/s021/f001/m002/g002/index.html?PTN=1&YMAX=2020&YMIN=2020"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "dealer": "ネクステージ四日市店",
+      "km": 20361,
+      "total_man": 339.9,
+      "source": "https://ctn-net.jp/stock/cars/maker/lexus/ux"
+    },
+    {
+      "market": "general_market",
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "dealer": "レクサス／クラウン専門店 ファイントラスト各務原店",
+      "km": 89000,
+      "total_man": 249.9,
+      "source": "https://www.goo-net.com/cgi-bin/fsearch/goo_used_search.cgi?category=USDN&phrase=ux250h&query=ux250h"
     }
   ],
   "derived_cohorts": [
@@ -578,6 +719,56 @@
       "market_segment": "lexus_cpo",
       "quality": "2026_11_11_grade_specific_listing_traceable_small_sample",
       "source_scope": "2026-11-11に販売店・年式・走行距離・支払総額を照合した掲載例。車両個体は店・走行距離で一次照合。少数・代表標本ではない",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_grade_sampling_20261111.json"
+    },
+    {
+      "model": "250h",
+      "grade": "c",
+      "year": 2019,
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2019,
+        2019
+      ],
+      "observed_km_span": [
+        26935,
+        64500
+      ],
+      "lower_man": 290,
+      "median_man": 302.9,
+      "upper_man": 320,
+      "market_segment": "general_market",
+      "quality": "2026_11_11_grade_specific_listing_traceable_small_sample",
+      "source_scope": "2026-11-11に複数販売店の年式・グレード・支払総額・走行距離を照合した別個体7件。無作為抽出ではなく走行距離を補正しない。",
+      "aggregation": "central_50_percent",
+      "year_filter_scope": "exact",
+      "sample_grade_validated": true,
+      "research_audit_file": "research/ux_grade_sampling_20261111.json"
+    },
+    {
+      "model": "250h",
+      "grade": "fs",
+      "year": 2020,
+      "mileage_start_km": "any",
+      "sample_size": 7,
+      "observed_years": [
+        2020,
+        2020
+      ],
+      "observed_km_span": [
+        20361,
+        100000
+      ],
+      "lower_man": 260,
+      "median_man": 297.4,
+      "upper_man": 330,
+      "market_segment": "general_market",
+      "quality": "2026_11_11_grade_specific_listing_traceable_small_sample",
+      "source_scope": "2026-11-11に複数販売店の年式・グレード・支払総額・走行距離を照合した別個体7件。無作為抽出ではなく走行距離を補正しない。",
       "aggregation": "central_50_percent",
       "year_filter_scope": "exact",
       "sample_grade_validated": true,
