@@ -1,0 +1,118 @@
+name: Lexus UX price guarded Xserver production and SWELL part
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/release/**'
+      - 'ops/lexus-ux-price-checker/blog_parts/publish_part.php'
+      - '.github/workflows/ux-price-xserver-production.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/release/**'
+      - 'ops/lexus-ux-price-checker/blog_parts/publish_part.php'
+      - '.github/workflows/ux-price-xserver-production.yml'
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: ux-price-production-release
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate isolated deployment, sampled price gate and blog part script
+        shell: bash
+        run: |
+          set -euo pipefail
+          python ops/lexus-ux-price-checker/tests/test_release.py
+          php -l ops/lexus-ux-price-checker/blog_parts/publish_part.php
+          bash -n ops/lexus-ux-price-checker/release/deploy_production.sh
+          test -f ops/lexus-ux-price-checker/index.html
+          test -f ops/lexus-ux-price-checker/data/reference_price_bands.json
+          ! grep -Eq 'px.a8.net|www15.a8.net' ops/lexus-ux-price-checker/index.html
+          ! grep -Fq -- '--delete' ops/lexus-ux-price-checker/release/deploy_production.sh
+          sed -n '/<script>/,/<\/script>/p' ops/lexus-ux-price-checker/index.html | sed '1d;$d' >/tmp/uxprice.js
+          node --check /tmp/uxprice.js
+      - name: Verify staged HTTPS bytes equal reviewed files
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker-ci-preview/index.html -o /tmp/ux-preview-index.html
+          cmp /tmp/ux-preview-index.html ops/lexus-ux-price-checker/index.html
+          curl -fsSL --retry 4 --retry-delay 5 --max-time 30 https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json -o /tmp/ux-preview-data.json
+          cmp /tmp/ux-preview-data.json ops/lexus-ux-price-checker/data/reference_price_bands.json
+          echo 'UX_PRICE_PRODUCTION_PREFLIGHT_HTTPS=PASS'
+  deploy:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify pinned Xserver SSH host
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Switch only UX price static folder and verify HTTPS or rollback
+        run: bash ops/lexus-ux-price-checker/release/deploy_production.sh
+  publish-blogpart:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify pinned Xserver SSH host
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Publish only blog part 4505, confirm shortcode, preserve articles
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          temp=".tsurikue-ux-publish-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/publish_part.php "$remote:$temp"
+          ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE'
+          set -euo pipefail
+          temp="$1"
+          [[ "$temp" =~ ^\.tsurikue-ux-publish-[0-9]+\.php$ ]] || exit 12
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
+          trap 'rm -f "$HOME/$temp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$temp"
+          REMOTE
+      - name: Release audit
+        if: success()
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          echo 'UX_PRICE_PUBLIC_HTML_JSON=PASS, UX_SWELL_BLOGPART_4505=publish, ARTICLES_UNCHANGED' >> "$GITHUB_STEP_SUMMARY"
+          gh issue comment 885 --repo "$GITHUB_REPOSITORY" --body "UX_PRICE_FINAL_RELEASE: status=PASS; site=https://tsurikue.com/ux-price-checker/; blogpart=4505; shortcode=[blog_parts id=\"4505\"]; affiliate_inside_tool=NO; articles_unchanged=YES" || echo 'Audit issue comment unavailable'
