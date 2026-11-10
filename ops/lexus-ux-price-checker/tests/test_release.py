@@ -9,6 +9,11 @@ assert 'publication_caveats' in data and len(data['publication_caveats']) >= 3
 assert data['price_basis']=='total'
 assert set(data['markets_included'])=={'general_market','lexus_cpo'}
 assert html.count('id="general-price"')==1 and html.count('id="cpo-price"')==1
+assert '<h1>レクサスUX 中古相場チェックツール</h1>' in html
+assert '※価格は参考程度です。' in html
+assert '価格について：</strong>' not in html
+assert 'カーセンサーでUXの中古相場を見る' not in html
+assert '本気で愛車を探すなら' not in html
 assert 'px.a8.net' not in html
 assert 'www15.a8.net' not in html
 assert 'ガリバー' not in html
