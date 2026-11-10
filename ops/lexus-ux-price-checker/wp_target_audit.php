@@ -31,3 +31,20 @@ foreach ($slugs as $slug) {
      'counts'=>$counts, 'headings'=>$headings
   ),JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES).PHP_EOL;
 }
+
+
+echo "UX_PARTS_POST_TYPE ".(post_type_exists('blog_parts')?'REGISTERED':'MISSING').PHP_EOL;
+echo "UX_PARTS_SHORTCODE ".(shortcode_exists('blog_parts')?'REGISTERED':'MISSING').PHP_EOL;
+$parts = get_posts(array('post_type'=>'blog_parts','post_status'=>array('publish','draft','pending','private'),'posts_per_page'=>-1,'fields'=>'ids'));
+foreach ($parts as $id) {
+  $p=get_post((int)$id);
+  if (!$p) continue;
+  $name=(string)$p->post_title; $slug=(string)$p->post_name;
+  if (stripos($name,'UX')===false && stripos($slug,'ux')===false && strpos($p->post_content,'ux-price-checker')===false) continue;
+  echo "UX_PARTS_AUDIT ".wp_json_encode(array('id'=>(int)$p->ID,'title'=>$name,'slug'=>$slug,
+    'status'=>$p->post_status,'content_sha256'=>hash('sha256',(string)$p->post_content),
+    'has_iframe'=>strpos($p->post_content,'ux-price-checker')!==false,
+    'has_affiliate'=>strpos($p->post_content,'px.a8.net')!==false),
+    JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES).PHP_EOL;
+}
+echo "UX_PARTS_ACTIVE_AUTOINJECT ".((defined('TSURIKUE_UX_PRICE_ENABLED')&&TSURIKUE_UX_PRICE_ENABLED===true)?'YES':'NO').PHP_EOL;
