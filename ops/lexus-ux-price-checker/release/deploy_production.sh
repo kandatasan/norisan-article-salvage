@@ -40,6 +40,10 @@ test ! -L "$dest" && test ! -e "$backup"
 php -r '$d=json_decode(file_get_contents($argv[1]),true); if(!$d || ($d["publication_reviewed"]??false)!==true || ($d["research_preview_only"]??true)!==false || ($d["limited_sample_release"]??false)!==true || count($d["cohorts"]??[])<20)exit(1);' "$candidate/data/reference_price_bands.json"
 grep -Fq 'id="general-price"' "$candidate/index.html"
 grep -Fq 'id="cpo-price"' "$candidate/index.html"
+# Compact user-approved UI; keep disclosure before the selector and remove old long explanation.
+grep -Fq 'レクサスUX 中古相場チェックツール' "$candidate/index.html"
+grep -Fq '※価格は参考程度です。' "$candidate/index.html"
+! grep -Fq '価格について：</strong>' "$candidate/index.html"
 # v0.15 three-selector UX: never deploy stale color UI or unsupported multi-year fallback logic.
 ! grep -Fq 'id="color"' "$candidate/index.html"
 grep -Fq 'maxYear-minYear<=4' "$candidate/index.html"
