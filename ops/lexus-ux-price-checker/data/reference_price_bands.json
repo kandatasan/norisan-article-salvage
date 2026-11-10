@@ -21,7 +21,6 @@
       "grade": "fs",
       "year": 2019,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 6,
       "observed_years": [
         2019,
@@ -45,7 +44,6 @@
       "grade": "all",
       "year": 2019,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 6,
       "observed_years": [
         2019,
@@ -69,7 +67,6 @@
       "grade": "c",
       "year": 2021,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 5,
       "observed_years": [
         2021,
@@ -93,7 +90,6 @@
       "grade": "all",
       "year": 2021,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 8,
       "observed_years": [
         2021,
@@ -117,7 +113,6 @@
       "grade": "all",
       "year": 2024,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 5,
       "observed_years": [
         2024,
@@ -141,7 +136,6 @@
       "grade": "all",
       "year": 2023,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 5,
       "observed_years": [
         2023,
@@ -165,7 +159,6 @@
       "grade": "l",
       "year": 2024,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 5,
       "observed_years": [
         2024,
@@ -189,7 +182,6 @@
       "grade": "all",
       "year": 2024,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 8,
       "observed_years": [
         2024,
@@ -213,7 +205,6 @@
       "grade": "all",
       "year": 2025,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 6,
       "observed_years": [
         2025,
@@ -237,7 +228,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 7,
       "observed_years": [
         2019,
@@ -261,7 +251,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 5,
       "observed_years": [
         2019,
@@ -285,7 +274,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 11,
       "observed_years": [
         2020,
@@ -309,7 +297,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 6,
       "observed_years": [
         2022,
@@ -333,7 +320,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 6,
       "observed_years": [
         2022,
@@ -357,7 +343,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 14,
       "observed_years": [
         2024,
@@ -381,7 +366,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 5,
       "observed_years": [
         2024,
@@ -405,7 +389,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 8,
       "observed_years": [
         2019,
@@ -429,7 +412,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 15,
       "observed_years": [
         2019,
@@ -453,7 +435,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 5,
       "observed_years": [
         2024,
@@ -477,7 +458,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 9,
       "observed_years": [
         2021,
@@ -501,7 +481,6 @@
       "grade": "all",
       "year": "any",
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 7,
       "observed_years": [
         2021,
@@ -525,7 +504,6 @@
       "grade": "l",
       "year": 2021,
       "mileage_start_km": "any",
-      "color": "any",
       "sample_size": 7,
       "observed_years": [
         2021,
@@ -546,12 +524,18 @@
     }
   ],
   "limited_sample_release": true,
-  "publication_note": "この価格帯は購入予定者向けの大まかな参考。無作為抽出ではなく、年式・グレード・走行距離・カラーの全組合せを反映するものではありません。掲載価格は随時変わります。",
+  "publication_note": "中古UXの少数掲載例による参考価格です。一般中古車とCPOを別々に表示します。年式・グレードが完全一致しない場合は、同じ車種で該当年を含む最大5年の集計結果と明記します。走行距離は価格に未反映。",
   "publication_caveats": [
     "一般中古車の監査候補29件（別集計UX300e7件）とCPO36件に偏りがあり、全国相場を代表しない",
     "同じ個体をグレード混在や近接年式などで複数コホートに再集計しており、22個の価格帯が22個の独立標本ではない",
-    "走行距離・カラーは厳密な条件別集計を行っておらず、選択時に未反映を明示する",
+    "走行距離は厳密な条件別集計がないため、選択時に未反映を明示する",
     "一部は過去の掲載例であり、現在販売中かどうかは保証しない",
     "定期更新・販売車両の重複再監査が必要"
-  ]
+  ],
+  "display_facets": [
+    "grade",
+    "year",
+    "mileage"
+  ],
+  "fallback_policy": "same_model_only; selected_year_in_observed_span; observed_span_max_5_years; grade_all_only; explicit_mixed_year_and_mixed_grade_warning"
 }
