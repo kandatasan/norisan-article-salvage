@@ -48,6 +48,7 @@ jobs:
           sed -n '/<script>/,/<\/script>/p' ops/lexus-ux-price-checker/index.html | sed '1d;$d' > /tmp/ux-price-script.js
           node --check /tmp/ux-price-script.js
           node ops/lexus-ux-price-checker/tests/test_search.js
+          node ops/lexus-ux-price-checker/tests/test_grade_observations.js
           php -l ops/lexus-ux-price-checker/wordpress/tsurikue-ux-price-embed.php
           php -l ops/lexus-ux-price-checker/wordpress/tests/test_embed.php
           php ops/lexus-ux-price-checker/wordpress/tests/test_embed.php
@@ -120,11 +121,20 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          curl -fsSL --max-time 25 --retry 2 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/index.html?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-checker-preview.html
-          cmp /tmp/ux-checker-preview.html ops/lexus-ux-price-checker/index.html
-          curl -fsSL --max-time 25 --retry 2 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json?ux_rev=${GITHUB_RUN_ID}" -o /tmp/ux-checker-preview.json
-          cmp /tmp/ux-checker-preview.json ops/lexus-ux-price-checker/data/reference_price_bands.json
-          echo "UX_PREVIEW_CACHED_HTML_BYPASS=PASS"
+          # A cache/intermediate CDN node may briefly serve the previous version after SSH switch.
+          # Check exact bytes, never accept a mismatch, but allow bounded propagation.
+          matched=0
+          for attempt in $(seq 1 12); do
+            if curl -fsSL --max-time 25 --retry 1 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/index.html?ux_rev=${GITHUB_SHA}-${attempt}" -o /tmp/ux-checker-preview.html &&
+               cmp -s /tmp/ux-checker-preview.html ops/lexus-ux-price-checker/index.html &&
+               curl -fsSL --max-time 25 --retry 1 -H 'Cache-Control: no-cache' "https://tsurikue.com/ux-price-checker-ci-preview/data/reference_price_bands.json?ux_rev=${GITHUB_SHA}-${attempt}" -o /tmp/ux-checker-preview.json &&
+               cmp -s /tmp/ux-checker-preview.json ops/lexus-ux-price-checker/data/reference_price_bands.json; then
+               matched=1; break
+            fi
+            sleep 5
+          done
+          test "$matched" -eq 1 || { echo 'UX_PREVIEW_SOURCE_PARITY=FAIL'; exit 10; }
+          echo 'UX_PREVIEW_SOURCE_PARITY=PASS'
           echo 'UX_PREVIEW_HTTPS=PASS'
 
       - name: Record preview result in Actions job summary
