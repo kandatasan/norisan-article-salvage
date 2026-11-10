@@ -39,6 +39,10 @@ jobs:
           assert j['limited_sample_release'] is True
           assert j['price_basis']=='total'
           assert set(j['markets_included'])=={'general_market','lexus_cpo'}
+          assert len(j['cohorts'])>=10
+          assert j['price_cohort_class']=='grade_specific_only'
+          assert all(v['grade']!='all' for v in j['cohorts'])
+          assert "['all','全グレード'" not in h
           for v in j['cohorts']:
               assert v['lower_man']<=v['median_man']<=v['upper_man']
               assert v['market_segment'] in ('general_market','lexus_cpo')
@@ -48,6 +52,7 @@ jobs:
           sed -n '/<script>/,/<\/script>/p' ops/lexus-ux-price-checker/index.html | sed '1d;$d' > /tmp/ux-price-script.js
           node --check /tmp/ux-price-script.js
           node ops/lexus-ux-price-checker/tests/test_search.js
+          node ops/lexus-ux-price-checker/tests/test_grade_observations.js
           php -l ops/lexus-ux-price-checker/wordpress/tsurikue-ux-price-embed.php
           php -l ops/lexus-ux-price-checker/wordpress/tests/test_embed.php
           php ops/lexus-ux-price-checker/wordpress/tests/test_embed.php
