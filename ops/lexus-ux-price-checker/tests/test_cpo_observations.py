@@ -20,7 +20,7 @@ for r in records:
     assert r['market_segment']=='lexus_cpo'
     assert r['grade'] in {'fs','l'}
     assert r['model'] in {'250h','300h'}
-    assert r['year'] in {2023,2024}
+    assert r['year'] in {2021,2023,2024}
     assert isinstance(r['odometer_km'],int) and 0<=r['odometer_km']<=100000
     assert isinstance(r['total_man'],(int,float)) and r['total_man']>100
     assert urlsplit(r['source_url']).hostname=='cpo.lexus.jp'
