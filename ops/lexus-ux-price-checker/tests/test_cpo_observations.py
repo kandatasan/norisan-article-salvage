@@ -12,8 +12,8 @@ root=Path(__file__).resolve().parents[1]
 raw=json.loads((root/'research/ux_cpo_grade_observations_20261111.json').read_text(encoding='utf-8'))
 published=json.loads((root/'data/reference_price_bands.json').read_text(encoding='utf-8'))
 records=raw['observations']
-assert len(records)==25
-assert len(raw['derived_bands'])==3
+assert len(records)==33
+assert len(raw['derived_bands'])==4
 assert len({r['identity_key'] for r in records})==len(records)
 by_group=defaultdict(list)
 for r in records:
@@ -53,5 +53,5 @@ for (model,grade,year,segment),observations in by_group.items():
         actual=cohort[key]
         if key=='median_man':assert isclose(actual,value,abs_tol=.00001),(cohort,key,actual,value)
         else:assert actual==value,(cohort,key,actual,value)
-assert len(by_group)==3
-print('UX_CPO_25_INDIVIDUAL_OBSERVATIONS=PASS; auditable_grade_bands=3')
+assert len(by_group)==4
+print('UX_CPO_33_INDIVIDUAL_OBSERVATIONS=PASS; auditable_grade_bands=4')
