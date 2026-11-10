@@ -52,6 +52,7 @@ printf '%s\n' 'ux-price-managed-v1' > "$candidate/.tsurikue-ux-price-managed"
 cat > "$candidate/.htaccess" <<'HT'
 <IfModule mod_headers.c>
 Header always set X-Robots-Tag "noindex, nofollow"
+Header always set Cache-Control "no-cache, max-age=0, must-revalidate"
 </IfModule>
 HT
 if [[ -e "$dest" ]]; then
