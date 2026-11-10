@@ -1,0 +1,86 @@
+name: Lexus UX SWELL blog part guarded draft creation
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/**'
+      - '.github/workflows/ux-price-wp-blogpart-draft.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/**'
+      - '.github/workflows/ux-price-wp-blogpart-draft.yml'
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: ux-price-blogparts-draft
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Syntax and safety properties
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/lexus-ux-price-checker/blog_parts/create_draft.php
+          python - <<'PY'
+          from pathlib import Path
+          p=Path('ops/lexus-ux-price-checker/blog_parts/create_draft.php').read_text()
+          assert "post_status' => 'draft'" in p
+          assert "post_type' => 'blog_parts'" in p
+          assert 'px.a8.net' not in p
+          assert 'ux-price-checker/?' in p
+          assert "wp_delete_post((int)$id, true)" in p
+          assert '[blog_parts id=' in p
+          assert "height:620px" in p
+          print('UX_SWELL_DRAFT_SAFE=PASS')
+          PY
+  create-draft:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate pinned Xserver host
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Create single draft blog part with rollback and record ID
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          stage=".tsurikue-ux-blogpart-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/create_draft.php "$remote:$stage"
+          ssh $opts "$remote" bash -s -- "$stage" <<'REMOTE'
+          set -euo pipefail
+          stage="$1"
+          [[ "$stage" =~ ^\.tsurikue-ux-blogpart-[0-9]+\.php$ ]] || exit 20
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$stage" && test ! -L "$HOME/$stage"
+          trap 'rm -f "$HOME/$stage"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$stage"
+          echo 'UX_SWELL_BLOGPART_DRAFT_AUDIT=PASS'
+          REMOTE
+      - name: Record operations summary
+        if: success()
+        run: |
+          echo "UX SWELL blog part: created or verified as draft; existing posts and ads unchanged." >> "$GITHUB_STEP_SUMMARY"
