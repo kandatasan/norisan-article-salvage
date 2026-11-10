@@ -62,8 +62,9 @@ function matchingBand(model,grade,yr,mileage,segment){
   const targetMileage=mileage==='any'?null:Number(mileage);
   const candidates=bands.filter(b=>{
     if(b.market_segment!==segment||b.model!==model) return false;
-    if(b.grade!==grade&&b.grade!=='all') return false;
-    if(grade==='all'&&b.grade!=='all') return false;
+    // Never reuse pooled all-grade observations as a grade-specific price.
+    // A selected grade must match the listing cohort exactly.
+    if(b.grade!==grade) return false;
     if(b.mileage_start_km!=='any'&&b.mileage_start_km!==targetMileage) return false;
     const [minYear,maxYear]=b.observed_years;
     if(targetYear===null) return b.year==='any';
@@ -84,7 +85,13 @@ function render(){
   const cpo=matchingBand(model,grade,yr,mileage,'lexus_cpo');
   function showMarket(b,priceId,noteId){
     const price=$(priceId),note=$(noteId);
-    if(!b){price.textContent='集計中';price.classList.add('is-empty');note.textContent='同条件の掲載例が不足しています';return;}
+    if(!b){
+      price.textContent='集計中';
+      price.classList.add('is-empty');
+      const gradeSelected=g.value.split(':')[1];
+      note.textContent=gradeSelected==='all'?'掲載例が不足しています':'グレード別データ不足（全グレードなら参考価格あり）';
+      return;
+    }
     price.classList.remove('is-empty');
     price.textContent=`${fmt(b.lower_man)}万〜${fmt(b.upper_man)}万円`;
     const caveats=[];
