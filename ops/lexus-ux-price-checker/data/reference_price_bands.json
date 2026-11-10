@@ -19,29 +19,6 @@
     {
       "model": "200",
       "grade": "all",
-      "year": 2019,
-      "mileage_start_km": "any",
-      "sample_size": 6,
-      "observed_years": [
-        2019,
-        2019
-      ],
-      "observed_km_span": [
-        10000,
-        70000
-      ],
-      "lower_man": 270,
-      "median_man": 295.5,
-      "upper_man": 310,
-      "market_segment": "general_market",
-      "quality": "nonrepresentative_manual_observations",
-      "source_scope": "掲載例の支払総額・無作為抽出ではない",
-      "aggregation": "central_50_percent",
-      "year_filter_scope": "exact_or_all"
-    },
-    {
-      "model": "200",
-      "grade": "all",
       "year": 2023,
       "mileage_start_km": "any",
       "sample_size": 5,
@@ -555,7 +532,8 @@
     "走行距離は厳密な条件別集計がないため、選択時に未反映を明示する",
     "一部は過去の掲載例であり、現在販売中かどうかは保証しない",
     "定期更新・販売車両の重複再監査が必要",
-    "グレードを個別指定した場合、全グレード混合集計を流用しない。特定グレードで5台未満は価格を表示せず、集計中とする"
+    "グレードを個別指定した場合、全グレード混合集計を流用しない。特定グレードで5台未満は価格を表示せず、集計中とする",
+    "旧UX200全グレード2019年の6件は実際にはF SPORTのみだったため、全グレード集計としては使用停止"
   ],
   "display_facets": [
     "grade",
