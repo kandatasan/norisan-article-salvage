@@ -1070,6 +1070,7 @@ def build_ux_purchase_funnel_target(current: str, target: dict[str, Any], funnel
             r'<!-- wp:html -->\s*'
             r'<div class="tsq-gulliver-micro-20261014 bottom".*?<!-- /wp:html -->\s*$',
             re.S,
+        )
         matches = list(pattern.finditer(prefix))
         if len(matches) != 1:
             raise RuntimeError(
