@@ -1061,6 +1061,28 @@ def build_ux_purchase_funnel_target(current: str, target: dict[str, Any], funnel
         if required and required not in source:
             raise RuntimeError(f"legacy Gulliver copy drifted for {target['slug']}")
         start, end = m.start(), m.end()
+    elif mode == "legacy_gulliver_native_triplet":
+        pattern = re.compile(
+            r'<!-- wp:html -->\s*'
+            r'<div class="tsq-gulliver-micro-20261014 top".*?<!-- /wp:html -->\s*'
+            r'<!-- wp:loos/button(?: [^\n]*)? -->\s*'
+            r'<div class="swell-block-button -html green_".*?<!-- /wp:loos/button -->\s*'
+            r'<!-- wp:html -->\s*'
+            r'<div class="tsq-gulliver-micro-20261014 bottom".*?<!-- /wp:html -->\s*$'
+            re.S,
+        )
+        matches = list(pattern.finditer(prefix))
+        if len(matches) != 1:
+            raise RuntimeError(
+                f"legacy native Gulliver triplet drifted for {target['slug']}: {len(matches)}"
+            )
+        m = matches[0]
+        source = m.group(0).rstrip()
+        removed_native_button_count = source.count('swell-block-button -html green_')
+        required = str(target.get("legacy_top_phrase") or "")
+        if required and required not in source:
+            raise RuntimeError(f"legacy native Gulliver copy drifted for {target['slug']}")
+        start, end = m.start(), m.end()
     elif mode == "legacy_shortcode_4172":
         paragraph = str(target["legacy_paragraph"])
         source = (
