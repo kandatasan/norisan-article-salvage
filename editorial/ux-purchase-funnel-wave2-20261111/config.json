@@ -55,5 +55,6 @@
       "anchor_block": "<!-- wp:paragraph -->\n<p>そして乗り換えなら、次の車の値段だけでなく<strong>今の車がいくらで売れるか</strong>も確認しておきたいところ。</p>\n<!-- /wp:paragraph -->",
       "marker": "<!-- tsurikue-ux-purchase-funnel:lexus-ux-poor:20261111 -->"
     }
-  ]
+  ],
+  "retry_generation": 2
 }
