@@ -1,0 +1,83 @@
+name: UX Gutenberg 4507 A8 free-text link completion
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/complete_ux_native_copy_draft_4507.php'
+      - '.github/workflows/ux-buying-native-4507-a8-text.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/complete_ux_native_copy_draft_4507.php'
+      - '.github/workflows/ux-buying-native-4507-a8-text.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ux-gutenberg-4507-a8-text
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint safe draft-only update and advertising code preservation
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/lexus-ux-price-checker/blog_parts/complete_ux_native_copy_draft_4507.php
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('ops/lexus-ux-price-checker/blog_parts/complete_ux_native_copy_draft_4507.php').read_text()
+          assert 'get_post(4506)' in s and 'get_post(4505)' in s and 'get_post(4507)' in s
+          assert "'ID'=>4507" in s and "post_status!=='draft'" in s
+          assert '<!-- wp:paragraph' in s and "strpos($body,'<!-- wp:html ')" in s
+          assert 'substr_count($new,$pixel)' in s and 'substr_count($new,$affiliate)' in s
+          assert "wp_update_post(['ID'=>4507" in s
+          assert 'wp_delete_post' not in s
+          assert 'www13.a8.net/0.gif' in s
+          print('UX_NATIVE_4507_AD_CODE_SAFETY=PASS')
+          PY
+  apply-to-draft:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate pinned Xserver SSH host
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Update only new WordPress draft 4507 and verify A8 pair integrity
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          tmp=".ux-4507-a8text-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/complete_ux_native_copy_draft_4507.php "$remote:$tmp"
+          ssh $opts "$remote" bash -s -- "$tmp" <<'REMOTE' | tee /tmp/ux-4507-ad-result.txt
+          set -euo pipefail
+          tmp="$1"; [[ "$tmp" =~ ^\.ux-4507-a8text-[0-9]+\.php$ ]] || exit 13
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$tmp" && test ! -L "$HOME/$tmp"
+          trap 'rm -f "$HOME/$tmp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$tmp"
+          REMOTE
+          grep -Eq '^UX_NATIVE_A8_RESULT=(UPDATED|ALREADY_LINKED)$' /tmp/ux-4507-ad-result.txt
+          grep -Fxq 'UX_NATIVE_A8_STATUS=draft' /tmp/ux-4507-ad-result.txt
+          echo 'UX_GUTENBERG_4507_AD_PAIR=PASS; draft_only=YES; existing_4505_4506=UNCHANGED' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Editor: https://tsurikue.com/wp-admin/post.php?post=4507&action=edit' >> "$GITHUB_STEP_SUMMARY"
