@@ -121,5 +121,28 @@ class UxPurchaseFunnelTests(unittest.TestCase):
         self.assertIn(before, updated)
 
 
+    def test_replaces_legacy_native_button_without_increasing_button_count(self):
+        legacy = """<!-- wp:html -->
+<div class="tsq-gulliver-micro-20261014 top">TOP COPY</div>
+<!-- /wp:html -->
+
+<!-- wp:loos/button -->
+<div class="swell-block-button -html green_"><a href="https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY" rel="nofollow">old</a><img src="https://www15.a8.net/0.gif?a8mat=4B65SD+8DUSHE+9QU+NVHCY"></div>
+<!-- /wp:loos/button -->
+
+<!-- wp:html -->
+<div class="tsq-gulliver-micro-20261014 bottom">BOTTOM</div>
+<!-- /wp:html -->"""
+        heading = """<!-- wp:heading -->
+<h2 class="wp-block-heading">NEXT</h2>
+<!-- /wp:heading -->"""
+        current = legacy + "\n\n" + heading
+        target = self.target(current, mode="legacy_gulliver_triplet", legacy_top_phrase="TOP COPY")
+        updated, action = MOD.build_ux_purchase_funnel_target(current, target, FUNNEL)
+        self.assertEqual(action, "UPDATE")
+        self.assertEqual(updated.count("swell-block-button -html green_"), 1)
+        self.assertIn('[blog_parts id="4505"]', updated)
+
+
 if __name__ == "__main__":
     unittest.main()
