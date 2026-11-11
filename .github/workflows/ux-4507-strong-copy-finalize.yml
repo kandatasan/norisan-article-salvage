@@ -1,0 +1,95 @@
+name: UX 4507 strong-copy native Gutenberg CTA finalize
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/finalize_ux_native_copy_4507.php'
+      - '.github/workflows/ux-4507-strong-copy-finalize.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/finalize_ux_native_copy_4507.php'
+      - '.github/workflows/ux-4507-strong-copy-finalize.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ux-native-4507-strong-finalize
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Lint and check only safe draft 4507 edits
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/lexus-ux-price-checker/blog_parts/finalize_ux_native_copy_4507.php
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('ops/lexus-ux-price-checker/blog_parts/finalize_ux_native_copy_4507.php').read_text()
+          blocks=s.split("$block=<<<'BLOCKS'",1)[1].split('BLOCKS;',1)[0]
+          assert '<!-- wp:group ' in blocks
+          assert blocks.count('<!-- wp:paragraph')==6
+          assert blocks.count('<!-- wp:separator')==1
+          assert '<!-- wp:html' not in blocks
+          assert '本気で愛車を探すなら、まだネット上に出ていない非公開車両も確認しよう！' in blocks
+          assert 'ガリバーなら一般公開前の車両も探せる！' in blocks
+          assert 'カーセンサーでUXの中古相場を見る' in blocks
+          assert '希望のUXが見つからなかったら？' not in blocks
+          assert 'wp_update_post(' in s and "'ID'=>4507" in s
+          assert "get_post(4505)" in s and "get_post(4506)" in s
+          assert "'post_status'=>'draft'" in s
+          assert 'do_blocks(' in s and 'preg_match($rx,$oldSource' in s
+          assert 'wp_delete_post(' not in s
+          print('UX_4507_STRONG_NATIVE_SOURCE=PASS')
+          PY
+  finalize-draft:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Confirm Xserver SSH pinned identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Finalize only UX purchase CTA draft 4507 and render-verify A8 code
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          temp=".ux-4507-finalize-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/finalize_ux_native_copy_4507.php "$remote:$temp"
+          ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE' | tee /tmp/ux-4507-finalize-result.txt
+          set -euo pipefail
+          temp="$1"; [[ "$temp" =~ ^\.ux-4507-finalize-[0-9]+\.php$ ]] || exit 12
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
+          trap 'rm -f "$HOME/$temp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$temp"
+          REMOTE
+          grep -Eq '^UX_4507_FINAL_RESULT=(UPDATED|ALREADY_COMPLETE)$' /tmp/ux-4507-finalize-result.txt
+          for token in UX_4507_FINAL_CARSENSOR_LINK UX_4507_FINAL_A8_ANCHOR_PIXEL UX_4507_FINAL_NATIVE_BLOCKS UX_4507_FINAL_RENDERED_LINKS UX_4507_FINAL_4505_4506_UNCHANGED; do
+            grep -Fxq "$token=PASS" /tmp/ux-4507-finalize-result.txt
+          done
+          grep -Fxq 'UX_4507_FINAL_STATUS=draft' /tmp/ux-4507-finalize-result.txt
+          echo 'UX_4507_COPYABLE_NATIVE_CTA=READY_AS_DRAFT' >> "$GITHUB_STEP_SUMMARY"
+          echo 'UX_4507_A8_COMPLETE_ANCHOR_AND_PIXEL=PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo 'UX_4507_EDITOR=https://tsurikue.com/wp-admin/post.php?post=4507&action=edit' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Articles, source part 4506 and checker part 4505 unchanged.' >> "$GITHUB_STEP_SUMMARY"
