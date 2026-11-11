@@ -137,7 +137,7 @@ class UxPurchaseFunnelTests(unittest.TestCase):
 <h2 class="wp-block-heading">NEXT</h2>
 <!-- /wp:heading -->"""
         current = legacy + "\n\n" + heading
-        target = self.target(current, mode="legacy_gulliver_triplet", legacy_top_phrase="TOP COPY")
+        target = self.target(current, mode="legacy_gulliver_native_triplet", legacy_top_phrase="TOP COPY")
         updated, action = MOD.build_ux_purchase_funnel_target(current, target, FUNNEL)
         self.assertEqual(action, "UPDATE")
         self.assertEqual(updated.count("swell-block-button -html green_"), 1)
