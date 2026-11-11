@@ -20,6 +20,8 @@ foreach($iter as $file){
  if(!is_array($d)||($d['name']??'')!=='loos/button')continue;
  echo 'UX_PROBE_THEME_BLOCK_FILE='.$file->getPathname().PHP_EOL;
  echo 'UX_PROBE_THEME_ATTR_KEYS='.implode(',',array_keys($d['attributes']??[])).PHP_EOL;
+ echo 'UX_PROBE_THEME_HTMLTAGS_CONFIG='.json_encode($d['attributes']['htmlTags']??[],JSON_UNESCAPED_UNICODE).PHP_EOL;
+ echo 'UX_PROBE_THEME_STYLE_CONFIG='.json_encode($d['styles']??[],JSON_UNESCAPED_UNICODE).PHP_EOL;
  foreach($d['attributes']??[] as $key=>$attr){
    echo 'UX_PROBE_ATTR '.$key.' type='.($attr['type']??'unknown').' default_type='.gettype($attr['default']??null).PHP_EOL;
  }
@@ -47,6 +49,12 @@ $walk=function($nodes,$postId)use(&$walk,&$sample){
      $inner=$n['innerHTML']??'';
      preg_match_all('/<([a-z][a-z0-9-]*)\b/iu',$inner,$tagMatches);
      echo 'UX_PROBE_SAMPLE_TAGS='.implode(',',array_slice($tagMatches[1],0,18)).PHP_EOL;
+     if($sample===2){
+       $sanitized=preg_replace('/\bhref="[^"]*"/iu','href="[A8_LINK]"',$inner);
+       $sanitized=preg_replace('/\bsrc="[^"]*"/iu','src="[A8_IMAGE]"',$sanitized);
+       $sanitized=preg_replace('~(<a\b[^>]*>).*?(</a>)~si','$1BUTTON_LABEL$2',$sanitized);
+       echo 'UX_PROBE_SAMPLE_HTML_SHAPE='.substr(preg_replace('/\s+/u',' ',$sanitized),0,2400).PHP_EOL;
+     }
      if(preg_match('/\bclass="([^"]+)"/u',$inner,$cm))
        echo 'UX_PROBE_SAMPLE_OUTER_CLASS='.$cm[1].PHP_EOL;
      echo 'UX_PROBE_SAMPLE_AD_URL_IN_ATTR='.((strpos(json_encode($attrs),'px.a8.net')!==false)?'YES':'NO').PHP_EOL;
