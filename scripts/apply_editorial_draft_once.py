@@ -1039,6 +1039,7 @@ def build_ux_purchase_funnel_target(current: str, target: dict[str, Any], funnel
     prefix = current[:heading_start]
 
     mode = str(target["mode"])
+    removed_native_button_count = 0
     if mode == "legacy_gulliver_triplet":
         pattern = re.compile(
             r'<!-- wp:html -->\s*'
@@ -1055,9 +1056,32 @@ def build_ux_purchase_funnel_target(current: str, target: dict[str, Any], funnel
             raise RuntimeError(f"legacy Gulliver triplet drifted for {target['slug']}: {len(matches)}")
         m = matches[0]
         source = m.group(0).rstrip()
+        removed_native_button_count = source.count('swell-block-button -html green_')
         required = str(target.get("legacy_top_phrase") or "")
         if required and required not in source:
             raise RuntimeError(f"legacy Gulliver copy drifted for {target['slug']}")
+        start, end = m.start(), m.end()
+    elif mode == "legacy_gulliver_native_triplet":
+        pattern = re.compile(
+            r'<!-- wp:html -->\s*'
+            r'<div class="tsq-gulliver-micro-20261014 top".*?<!-- /wp:html -->\s*'
+            r'<!-- wp:loos/button(?: [^\n]*)? -->\s*'
+            r'<div class="swell-block-button -html green_".*?<!-- /wp:loos/button -->\s*'
+            r'<!-- wp:html -->\s*'
+            r'<div class="tsq-gulliver-micro-20261014 bottom".*?<!-- /wp:html -->\s*$',
+            re.S,
+        )
+        matches = list(pattern.finditer(prefix))
+        if len(matches) != 1:
+            raise RuntimeError(
+                f"legacy native Gulliver triplet drifted for {target['slug']}: {len(matches)}"
+            )
+        m = matches[0]
+        source = m.group(0).rstrip()
+        removed_native_button_count = source.count('swell-block-button -html green_')
+        required = str(target.get("legacy_top_phrase") or "")
+        if required and required not in source:
+            raise RuntimeError(f"legacy native Gulliver copy drifted for {target['slug']}")
         start, end = m.start(), m.end()
     elif mode == "legacy_shortcode_4172":
         paragraph = str(target["legacy_paragraph"])
@@ -1065,10 +1089,36 @@ def build_ux_purchase_funnel_target(current: str, target: dict[str, Any], funnel
             '<!-- wp:paragraph -->\n<p>' + paragraph + '</p>\n<!-- /wp:paragraph -->\n\n'
             '<!-- wp:shortcode -->\n[blog_parts id="4172"]\n<!-- /wp:shortcode -->'
         )
+        removed_native_button_count = source.count('swell-block-button -html green_')
         tail = re.search(re.escape(source) + r'\s*$', prefix, re.S)
         if not tail:
             raise RuntimeError(f"legacy 4172 block drifted for {target['slug']}")
         start, end = tail.start(), tail.end()
+    elif mode == "insert_before_block":
+        anchor_block = str(target["anchor_block"])
+        if current.count(anchor_block) != 1:
+            raise RuntimeError(
+                f"UX funnel anchor block drifted for {target['slug']}: {current.count(anchor_block)}"
+            )
+        start = current.find(anchor_block)
+        end = start
+    elif mode == "insert_before_heading":
+        before_heading = str(target["before_heading"])
+        heading_level = int(target.get("before_heading_level") or 2)
+        if heading_level not in (2, 3):
+            raise RuntimeError("UX funnel before_heading_level must be 2 or 3")
+        heading_before_pattern = re.compile(
+            r'<!-- wp:heading(?: [^\n]*)? -->\s*<h' + str(heading_level) + r'[^>]*>\s*' +
+            re.escape(before_heading) + r'\s*</h' + str(heading_level) + r'>\s*<!-- /wp:heading -->',
+            re.S,
+        )
+        before_matches = list(heading_before_pattern.finditer(current))
+        if len(before_matches) != 1:
+            raise RuntimeError(
+                f"UX funnel before heading drifted for {target['slug']}: {len(before_matches)}"
+            )
+        start = before_matches[0].start()
+        end = start
     else:
         raise RuntimeError(f"unknown UX funnel replacement mode: {mode}")
 
@@ -1090,8 +1140,13 @@ def build_ux_purchase_funnel_target(current: str, target: dict[str, Any], funnel
         raise RuntimeError("UX funnel marker count invalid")
     if updated.count('[blog_parts id="4505"]') != current.count('[blog_parts id="4505"]') + 1:
         raise RuntimeError("UX price checker count did not increase by one")
-    if updated.count('swell-block-button -html green_') != current.count('swell-block-button -html green_') + 1:
-        raise RuntimeError("native SWELL button count did not increase by one")
+    expected_native_buttons = (
+        current.count('swell-block-button -html green_') + 1 - removed_native_button_count
+    )
+    if updated.count('swell-block-button -html green_') != expected_native_buttons:
+        raise RuntimeError(
+            f"native SWELL button count unexpected: {updated.count('swell-block-button -html green_')} != {expected_native_buttons}"
+        )
     if updated.count('a8mat=4B65SD+8DUSHE+9QU+NVHCY') < 2:
         raise RuntimeError("Gulliver A8 link/pixel missing after replacement")
     return updated, "UPDATE"
