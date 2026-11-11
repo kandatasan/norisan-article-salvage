@@ -1,0 +1,59 @@
+name: UX SWELL native button template read-only probe
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/probe_swell_button.php'
+      - '.github/workflows/ux-4507-swell-button-probe.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/probe_swell_button.php'
+      - '.github/workflows/ux-4507-swell-button-probe.yml'
+permissions:
+  contents: read
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax
+        run: php -l ops/lexus-ux-price-checker/blog_parts/probe_swell_button.php
+  inspect:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Xserver host identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Read-only SWELL button metadata and sample block structure
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          tmp=".ux-button-probe-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/probe_swell_button.php "$remote:$tmp"
+          ssh $opts "$remote" bash -s -- "$tmp" <<'REMOTE'
+          set -euo pipefail
+          tmp="$1"; [[ "$tmp" =~ ^\.ux-button-probe-[0-9]+\.php$ ]] || exit 12
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test -f "$root/wp-config.php" && test ! -L "$root"
+          trap 'rm -f "$HOME/$tmp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$tmp"
+          REMOTE
