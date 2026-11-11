@@ -1,0 +1,93 @@
+name: UX 4507 flat Gutenberg and native SWELL affiliate button
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/replace_4507_with_flat_swell_button.php'
+      - '.github/workflows/ux-4507-flat-swell-button.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/replace_4507_with_flat_swell_button.php'
+      - '.github/workflows/ux-4507-flat-swell-button.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ux-4507-flat-swell-button
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify valid flat block source and protected records
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/lexus-ux-price-checker/blog_parts/replace_4507_with_flat_swell_button.php
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('ops/lexus-ux-price-checker/blog_parts/replace_4507_with_flat_swell_button.php').read_text()
+          block=s.split("$template=<<<'BLOCKS'",1)[1].split('BLOCKS;',1)[0]
+          assert block.count('<!-- wp:paragraph')==5
+          assert block.count('<!-- wp:separator')==1
+          assert block.count('<!-- wp:loos/button')==1
+          assert '<!-- wp:group' not in block and '<!-- wp:html' not in block
+          assert 'swell-block-button -html blue_ is-style-btn_solid' in block
+          assert '__EXACT_A8_PAIR__' in block
+          assert 'カーセンサーでUXの中古相場を見る' in block
+          assert '本気で愛車を探すなら、まだネット上に出ていない非公開車両も確認しよう！' in block
+          assert 'ガリバーなら一般公開前の車両も探せる！' in block
+          assert "get_post(4505)" in s and "get_post(4506)" in s
+          assert "'ID'=>4507" in s and "'post_status'=>'draft'" in s
+          assert 'do_blocks(' in s and "get_registered('loos/button')" not in s
+          assert 'wp_delete_post(' not in s
+          print('UX_4507_NATIVE_BUTTON_PRECHECK=PASS')
+          PY
+  update-draft:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate Xserver pinned SSH identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Update only 4507 draft, check real SWELL button render and A8 pixel
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          tmp=".ux-4507-flat-swell-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/replace_4507_with_flat_swell_button.php "$remote:$tmp"
+          ssh $opts "$remote" bash -s -- "$tmp" <<'REMOTE' | tee /tmp/ux-flat-result.txt
+          set -euo pipefail
+          tmp="$1"; [[ "$tmp" =~ ^\.ux-4507-flat-swell-[0-9]+\.php$ ]] || exit 12
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test -f "$root/wp-config.php" && test ! -L "$root"
+          trap 'rm -f "$HOME/$tmp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$tmp"
+          REMOTE
+          grep -Eq '^UX_4507_FLAT_RESULT=(UPDATED|ALREADY_COMPLETE)$' /tmp/ux-flat-result.txt
+          grep -Fxq 'UX_4507_FLAT_STATUS=draft' /tmp/ux-flat-result.txt
+          for label in UX_4507_FLAT_SWELL_BUTTON UX_4507_FLAT_A8_FULL_PAIR UX_4507_FLAT_RENDERED_LINKS UX_4507_FLAT_SOURCE_PARTS_UNCHANGED; do
+            grep -Fxq "$label=PASS" /tmp/ux-flat-result.txt
+          done
+          echo 'UX_4507_NATIVE_SWELL_BUTTON_FLAT_BLOCKS=PASS' >> "$GITHUB_STEP_SUMMARY"
+          echo 'UX_4507_EDITOR=https://tsurikue.com/wp-admin/post.php?post=4507&action=edit' >> "$GITHUB_STEP_SUMMARY"
+          echo 'Original affiliate block 4506, checker 4505, articles unchanged.' >> "$GITHUB_STEP_SUMMARY"
