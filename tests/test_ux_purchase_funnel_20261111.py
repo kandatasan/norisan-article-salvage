@@ -127,7 +127,7 @@ class UxPurchaseFunnelTests(unittest.TestCase):
 <!-- /wp:html -->
 
 <!-- wp:loos/button -->
-<div class="swell-block-button -html green_"><a href="https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY" rel="nofollow">old</a><img src="https://www15.a8.net/0.gif?a8mat=4B65SD+8DUSHE+9QU+NVHCY"></div>
+<div class="swell-block-button -html green_ -size-l is-style-btn_shiny"><a href="https://px.a8.net/svt/ejp?a8mat=4B65SD+8DUSHE+9QU+NVHCY" rel="nofollow">old</a><img src="https://www15.a8.net/0.gif?a8mat=4B65SD+8DUSHE+9QU+NVHCY"></div>
 <!-- /wp:loos/button -->
 
 <!-- wp:html -->
