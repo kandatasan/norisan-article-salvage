@@ -1,0 +1,87 @@
+name: UX native Gutenberg CTA copyable draft prototype
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/create_ux_native_copy_draft.php'
+      - '.github/workflows/ux-buying-native-copy-draft.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/lexus-ux-price-checker/blog_parts/create_ux_native_copy_draft.php'
+      - '.github/workflows/ux-buying-native-copy-draft.yml'
+permissions:
+  contents: read
+concurrency:
+  group: ux-buying-native-copy-draft
+  cancel-in-progress: false
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate Gutenberg native blocks and immutability
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/lexus-ux-price-checker/blog_parts/create_ux_native_copy_draft.php
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('ops/lexus-ux-price-checker/blog_parts/create_ux_native_copy_draft.php').read_text()
+          body=s.split("$body=<<<'BLOCKS'",1)[1].split("BLOCKS;",1)[0]
+          assert '<!-- wp:group ' in body and '<!-- wp:buttons -->' in body and '<!-- wp:button ' in body
+          assert '<!-- wp:html' not in body and 'px.a8.net' not in body and 'a8.net/0.gif' not in body
+          assert 'href="https://www.carsensor.net/usedcar/bLE/s021/index.html"' in body
+          assert "'post_status'=>'draft'" in s and 'wp_update_post(' not in s
+          assert 'UX_NATIVE_GULLIVER_LINK=UNSET' in s
+          print('UX_NATIVE_COPY_VALIDATION=PASS')
+          PY
+  create-draft:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify Xserver SSH host fingerprint
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Add only a new nonpublic editable block CTA draft
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          temp=".ux-native-copy-$GITHUB_RUN_ID.php"
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" ops/lexus-ux-price-checker/blog_parts/create_ux_native_copy_draft.php "$remote:$temp"
+          ssh $opts "$remote" bash -s -- "$temp" <<'REMOTE' | tee /tmp/ux-native-result.txt
+          set -euo pipefail
+          temp="$1"; [[ "$temp" =~ ^\.ux-native-copy-[0-9]+\.php$ ]] || exit 13
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -f "$HOME/$temp" && test ! -L "$HOME/$temp"
+          trap 'rm -f "$HOME/$temp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$temp"
+          REMOTE
+          id="$(sed -n 's/^UX_NATIVE_ID=//p' /tmp/ux-native-result.txt | tail -1)"
+          status="$(sed -n 's/^UX_NATIVE_STATUS=//p' /tmp/ux-native-result.txt | tail -1)"
+          outcome="$(sed -n 's/^UX_NATIVE_RESULT=//p' /tmp/ux-native-result.txt | tail -1)"
+          [[ "$id" =~ ^[0-9]+$ && "$status" == draft ]] || exit 30
+          [[ "$outcome" == CREATED || "$outcome" == EXISTS ]] || exit 31
+          echo "UX_NATIVE_ID=$id" >> "$GITHUB_STEP_SUMMARY"
+          echo "UX_NATIVE_STATUS=draft" >> "$GITHUB_STEP_SUMMARY"
+          echo "UX_NATIVE_EDITOR=https://tsurikue.com/wp-admin/post.php?post=$id&action=edit" >> "$GITHUB_STEP_SUMMARY"
+          echo "No published posts, parts 4505/4506, or affiliate links were changed." >> "$GITHUB_STEP_SUMMARY"
