@@ -1,0 +1,23 @@
+{
+  "schema": "tsurikue-river-name-candidate-layer-v01",
+  "fixed_coverage_denominator": 1127,
+  "connected_groups_at_baseline": 477,
+  "baseline_connection_rate_percent": 42.32,
+  "groups_needed_for_50_percent": 87,
+  "candidate_count": 22,
+  "candidate_rows_affect_fixed_denominator": false,
+  "candidate_rows_are_published": false,
+  "candidate_rows_have_fish_connections": false,
+  "candidate_rows_have_inferred_watersheds_or_codes": false,
+  "source_batches": [
+    {
+      "batch_id": "hiroshima-city-map-2024-04-01",
+      "publisher": "広島市",
+      "source_title": "広島市域内の河川",
+      "source_page_url": "https://www.city.hiroshima.lg.jp/living/doro-kotsu-kasen/1026440/1026441/1003366.html",
+      "source_document_url": "https://www.city.hiroshima.lg.jp/_res/projects/default_project/_page_/001/003/366/103478.pdf",
+      "source_as_of": "2024-04-01",
+      "candidate_rows": 22
+    }
+  ]
+}
