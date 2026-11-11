@@ -60,8 +60,13 @@ $template=<<<'BLOCKS'
 BLOCKS;
 $new=str_replace('__EXACT_A8_PAIR__',$pair,$template);
 $want=['core/paragraph','core/separator','core/paragraph','core/paragraph','core/paragraph','loos/button','core/paragraph'];
-$blocks=parse_blocks($new);
-if(count($blocks)!==count($want))throw new RuntimeException('Incorrect number of direct Gutenberg blocks');
+$rawBlocks=parse_blocks($new);
+$blocks=array_values(array_filter($rawBlocks,function($block){
+  // WordPress parse_blocks returns harmless null blocks for separators/newlines
+  // between top-level blocks; do not mistake whitespace for an actual block.
+  return ($block['blockName']??null)!==null || trim((string)($block['innerHTML']??''))!=='';
+}));
+if(count($blocks)!==count($want))throw new RuntimeException('Incorrect number of nonempty direct Gutenberg blocks');
 foreach($blocks as $i=>$b){
   if(($b['blockName']??null)!==$want[$i]||!empty($b['innerBlocks']))throw new RuntimeException('Unexpected nesting or block type');
 }
