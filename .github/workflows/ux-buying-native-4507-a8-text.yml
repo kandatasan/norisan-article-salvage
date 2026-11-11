@@ -31,7 +31,7 @@ jobs:
           s=Path('ops/lexus-ux-price-checker/blog_parts/complete_ux_native_copy_draft_4507.php').read_text()
           assert 'get_post(4506)' in s and 'get_post(4505)' in s and 'get_post(4507)' in s
           assert "'ID'=>4507" in s and "post_status!=='draft'" in s
-          assert '<!-- wp:paragraph' in s and '<!-- wp:html ' not in s
+          assert '<!-- wp:paragraph' in s and "strpos($body,'wp:html')" in s
           assert 'substr_count($new,$pixel)' in s and 'substr_count($new,$affiliate)' in s
           assert "wp_update_post(['ID'=>4507" in s
           assert 'wp_delete_post' not in s
