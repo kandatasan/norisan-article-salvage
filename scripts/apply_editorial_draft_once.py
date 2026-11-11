@@ -1067,207 +1067,17 @@ def build_ux_purchase_funnel_target(current: str, target: dict[str, Any], funnel
             '<!-- wp:paragraph -->\n<p>' + paragraph + '</p>\n<!-- /wp:paragraph -->\n\n'
             '<!-- wp:shortcode -->\n[blog_parts id="4172"]\n<!-- /wp:shortcode -->'
         )
-        tail = re.search(re.escape(source) + r'\s*
-    lead = str(target.get("lead_paragraph") or "").strip()
-    pieces = [marker]
-    if lead:
-        pieces.append(
-            '<!-- wp:paragraph -->\n<p><strong>' + html.escape(lead, quote=False) +
-            '</strong></p>\n<!-- /wp:paragraph -->'
-        )
-    pieces += [
-        '<!-- wp:shortcode -->\n[blog_parts id="4505"]\n<!-- /wp:shortcode -->',
-        funnel.strip(),
-    ]
-    replacement = "\n\n".join(pieces)
-    updated = current[:start] + replacement + "\n\n" + current[end:]
-
-    if updated.count(marker) != 1:
-        raise RuntimeError("UX funnel marker count invalid")
-    if updated.count('[blog_parts id="4505"]') != current.count('[blog_parts id="4505"]') + 1:
-        raise RuntimeError("UX price checker count did not increase by one")
-    expected_native_buttons = (
-        current.count('swell-block-button -html green_') + 1 - removed_native_button_count
-    )
-    if updated.count('swell-block-button -html green_') != expected_native_buttons:
-        raise RuntimeError(
-            f"native SWELL button count unexpected: {updated.count('swell-block-button -html green_')} != {expected_native_buttons}"
-        )
-    if updated.count('a8mat=4B65SD+8DUSHE+9QU+NVHCY') < 2:
-        raise RuntimeError("Gulliver A8 link/pixel missing after replacement")
-    return updated, "UPDATE"
-
-
-def apply_published_ux_purchase_funnels(config_path: Path, cfg: dict[str, Any], auth: str):
-    """Guarded multi-post UX funnel replacement. Preflight all posts before the first write."""
-    funnel = (config_path.parent / cfg["funnel_file"]).read_text(encoding="utf-8").strip()
-    expected_funnel_sha = str(cfg["expected_funnel_sha256"])
-    actual_funnel_sha = hashlib.sha256(funnel.encode()).hexdigest()
-    if actual_funnel_sha != expected_funnel_sha:
-        raise RuntimeError(f"4507 copy source hash mismatch: {actual_funnel_sha}")
-
-    targets = cfg.get("targets") or []
-    if not isinstance(targets, list) or not targets:
-        raise RuntimeError("UX funnel config has no targets")
-
-    counts_before = public_counts(auth)
-    plans = []
-    keys = ("id", "slug", "status", "featured_media", "categories", "author")
-
-    for target in targets:
-        pid = int(target["post_id"])
-        row = fetch_post_by_id(pid, auth)
-        title = html.unescape(raw_field(row, "title"))
-        if (row.get("id"), row.get("slug"), row.get("status")) != (pid, target["slug"], "publish"):
-            raise RuntimeError(f"UX funnel identity/status drifted for {target['slug']}")
-        if title != target["title"]:
-            raise RuntimeError(f"UX funnel title drifted for {target['slug']}")
-        current = raw_field(row, "content")
-        updated, action = build_ux_purchase_funnel_target(current, target, funnel)
-        plans.append({
-            "target": target,
-            "row": row,
-            "title": title,
-            "current": current,
-            "updated": updated,
-            "action": action,
-        })
-
-    for plan in plans:
-        latest = fetch_post_by_id(int(plan["target"]["post_id"]), auth)
-        if any(latest.get(k) != plan["row"].get(k) for k in keys):
-            raise RuntimeError(f"UX funnel concurrent metadata edit: {plan['target']['slug']}")
-        if html.unescape(raw_field(latest, "title")) != plan["title"] or raw_field(latest, "content") != plan["current"]:
-            raise RuntimeError(f"UX funnel concurrent content edit: {plan['target']['slug']}")
-
-    written = []
-    report_dir = Path("reports") / "ux-purchase-funnel-wave1-20261111"
-    report_dir.mkdir(parents=True, exist_ok=True)
-
-    try:
-        results = []
-        for plan in plans:
-            target = plan["target"]
-            pid = int(target["post_id"])
-            wrote = False
-            if plan["action"] == "UPDATE":
-                response = post_json(
-                    f"{SITE_URL}/wp-json/wp/v2/posts/{pid}",
-                    auth,
-                    {"content": plan["updated"]},
-                )
-                wrote = True
-                written.append(plan)
-                if (response.get("id"), response.get("slug"), response.get("status")) != (
-                    pid, target["slug"], "publish"
-                ):
-                    raise RuntimeError(f"UX funnel response mismatch: {target['slug']}")
-
-            after = fetch_post_by_id(pid, auth)
-            if any(after.get(k) != plan["row"].get(k) for k in keys):
-                raise RuntimeError(f"UX funnel metadata changed: {target['slug']}")
-            if html.unescape(raw_field(after, "title")) != plan["title"] or raw_field(after, "content") != plan["updated"]:
-                raise RuntimeError(f"UX funnel saved content mismatch: {target['slug']}")
-
-            rendered = (after.get("content") or {}).get("rendered", "")
-            if "ガリバーで希望のUXを探してみる" not in rendered:
-                raise RuntimeError(f"native Gulliver CTA absent after save: {target['slug']}")
-
-            results.append({
-                "action": plan["action"],
-                "post_id": pid,
-                "slug": target["slug"],
-                "status": "publish",
-                "title": plan["title"],
-                "featured_media": after.get("featured_media"),
-                "old_sha256": hashlib.sha256(plan["current"].encode()).hexdigest(),
-                "new_sha256": hashlib.sha256(plan["updated"].encode()).hexdigest(),
-                "wordpress_write_count": int(wrote),
-            })
-
-        counts_after = public_counts(auth)
-        if counts_after != counts_before:
-            raise RuntimeError("published post/page counts changed during UX funnel update")
-
-        report = {
-            "targets": results,
-            "published_before": counts_before,
-            "published_after": counts_after,
-        }
-        (report_dir / "result.json").write_text(
-            json.dumps(report, ensure_ascii=False, indent=2) + "\n",
-            encoding="utf-8",
-        )
-        lines = ["# UX purchase funnel wave 1", ""]
-        for result in results:
-            lines += [
-                f"- {result['slug']} ({result['post_id']}): **{result['action']}**",
-                "  - status: publish",
-                f"  - content: {result['old_sha256']} -> {result['new_sha256']}",
-            ]
-        (report_dir / "summary.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
-        print("UX_PURCHASE_FUNNEL_VERIFIED", json.dumps(report, ensure_ascii=False), flush=True)
-        return report
-    except Exception:
-        for plan in reversed(written):
-            try:
-                target = plan["target"]
-                pid = int(target["post_id"])
-                now = fetch_post_by_id(pid, auth)
-                if raw_field(now, "content") == plan["updated"] and all(
-                    now.get(k) == plan["row"].get(k) for k in keys
-                ):
-                    post_json(
-                        f"{SITE_URL}/wp-json/wp/v2/posts/{pid}",
-                        auth,
-                        {"content": plan["current"]},
-                    )
-                    print("UX_PURCHASE_FUNNEL_ROLLBACK", target["slug"], flush=True)
-                else:
-                    print("UX_PURCHASE_FUNNEL_ROLLBACK_SKIPPED_DRIFT", target["slug"], flush=True)
-            except Exception as rollback_error:
-                print(
-                    "UX_PURCHASE_FUNNEL_ROLLBACK_FAILED",
-                    plan["target"]["slug"],
-                    repr(rollback_error),
-                    flush=True,
-                )
-        raise
-
-def apply(config_path: Path):
-    user = os.environ.get("TSURIKUE_WP_USER"); password = os.environ.get("TSURIKUE_WP_APP_PASSWORD")
-    if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
-    auth = auth_header(user, password)
-    raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
-    if raw_cfg.get("operation") == "replace_published_ux_purchase_funnels":
-        return apply_published_ux_purchase_funnels(config_path, raw_cfg, auth)
-    if raw_cfg.get("operation") == "replace_published_affiliate_copy":
-        return apply_published_affiliate_copy_replacements(raw_cfg, auth)
-    if raw_cfg.get("operation") == "insert_gulliver_extra_buttons":
-        return apply_published_gulliver_extra_buttons(raw_cfg, auth)
-    if raw_cfg.get("operation") == "insert_gulliver_context_ctas":
-        return apply_published_gulliver_context_ctas(raw_cfg, auth)
-    if raw_cfg.get("operation") == "replace_published_gulliver_banner":
-        return apply_published_affiliate_swap(raw_cfg, auth)
-    if raw_cfg.get("operation") == "insert_published_block":
-        return apply_published_insertion(config_path, raw_cfg, auth)
-    if raw_cfg.get("operation") == "replace_existing_table_cell":
-        return apply_existing_table_cell_replacement(config_path, raw_cfg, auth)
-    cfg, full = load_package(config_path)
-    if cfg.get("operation") == "create": return apply_create(cfg, full, auth)
-    return apply_update(cfg, full, auth)
-
-def main():
-    ap = argparse.ArgumentParser(); ap.add_argument("--config", required=True); args = ap.parse_args(); apply(Path(args.config)); return 0
-if __name__ == "__main__": raise SystemExit(main())
-, prefix, re.S)
+        removed_native_button_count = source.count('swell-block-button -html green_')
+        tail = re.search(re.escape(source) + r'\s*$', prefix, re.S)
         if not tail:
             raise RuntimeError(f"legacy 4172 block drifted for {target['slug']}")
         start, end = tail.start(), tail.end()
     elif mode == "insert_before_block":
         anchor_block = str(target["anchor_block"])
         if current.count(anchor_block) != 1:
-            raise RuntimeError(f"UX funnel anchor block drifted for {target['slug']}: {current.count(anchor_block)}")
+            raise RuntimeError(
+                f"UX funnel anchor block drifted for {target['slug']}: {current.count(anchor_block)}"
+            )
         start = current.find(anchor_block)
         end = start
     elif mode == "insert_before_heading":
@@ -1308,8 +1118,13 @@ if __name__ == "__main__": raise SystemExit(main())
         raise RuntimeError("UX funnel marker count invalid")
     if updated.count('[blog_parts id="4505"]') != current.count('[blog_parts id="4505"]') + 1:
         raise RuntimeError("UX price checker count did not increase by one")
-    if updated.count('swell-block-button -html green_') != current.count('swell-block-button -html green_') + 1:
-        raise RuntimeError("native SWELL button count did not increase by one")
+    expected_native_buttons = (
+        current.count('swell-block-button -html green_') + 1 - removed_native_button_count
+    )
+    if updated.count('swell-block-button -html green_') != expected_native_buttons:
+        raise RuntimeError(
+            f"native SWELL button count unexpected: {updated.count('swell-block-button -html green_')} != {expected_native_buttons}"
+        )
     if updated.count('a8mat=4B65SD+8DUSHE+9QU+NVHCY') < 2:
         raise RuntimeError("Gulliver A8 link/pixel missing after replacement")
     return updated, "UPDATE"
