@@ -1,0 +1,13 @@
+{
+  "operation": "add_published_ux_used_two_owner_photos_20261113",
+  "post_id": 2948,
+  "slug": "lexus-ux-used",
+  "expected_content_sha256": "78c7e3defc4baa44034693511d35e303fbd4bf9659d2c5886709fb40767d0796",
+  "media_ids": [
+    2201,
+    2207
+  ],
+  "photo_source_post_id": 2517,
+  "photo_source_slug": "ux-koukai",
+  "scope": "content-only: add verified rear-seat and box in trunk photos to the downsides section; leave all other copy, affiliates, and metadata unchanged"
+}
