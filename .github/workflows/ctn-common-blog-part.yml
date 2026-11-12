@@ -1,0 +1,103 @@
+name: CTN common CTA blog part
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/ctn-common-cta/create_publish_blog_part.php'
+      - '.github/workflows/ctn-common-blog-part.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/ctn-common-cta/create_publish_blog_part.php'
+      - '.github/workflows/ctn-common-blog-part.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ctn-common-blog-part
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate CTN common CTA source
+        shell: bash
+        run: |
+          set -euo pipefail
+          php -l ops/ctn-common-cta/create_publish_blog_part.php
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('ops/ctn-common-cta/create_publish_blog_part.php').read_text()
+          assert "CTN一括車査定｜共通CTA（SWELLボタン）" in s
+          assert "ctn-car-appraisal-common-cta" in s
+          assert "お試しだけでもOK！" in s
+          assert "電話がかかってくるのは、最大でも3社まで" in s
+          assert 'wp:loos/button {"color":"green"' in s
+          assert 'swell-block-button -html green_ is-style-btn_solid' in s
+          assert s.count('https://px.a8.net/svt/ejp?a8mat=3Z8YF4+7VEF1M+5I4S+5YRHE') >= 2
+          assert s.count('https://www18.a8.net/0.gif?a8mat=3Z8YF4+7VEF1M+5I4S+5YRHE') >= 2
+          assert '>【CTN一括車査定】</a>' in s
+          assert "post_type'=>'blog_parts'" in s
+          assert "'post_status'=>'draft'" in s
+          assert "'post_status'=>'publish'" in s
+          assert "WP_Block_Type_Registry" in s
+          assert "do_blocks(" in s
+          print('CTN_COMMON_BLOGPART_PRECHECK=PASS')
+          PY
+
+  create-and-publish:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Authenticate Xserver pinned SSH identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+
+      - name: Create and publish guarded CTN blog part
+        shell: bash
+        run: |
+          set -euo pipefail
+          remote="$XSERVER_SSH_USER@$XSERVER_SSH_HOST"
+          key="$HOME/.ssh/xserver_deploy_key"
+          opts="-p 10022 -i $key -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile=$HOME/.ssh/known_hosts"
+          tmp=".ctn-common-blog-part-$GITHUB_RUN_ID.php"
+
+          scp -P 10022 -i "$key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            ops/ctn-common-cta/create_publish_blog_part.php "$remote:$tmp"
+
+          ssh $opts "$remote" bash -s -- "$tmp" <<'REMOTE' | tee /tmp/ctn-common-result.txt
+          set -euo pipefail
+          tmp="$1"
+          [[ "$tmp" =~ ^\.ctn-common-blog-part-[0-9]+\.php$ ]] || exit 12
+          root="$HOME/tsurikue.com/public_html"
+          test -d "$root" && test -f "$root/wp-config.php" && test ! -L "$root"
+          trap 'rm -f "$HOME/$tmp"' EXIT
+          cd "$root"
+          wp eval-file "$HOME/$tmp"
+          REMOTE
+
+          grep -Eq '^CTN_COMMON_BLOGPART_RESULT=(CREATED_AND_PUBLISHED|ALREADY_COMPLETE)$' /tmp/ctn-common-result.txt
+          grep -Fxq 'CTN_COMMON_BLOGPART_STATUS=publish' /tmp/ctn-common-result.txt
+          grep -Fxq 'CTN_COMMON_BLOGPART_SWELL_BUTTON=PASS' /tmp/ctn-common-result.txt
+          grep -Fxq 'CTN_COMMON_BLOGPART_A8_PAIR=PASS' /tmp/ctn-common-result.txt
+          grep -Fxq 'CTN_COMMON_BLOGPART_RENDER=PASS' /tmp/ctn-common-result.txt
+
+          cat /tmp/ctn-common-result.txt >> "$GITHUB_STEP_SUMMARY"
