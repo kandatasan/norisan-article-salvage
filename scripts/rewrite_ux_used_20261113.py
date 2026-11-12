@@ -8,6 +8,7 @@ from __future__ import annotations
 import hashlib
 import html
 import json
+import re
 from pathlib import Path
 
 EXPECTED_SHA = "201f03006afa8c31e9a7481f769f00ebee1e4eaef7b66e28d771412d018470b3"
@@ -43,6 +44,7 @@ def transform(current: str, funnel: str) -> str:
         ):
             return current
         raise RuntimeError("Partial rewrite marker found; refusing repair")
+    source = current
     sha = hashlib.sha256(current.encode()).hexdigest()
     if sha != EXPECTED_SHA:
         raise RuntimeError(f"Source content changed after audited snapshot: {sha}")
@@ -141,6 +143,8 @@ def transform(current: str, funnel: str) -> str:
     current = current[:ss] + "\n\n".join(footer) + "\n\n" + current[ee:]
 
     # Guard the original photo map and related links; do not create/destroy media.
+    if sorted(re.findall(r'wp-image-(\\d+)', current)) != sorted(re.findall(r'wp-image-(\\d+)', source)):
+        raise RuntimeError('Owner photo reference map changed')
     if (
         current.count('[blog_parts id="4505"]') != 1
         or current.count('[blog_parts id="4521"]') != 1
