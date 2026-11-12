@@ -143,7 +143,7 @@ def transform(current: str, funnel: str) -> str:
     current = current[:ss] + "\n\n".join(footer) + "\n\n" + current[ee:]
 
     # Guard the original photo map and related links; do not create/destroy media.
-    if sorted(re.findall(r'wp-image-(\\d+)', current)) != sorted(re.findall(r'wp-image-(\\d+)', source)):
+    if sorted(re.findall(r'wp-image-(\d+)', current)) != sorted(re.findall(r'wp-image-(\d+)', source)):
         raise RuntimeError('Owner photo reference map changed')
     if (
         current.count('[blog_parts id="4505"]') != 1
