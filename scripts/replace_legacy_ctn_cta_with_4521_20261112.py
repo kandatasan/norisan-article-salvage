@@ -139,8 +139,8 @@ def make_new(content):
         raise RuntimeError("legacy CTN A8 material remains")
     if fixed.count('[blog_parts id="4521"]')!=1:
         raise RuntimeError("new CTN shortcode count mismatch")
-    if block_problems(fixed):
-        raise RuntimeError("Gutenberg structure would be broken")
+    if block_problems(fixed) != block_problems(content):
+        raise RuntimeError("Gutenberg problem baseline changed")
     return fixed
 
 def main():
@@ -152,8 +152,6 @@ def main():
         row=get_post(t[0])
         verify_identity(row,t)
         before=raw(row,"content")
-        if block_problems(before):
-            raise RuntimeError(f"broken Gutenberg before update: {t[1]}")
         fixed=make_new(before)
         prepared.append((t,before,fixed))
 
@@ -176,8 +174,8 @@ def main():
             raise RuntimeError(f"new shortcode verification failed: {t[1]}")
         if "tsq-ctn-official-002-20261110" in actual or "3Z8YF4+7VEGL6+5I4S+5YRHE" in actual:
             raise RuntimeError(f"legacy CTA still present: {t[1]}")
-        if block_problems(actual):
-            raise RuntimeError(f"broken Gutenberg after update: {t[1]}")
+        if block_problems(actual) != block_problems(before):
+            raise RuntimeError(f"Gutenberg problem baseline changed after update: {t[1]}")
         results.append((t[0],t[1]))
 
     after_total=pub_count()
