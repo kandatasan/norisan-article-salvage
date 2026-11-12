@@ -34,4 +34,12 @@ jobs:
             t=t.replace('\n',' ')
             print('BLOCK',i,m.group(1),'br='+str(len(re.findall(r'<br\b',inner))), 'text='+t[:400])
           print('TOTAL',i+1)
+          from scripts.refine_ux_used_voice_breaks_20261113 import transform,PARA
+          revised=transform(body)
+          print('PREFLIGHT_NEW_SHA',hashlib.sha256(revised.encode()).hexdigest())
+          print('PREFLIGHT_NEW_PARAS',len(PARA.findall(revised)),'SOFT',revised.count('<br'),'OLD_PARAS',len(PARA.findall(body)),'OLD_SOFT',body.count('<br'))
+          for phrase in ['中古で良かったんじゃないか？','今なら中古UX250h','中古UXを探すなら、レクサス認定中古車のCPOも候補です','今の車を高く売る']:
+            print('PREFLIGHT_PHRASE',phrase,revised.count(phrase))
+          print('PREFLIGHT_SUCCESS_NO_WRITE')
+
           PY
