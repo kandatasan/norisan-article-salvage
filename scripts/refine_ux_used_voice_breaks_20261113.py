@@ -26,7 +26,7 @@ def replace_one(body:str,old:str,new:str)->str:
 
 
 def matching_block(body:str,phrase:str):
-    matches=[m for m in PARA.finditer(body) if phrase in m.group(1)]
+    matches=[m for m in PARA.finditer(body) if phrase in html.unescape(re.sub(r'<[^>]+>', '', m.group(1)))]
     if len(matches)!=1:
         raise RuntimeError(f"Expected one full paragraph with {phrase!r}; found {len(matches)}")
     return matches[0]
