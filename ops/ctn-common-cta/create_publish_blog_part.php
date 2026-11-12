@@ -17,14 +17,13 @@ if (!WP_Block_Type_Registry::get_instance()->is_registered('loos/button')) {
 
 $title='CTN一括車査定｜共通CTA（SWELLボタン）';
 $slug='ctn-car-appraisal-common-cta';
-$marker='tsurikue-ctn-common-cta-20261112';
+$marker='data-tsurikue-ctn-common-cta="20261112"';
 $href='https://px.a8.net/svt/ejp?a8mat=3Z8YF4+7VEF1M+5I4S+5YRHE';
 $pixel='https://www18.a8.net/0.gif?a8mat=3Z8YF4+7VEF1M+5I4S+5YRHE';
 
 $content=<<<'BLOCKS'
-<!-- tsurikue-ctn-common-cta-20261112 -->
 <!-- wp:paragraph {"style":{"typography":{"textAlign":"center"}},"className":"u-mb-ctrl u-mb-5"} -->
-<p class="has-text-align-center u-mb-ctrl u-mb-5"><strong>お試しだけでもOK！</strong></p>
+<p class="has-text-align-center u-mb-ctrl u-mb-5" data-tsurikue-ctn-common-cta="20261112"><strong>お試しだけでもOK！</strong></p>
 <!-- /wp:paragraph -->
 
 <!-- wp:loos/button {"color":"green","className":"is-style-btn_solid u-mb-ctrl u-mb-5"} -->
