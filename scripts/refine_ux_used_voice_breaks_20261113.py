@@ -12,7 +12,7 @@ TITLE="レクサスUXの中古は狙い目？新車と比べて中古をおす�
 EXPECTED_SHA="b815b42e22ff3d22a237035da0e992af04bca3822123d7b31934060d23b8c73d"
 MARKER="<!-- tsurikue-ux-used-voice-breaks:20261113 -->"
 INTRO_ANCHOR='<!-- wp:image {"id":2587,"sizeSlug":"large","linkDestination":"none"} -->'
-PARA=re.compile(r'<!-- wp:paragraph -->\s*<p>(.*?)</p>\s*<!-- /wp:paragraph -->',re.S)
+PARA=re.compile(r'<!-- wp:paragraph(?: [^\n]*?)? -->\s*<p[^>]*>(.*?)</p>\s*<!-- /wp:paragraph -->',re.S)
 
 
 def p(inner:str)->str:
@@ -42,7 +42,8 @@ def merge(body:str,phrases:list[str])->str:
     contents=[m.group(1).strip() for m in chunks]
     # Existing soft breaks remain; joining topics in the same flow uses soft breaks.
     joined="<br>".join(contents)
-    return body[:chunks[0].start()]+p(joined)+body[chunks[-1].end():]
+    first_block=chunks[0].group(0).replace(chunks[0].group(1),joined,1)
+    return body[:chunks[0].start()]+first_block+body[chunks[-1].end():]
 
 
 def sentence_breaks(inner:str)->str:
@@ -65,7 +66,7 @@ def normalize_plain_paragraphs(body:str)->str:
     def fix(m):
         inner=m.group(1)
         revised=sentence_breaks(inner)
-        return p(revised) if revised!=inner else m.group(0)
+        return m.group(0).replace(inner,revised,1) if revised!=inner else m.group(0)
     return PARA.sub(fix,body)
 
 
@@ -80,7 +81,6 @@ def transform(source:str)->str:
     current=source
 
     # Replace only the introductory six short, disjoint paragraphs (not the owner photo).
-    first='<span NEVER MATCH>' # replaced below by unique real source anchor
     first='<!-- wp:paragraph -->\n<p><strong>中古のレクサスUX、今なら本気で狙い目だと思っています。</strong></p>'
     if current.count(first)!=1 or current.count(INTRO_ANCHOR)!=1:
         raise RuntimeError("Intro or photo anchor moved")
