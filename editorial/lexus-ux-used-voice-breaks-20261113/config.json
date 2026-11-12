@@ -1,0 +1,10 @@
+{
+  "operation": "refine_published_ux_used_voice_breaks_20261113",
+  "post_id": 2948,
+  "slug": "lexus-ux-used",
+  "title": "レクサスUXの中古は狙い目？新車と比べて中古をおすすめしたい理由",
+  "expected_current_content_sha256": "b815b42e22ff3d22a237035da0e992af04bca3822123d7b31934060d23b8c73d",
+  "scope": "content-only, published post",
+  "policy": "Same topic uses <br> within existing Gutenberg paragraph; new topic uses distinct paragraph; existing media, CTN and Gulliver unchanged.",
+  "source": "owner update 2026-11-13"
+}
