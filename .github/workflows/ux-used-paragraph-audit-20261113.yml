@@ -4,6 +4,7 @@ on:
     branches: [refine-lexus-ux-used-voice-breaks-20261113]
     paths:
       - '.github/workflows/ux-used-paragraph-audit-20261113.yml'
+      - 'scripts/refine_ux_used_voice_breaks_20261113.py'
 permissions:
   contents: read
 jobs:
