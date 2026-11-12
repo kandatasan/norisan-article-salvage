@@ -36,9 +36,14 @@ $content=<<<'BLOCKS'
 <!-- /wp:paragraph -->
 BLOCKS;
 
-$blocks=parse_blocks($content);
+$rawBlocks=parse_blocks($content);
+$blocks=array_values(array_filter($rawBlocks,function($block){
+  // WordPress parse_blocks may emit harmless null blocks for whitespace
+  // between top-level blocks. Ignore only truly empty separators/newlines.
+  return ($block['blockName']??null)!==null || trim((string)($block['innerHTML']??''))!=='';
+}));
 $want=array('core/paragraph','loos/button','core/paragraph');
-if(count($blocks)!==count($want)) throw new RuntimeException('Unexpected direct block count');
+if(count($blocks)!==count($want)) throw new RuntimeException('Unexpected nonempty direct block count');
 foreach($blocks as $i=>$b){
   if(($b['blockName']??null)!==$want[$i] || !empty($b['innerBlocks'])) {
     throw new RuntimeException('Unexpected nesting or block type');
