@@ -18,12 +18,12 @@ POST_ID = 2948
 
 
 def paragraph(content: str) -> str:
-    return "<!-- wp:paragraph -->\\n<p>" + content + "</p>\\n<!-- /wp:paragraph -->"
+    return "<!-- wp:paragraph -->\n<p>" + content + "</p>\n<!-- /wp:paragraph -->"
 
 
 def heading(content: str, level: int = 2) -> str:
     opts = ' {"level":3}' if level == 3 else ""
-    return f'<!-- wp:heading{opts} -->\\n<h{level} class="wp-block-heading">{content}</h{level}>\\n<!-- /wp:heading -->'
+    return f'<!-- wp:heading{opts} -->\n<h{level} class="wp-block-heading">{content}</h{level}>\n<!-- /wp:heading -->'
 
 
 def replace_once(body: str, original: str, replacement: str) -> str:
@@ -48,7 +48,7 @@ def transform(current: str, funnel: str) -> str:
         raise RuntimeError(f"Source content changed after audited snapshot: {sha}")
 
     # Only the six leading intro paragraphs; preserve markers and original UX photo.
-    first = '<!-- wp:paragraph -->\\n<p><strong>UX250h F SPORTが車両本体199.6万円。'
+    first = '<!-- wp:paragraph -->\n<p><strong>UX250h F SPORTが車両本体199.6万円。'
     image_anchor = '<!-- wp:image {"id":2587,"sizeSlug":"large","linkDestination":"none"} -->'
     if current.count(first) != 1 or current.count(image_anchor) != 1:
         raise RuntimeError("Intro/photo anchors drifted")
@@ -64,8 +64,8 @@ def transform(current: str, funnel: str) -> str:
         '中古車をお得に買うコツは2つ。<br><strong>① 条件の良い個体を見つける。<br>② 今乗っている車を、できるだけ高く売る。</strong>',
         'どのUXを狙うか。そして乗り換えのお金をどう作るか。私の経験も交えて話します。',
     ]
-    current = current[:start] + "\\n\\n".join(paragraph(x) for x in intro) + "\\n\\n" + current[end:]
-    current = MARKER + "\\n" + current
+    current = current[:start] + "\n\n".join(paragraph(x) for x in intro) + "\n\n" + current[end:]
+    current = MARKER + "\n" + current
 
     current = replace_once(
         current,
@@ -93,8 +93,8 @@ def transform(current: str, funnel: str) -> str:
         current = replace_once(current, old, new)
 
     # Keep CTN blog part 4521 exactly once, and expand only its adjacent narrative.
-    old_ctn_start = '<!-- wp:paragraph -->\\n<p>そして乗り換えなら、買う車だけでなく'
-    ctn_button = '<!-- wp:shortcode -->\\n[blog_parts id="4521"]\\n<!-- /wp:shortcode -->'
+    old_ctn_start = '<!-- wp:paragraph -->\n<p>そして乗り換えなら、買う車だけでなく'
+    ctn_button = '<!-- wp:shortcode -->\n[blog_parts id="4521"]\n<!-- /wp:shortcode -->'
     if current.count(old_ctn_start) != 1 or current.count(ctn_button) != 1:
         raise RuntimeError("CTN anchors drifted")
     ctn_s = current.index(old_ctn_start)
@@ -111,13 +111,13 @@ def transform(current: str, funnel: str) -> str:
         paragraph('そこで、UXを手放すときに選んだのがCTN。連絡先が最大3社に絞られるので、たくさんの会社と一度にやりとりする負担がありません。実際、私に連絡してきたのはカーセブンとネクステージの2社。最終的に、カーセブンへ427万円で売却しました。'),
         paragraph('1社だけに任せる方法もあります。でも、私は複数社と話せる方が好き。<strong>交渉の余地が残るからです。</strong>'),
         heading('私ならこう交渉する', 3),
-        '<!-- wp:list -->\\n<ul class="wp-block-list"><!-- wp:list-item -->\\n<li>まず電話で「ぶっちゃけ、いくらぐらいになりそうですか？」と聞く。このとき、金額だけでなく、対応に熱意を感じる会社も覚えておく。</li>\\n<!-- /wp:list-item -->\\n\\n<!-- wp:list-item -->\\n<li>各社の感触が大きく変わらないなら、一番熱意を感じた会社へこう伝える。<br>「大体どこも同じ金額ですよね。正直、手間と時間が惜しいので、現地査定は一社にしたい。他社に負けない金額が出せそうなら、他社の現地査定を断ろうと思う」</li>\\n<!-- /wp:list-item --></ul>\\n<!-- /wp:list -->',
+        '<!-- wp:list -->\n<ul class="wp-block-list"><!-- wp:list-item -->\n<li>まず電話で「ぶっちゃけ、いくらぐらいになりそうですか？」と聞く。このとき、金額だけでなく、対応に熱意を感じる会社も覚えておく。</li>\n<!-- /wp:list-item -->\n\n<!-- wp:list-item -->\n<li>各社の感触が大きく変わらないなら、一番熱意を感じた会社へこう伝える。<br>「大体どこも同じ金額ですよね。正直、手間と時間が惜しいので、現地査定は一社にしたい。他社に負けない金額が出せそうなら、他社の現地査定を断ろうと思う」</li>\n<!-- /wp:list-item --></ul>\n<!-- /wp:list -->',
         paragraph('もちろん、この話で金額が上がる保証はありません。提示額に納得できなければ、ほかの会社にも現車を見てもらえばOK。<br><strong>大事なのは、下取りの一発回答で決めないこと。</strong>'),
     ]
-    current = current[:ctn_s] + "\\n\\n".join(new_ctn) + "\\n\\n" + current[ctn_e:]
+    current = current[:ctn_s] + "\n\n".join(new_ctn) + "\n\n" + current[ctn_e:]
 
     # Replace the old text-only last Gulliver CTA; keep related-card section intact.
-    summary_start = '<!-- wp:heading -->\\n<h2 class="wp-block-heading">まとめ｜200万円台のUXは「安いレクサス」じゃなく宝探し</h2>\\n<!-- /wp:heading -->'
+    summary_start = '<!-- wp:heading -->\n<h2 class="wp-block-heading">まとめ｜200万円台のUXは「安いレクサス」じゃなく宝探し</h2>\n<!-- /wp:heading -->'
     related_marker = '<!-- tq-lexus-related-cards:v1:lexus-ux-used -->'
     if current.count(summary_start) != 1 or current.count(related_marker) != 1:
         raise RuntimeError("Summary/related anchors drifted")
@@ -138,7 +138,7 @@ def transform(current: str, funnel: str) -> str:
         paragraph('中古車は1台ずつ条件が違うもの。お気に入りを見つけるなら、公開中の在庫だけで決めず、非公開車両も含めて探してみよう。'),
         funnel.strip(),
     ]
-    current = current[:ss] + "\\n\\n".join(footer) + "\\n\\n" + current[ee:]
+    current = current[:ss] + "\n\n".join(footer) + "\n\n" + current[ee:]
 
     # Guard the original photo map and related links; do not create/destroy media.
     if (
@@ -192,7 +192,7 @@ def apply_rewrite(config_path: Path, cfg: dict, auth: str, api):
         raise RuntimeError("Published counts changed")
     report = {"action": action, "post_id": POST_ID, "slug": SLUG, "title": TITLE, "status":"publish", "featured_media":1001, "content_before_sha256":hashlib.sha256(original.encode()).hexdigest(),"content_after_sha256":hashlib.sha256(new_body.encode()).hexdigest(), "wp_write_count":int(action == "UPDATE"),"published_counts":counts_before}
     out=Path("reports")/"lexus-ux-used-rewrite-20261113";out.mkdir(parents=True,exist_ok=True)
-    (out/"result.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
-    (out/"summary.md").write_text("# Lexus UX used rewrite 2026-11-13\\n\\n"+json.dumps(report,ensure_ascii=False,indent=2)+"\\n",encoding="utf-8")
+    (out/"result.json").write_text(json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
+    (out/"summary.md").write_text("# Lexus UX used rewrite 2026-11-13\n\n"+json.dumps(report,ensure_ascii=False,indent=2)+"\n",encoding="utf-8")
     print("UX_USED_REWRITE_RESULT",json.dumps(report,ensure_ascii=False),flush=True)
     return report
