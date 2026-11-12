@@ -44,6 +44,12 @@ jobs:
           print('PREFLIGHT_NEW_PARAS',len(PARA.findall(revised)),'SOFT',revised.count('<br'),'OLD_PARAS',len(PARA.findall(body)),'OLD_SOFT',body.count('<br'))
           for phrase in ['中古で良かったんじゃないか？','今なら中古UX250h','中古UXを探すなら、レクサス認定中古車のCPOも候補です','今の車を高く売る']:
             print('PREFLIGHT_PHRASE',phrase,revised.count(phrase))
+          def summary(html_source):
+            return {'a_hrefs': sorted(re.findall(r'<a[^>]+href=["\\']([^"\\']+)',html_source)), 'images': len(re.findall(r'<!-- wp:image',html_source)), 'figures': html_source.count('<figure'), 'paragraph_attrs': sorted(re.findall(r'<!-- wp:paragraph \\{[^\\n]*?\\} -->',html_source)), 'headings':len(re.findall(r'<!-- wp:heading',html_source)), 'blog_parts':sorted(re.findall(r'\\[blog_parts id="[0-9]+"\\]',html_source))}
+          old_sig=summary(body)
+          new_sig=summary(revised)
+          for key in old_sig:
+            print('STRUCTURE_CHECK',key,'SAME' if old_sig[key]==new_sig[key] else 'DIFFERENT', 'before',len(old_sig[key]) if isinstance(old_sig[key],list) else old_sig[key], 'after',len(new_sig[key]) if isinstance(new_sig[key],list) else new_sig[key])
           print('PREFLIGHT_SUCCESS_NO_WRITE')
 
           PY
