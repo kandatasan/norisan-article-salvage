@@ -1,0 +1,87 @@
+name: Replace legacy CTN CTA with blog part 4521
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/replace_legacy_ctn_cta_with_4521_20261112.py
+      - .github/workflows/replace-legacy-ctn-cta-with-4521-20261112.yml
+  push:
+    branches: [main]
+    paths:
+      - scripts/replace_legacy_ctn_cta_with_4521_20261112.py
+      - .github/workflows/replace-legacy-ctn-cta-with-4521-20261112.yml
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: replace-legacy-ctn-cta-with-4521-20261112
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Compile and inspect safety rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m py_compile scripts/replace_legacy_ctn_cta_with_4521_20261112.py
+          python - <<'PY'
+          from pathlib import Path
+          s=Path('scripts/replace_legacy_ctn_cta_with_4521_20261112.py').read_text()
+          assert 'TARGETS = [' in s
+          assert s.count('(2222, "ux-resale"') == 1
+          assert s.count('(3816, "landcruiser-fj-cheap"') == 1
+          assert '[blog_parts id="4521"]' in s
+          assert 'tsq-ctn-official-002-20261110' in s
+          assert '3Z8YF4+7VEGL6+5I4S+5YRHE' in s
+          assert 'Preflight all targets before the first write' in s
+          assert 'concurrent edit detected before write' in s
+          assert 'payload={"content":fixed}' in s
+          assert 'post_status' not in s.split('payload={"content":fixed}',1)[1][:100]
+          print('CTN_CTA_SWAP_PRECHECK=PASS')
+          PY
+
+  apply:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Apply guarded CTA-only replacements
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python scripts/replace_legacy_ctn_cta_with_4521_20261112.py | tee /tmp/ctn-cta-swap.txt
+          grep -Fxq 'CTN_CTA_SWAP_RESULT=SUCCESS' /tmp/ctn-cta-swap.txt
+          grep -Fxq 'CTN_CTA_SWAP_TARGETS=19' /tmp/ctn-cta-swap.txt
+          grep -Fxq 'CTN_CTA_SWAP_BODY_POLICY=EXACT_CLUSTER_REPLACEMENT_ONLY' /tmp/ctn-cta-swap.txt
+          cat /tmp/ctn-cta-swap.txt >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Record result
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          {
+            echo '### CTN legacy CTA → blog part 4521'
+            echo
+            cat /tmp/ctn-cta-swap.txt 2>/dev/null || echo 'CTN_CTA_SWAP_RESULT=BLOCKED_BEFORE_APPLY'
+          } > /tmp/comment.md
+          gh issue comment 22 --repo "${{ github.repository }}" --body-file /tmp/comment.md
