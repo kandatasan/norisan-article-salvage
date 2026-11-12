@@ -128,6 +128,14 @@ def transform(source:str)->str:
     image_ids=lambda body:sorted(re.findall(r'wp-image-(\d+)',body))
     if image_ids(source)!=image_ids(current):
         raise RuntimeError("Owner media IDs drifted")
+    # No image blocks, outbound link targets, headings, or styled paragraph attributes may vanish.
+    if (source.count("<!-- wp:image") != current.count("<!-- wp:image")
+        or source.count("<figure") != current.count("<figure")
+        or source.count("<!-- wp:heading") != current.count("<!-- wp:heading")
+        or source.count("<!-- wp:paragraph {") != current.count("<!-- wp:paragraph {")):
+        raise RuntimeError("Protected block structure drifted")
+    if sorted(re.findall(r'href="([^"]+)"', source)) != sorted(re.findall(r'href="([^"]+)"', current)):
+        raise RuntimeError("Original internal/external links drifted")
     if source.count('<!-- tq-lexus-related-cards:v1:lexus-ux-used -->')!=1 or current.count('<!-- tq-lexus-related-cards:v1:lexus-ux-used -->')!=1:
         raise RuntimeError("Related article cards moved")
     if "元オーナーです" in current[:current.find(INTRO_ANCHOR)]:
