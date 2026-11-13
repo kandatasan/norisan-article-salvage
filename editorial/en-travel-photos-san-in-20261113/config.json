@@ -46,22 +46,6 @@
           "fragment": "<!-- wp:paragraph -->\n<p><strong>About these photos:</strong> I received permission at the venue to publish these still photos on my blog. Video was not allowed, and I deliberately left out the scenes that would spoil the surprises. Please follow the staff's current photography guidance during your own visit.</p>\n<!-- /wp:paragraph -->"
         }
       ]
-    },
-    {
-      "post_id": 4391,
-      "slug": "matsue-vogel-park-english",
-      "status": "publish",
-      "title": "Matsue Vogel Park Review: Five Hours with Toucans, Penguins & Flowers",
-      "expected_current_content_sha256": "dbb2d4822a549b064116cffe2d50e34b2f14454ea6b658a7b03f7e6859786c54",
-      "marker": "tsurikue-en-san-in-vogel-20261113",
-      "required_category": 49,
-      "edits": [
-        {
-          "mode": "insert_before",
-          "anchor": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Was Matsue Vogel Park worth it?</h2>\n<!-- /wp:heading -->",
-          "fragment": "<!-- tsurikue-en-san-in-vogel-20261113 -->\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Make it a San'in road trip, if you have more time</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Matsue Vogel Park is easy to visit by train, and you don't need a car just to see the birds. But if you're exploring more of Shimane and Tottori, a car makes it easier to follow a scenic detour whenever something catches your eye.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Around Matsue, there's <strong>Lake Shinji</strong> for lakeside scenery, <strong>GOBIUS</strong> for freshwater creatures, <strong>Tamatsukuri Onsen</strong> for a hot-spring stop, and <strong>Matsue Castle</strong> for a change of pace. With extra time, you could continue to <strong>Sakaiminato</strong> for its yokai-filled streets or drive toward <strong>Mount Daisen</strong> for mountain views.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>That's a menu of places for a wider trip, not a checklist to squeeze into one day. The park itself kept us busy for around five hours!</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>If a road trip sounds like your kind of adventure, you can <a href=\"https://www.discovercars.com/?a_aid=tsurikue\" target=\"_blank\" rel=\"sponsored nofollow noopener\"><strong>compare rental car options in Japan</strong></a> before deciding. For a simple visit to Vogel Park, the train is still a great choice.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>A Small Note from Me 🚗</strong> This is an affiliate link. If you book through it, I may earn a commission. It helps me keep exploring Hiroshima and sharing firsthand travel experiences. Thanks for reading!</p>\n<!-- /wp:paragraph -->\n"
-        }
-      ]
     }
   ]
 }
