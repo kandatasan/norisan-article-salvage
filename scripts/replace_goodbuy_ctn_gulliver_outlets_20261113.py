@@ -23,9 +23,9 @@ NEW_FUNNEL=FUNNEL_MARKER+'\n<!-- wp:shortcode -->\n[blog_parts id="4507"]\n<!-- 
 
 BANNER_PATTERN=re.compile(r'<!-- wp:shortcode -->\s*\[blog_parts id="2843"\]\s*<!-- /wp:shortcode -->')
 OLD_FUNNEL_PATTERN=re.compile(
-    r'<!-- wp:html -->\s*<div class="tsq-gulliver-micro-20261014 top"\b[\s\S]*?<!-- /wp:html -->'
+    r'<!-- wp:html -->\s*<div class="tsq-gulliver-micro-20261014 top"[\s\S]*?<!-- /wp:html -->'
     r'\s*<!-- wp:shortcode -->\s*\[blog_parts id="4172"\]\s*<!-- /wp:shortcode -->'
-    r'\s*<!-- wp:html -->\s*<div class="tsq-gulliver-micro-20261014 bottom"\b[\s\S]*?<!-- /wp:html -->'
+    r'\s*<!-- wp:html -->\s*<div class="tsq-gulliver-micro-20261014 bottom"[\s\S]*?<!-- /wp:html -->'
 )
 
 def sha(body:str)->str:
