@@ -1,0 +1,39 @@
+name: Read-only compare latest Lexus used car funnel to goodbuy
+on:
+  push:
+    branches: [audit-goodbuy-exit-cta-20261113]
+    paths: [.github/workflows/audit-goodbuy-new-gulliver-20261113.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Read latest owner article + Gutenberg blog parts for exit design
+        env:
+          WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          WP_PASS: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,html,json,os,re,urllib.request,urllib.error
+          base="https://tsurikue.com/wp-json/wp/v2"
+          auth="Basic "+base64.b64encode((os.environ["WP_USER"]+":"+os.environ["WP_PASS"]).encode()).decode()
+          def get(path):
+              req=urllib.request.Request(base+path,headers={"Accept":"application/json","Authorization":auth})
+              with urllib.request.urlopen(req,timeout=40) as f:return json.load(f)
+          for pid in [2948,3835]:
+              p=get(f"/posts/{pid}?context=edit&_fields=id,title,slug,status,content,featured_media")
+              raw=p["content"]["raw"];print("ARTICLE",pid,p["slug"],p["title"]["raw"],"SHORTCODES",re.findall(r'\[blog_parts id="\d+"\]',raw))
+              for needle in ('4507','4505','4506','4172','2843','4521','ガリバー','非公開車両','カーセンサー','つりくえ-gulliver'):
+                  matches=[m.start() for m in re.finditer(re.escape(needle),raw)]
+                  print("NEEDLE",pid,needle,len(matches))
+                  for pos in matches[:3]:
+                      print("CONTEXT",pid,needle,repr(raw[max(0,pos-600):pos+950]).replace("\\n"," "))
+          for bid in [4505,4506,4507,4172,2843,4521]:
+              try:
+                  p=get(f"/blog_parts/{bid}?context=edit&_fields=id,title,status,content")
+                  print("BLOG_PART",bid,p["title"]["raw"],p["status"],repr(p["content"]["raw"][:3000]))
+              except urllib.error.HTTPError as e:print("BLOG_PART_ERR",bid,e.code)
+          PY
