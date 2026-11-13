@@ -1,0 +1,19 @@
+{
+  "operation": "rewrite_published_ux_resale_20261113",
+  "post_id": 2222,
+  "slug": "ux-resale",
+  "expected_sha256": "f90f4f14e2c5761f4ed4cb43121799b156a994468277f5ef4f8f958817300a10",
+  "new_title": "レクサスUXのリセールは？616万円→427万円、残価率69.3％の売却記録",
+  "scope": "publish content+title only; retain post id/slug/categories/author/featured media/CTN CTA/images/table/other links",
+  "data_sources": [
+    "current live post 2222 as of 2026-11-13",
+    "owner ux-mitsumori original quote: 2023-06 first registered / 2023-07 delivered / 2023 UX250h F SPORT Emotional Explorer",
+    "LEXUS official UX page: 2027-02 production end scheduled"
+  ],
+  "editorial_cautions": [
+    "69.3% uses 427/616 purchase total including options/fees, not MSRP residual value",
+    "2025-02 sale is historical; do not claim any live 2026-11 bid",
+    "no invented actual trade negotiation dialogue",
+    "earlier 435万円 quote is 6 months before sale, not competing bid at 2025-02"
+  ]
+}
