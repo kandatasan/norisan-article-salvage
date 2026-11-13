@@ -134,7 +134,8 @@ function decide(s) {
     ],compare:false};
   }
   if (s.valid === "unsure") {
-    r.tone="check"; r.compare=false;
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
     r.steps.push("You were unsure of document validity. Check expiry and original-document requirements before relying on this route.");
   }
   // An issuing-country dropdown is not an authoritative IDP validity database.
@@ -146,29 +147,35 @@ function decide(s) {
     r.steps.push("Check your IDP's actual issuing authority and paper format against the National Police Agency guidance. A document sold online is not automatically recognised.");
   }
   if (s.country === "other") {
-    r.tone="check"; r.compare=false;
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
     r.steps.push("Your licence-issuing region is not individually assessed here. Please verify the official requirements rather than treating this as approval.");
   }
   // Foreign IDPs and translated foreign licences are subject to a time limit
   // that cannot be inferred from a document expiry date alone.
   if (s.document !== "japan") {
     if (s.arrival === "yearplus") {
+      if (r.tone !== "stop") {
+        r.title="The usual one-year landing period has passed";
+        r.summary="Based on your answer, the standard period for driving with a foreign IDP or eligible translated foreign licence has ended. Do not drive using this route without official individual confirmation.";
+      }
       r.tone="stop"; r.compare=false;
-      r.title="The usual one-year landing period has passed";
-      r.summary="Based on your answer, the standard period for driving with a foreign IDP or eligible translated foreign licence has ended. Do not drive using this route without official individual confirmation.";
       r.steps.push("A new international permit alone does not automatically reset the one-year period. Ask the relevant prefectural driver's licence centre about your circumstances.");
     } else if (s.arrival === "unsure" || s.arrival === "notapplicable") {
-      r.tone="check"; r.compare=false;
+      if (r.tone !== "stop") r.tone="check";
+      r.compare=false;
       r.steps.push("You have not confirmed your Japan landing date. Verify that you are within the driving period before relying on any foreign permit or translation.");
     } else if (s.arrival === "planning") {
       r.steps.push("If you have not yet entered Japan, the usual one-year landing period starts from your eligible entry date. Your document must also be valid at the time you drive.");
     }
   }
   if (s.reentry === "yes" && s.document !== "japan") {
-    r.tone="check"; r.compare=false;
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
     r.steps.push("Important: for residents recorded in Japan's Basic Resident Register, leaving and re-entering within three months may NOT restart the one-year driving period. Ask the prefectural driver's licence centre.");
   } else if (s.reentry === "unsure" && s.document !== "japan") {
-    r.tone="check"; r.compare=false;
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
     r.steps.push("If you live in Japan or have recently re-entered, confirm the one-year counting rule before driving.");
   }
   if (s.document !== "japan" && s.country !== "jp") {
