@@ -1,0 +1,149 @@
+{
+  "operation": "refresh_english_travel_20261113",
+  "targets": [
+    {
+      "id": 4391,
+      "slug": "matsue-vogel-park-english",
+      "title": "Matsue Vogel Park Review: Five Hours with Toucans, Penguins & Flowers",
+      "status": "publish",
+      "featured_media": 3425,
+      "expected_sha256": "dbb2d4822a549b064116cffe2d50e34b2f14454ea6b658a7b03f7e6859786c54",
+      "photos": [],
+      "section": {
+        "before_heading": "Was Matsue Vogel Park worth it?",
+        "html": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">More to explore around Matsue if you have a car</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>You can enjoy Matsue Vogel Park without driving: Ichibata Railway stops right by the entrance. But for a wider trip through Shimane and Tottori, having a car opens up plenty of tempting detours.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Around Lake Shinji, you can enjoy the lakeside scenery and visit <strong>GOBIUS</strong>, a freshwater aquarium. <strong>Matsue Castle</strong> adds a little history to the day, while <strong>Tamatsukuri Onsen</strong> is a lovely option if you want to relax in a hot-spring town.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>With more time, you could extend your trip east toward <strong>Sakaiminato</strong> and its yokai-themed streets, or the landscapes around <strong>Mount Daisen</strong>. Those are better treated as a longer outing or another day's adventure, not a quick stop after spending five hours with the birds. Our <a href=\"https://tsurikue.com/en/tottori-road-trip/\">Tottori road-trip story</a> offers a closer look at some of that area.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>A Small Note from Me 🚗</strong><br><small>This is an affiliate link. If you book through it, I may earn a commission. It helps me keep exploring Hiroshima and sharing firsthand travel experiences. Thanks for reading!</small><br><a href=\"https://www.discovercars.com/?a_aid=tsurikue\" target=\"_blank\" rel=\"sponsored nofollow noopener\"><strong>Compare Rental Car Options in Japan</strong></a></p>\n<!-- /wp:paragraph -->"
+      }
+    },
+    {
+      "id": 4426,
+      "slug": "saijo-sake-street-english",
+      "title": "Saijo Sake Brewery Street: A Local's Walk Among 7 Breweries Near Hiroshima",
+      "status": "publish",
+      "featured_media": 4439,
+      "expected_sha256": "0ff72300165c12433138cdd087f052acaaf1e98a3024ece91449a7da237be8bb",
+      "photos": [
+        {
+          "id": 2933,
+          "heading": "Saijo during the Sake Festival is another world",
+          "position": "after",
+          "alt": "Festival visitors in traditional happi coats",
+          "path": "/wp-content/uploads/2026/08/d78d1e43-e39e-49e1-8d79-1e015c468f1a.jpg"
+        },
+        {
+          "id": 2939,
+          "heading": "I tried a cloudy festival sake",
+          "position": "after",
+          "alt": "Cloudy sake lined up for tasting at the Saijo Sake Festival",
+          "path": "/wp-content/uploads/2026/08/img_2201.jpg"
+        },
+        {
+          "id": 2938,
+          "heading": "When is the Saijo Sake Festival?",
+          "position": "before",
+          "alt": "Sake barrels and large tanks inside a brewery during the festival",
+          "path": "/wp-content/uploads/2026/08/img_2204.jpg"
+        }
+      ]
+    },
+    {
+      "id": 4427,
+      "slug": "tsunoshima-bridge-english",
+      "title": "Tsunoshima Bridge & Island Guide: Best Photo Spots, Lighthouse and Our Road Trip",
+      "status": "publish",
+      "featured_media": 2494,
+      "expected_sha256": "9ebcc40d31d69bcb3de55febcad479c6bf73cc8922037d8ee2f2f25d2cf3565a",
+      "photos": [
+        {
+          "id": 2507,
+          "heading": "The little lighthouse museum is worth a look",
+          "position": "before",
+          "alt": "A scenic view on Tsunoshima Island beyond the bridge",
+          "path": "/wp-content/uploads/2026/07/IMG_2012-1024x769.jpeg"
+        },
+        {
+          "id": 2508,
+          "heading": "A bubbly drink and souvenir hunting",
+          "position": "before",
+          "alt": "Sign for the Japanese TV drama HERO special filmed on Tsunoshima",
+          "path": "/wp-content/uploads/2026/07/IMG_2045-1024x769.jpeg"
+        },
+        {
+          "id": 2509,
+          "heading": "A bubbly drink and souvenir hunting",
+          "position": "after",
+          "alt": "Granvista Tsunoshima cafe near the lighthouse",
+          "path": "/wp-content/uploads/2026/07/IMG_2046-1024x768.jpeg"
+        },
+        {
+          "id": 2512,
+          "heading": "How to get to Tsunoshima Bridge",
+          "position": "before",
+          "alt": "Tsunoshima Sohonke shop where we looked for local souvenirs",
+          "path": "/wp-content/uploads/2026/07/IMG_2055-1024x768.jpeg"
+        }
+      ]
+    },
+    {
+      "id": 4402,
+      "slug": "kochi-roadtrip-english",
+      "title": "Hiroshima to Kochi Road Trip: 2 Days via Shikoku Karst & Niyodo Blue",
+      "status": "publish",
+      "featured_media": 3376,
+      "expected_sha256": "dbe588e4ef0725f8946d9fecf857dda9fb513b0cc429a857ffb98ac7ea989007",
+      "photos": [
+        {
+          "id": 3395,
+          "heading": "Shikoku Karst: my mountain view lasted just a few minutes",
+          "position": "before",
+          "alt": "Uwajima sea bream rice ingredients and our finished bowl",
+          "path": "/wp-content/uploads/2026/09/400b630d-20e7-408e-89b9-df6e3542e03a.jpg"
+        },
+        {
+          "id": 3393,
+          "heading": "Shikoku Karst: my mountain view lasted just a few minutes",
+          "position": "before",
+          "alt": "Orange juice taps and three cups of juice in Dogo",
+          "path": "/wp-content/uploads/2026/09/19890c96-7b96-4aa9-9b9d-ad1cfec91397.jpg"
+        },
+        {
+          "id": 3394,
+          "heading": "Dinner: river shrimp stole the show from bonito",
+          "position": "before",
+          "alt": "Keepsake picture holding naruko clappers after the Yosakoi performance",
+          "path": "/wp-content/uploads/2026/09/49c84656-d80c-445f-8d6e-0871a7a9b7f6.jpg"
+        },
+        {
+          "id": 3396,
+          "heading": "Day 2: Katsurahama, hungry turtles and a second chance at Niyodo Blue",
+          "position": "before",
+          "alt": "Collage of dishes we ate in a Kochi izakaya",
+          "path": "/wp-content/uploads/2026/09/c411bbe7-9abd-49e9-8edf-7806e8fb5fa7.jpg"
+        }
+      ]
+    },
+    {
+      "id": 4417,
+      "slug": "sera-day-trip-english",
+      "title": "Sera Day Trip from Hiroshima: Flower Fields, Farm Gelato & Dream Bridge",
+      "status": "publish",
+      "featured_media": 1958,
+      "expected_sha256": "84b05137e7816e1273732437e8f098e23d3ab2d7d14f5084389a8759d26d9ca8",
+      "photos": [
+        {
+          "id": 1961,
+          "heading": "Stop 2: Gelato Kobo Donna, a very good reason to take a break",
+          "position": "before",
+          "alt": "A close-up view of spring flowers at Sera Kogen Farm",
+          "path": "/wp-content/uploads/2026/05/IMG_9874-1-768x1024.jpeg"
+        },
+        {
+          "id": 1960,
+          "heading": "Stop 2: Gelato Kobo Donna, a very good reason to take a break",
+          "position": "before",
+          "alt": "Another close view of flowers at Sera Kogen Farm",
+          "path": "/wp-content/uploads/2026/05/IMG_9871-768x1024.jpeg"
+        }
+      ]
+    }
+  ]
+}
