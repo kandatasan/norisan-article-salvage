@@ -22,6 +22,7 @@ jobs:
         run: |
           set -euo pipefail
           php -l ops/wp-japan-licence-check/tsurikue-can-drive-japan.php
+          php -l ops/wp-japan-licence-check/baseline/tsurikue-can-drive-japan-v1.0.0.php
           php -l ops/wp-japan-licence-check/tests/checker-smoke.php
           php ops/wp-japan-licence-check/tests/checker-smoke.php
       - name: Browser-free decision regression
@@ -46,13 +47,16 @@ jobs:
           printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
           chmod 600 "$HOME/.ssh/xserver_deploy_key"
           bash river-fish/xserver-git/verify_host_key.sh
-      - name: Stage exactly one new plugin outside document root
+      - name: Stage candidate and known previous version outside document root
         shell: bash
         run: |
           set -euo pipefail
           scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
             ops/wp-japan-licence-check/tsurikue-can-drive-japan.php \
             "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-can-drive-japan-20261113.php"
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            ops/wp-japan-licence-check/baseline/tsurikue-can-drive-japan-v1.0.0.php \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-can-drive-japan-v1-baseline-20261113.php"
       - name: Guarded MU-plugin activation and rollback
         shell: bash
         run: |
@@ -63,15 +67,23 @@ jobs:
           set -euo pipefail
           root="$HOME/tsurikue.com/public_html"
           staged="$HOME/.tsurikue-can-drive-japan-20261113.php"
+          baseline="$HOME/.tsurikue-can-drive-japan-v1-baseline-20261113.php"
+          backup="$HOME/.tsurikue-can-drive-japan-rollback-20261113.php"
           target="$root/wp-content/mu-plugins/tsurikue-can-drive-japan.php"
           installed=0
+          replaced=0
           finish() {
             code=$?
-            if (( code != 0 && installed == 1 )); then
-              rm -f "$target"
-              echo 'JAPAN_DRIVE_CHECKER_ROLLBACK_ATTEMPTED=yes'
+            if (( code != 0 )); then
+              if (( replaced == 1 )); then
+                install -m 0644 "$backup" "$target" || echo 'CHECKER_RESTORE_FAILED=yes'
+                echo 'JAPAN_DRIVE_CHECKER_PREVIOUS_VERSION_RESTORED_ATTEMPTED=yes'
+              elif (( installed == 1 )); then
+                rm -f "$target"
+                echo 'JAPAN_DRIVE_CHECKER_ROLLBACK_ATTEMPTED=yes'
+              fi
             fi
-            rm -f "$staged"
+            rm -f "$staged" "$baseline" "$backup"
             exit "$code"
           }
           trap finish EXIT
@@ -79,7 +91,10 @@ jobs:
           test -d "$root/wp-content/mu-plugins" && test ! -L "$root/wp-content/mu-plugins"
           test -f "$root/wp-content/mu-plugins/tsurikue-en-routes.php"
           test -f "$staged" && test ! -L "$staged"
+          test -f "$baseline" && test ! -L "$baseline"
+          test ! -e "$backup" && test ! -L "$backup"
           php -l "$staged"
+          php -l "$baseline"
           cd "$root"
           before_posts="$(wp post list --post_type=post --post_status=publish --format=count)"
           before_pages="$(wp post list --post_type=page --post_status=publish --format=count)"
@@ -89,17 +104,34 @@ jobs:
             throw new RuntimeException("English Travel category 49 mismatch");
           }
           $existing=get_page_by_path("can-i-drive-in-japan", OBJECT, array("post","page"));
-          if ($existing && $existing->post_status !== "draft") {
-            throw new RuntimeException("Unexpected published checker slug conflict");
+          if ($existing && ($existing->post_status !== "draft" || (int)$existing->ID !== 4568)) {
+            throw new RuntimeException("Unexpected checker draft identity or status");
+          }
+          $checker=get_post(4568);
+          if (!$checker || $checker->post_name !== "can-i-drive-in-japan"
+              || $checker->post_status !== "draft"
+              || strpos($checker->post_content,"[tsurikue_can_drive_japan]")===false
+              || !has_category(49,4568)) {
+            throw new RuntimeException("Live checker draft, category, or shortcode changed");
           }
           echo "JAPAN_DRIVE_CHECKER_PREFLIGHT=PASS\n";
           '
           if test -e "$target" || test -L "$target"; then
             test -f "$target" && test ! -L "$target"
-            test "$(sha256sum "$target" | cut -d' ' -f1)" = "$(sha256sum "$staged" | cut -d' ' -f1)"
-            echo 'JAPAN_DRIVE_CHECKER_ALREADY_INSTALLED_SAME_BYTES=yes'
+            if cmp -s "$target" "$staged"; then
+              echo 'JAPAN_DRIVE_CHECKER_ALREADY_INSTALLED_SAME_BYTES=yes'
+            else
+              cmp -s "$target" "$baseline" || { echo 'CHECKER_LIVE_BYTES_DRIFTED=STOP'; exit 1; }
+              cp -p "$target" "$backup"
+              cmp -s "$target" "$backup"
+              temp="$target.new.$"
+              install -m 0644 "$staged" "$temp"
+              mv -f "$temp" "$target"
+              replaced=1
+              echo 'JAPAN_DRIVE_CHECKER_SAFE_UPGRADE_V1_TO_V1_1=yes'
+            fi
           else
-            temp="$target.new.$$"
+            temp="$target.new.$"
             install -m 0644 "$staged" "$temp"
             mv -f "$temp" "$target"
             installed=1
@@ -114,10 +146,17 @@ jobs:
           if (substr_count($out,"data-tsurikue-drive-check")!==1
               || strpos($out,"Can I Drive in Japan?")===false
               || strpos($out,"aria-live=\"polite\"")===false
+              || strpos($out,"name=\"arrival\"")===false
+              || strpos(tsu_drive_checker_js(),"s.arrival === \"yearplus\"")===false
               || strpos(tsu_drive_checker_js(),"eligibleTranslations")===false) {
             throw new RuntimeException("Checker shortcode runtime mismatch");
           }
+          $draft=get_post(4568);
+          if (!$draft || $draft->post_status!=="draft") {
+            throw new RuntimeException("Checker draft accidentally published");
+          }
           echo "JAPAN_DRIVE_CHECKER_RENDER_VERIFIED=PASS\n";
+          echo "JAPAN_DRIVE_CHECKER_DRAFT_REMAINS_PRIVATE=yes\n";
           '
           test "$(wp post list --post_type=post --post_status=publish --format=count)" = "$before_posts"
           test "$(wp post list --post_type=page --post_status=publish --format=count)" = "$before_pages"

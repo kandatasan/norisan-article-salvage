@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tsurikue Japan Driving Licence Checker
  * Description: Read-only English travel document checklist displayed only by [tsurikue_can_drive_japan].
- * Version: 1.0.0
+ * Version: 1.1.0
  *
  * Never decides legal eligibility. No personal data storage, cookies, or AJAX.
  */
@@ -70,8 +70,8 @@ function decide(s) {
     summary:"This is a document guide, not an approval to drive or rent a car.",
     steps:[], compare:false
   };
-  if (!s.country || !s.document || !s.valid || !s.reentry) {
-    base.summary="Please complete all four questions first.";
+  if (!s.country || !s.document || !s.valid || !s.reentry || !s.arrival) {
+    base.summary="Please complete all five questions first.";
     return base;
   }
   if (s.valid === "no") {
@@ -134,14 +134,48 @@ function decide(s) {
     ],compare:false};
   }
   if (s.valid === "unsure") {
-    r.tone="check"; r.compare=false;
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
     r.steps.push("You were unsure of document validity. Check expiry and original-document requirements before relying on this route.");
   }
-  if (s.reentry === "yes" && s.document !== "japan") {
+  // An issuing-country dropdown is not an authoritative IDP validity database.
+  // Route unknown issuers and known problem cases to manual official verification.
+  if (s.document === "geneva" && ["cn","vn","id","fr","be","mc","de","ch","tw","jp","other"].indexOf(s.country) !== -1) {
     r.tone="check"; r.compare=false;
+    r.title="Check the actual IDP issuing authority";
+    r.summary="The 1949 IDP route is not confirmed for the selected issuing country or region. Some do not issue Japanese-recognised Geneva-format permits. Do not drive based on this result.";
+    r.steps.push("Check your IDP's actual issuing authority and paper format against the National Police Agency guidance. A document sold online is not automatically recognised.");
+  }
+  if (s.country === "other") {
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
+    r.steps.push("Your licence-issuing region is not individually assessed here. Please verify the official requirements rather than treating this as approval.");
+  }
+  // Foreign IDPs and translated foreign licences are subject to a time limit
+  // that cannot be inferred from a document expiry date alone.
+  if (s.document !== "japan") {
+    if (s.arrival === "yearplus") {
+      if (r.tone !== "stop") {
+        r.title="The usual one-year landing period has passed";
+        r.summary="Based on your answer, the standard period for driving with a foreign IDP or eligible translated foreign licence has ended. Do not drive using this route without official individual confirmation.";
+      }
+      r.tone="stop"; r.compare=false;
+      r.steps.push("A new international permit alone does not automatically reset the one-year period. Ask the relevant prefectural driver's licence centre about your circumstances.");
+    } else if (s.arrival === "unsure" || s.arrival === "notapplicable") {
+      if (r.tone !== "stop") r.tone="check";
+      r.compare=false;
+      r.steps.push("You have not confirmed your Japan landing date. Verify that you are within the driving period before relying on any foreign permit or translation.");
+    } else if (s.arrival === "planning") {
+      r.steps.push("If you have not yet entered Japan, the usual one-year landing period starts from your eligible entry date. Your document must also be valid at the time you drive.");
+    }
+  }
+  if (s.reentry === "yes" && s.document !== "japan") {
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
     r.steps.push("Important: for residents recorded in Japan's Basic Resident Register, leaving and re-entering within three months may NOT restart the one-year driving period. Ask the prefectural driver's licence centre.");
   } else if (s.reentry === "unsure" && s.document !== "japan") {
-    r.tone="check"; r.compare=false;
+    if (r.tone !== "stop") r.tone="check";
+    r.compare=false;
     r.steps.push("If you live in Japan or have recently re-entered, confirm the one-year counting rule before driving.");
   }
   if (s.document !== "japan" && s.country !== "jp") {
@@ -193,7 +227,8 @@ function init(host){
     var selected=form.querySelector("[name=documents]:checked");
     var validity=form.querySelector("[name=validity]:checked");
     var reentry=form.querySelector("[name=reentry]:checked");
-    var s={country:country.value,document:selected?selected.value:"",valid:validity?validity.value:"",reentry:reentry?reentry.value:""};
+    var arrival=form.querySelector("[name=arrival]:checked");
+    var s={country:country.value,document:selected?selected.value:"",valid:validity?validity.value:"",reentry:reentry?reentry.value:"",arrival:arrival?arrival.value:""};
     render(host,decide(s));
   });
 }
@@ -250,7 +285,7 @@ return <<<'HTML'
           <option value="ae">United Arab Emirates</option>
           <option value="other">Other country / region</option>
         </select>
-        <div data-other hidden><label for="tsu-other-country">Your country / region (for your own reference)</label>
+        <div data-other hidden><p class="help">Other regions require a manual official check. Typing a name here does not change the result.</p><label for="tsu-other-country">Your country / region (for your own reference)</label>
           <input id="tsu-other-country" type="text" autocomplete="off" maxlength="80" placeholder="e.g. Brazil (not stored)"></div>
       </div>
       <fieldset>
@@ -276,6 +311,15 @@ return <<<'HTML'
           <label class="choice"><input type="radio" name="reentry" value="unsure"> Not sure</label>
         </fieldset>
       </div>
+      <fieldset>
+        <legend>5. When did you most recently enter Japan?</legend>
+        <span class="help">For a Japanese driving licence, choose "Not applicable". If you live in Japan, the short re-entry rule above still matters.</span>
+        <label class="choice"><input type="radio" name="arrival" value="planning" required> I have not arrived yet (planning my trip)</label>
+        <label class="choice"><input type="radio" name="arrival" value="underone"> Less than one year ago</label>
+        <label class="choice"><input type="radio" name="arrival" value="yearplus"> One year ago or earlier</label>
+        <label class="choice"><input type="radio" name="arrival" value="unsure"> I'm not sure</label>
+        <label class="choice"><input type="radio" name="arrival" value="notapplicable"> Not applicable — I hold a Japanese driving licence</label>
+      </fieldset>
       <button type="submit">Check my documents</button>
     </form>
     <div class="answer" data-answer role="status" aria-live="polite" aria-atomic="true"></div>
@@ -284,6 +328,7 @@ return <<<'HTML'
       <div class="source-links">
         <a target="_blank" rel="noopener noreferrer" href="https://www.npa.go.jp/english/bureau/traffic/r8_english.pdf.pdf">National Police Agency (English)</a>
         <a target="_blank" rel="noopener noreferrer" href="https://english.jaf.or.jp/driving-in-japan/drive-in-japan/switch-to-japanese-license">JAF · Foreign licences and translations</a>
+        <a target="_blank" rel="noopener noreferrer" href="https://www.japan.travel/en/plan/getting-around/cars/">Japan National Tourism Organization · Driving preparation</a>
       </div>
       <p class="privacy">Checked against publicly available guidance on November 13, 2026. This page does not independently verify permit issuers, rental eligibility or changes made after that date.</p>
     </div>
@@ -296,14 +341,27 @@ return <<<'HTML'
 HTML;
 }
 
+/** A dedicated English helper page uses the correct HTML language. */
+function tsu_drive_checker_language($attrs) {
+    if (!is_singular('post')) { return $attrs; }
+    $post = get_queried_object();
+    if (!($post instanceof WP_Post) || $post->post_name !== 'can-i-drive-in-japan'
+        || !has_shortcode($post->post_content, 'tsurikue_can_drive_japan')) { return $attrs; }
+    if (preg_match('/\\blang\\s*=\\s*(["\\\x27]).*?\\1/i', $attrs)) {
+        return preg_replace('/\\blang\\s*=\\s*(["\\\x27]).*?\\1/i', 'lang="en"', $attrs, 1);
+    }
+    return trim($attrs . ' lang="en"');
+}
+add_filter('language_attributes', 'tsu_drive_checker_language', 20);
+
 function tsu_drive_checker_assets() {
     if (!is_singular('post')) { return; }
     $post = get_queried_object();
     if (!($post instanceof WP_Post) || !has_shortcode($post->post_content, 'tsurikue_can_drive_japan')) { return; }
-    wp_register_style('tsurikue-drive-checker', false, array(), '1.0.0');
+    wp_register_style('tsurikue-drive-checker', false, array(), '1.1.0');
     wp_enqueue_style('tsurikue-drive-checker');
     wp_add_inline_style('tsurikue-drive-checker', tsu_drive_checker_css());
-    wp_register_script('tsurikue-drive-checker', false, array(), '1.0.0', true);
+    wp_register_script('tsurikue-drive-checker', false, array(), '1.1.0', true);
     wp_enqueue_script('tsurikue-drive-checker');
     wp_add_inline_script('tsurikue-drive-checker', tsu_drive_checker_js(), 'after');
 }
