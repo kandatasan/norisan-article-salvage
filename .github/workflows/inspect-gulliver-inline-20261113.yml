@@ -1,0 +1,31 @@
+name: Examine inline legacy Gulliver wrappers 3608 and 3611
+on:
+  push:
+    branches: [migrate-old-gulliver-tracked-buttons-20261113]
+    paths: [.github/workflows/inspect-gulliver-inline-20261113.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Read targeted CTA blocks only
+        env:
+          WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          WP_PASS: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,json,os,re,urllib.request
+          a='Basic '+base64.b64encode((os.environ['WP_USER']+':'+os.environ['WP_PASS']).encode()).decode()
+          for pid in [3608,3611,2517,3606,2329]:
+              req=urllib.request.Request(f'https://tsurikue.com/wp-json/wp/v2/posts/{pid}?context=edit&_fields=id,slug,content',headers={'Authorization':a})
+              with urllib.request.urlopen(req,timeout=35) as f:p=json.load(f)
+              b=p['content']['raw'];print('ARTICLE',pid,p['slug'])
+              for needle in ('tsq-gulliver-micro-20261014','a8mat=4B65SD+8DUSHE+9QU+NVHCY'):
+                  matches=list(re.finditer(re.escape(needle),b))
+                  print('MATCH_COUNT',needle,len(matches))
+                  for m in matches[:5]:
+                      print('SOURCE_CONTEXT',pid,needle,repr(b[max(0,m.start()-650):min(len(b),m.end()+880)]))
+          PY
