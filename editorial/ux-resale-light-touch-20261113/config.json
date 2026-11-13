@@ -1,0 +1,18 @@
+{
+  "operation": "add_ux_resale_light_touch_20261113",
+  "post_id": 2222,
+  "slug": "ux-resale",
+  "expected_sha256": "f90f4f14e2c5761f4ed4cb43121799b156a994468277f5ef4f8f958817300a10",
+  "mode": "add-only",
+  "new_title": null,
+  "additional_blocks": [
+    "one 4-item facts list next to original appraisal table",
+    "two real telephone negotiation paragraphs before original onsite appraisal paragraphs"
+  ],
+  "constraints": [
+    "Preserve every byte of original body after stripping exactly the inserted blocks",
+    "Do not rewrite paragraphs or headings",
+    "Do not touch WordPress post metadata, title, links, original list/table, photos or CTN",
+    "2025-02 actual sale price 427万円; purchase total 616万円 including options and charges; ratio 69.3% is total-based, not MSRP based"
+  ]
+}
