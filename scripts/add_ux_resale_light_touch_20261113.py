@@ -127,8 +127,8 @@ def transform(source: str) -> str:
         raise RuntimeError("Existing internal/external links changed")
     if len(re.findall(r'<!-- wp:list-item', augmented)) != len(re.findall(r'<!-- wp:list-item', source)) + 4:
         raise RuntimeError("New list must have exactly four numeric facts")
-    if not (augmented.find(MARKER_STATS) < augmented.find(FOLLOWING_CAVEAT)
-            < augmented.find(MARKER_CALLS) < augmented.find(FOLLOWING_ONSITE)):
+    if not (augmented.find(MARKER_STATS) < unique_paragraph(augmented, FOLLOWING_CAVEAT).start()
+            < augmented.find(MARKER_CALLS) < unique_paragraph(augmented, FOLLOWING_ONSITE).start()):
         raise RuntimeError("Inserted content is out of episode sequence")
     return augmented
 
