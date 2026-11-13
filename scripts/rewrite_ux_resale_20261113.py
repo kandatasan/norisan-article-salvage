@@ -134,7 +134,7 @@ def transform(source:str)->str:
     if sorted(set(new_links)-set(old_links))!=['https://lexus.jp/models/ux/']:
         raise RuntimeError('Unexpected outgoing URL introduced')
     if not set(old_links).issubset(set(new_links)):
-        raise RuntimeError('Existing outbound link removed')
+        raise RuntimeError(f'Existing outbound link removed: {sorted(set(old_links)-set(new_links))}')
     if current.count('Emotional Explorer')<1 or current.count('69.3％')<3:
         raise RuntimeError('Main search intent answer missing')
     if current.count('wp-image-')!=source.count('wp-image-'):
