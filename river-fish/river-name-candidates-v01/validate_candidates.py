@@ -38,9 +38,9 @@ def validate() -> dict:
         entry for entry in atlas["entries"]
         if entry["kind"] != "official_watershed_name_only_v21"
     ]
-    if len(fixed_groups) != manifest["fixed_coverage_denominator"] != 1127:
+    if len(fixed_groups) != manifest["fixed_coverage_denominator"] or manifest["fixed_coverage_denominator"] != 1127:
         raise ValueError("Fixed coverage denominator changed")
-    if len(rows) != manifest["candidate_count"] != 22:
+    if len(rows) != manifest["candidate_count"]:
         raise ValueError("Candidate count differs from reviewed manifest")
     if any(manifest[key] for key in (
         "candidate_rows_affect_fixed_denominator",
@@ -59,6 +59,14 @@ def validate() -> dict:
         if entry.get("source_prefecture")
     }
     cross_context_rows = 0
+    reviewed_sources = {
+        (
+            batch["publisher"], batch["source_title"], batch["source_page_url"],
+            batch["source_document_url"], batch["source_as_of"],
+        ): batch["candidate_rows"]
+        for batch in manifest["source_batches"]
+    }
+    source_row_counts: Counter[tuple[str, str, str, str, str]] = Counter()
     for row in rows:
         if row["candidate_id"] in ids:
             raise ValueError(f"Duplicate candidate ID: {row['candidate_id']}")
@@ -76,9 +84,16 @@ def validate() -> dict:
             raise ValueError(f"Cross-context exact-name count changed: {key}")
         cross_context_rows += recorded_name_matches > 0
 
+        source_key = (
+            row["publisher"], row["source_title"], row["source_page_url"],
+            row["source_document_url"], row["source_as_of"],
+        )
+        if source_key not in reviewed_sources:
+            raise ValueError(f"Candidate source is not in the reviewed manifest: {key}")
+        source_row_counts[source_key] += 1
         urls = (row["source_page_url"], row["source_document_url"])
-        if any(urlparse(url).scheme != "https" or urlparse(url).hostname != "www.city.hiroshima.lg.jp" for url in urls):
-            raise ValueError(f"Candidate source is not the reviewed Hiroshima City host: {key}")
+        if any(urlparse(url).scheme != "https" or not urlparse(url).hostname for url in urls):
+            raise ValueError(f"Candidate source is not HTTPS: {key}")
         if not row["river_name_as_written"] or row["river_name_as_written"][0] in "=+-@":
             raise ValueError(f"Unsafe or empty river name: {key}")
         if row["watershed_name"] or row["river_code"]:
@@ -98,6 +113,9 @@ def validate() -> dict:
             "source_as_of", "source_page_updated", "review_note",
         )):
             raise ValueError(f"Candidate lacks source or review metadata: {key}")
+
+    if dict(source_row_counts) != reviewed_sources:
+        raise ValueError("Candidate row counts differ from reviewed source batches")
 
     return {
         "schema": manifest["schema"],
