@@ -1,0 +1,14 @@
+{
+  "operation": "create",
+  "status": "draft",
+  "slug": "can-i-drive-in-japan",
+  "categories": [
+    49
+  ],
+  "title": "Can I Drive in Japan? Check Your Licence, IDP & Required Documents",
+  "salvage_marker": "<!-- tsurikue-source:official-npa-2026-jaf; tool=can-i-drive-in-japan; language=en -->",
+  "editorial_marker": "<!-- tsurikue-editorial:can-i-drive-in-japan:v1 -->",
+  "content_file": "content.html",
+  "featured_media": 0,
+  "expected_media": {}
+}
