@@ -1,0 +1,56 @@
+name: UX resale one-post read-only audit
+on:
+  push:
+    branches: [ux-resale-verified-story-20261113]
+    paths:
+      - '.github/workflows/ux-resale-readonly-20261113.yml'
+      - 'scripts/rewrite_ux_resale_20261113.py'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read WordPress UX resale actual blocks
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import urllib.request,json,base64,re,hashlib,html,os,sys
+          url='https://tsurikue.com/wp-json/wp/v2/posts?context=edit&slug=ux-resale&_fields=id,slug,status,title,content,featured_media,categories,author,date,modified'
+          auth=base64.b64encode((os.environ['TSURIKUE_WP_USER']+':'+os.environ['TSURIKUE_WP_APP_PASSWORD']).encode()).decode()
+          req=urllib.request.Request(url,headers={'Authorization':'Basic '+auth,'Accept':'application/json','User-Agent':'ux-resale-readonly-20261113'})
+          with urllib.request.urlopen(req,timeout=35) as f: rows=json.load(f)
+          if len(rows)!=1:raise RuntimeError(f"Unique slug not found: {len(rows)}")
+          row=rows[0]; body=row['content']['raw']
+          print('POST_META',json.dumps({k:row[k] for k in ['id','slug','status','featured_media','categories','author','date','modified']},ensure_ascii=False))
+          print('TITLE',row['title'].get('raw',row['title'].get('rendered')))
+          print('BODY_SHA',hashlib.sha256(body.encode()).hexdigest(),'LENGTH',len(body))
+          blocks=re.findall(r'<!-- wp:([\w/-]+)(?: [^\n]*?)? -->[\s\S]*?<!-- /wp:\1 -->',body)
+          print('BLOCK_COUNTERS',{x:blocks.count(x) for x in set(blocks)})
+          pattern=re.compile(r'<!-- wp:(paragraph|heading|table|list|image|shortcode|html|group|buttons|button)(?: [^\n]*?)? -->(.*?)<!-- /wp:\1 -->',re.S)
+          for idx,m in enumerate(pattern.finditer(body)):
+              t=m.group(2)
+              simple=html.unescape(re.sub(r'<[^>]+>','',t))
+              simple=re.sub(r'\s+',' ',simple).strip()
+              if m.group(1) in ['paragraph','heading','table','shortcode','html','list']:
+                  print('BLOCK',idx,m.group(1),'BR',t.count('<br'),simple[:1000])
+              elif m.group(1)=='image':
+                  print('IMAGE',idx,re.findall(r'wp-image-\d+',t),'ALT',re.findall(r'alt="[^"]*"',t)[:1])
+              else:
+                  print('OTHER',idx,m.group(1),simple[:170])
+          for keyword in ['427万円','616万円','435万円','2025年2月','2027年2月','Emotional Explorer','[blog_parts','px.a8.net']:
+              print('KEYWORD',keyword,'COUNT',body.count(keyword))
+          try:
+              sys.path.insert(0,'scripts')
+              from rewrite_ux_resale_20261113 import transform
+              revised=transform(body)
+              print('PREFLIGHT_SHA',hashlib.sha256(revised.encode()).hexdigest(),'LEN',len(revised))
+              print('PREFLIGHT_SUCCESS_READONLY')
+          except ImportError:
+              print('PREFLIGHT_PENDING_SCRIPT')
+          PY
