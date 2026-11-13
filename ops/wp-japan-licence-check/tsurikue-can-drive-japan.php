@@ -140,7 +140,7 @@ function decide(s) {
   }
   // An issuing-country dropdown is not an authoritative IDP validity database.
   // Route unknown issuers and known problem cases to manual official verification.
-  if (s.document === "geneva" && ["cn","vn","fr","be","mc","jp","other"].indexOf(s.country) !== -1) {
+  if (s.document === "geneva" && ["cn","vn","id","fr","be","mc","de","ch","tw","jp","other"].indexOf(s.country) !== -1) {
     r.tone="check"; r.compare=false;
     r.title="Check the actual IDP issuing authority";
     r.summary="The 1949 IDP route is not confirmed for the selected issuing country or region. Some do not issue Japanese-recognised Geneva-format permits. Do not drive based on this result.";
