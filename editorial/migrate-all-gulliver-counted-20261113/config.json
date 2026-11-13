@@ -1,0 +1,8 @@
+{
+  "operation": "migrate_all_gulliver_native_counted_20261113",
+  "date": "2026-11-13",
+  "scope": "All published WordPress posts with legacy Gulliver 2843/4172, 4507 blog part, legacy micro-copy+direct A8 text links, or uncounted native A8 Gulliver buttons. Do not alter normal prose/photos/tables/headings/CTN.",
+  "source_approved_part": 4507,
+  "swell_counting": "native loos/button isCount=true, per-placement data-id unique within page",
+  "safety": "Read-only whole-site preflight first, protect source SHAs for audited old posts, fetch and compare immediately before each post update, verify save and rendered button, keep A8 redirect and pixel codes."
+}
