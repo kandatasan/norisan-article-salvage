@@ -1,0 +1,95 @@
+name: Restore UX resale exact original (guarded one-time)
+on:
+  push:
+    branches: [restore-ux-resale-original-20261113]
+    paths: [.github/workflows/restore-ux-resale-original-20261113.yml]
+permissions:
+  contents: read
+jobs:
+  restore:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Restore original published content and title from exact matching WP revision
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64, hashlib, html, json, os, urllib.request, urllib.parse, urllib.error
+
+          BASE="https://tsurikue.com/wp-json/wp/v2"
+          POST_ID=2222
+          ORIGINAL_TITLE="レクサスUXのリセールは？616万円で購入し427万円で売却した記録"
+          CURRENT_TITLE="レクサスUXのリセールは？616万円→427万円、残価率69.3％の売却記録"
+          ORIGINAL_SHA="f90f4f14e2c5761f4ed4cb43121799b156a994468277f5ef4f8f958817300a10"
+          CURRENT_SHA="31ed70b9eae1211597063acae92388ef10e46f6741df6ca2a9070539973860cd"
+          auth="Basic "+base64.b64encode((os.environ["TSURIKUE_WP_USER"]+":"+os.environ["TSURIKUE_WP_APP_PASSWORD"]).encode()).decode()
+          def request(route, payload=None):
+              data=None if payload is None else json.dumps(payload,ensure_ascii=False).encode('utf-8')
+              req=urllib.request.Request(BASE+route, data=data, headers={"Authorization":auth,"Accept":"application/json","Content-Type":"application/json; charset=utf-8","User-Agent":"tsurikue-ux-resale-one-time-rollback"},method="POST" if data is not None else "GET")
+              with urllib.request.urlopen(req,timeout=45) as response:
+                  return json.load(response)
+          def raw(obj, field):
+              value=obj.get(field)
+              if isinstance(value,dict):return value.get('raw', value.get('rendered',''))
+              return value
+          def sha(s):
+              return hashlib.sha256(s.encode('utf-8')).hexdigest()
+          def identity(row):
+              return {key:row.get(key) for key in ['id','slug','status','featured_media','categories','author']}
+          orig_identity={'id':POST_ID,'slug':'ux-resale','status':'publish','featured_media':2223,'categories':[10,11],'author':1}
+          route="/posts/2222?context=edit"
+          before=request(route)
+          if identity(before)!=orig_identity:
+              raise RuntimeError('RESTORE_ABORT: Unexpected post ID, slug, status, featured image, categories, or author')
+          current_body=raw(before,"content")
+          current_title=html.unescape(raw(before,"title"))
+          print("BEFORE",json.dumps({"post_id":POST_ID,"sha":sha(current_body),"title":current_title,"media_count":current_body.count("<!-- wp:image"),"ctn":current_body.count('[blog_parts id="4521"]')},ensure_ascii=False),flush=True)
+          if sha(current_body)==ORIGINAL_SHA and current_title==ORIGINAL_TITLE:
+              print("RESTORE_RESULT ALREADY_ORIGINAL; zero writes",flush=True)
+              raise SystemExit(0)
+          if sha(current_body)!=CURRENT_SHA or current_title!=CURRENT_TITLE:
+              raise RuntimeError('RESTORE_ABORT: Someone has edited the UX resale article after the last verified change; do not overwrite it')
+          original=None
+          source_revision=None
+          for page in range(1,5):
+              revisions=request(f"/posts/2222/revisions?context=edit&per_page=100&page={page}")
+              if not isinstance(revisions,list):raise RuntimeError('RESTORE_ABORT: Revisions API unexpected response')
+              for rev in revisions:
+                  candidate=raw(rev,'content')
+                  if candidate and sha(candidate)==ORIGINAL_SHA:
+                      if html.unescape(raw(rev,'title'))!=ORIGINAL_TITLE:
+                          raise RuntimeError('RESTORE_ABORT: Content matched but revision title does not')
+                      original=candidate
+                      source_revision=rev.get('id')
+                      break
+              if original is not None:break
+              if len(revisions)<100:break
+          if original is None:
+              raise RuntimeError('RESTORE_ABORT: Original content SHA not found among WordPress revisions. Nothing changed.')
+          print("MATCHED_ORIGINAL_REVISION",source_revision,ORIGINAL_SHA,"bytes",len(original),flush=True)
+          if original.count('[blog_parts id="4521"]') != 1 or original.count('<!-- wp:image')!=3:
+              raise RuntimeError('RESTORE_ABORT: Original CTA or image blocks unexpected')
+          fresh=request(route)
+          if identity(fresh)!=identity(before) or sha(raw(fresh,'content'))!=CURRENT_SHA or html.unescape(raw(fresh,'title'))!=CURRENT_TITLE:
+              raise RuntimeError("RESTORE_ABORT: WordPress post changed during verification")
+          saved=request("/posts/2222",{"title":ORIGINAL_TITLE,"content":original})
+          if identity(saved)!=orig_identity:
+              raise RuntimeError("RESTORE_ERROR: WordPress metadata changed during rollback")
+          verified=request(route)
+          if identity(verified)!=orig_identity:
+              raise RuntimeError('RESTORE_ERROR: Post identity changed after restore')
+          actual_sha=sha(raw(verified,'content'))
+          actual_title=html.unescape(raw(verified,'title'))
+          if actual_sha!=ORIGINAL_SHA or actual_title!=ORIGINAL_TITLE:
+              raise RuntimeError('RESTORE_ERROR: Saved text/title did not match original exactly')
+          print("RESTORE_RESULT",json.dumps({
+              "post_id":POST_ID,"slug":"ux-resale","status":"publish",
+              "restored_revision_id":source_revision,"content_sha256":actual_sha,
+              "title":actual_title,"image_blocks":raw(verified,'content').count('<!-- wp:image'),
+              "ctn_shortcode_preserved":raw(verified,'content').count('[blog_parts id="4521"]')==1,
+              "writes":1
+          },ensure_ascii=False),flush=True)
+          PY
