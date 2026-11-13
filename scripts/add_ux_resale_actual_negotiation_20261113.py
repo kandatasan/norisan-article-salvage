@@ -13,7 +13,7 @@ TITLE="レクサスUXのリセールは？616万円→427万円、残価率69.3�
 EXPECTED_SHA="8498af9ce4a0009533f5ed9be09a867f5c62aec164e0745ce58de28c32e4fcf2"
 MARKER="<!-- tsurikue-ux-resale-real-negotiation:20261113 -->"
 PARA=re.compile(r'<!-- wp:paragraph(?: [^\n]*?)? -->\s*<p[^>]*>.*?</p>\s*<!-- /wp:paragraph -->', re.S)
-BEFORE_ANCHOR="やり取りは最大3社"
+BEFORE_ANCHOR="CTNは条件に合う買取店を選び、やり取りは"
 NEXT_ANCHOR="カーセブンとネクステージには、どちらにも実際のUXを見てもらいました。"
 
 def digest(body:str)->str:
