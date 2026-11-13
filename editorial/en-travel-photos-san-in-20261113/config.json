@@ -1,0 +1,67 @@
+{
+  "operation": "enhance_english_travel_20261113",
+  "source_snapshot": "WordPress.2026-11-12.xml",
+  "targets": [
+    {
+      "post_id": 4433,
+      "slug": "sakaiminato-mizuki-road-english",
+      "status": "draft",
+      "title": "Mizuki Shigeru Road Guide: Kitaro Trains, Yokai Statues & a Spooky Warehouse",
+      "expected_current_content_sha256": "9e85c198f9d140a4d5a566bafc9d20677f11ccd874a5c9a2d68296f68836af42",
+      "marker": "tsurikue-en-photo-warehouse-20261113",
+      "required_category": 49,
+      "expected_media": {
+        "4150": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-08.jpg",
+        "4151": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-09.jpg",
+        "4152": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-10.jpg",
+        "4153": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-11.jpg",
+        "4154": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-12.jpg",
+        "4155": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-13.jpg",
+        "4156": "/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-14.jpg"
+      },
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>The version I entered was called <strong>Chapter Three</strong>, a maze-like haunted-house experience where you choose your own path. Outside it was all cute statues and cheerful trains. In here, the mood was quite different.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-photo-warehouse-20261113 -->\n<!-- wp:image {\"id\":4150,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-08.jpg\" alt=\"Ticket price board at the entrance to Kitaro Yokai Warehouse\" class=\"wp-image-4150\"/><figcaption class=\"wp-element-caption\">The admission board outside the warehouse when I visited.</figcaption></figure>\n<!-- /wp:image -->"
+        },
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>The ticket doubled as a special <em>lucky charm sheet</em>. The idea was to collect five stamps, choosing four of the blessings yourself—things like good financial luck and road safety—then completing the final mark.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- wp:image {\"id\":4151,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-09.jpg\" alt=\"Ticket and lucky-charm stamp sheet from Kitaro Yokai Warehouse\" class=\"wp-image-4151\"/><figcaption class=\"wp-element-caption\">Even the ticket becomes part of the adventure.</figcaption></figure>\n<!-- /wp:image -->\n\n<!-- wp:image {\"id\":4152,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-10.jpg\" alt=\"Yokai Warehouse stamp-collecting mission instructions\" class=\"wp-image-4152\"/><figcaption class=\"wp-element-caption\">The stamp mission begins. I'll leave the final location a surprise.</figcaption></figure>\n<!-- /wp:image -->"
+        },
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>The route brought me into a strange mirror-filled area. Next came the familiar flat-faced yokai <strong>Nurikabe</strong>. That expression is hard to dislike.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- wp:image {\"id\":4153,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-11.jpg\" alt=\"Mirror-filled area inside Kitaro Yokai Warehouse\" class=\"wp-image-4153\"/><figcaption class=\"wp-element-caption\">The first mirror-filled room.</figcaption></figure>\n<!-- /wp:image -->\n\n<!-- wp:image {\"id\":4154,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-12.jpg\" alt=\"Nurikabe yokai figure inside Kitaro Yokai Warehouse\" class=\"wp-image-4154\"/><figcaption class=\"wp-element-caption\">Nurikabe, with that unmistakable expression.</figcaption></figure>\n<!-- /wp:image -->"
+        },
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>But deeper inside, the colors and lighting made things less welcoming. Then there was <strong>Neko Musume</strong>—a character I'd always thought I knew. Under those lights, she looked unexpectedly frightening.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- wp:image {\"id\":4155,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-13.jpg\" alt=\"Yokai figure under eerie purple lighting inside Kitaro Yokai Warehouse\" class=\"wp-image-4155\"/><figcaption class=\"wp-element-caption\">The lighting changes everything.</figcaption></figure>\n<!-- /wp:image -->\n\n<!-- wp:image {\"id\":4156,\"sizeSlug\":\"full\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-full\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/10/tsurikue-sakaiminato-4138-14.jpg\" alt=\"Kitaro and Neko Musume illuminated by green light in Yokai Warehouse\" class=\"wp-image-4156\"/><figcaption class=\"wp-element-caption\">A familiar pair, suddenly looking much creepier.</figcaption></figure>\n<!-- /wp:image -->"
+        },
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p><strong>Photography note:</strong> The attraction's current official rules ask visitors not to take photos or record video inside. The English article therefore doesn't reproduce my older indoor photos; please follow the rules in effect during your visit.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- wp:paragraph -->\n<p><strong>About these photos:</strong> I received permission at the venue to publish these still photos on my blog. Video was not allowed, and I deliberately left out the scenes that would spoil the surprises. Please follow the staff's current photography guidance during your own visit.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4391,
+      "slug": "matsue-vogel-park-english",
+      "status": "publish",
+      "title": "Matsue Vogel Park Review: Five Hours with Toucans, Penguins & Flowers",
+      "expected_current_content_sha256": "dbb2d4822a549b064116cffe2d50e34b2f14454ea6b658a7b03f7e6859786c54",
+      "marker": "tsurikue-en-san-in-vogel-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "insert_before",
+          "anchor": "<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Was Matsue Vogel Park worth it?</h2>\n<!-- /wp:heading -->",
+          "fragment": "<!-- tsurikue-en-san-in-vogel-20261113 -->\n<!-- wp:heading -->\n<h2 class=\"wp-block-heading\">Make it a San'in road trip, if you have more time</h2>\n<!-- /wp:heading -->\n\n<!-- wp:paragraph -->\n<p>Matsue Vogel Park is easy to visit by train, and you don't need a car just to see the birds. But if you're exploring more of Shimane and Tottori, a car makes it easier to follow a scenic detour whenever something catches your eye.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>Around Matsue, there's <strong>Lake Shinji</strong> for lakeside scenery, <strong>GOBIUS</strong> for freshwater creatures, <strong>Tamatsukuri Onsen</strong> for a hot-spring stop, and <strong>Matsue Castle</strong> for a change of pace. With extra time, you could continue to <strong>Sakaiminato</strong> for its yokai-filled streets or drive toward <strong>Mount Daisen</strong> for mountain views.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>That's a menu of places for a wider trip, not a checklist to squeeze into one day. The park itself kept us busy for around five hours!</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p>If a road trip sounds like your kind of adventure, you can <a href=\"https://www.discovercars.com/?a_aid=tsurikue\" target=\"_blank\" rel=\"sponsored nofollow noopener\"><strong>compare rental car options in Japan</strong></a> before deciding. For a simple visit to Vogel Park, the train is still a great choice.</p>\n<!-- /wp:paragraph -->\n\n<!-- wp:paragraph -->\n<p><strong>A Small Note from Me 🚗</strong> This is an affiliate link. If you book through it, I may earn a commission. It helps me keep exploring Hiroshima and sharing firsthand travel experiences. Thanks for reading!</p>\n<!-- /wp:paragraph -->\n"
+        }
+      ]
+    }
+  ]
+}
