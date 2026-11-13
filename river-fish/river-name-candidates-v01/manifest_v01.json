@@ -4,7 +4,7 @@
   "connected_groups_at_baseline": 477,
   "baseline_connection_rate_percent": 42.32,
   "groups_needed_for_50_percent": 87,
-  "candidate_count": 22,
+  "candidate_count": 58,
   "candidate_rows_affect_fixed_denominator": false,
   "candidate_rows_are_published": false,
   "candidate_rows_have_fish_connections": false,
@@ -18,6 +18,17 @@
       "source_document_url": "https://www.city.hiroshima.lg.jp/_res/projects/default_project/_page_/001/003/366/103478.pdf",
       "source_as_of": "2024-04-01",
       "candidate_rows": 22
+    },
+    {
+      "batch_id": "sendai-city-river-list-2026-10-19",
+      "publisher": "仙台市",
+      "source_title": "仙台市の河川",
+      "source_page_url": "https://www.city.sendai.jp/kasen-chose/kurashi/shizen/midori/kasen/sendai.html",
+      "source_document_url": "https://www.city.sendai.jp/kasen-chose/kurashi/shizen/midori/kasen/sendai.html",
+      "source_as_of": "2026-10-19",
+      "candidate_rows": 36,
+      "source_names_reviewed": 44,
+      "excluded_existing_same_river_or_same_prefecture_groups": 8
     }
   ]
 }
