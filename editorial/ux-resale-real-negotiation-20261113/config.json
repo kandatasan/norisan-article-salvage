@@ -1,0 +1,13 @@
+{
+  "operation": "add_ux_resale_actual_negotiation_20261113",
+  "post_id": 2222,
+  "slug": "ux-resale",
+  "expected_sha256": "8498af9ce4a0009533f5ed9be09a867f5c62aec164e0745ce58de28c32e4fcf2",
+  "source": "Owner confirms on 2026-11-13 that phone negotiation described in /lexus-ux-used/ is exactly what happened when selling UX",
+  "scope": "Insert H3 and three paragraphs after CTN phone contact, before both onsite appraisals; no other post edits.",
+  "guardrails": [
+    "No invented new seller/appraiser amount or chronology",
+    "Original 2025-02 sale remains 427万円",
+    "Retain images, original links, CTA, table, metadata and publish count"
+  ]
+}
