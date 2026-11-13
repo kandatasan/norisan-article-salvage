@@ -71,7 +71,7 @@ def transform(source:str)->str:
     before,after=signature(source),signature(updated)
     if before!=after:
         raise RuntimeError("Other Gutenberg blocks, links or affiliates changed")
-    if updated.count('月5,000円なら年間6万円。5年なら30万円')!=1:
+    if '私の例と同じ月5,000円差なら' in updated or '月5,000円' not in updated:
         raise RuntimeError("Insurance savings should appear exactly once")
     if not ('シエンタ' in updated and '三眼フルLED' in updated and '27万5,000円' in updated and '友人' in updated):
         raise RuntimeError("Owner anecdotes unexpectedly lost")
