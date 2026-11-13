@@ -1,0 +1,17 @@
+{
+  "operation": "replace_goodbuy_outlets_20261113",
+  "post_id": 3835,
+  "slug": "goodbuy",
+  "expected_sha256": "49ac985c9d157c9384d125a673e9188e94997e055c6f995f8fb126ee892024ad",
+  "scope": "CTN already latest published blog part 4521; keep its placement unchanged. Remove legacy Gulliver banner 2843 from method 4 and replace method 5's old HTML microcopy+Gulliver 4172 with published blog part 4507 (SWELL button plus non-affiliate car-market link).",
+  "protected": [
+    "All other WP article HTML remains identical",
+    "Featured media 2231, categories [10,11], author1, title, status publish, link, existing tables, photos, paragraphs and headings unchanged",
+    "A8 ad code remains inside the existing published reusable blog parts",
+    "Published site post/page count unchanged"
+  ],
+  "reusable_parts": [
+    4521,
+    4507
+  ]
+}
