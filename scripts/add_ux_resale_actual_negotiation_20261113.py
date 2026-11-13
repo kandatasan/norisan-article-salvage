@@ -73,7 +73,7 @@ def transform(source:str)->str:
         raise RuntimeError("Original sale amount unintentionally changed")
     if updated.count('435万円')!=source.count('435万円'):
         raise RuntimeError("Earlier independent appraisal amount unexpectedly changed")
-    if updated.count('wp:paragraph')!=source.count('wp:paragraph')+3:
+    if updated.count('<!-- wp:paragraph')!=source.count('<!-- wp:paragraph')+3:
         raise RuntimeError("Unexpected paragraph modification")
     if updated.count('一社にしたい')!=1 or updated.count('ぶっちゃけ、いくらぐらいになりそうですか？')!=1:
         raise RuntimeError("Confirmed owner negotiation dialogue missing")
