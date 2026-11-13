@@ -1299,6 +1299,9 @@ def apply(config_path: Path):
     if raw_cfg.get("operation") == "enhance_english_travel_20261113":
         from apply_en_travel_20261113 import apply_en_travel
         return apply_en_travel(config_path, raw_cfg, auth, (fetch_post_by_id, raw_field, public_counts, post_json, SITE_URL, get_json))
+    if raw_cfg.get("operation") == "migrate_all_gulliver_native_counted_20261113":
+        from migrate_all_gulliver_native_counted_20261113 import run as run_gulliver
+        return run_gulliver(raw_cfg, auth, (get_json, post_json, public_counts, SITE_URL), dry_run=False)
     if raw_cfg.get("operation") == "replace_goodbuy_outlets_20261113":
         from replace_goodbuy_ctn_gulliver_outlets_20261113 import apply_exit_design
         return apply_exit_design(config_path, raw_cfg, auth, (fetch_post_by_id, raw_field, public_counts, post_json, SITE_URL, get_json))
