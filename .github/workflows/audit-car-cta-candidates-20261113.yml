@@ -1,0 +1,63 @@
+name: Read-only Lexus and car CTA inventory 2026-11-13
+on:
+  push:
+    branches: [audit-car-cta-candidates-20261113]
+    paths:
+      - '.github/workflows/audit-car-cta-candidates-20261113.yml'
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Inventory published automotive posts and CTA placements without any edits
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,html,json,os,re,time,urllib.parse,urllib.request
+          auth='Basic '+base64.b64encode((os.environ["TSURIKUE_WP_USER"]+':'+os.environ["TSURIKUE_WP_APP_PASSWORD"]).encode()).decode()
+          base='https://tsurikue.com/wp-json/wp/v2'
+          headers={"Authorization":auth,"Accept":"application/json","User-Agent":"tsurikue-car-cta-readonly"}
+          def get(path):
+              req=urllib.request.Request(base+path,headers=headers)
+              with urllib.request.urlopen(req,timeout=45) as f:return json.load(f)
+          all_posts=[]
+          for page in range(1,5):
+              rows=get(f"/posts?context=edit&status=publish&per_page=100&page={page}&_fields=id,slug,title,content,categories,status,link")
+              if not isinstance(rows,list):raise RuntimeError('Unexpected post response')
+              all_posts+=rows
+              if len(rows)<100:break
+          print("TOTAL_POSTS_EXAMINED",len(all_posts),flush=True)
+          results=[]
+          for p in all_posts:
+              title=html.unescape(p.get("title",{}).get("raw",""))
+              cats=p.get("categories",[])
+              slug=p["slug"]
+              is_auto=10 in cats or 11 in cats or any(k in title for k in ("レクサス","タント","ランドクルーザー","ランクル","中古車","クルマ","一括査定","車の","車を","洗車"))
+              if not is_auto:continue
+              body=(p.get("content") or {}).get("raw","")
+              parts=re.findall(r'\[blog_parts id="(\d+)"\]',body)
+              urls=re.findall(r'href="([^"]+)"',body)
+              active_ctn=body.count('a8mat=3Z8YF4+7VEF1M+5I4S+5YRHE')
+              active_gull=body.count('a8mat=4B65SD+8DUSHE+9QU+NVHCY')
+              legacy=any(id in parts for id in ["2843","4172","3788","2184","2846","3104"])
+              new=any(id in parts for id in ["4521","4507"])
+              related=[{"id":int(id),"idx":body.find('[blog_parts id="'+id+'"]')} for id in parts]
+              item=dict(id=p["id"],slug=slug,title=title[:95],categories=cats,parts=parts,
+                        has_inline_ctn=active_ctn>0,has_inline_gulliver=active_gull>0,
+                        legacy_parts=legacy,new_parts=new,
+                        legacy_micro="tsq-gulliver-micro-20261014" in body,
+                        intext_ctn=body.count('CTN'),intext_gulliver=body.count('ガリバー'),
+                        intext_sell=body.count('査定'),intext_buy=body.count('中古'),
+                        ad_link_ctn=any("3Z8YF4" in u for u in urls),
+                        ad_link_gulliver=any("4B65SD" in u for u in urls),
+                        photos=body.count("<!-- wp:image"),sections=body.count("<!-- wp:heading"),shortcode_offsets=related)
+              results.append(item)
+          print("AUTO_POSTS_EXAMINED",len(results))
+          for item in sorted(results,key=lambda x:(0 if "レクサス" in x["title"] or "UX" in x["title"] else 1,x["id"])):
+              print("CAR_POST",json.dumps(item,ensure_ascii=False,separators=(",",":")),flush=True)
+          PY
