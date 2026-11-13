@@ -1299,6 +1299,9 @@ def apply(config_path: Path):
     if raw_cfg.get("operation") == "enhance_english_travel_20261113":
         from apply_en_travel_20261113 import apply_en_travel
         return apply_en_travel(config_path, raw_cfg, auth, (fetch_post_by_id, raw_field, public_counts, post_json, SITE_URL, get_json))
+    if raw_cfg.get("operation") == "cleanup_lexus_goodbuy_light_20261113":
+        from lexus_goodbuy_light_20261113 import apply as apply_goodbuy_light
+        return apply_goodbuy_light(config_path, raw_cfg, auth, (fetch_post_by_id, raw_field, public_counts, post_json, SITE_URL))
     if raw_cfg.get("operation") == "add_ux_resale_light_touch_20261113":
         from add_ux_resale_light_touch_20261113 import apply_light_additions
         return apply_light_additions(config_path, raw_cfg, auth, (fetch_post_by_id, raw_field, public_counts, post_json, SITE_URL))
