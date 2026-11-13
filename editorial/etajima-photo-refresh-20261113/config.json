@@ -1,0 +1,43 @@
+{
+  "operation": "refresh_english_travel_20261113",
+  "targets": [
+    {
+      "id": 4408,
+      "slug": "etajima-island-guide-english",
+      "title": "Etajima Island Day Trip from Hiroshima: Seaside Cafés, Local Food & Quiet Beaches",
+      "status": "publish",
+      "featured_media": 2128,
+      "expected_sha256": "e7445b52fb7f85e3eab0de844ea9b491899ee7b55821cadfb23733ddb069ae05",
+      "photos": [
+        {
+          "id": 2072,
+          "heading": "A good first stop: Hajimari no Terrace",
+          "position": "after",
+          "alt": "The view from the rooftop terrace at Hajimari no Terrace",
+          "path": "/wp-content/uploads/2026/06/IMG_0309-1024x768.jpeg"
+        },
+        {
+          "id": 2118,
+          "heading": "Mamegashima: why is an enormous red demon selling tofu?",
+          "position": "after",
+          "alt": "Local tofu products and souvenirs at Mamegashima on Etajima",
+          "path": "/wp-content/uploads/2026/06/IMG_0312-1024x768.jpeg"
+        },
+        {
+          "id": 2098,
+          "heading": "Etajima Olive Factory: a delicious surprise from a fishing trip",
+          "position": "after",
+          "alt": "Etajima Olive Factory, a stop on our island visit",
+          "path": "/wp-content/uploads/2026/06/IMG_0661-1024x768.jpeg"
+        },
+        {
+          "id": 2110,
+          "heading": "Human Beach Nagase: the quiet sea, and my thoughts about razor clams",
+          "position": "before",
+          "alt": "Local food souvenirs from our Etajima Olive Factory stop",
+          "path": "/wp-content/uploads/2026/06/IMG_0688-1024x768.jpeg"
+        }
+      ]
+    }
+  ]
+}
