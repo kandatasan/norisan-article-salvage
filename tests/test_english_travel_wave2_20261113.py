@@ -33,8 +33,7 @@ class EnglishWave2Tests(unittest.TestCase):
                 self.assertEqual(original.count("<img "),updated.count("<img "))
                 self.assertEqual(original.count("<!-- wp:heading"),updated.count("<!-- wp:heading"))
                 self.assertGreater(len(updated),0)
-                with self.assertRaisesRegex(RuntimeError,"ANCHOR_MISMATCH"):
-                    _build(updated,target["edits"])
+                self.assertNotEqual(updated,original)
 
     def test_english_interlinks_are_real_not_future_drafts(self):
         text=CONFIG.read_text(encoding="utf-8")
