@@ -1,0 +1,75 @@
+{
+  "operation": "enhance_english_travel_20261113",
+  "source_snapshot": "WP 2026-11-12 plus verified content-only updates from PRs #942 #943 #945",
+  "targets": [
+    {
+      "post_id": 4417,
+      "slug": "sera-day-trip-english",
+      "status": "publish",
+      "title": "Sera Day Trip from Hiroshima: Flower Fields, Farm Gelato & Dream Bridge",
+      "expected_current_content_sha256": "1bf4c83d622f5a8748a26f8fc0c23a2649bff3bc37acce1be620c1c89b864a46",
+      "required_category": 49,
+      "marker": "tsurikue-en-copy-cleanup-4417-20261113",
+      "edits": [
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>If you mainly want detailed flower photos and practical tips, the original Japanese review is <a href=\"https://tsurikue.com/serakankounokotsu/\">here</a>. A separate English farm review is being prepared.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-copy-cleanup-4417-20261113 -->\n<!-- wp:paragraph -->\n<p>For more of the flower paths and photography tips, read my <a href=\"https://tsurikue.com/en/sera-kogen-farm/\">English Sera Kogen Farm review</a>. The wider road-trip story continues below with gelato and Yume Tsuribashi Bridge.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4408,
+      "slug": "etajima-island-guide-english",
+      "status": "publish",
+      "title": "Etajima Island Day Trip from Hiroshima: Seaside Cafés, Local Food & Quiet Beaches",
+      "expected_current_content_sha256": "8878b3bd5da579e6848f063549e4a349cb3db2eb24c31e60f347f22891f18675",
+      "required_category": 49,
+      "marker": "tsurikue-en-copy-cleanup-4408-20261113",
+      "edits": [
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>This is a guide to places I've actually stopped at during my Etajima travels. Not every stop was on the same day, and I'm not pretending this is a carefully timed package tour.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-copy-cleanup-4408-20261113 -->\n<!-- wp:paragraph -->\n<p>These places come from several trips to Etajima, not one packed itinerary. Choose a few that fit your route, and leave time for those little stops by the sea.</p>\n<!-- /wp:paragraph -->"
+        },
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>Remember that the stops above reflect several visits, not one pre-planned route that I personally completed in a fixed order. It's better to build your own day around the current opening hours and transport connections.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- wp:paragraph -->\n<p>Ferry times and opening hours matter more than ticking off every stop. Choose the places that work with the port or bridge you're using, and enjoy the island at your own pace.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4424,
+      "slug": "kurashiki-bikan-quarter-english",
+      "status": "publish",
+      "title": "Kurashiki Bikan Historical Quarter: Parfaits, Denim Shops & Our Funny Canal Walk",
+      "expected_current_content_sha256": "4e9b5aff41451953380a3d733f9a55421a75cd779fd5c946062def9e5d2362e6",
+      "required_category": 49,
+      "marker": "tsurikue-en-copy-cleanup-4424-20261113",
+      "edits": [
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>If you want to enter the Ohara Museum of Art, ride a traditional riverboat or visit other landmarks, allow extra time and check their separate ticket arrangements. We didn't do those things on this visit, so I'm not going to pretend to review them.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-copy-cleanup-4424-20261113 -->\n<!-- wp:paragraph -->\n<p>We left those for another day. If they're on your list, check their opening hours and ticket arrangements before visiting.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4425,
+      "slug": "motonosumi-shrine-english",
+      "status": "publish",
+      "title": "Motonosumi Shrine Guide: 123 Red Torii Gates, Our Visit & 2026 Access Closures",
+      "expected_current_content_sha256": "36e3bf5a6605382d240ff8826ca647ad39d3334dfda048f814605637732976dc",
+      "required_category": 49,
+      "marker": "tsurikue-en-copy-cleanup-4425-20261113",
+      "edits": [
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>Our own visit took place before the current repairs. I don't want to pretend that the full route we walked can be repeated unchanged today.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-copy-cleanup-4425-20261113 -->\n<!-- wp:paragraph -->\n<p>Our visit was before the repairs, so the path shown in our 2023 photos may not be open on your travel date.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    }
+  ]
+}
