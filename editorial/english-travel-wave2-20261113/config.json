@@ -1,0 +1,139 @@
+{
+  "operation": "enhance_english_travel_20261113",
+  "source_snapshot": "WordPress.2026-11-12.xml; all 8 posts isolated from PR #942/#943/#944",
+  "targets": [
+    {
+      "post_id": 4375,
+      "slug": "orizuru-tower-english",
+      "status": "publish",
+      "title": "Is Hiroshima Orizuru Tower Worth ¥2,200? A Local's Honest Review",
+      "expected_current_content_sha256": "88e6227de6ce76e91b4252207d9d8398482ed2ad437cb21d29b89a6f9ced941f",
+      "marker": "tsurikue-en-wave2-4375-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>But if your plans include a longer road trip through Hiroshima Prefecture or the wider Chugoku region, a rental car can give you more freedom to stop at smaller towns, scenic viewpoints and places that are harder to reach by public transport.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4375-20261113 -->\n<!-- wp:paragraph -->\n<p>Want a few ideas beyond the city? I've also written about our <a href=\"https://tsurikue.com/en/kurahashi-island/\">relaxed coastal drive around Kurahashi Island</a> and <a href=\"https://tsurikue.com/en/etajima-island/\">little discoveries around Etajima</a>. Both are for a different kind of Hiroshima day, after you've enjoyed the city itself.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4380,
+      "slug": "yamaguchi-roadtrip-english",
+      "status": "publish",
+      "title": "Yamaguchi Road Trip from Hiroshima: 2 Days to Tsunoshima & Motonosumi",
+      "expected_current_content_sha256": "5e307a702cbeaf01cdf92fff54b04374e005eb4547bfc57b3f9428722e7c7108",
+      "marker": "tsurikue-en-wave2-4380-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p><strong>Don't mistake this for a short trip from Hiroshima.</strong> Eastern Yamaguchi is closer, but Tsunoshima and Motonosumi are much farther west. Allow a full two days or reduce the number of stops. Even for us, this was a very ambitious schedule.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4380-20261113 -->\n<!-- wp:paragraph -->\n<p>If one stop catches your eye, I've written separate photo diaries about <a href=\"https://tsurikue.com/en/mikawa-mu-valley/\">our underground adventure at Mikawa Mu Valley</a>, <a href=\"https://tsurikue.com/en/motonosumi-shrine/\">Motonosumi's red gates</a>, <a href=\"https://tsurikue.com/en/tsunoshima-bridge/\">Tsunoshima Bridge and the island</a>, and <a href=\"https://tsurikue.com/en/karato-market/\">what we ate at Karato Market</a>. Pick whichever sounds most fun, rather than racing through all four.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4393,
+      "slug": "tottori-drive-english",
+      "status": "publish",
+      "title": "Tottori Road Trip: Detective Conan, Sand Art, Seafood & Rain at the Dunes",
+      "expected_current_content_sha256": "d709ab1517173c776afbf956cfd04bc8eb19b65382cc0e0c4e263053ee8d5bb0",
+      "marker": "tsurikue-en-wave2-4393-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>Daytime for exploring, evening for a bath, then another area to visit the next morning. For a long east–west Tottori drive, having one overnight stop made a big difference.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4393-20261113 -->\n<!-- wp:paragraph -->\n<p>If you're spending another day in the San'in region, you could also cross into neighboring Shimane. On a separate trip we spent about five hours at <a href=\"https://tsurikue.com/en/matsue-vogel-park/\">Matsue Vogel Park</a> among birds and flowers. It deserves plenty of time of its own.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4403,
+      "slug": "kurahashi-island-english",
+      "status": "publish",
+      "title": "Kurahashi Island Day Trip from Hiroshima: Seaside Views, Sashimi & a Quiet Beach",
+      "expected_current_content_sha256": "2de494ac048b759348df6c3c20e14da3c8fc1341e85e46186742040969efecaa",
+      "marker": "tsurikue-en-wave2-4403-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>This article is from my firsthand September trip. <a href=\"https://tsurikue.com/kurahashijima-autumn-drive/\">Read the original Japanese version</a> or see more articles in <a href=\"https://tsurikue.com/en/\">English Travel</a>.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4403-20261113 -->\n<!-- wp:paragraph -->\n<p>If you're in the mood for another unhurried day by the Seto Inland Sea, <a href=\"https://tsurikue.com/en/etajima-island/\">Etajima Island</a> is another place we've explored. It's a different outing, with cafés, seaside stops and plenty of reasons to pull over.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4410,
+      "slug": "nagase-beach-etajima-english",
+      "status": "publish",
+      "title": "Human Beach Nagase on Etajima: A Quiet Beach Near Hiroshima (and My Razor Clam Obsession)",
+      "expected_current_content_sha256": "4fe658cfda43a00dd54afe26a9cce0a5716e27b0c6ae00cac8e8a2750f212a1b",
+      "marker": "tsurikue-en-wave2-4410-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>For a peaceful seaside break during an Etajima day trip, that might be all you need.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4410-20261113 -->\n<!-- wp:paragraph -->\n<p>Nagase is just one of the places we've stopped on Etajima. Our <a href=\"https://tsurikue.com/en/etajima-island/\">Etajima Island guide</a> brings together other seaside stops, cafés, tofu treats and olive products from separate visits—not one impossibly packed day.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4418,
+      "slug": "sera-kogen-farm-english",
+      "status": "publish",
+      "title": "Sera Kogen Farm Review: Spring Flowers & Photography Tips from Hiroshima",
+      "expected_current_content_sha256": "354ae93f7859f91b3f79a44238ff939a3a97004ee6c86bfc91a641a093d62513",
+      "marker": "tsurikue-en-wave2-4418-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>Want to make a day of it? On my wider Sera drive I also stopped for farm gelato at Donna and a quiet walk at Yume Tsuribashi Bridge. That trip is described in <a href=\"https://tsurikue.com/sera-sightseeing/\">the original Japanese Sera day-trip article</a>.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4418-20261113 -->\n<!-- wp:paragraph -->\n<p>Want to make a day of it? On my wider Sera drive I also stopped for farm gelato at Donna and a quiet walk at Yume Tsuribashi Bridge. You can follow that outing in my <a href=\"https://tsurikue.com/en/sera-day-trip/\">English Sera day-trip story</a>.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4424,
+      "slug": "kurashiki-bikan-quarter-english",
+      "status": "publish",
+      "title": "Kurashiki Bikan Historical Quarter: Parfaits, Denim Shops & Our Funny Canal Walk",
+      "expected_current_content_sha256": "46e9a5b615b72bed8de0c420b197e878ebad4e5805a0c3306c04bc5793847166",
+      "marker": "tsurikue-en-wave2-4424-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>There I was, apparently shouting about fish at the picturesque river while everyone else admired the architecture. A very normal husband-and-wife sightseeing moment.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4424-20261113 -->\n<!-- wp:paragraph -->\n<p>There I was, shouting about a fish beside Kurashiki's beautiful old streets. Apparently, that particular attraction had an audience of one.</p>\n<!-- /wp:paragraph -->"
+        },
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>I'm a fishing enthusiast, so little surprises like that are part of what makes a walk memorable for me. You may be more interested in the boats, buildings and swans. All perfectly reasonable choices.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- wp:paragraph -->\n<p>The old streets were beautiful, but I wasn't going to ignore a fish swimming right in front of me. That's what happens when you take a fishing enthusiast sightseeing.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4425,
+      "slug": "motonosumi-shrine-english",
+      "status": "publish",
+      "title": "Motonosumi Shrine Guide: 123 Red Torii Gates, Our Visit & 2026 Access Closures",
+      "expected_current_content_sha256": "ff940470b41e0810723da7ed937049ac739a51364218a72839b555dc12f7c7b5",
+      "marker": "tsurikue-en-wave2-4425-20261113",
+      "required_category": 49,
+      "edits": [
+        {
+          "mode": "replace",
+          "anchor": "<!-- wp:paragraph -->\n<p>For a wider two-day road trip, see our <a href=\"https://tsurikue.com/en/yamaguchi-road-trip/\">English Yamaguchi itinerary</a>. And for the original Japanese story and more photographs, here's <a href=\"https://tsurikue.com/motonosumi/\">my Motonosumi Shrine visit report</a>.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-wave2-4425-20261113 -->\n<!-- wp:paragraph -->\n<p>If the coast is what you're here for, take a look at our <a href=\"https://tsurikue.com/en/tsunoshima-bridge/\">Tsunoshima Bridge and island story</a>, or follow our <a href=\"https://tsurikue.com/en/yamaguchi-road-trip/\">two-day Yamaguchi drive</a>. And if you'd like the original Japanese article with more photographs, here's <a href=\"https://tsurikue.com/motonosumi/\">my Motonosumi Shrine visit report</a>.</p>\n<!-- /wp:paragraph -->"
+        }
+      ]
+    }
+  ]
+}
