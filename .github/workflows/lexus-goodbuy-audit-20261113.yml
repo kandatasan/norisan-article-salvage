@@ -34,7 +34,7 @@ jobs:
               text=html.unescape(re.sub(r'<[^>]*>','',inner))
               text=re.sub(r'\s+',' ',text).strip()
               print('BLOCK',i,m.group(1),repr(text[:1300]),'chars',len(text))
-          for m in re.finditer(r'<!-- wp:paragraph(?: [^\\n]*?)? -->\\s*<p[^>]*>.*?</p>\\s*<!-- /wp:paragraph -->',body,re.S):
+          for m in re.finditer(r'<!-- wp:paragraph.*?<!-- /wp:paragraph -->',body,re.S):
               if any(q in m.group(0) for q in ['見るのは月々の数字だけじゃなく','車両価格だけがカーライフのお金ではありません','補償内容をそろえて比べて']):
                   print('TARGET_RAW',m.group(0)[:1400].replace('\\n',' '))
           print('SHORTCODES',re.findall(r'\[blog_parts id="\d+"\]',body))
