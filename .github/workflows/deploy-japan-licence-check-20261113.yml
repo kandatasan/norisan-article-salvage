@@ -1,0 +1,126 @@
+name: Safe install - Japan driving licence checker
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ops/wp-japan-licence-check/**'
+      - '.github/workflows/deploy-japan-licence-check-20261113.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ops/wp-japan-licence-check/**'
+      - '.github/workflows/deploy-japan-licence-check-20261113.yml'
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+      - name: PHP syntax and shortcode UI test
+        run: |
+          set -euo pipefail
+          php -l ops/wp-japan-licence-check/tsurikue-can-drive-japan.php
+          php -l ops/wp-japan-licence-check/tests/checker-smoke.php
+          php ops/wp-japan-licence-check/tests/checker-smoke.php
+      - name: Browser-free decision regression
+        run: node ops/wp-japan-licence-check/tests/checker-regression.js
+  install:
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      XSERVER_SSH_HOST: ${{ secrets.XSERVER_SSH_HOST }}
+      XSERVER_SSH_USER: ${{ secrets.XSERVER_SSH_USER }}
+      XSERVER_SSH_PRIVATE_KEY: ${{ secrets.XSERVER_SSH_PRIVATE_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate pinned SSH identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$XSERVER_SSH_HOST" && test -n "$XSERVER_SSH_USER" && test -n "$XSERVER_SSH_PRIVATE_KEY"
+          mkdir -p "$HOME/.ssh" && chmod 700 "$HOME/.ssh"
+          printf '%s\n' "$XSERVER_SSH_PRIVATE_KEY" > "$HOME/.ssh/xserver_deploy_key"
+          chmod 600 "$HOME/.ssh/xserver_deploy_key"
+          bash river-fish/xserver-git/verify_host_key.sh
+      - name: Stage exactly one new plugin outside document root
+        shell: bash
+        run: |
+          set -euo pipefail
+          scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            ops/wp-japan-licence-check/tsurikue-can-drive-japan.php \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-can-drive-japan-20261113.php"
+      - name: Guarded MU-plugin activation and rollback
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -p 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST" 'bash -se' <<'SH'
+          set -euo pipefail
+          root="$HOME/tsurikue.com/public_html"
+          staged="$HOME/.tsurikue-can-drive-japan-20261113.php"
+          target="$root/wp-content/mu-plugins/tsurikue-can-drive-japan.php"
+          installed=0
+          finish() {
+            code=$?
+            if (( code != 0 && installed == 1 )); then
+              rm -f "$target"
+              echo 'JAPAN_DRIVE_CHECKER_ROLLBACK_ATTEMPTED=yes'
+            fi
+            rm -f "$staged"
+            exit "$code"
+          }
+          trap finish EXIT
+          test -d "$root" && test ! -L "$root" && test -f "$root/wp-config.php"
+          test -d "$root/wp-content/mu-plugins" && test ! -L "$root/wp-content/mu-plugins"
+          test -f "$root/wp-content/mu-plugins/tsurikue-en-routes.php"
+          test -f "$staged" && test ! -L "$staged"
+          php -l "$staged"
+          cd "$root"
+          before_posts="$(wp post list --post_type=post --post_status=publish --format=count)"
+          before_pages="$(wp post list --post_type=page --post_status=publish --format=count)"
+          wp eval '
+          $cat=get_category_by_slug("english-travel");
+          if (!$cat || (int)$cat->term_id !== 49) {
+            throw new RuntimeException("English Travel category 49 mismatch");
+          }
+          $existing=get_page_by_path("can-i-drive-in-japan", OBJECT, array("post","page"));
+          if ($existing && $existing->post_status !== "draft") {
+            throw new RuntimeException("Unexpected published checker slug conflict");
+          }
+          echo "JAPAN_DRIVE_CHECKER_PREFLIGHT=PASS\n";
+          '
+          if test -e "$target" || test -L "$target"; then
+            test -f "$target" && test ! -L "$target"
+            test "$(sha256sum "$target" | cut -d' ' -f1)" = "$(sha256sum "$staged" | cut -d' ' -f1)"
+            echo 'JAPAN_DRIVE_CHECKER_ALREADY_INSTALLED_SAME_BYTES=yes'
+          else
+            temp="$target.new.$$"
+            install -m 0644 "$staged" "$temp"
+            mv -f "$temp" "$target"
+            installed=1
+            echo 'JAPAN_DRIVE_CHECKER_NEW_PLUGIN_INSTALLED=yes'
+          fi
+          wp eval '
+          if (!shortcode_exists("tsurikue_can_drive_japan")
+              || !function_exists("tsu_drive_checker_js")) {
+            throw new RuntimeException("Checker shortcode or JS not loaded");
+          }
+          $out=do_shortcode("[tsurikue_can_drive_japan]");
+          if (substr_count($out,"data-tsurikue-drive-check")!==1
+              || strpos($out,"Can I Drive in Japan?")===false
+              || strpos($out,"aria-live=\"polite\"")===false
+              || strpos(tsu_drive_checker_js(),"eligibleTranslations")===false) {
+            throw new RuntimeException("Checker shortcode runtime mismatch");
+          }
+          echo "JAPAN_DRIVE_CHECKER_RENDER_VERIFIED=PASS\n";
+          '
+          test "$(wp post list --post_type=post --post_status=publish --format=count)" = "$before_posts"
+          test "$(wp post list --post_type=page --post_status=publish --format=count)" = "$before_pages"
+          echo 'JAPAN_DRIVE_CHECKER_PUBLISHED_COUNT_CHANGE=0'
+          echo 'JAPAN_DRIVE_CHECKER_UNRELATED_POST_WRITES=0'
+          SH

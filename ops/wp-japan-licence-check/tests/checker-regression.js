@@ -1,0 +1,35 @@
+'use strict';
+const fs=require('fs');
+const vm=require('vm');
+const assert=require('assert');
+const source=fs.readFileSync('ops/wp-japan-licence-check/tsurikue-can-drive-japan.php','utf8');
+const hit=source.match(/function tsu_drive_checker_js\(\)\s*\{\s*return <<<'JS'\n([\s\S]*?)\nJS;/);
+assert(hit,'PHP nowdoc JavaScript extractable');
+const sandbox={document:{addEventListener(){}},window:{},console};
+vm.runInNewContext(hit[1],sandbox,{timeout:3000});
+const decide=sandbox.window.tsurikueDriveDecide;
+assert.strictEqual(typeof decide,'function');
+function check(country,document,valid='yes',reentry='no'){
+  return decide({country,document,valid,reentry});
+}
+assert.strictEqual(check('jp','japan').tone,'possible','valid Japanese licence');
+assert.strictEqual(check('fr','translation').tone,'possible','French translation route');
+assert.strictEqual(check('de','translation').tone,'possible','German translation route');
+assert.strictEqual(check('tw','translation').tone,'possible','Taiwan translation route');
+assert.strictEqual(check('mc','translation').tone,'possible','Monaco translation route');
+assert.strictEqual(check('us','translation').tone,'stop','Translation not universal');
+assert.strictEqual(check('cn','translation').tone,'stop','Translation not universal for China');
+assert.strictEqual(check('us','original').tone,'stop','Foreign licence alone cannot qualify');
+assert.strictEqual(check('us','vienna').tone,'stop','Vienna permit cannot qualify');
+assert.strictEqual(check('ca','geneva').tone,'possible','Geneva potential only');
+assert(check('ca','geneva').summary.includes('does not prove'),'No automatic IDP qualification');
+assert.strictEqual(check('ca','geneva','no').tone,'stop','Expired document');
+assert.strictEqual(check('ca','geneva','unsure').tone,'check','Unknown validity');
+assert.strictEqual(check('ca','geneva','yes','yes').tone,'check','Resident short re-entry');
+assert.strictEqual(check('ca','geneva','yes','yes').compare,false,'No monetization when resident status unclear');
+assert.strictEqual(check('ca','unsure').compare,false,'Unknown documents');
+assert.strictEqual(check('ca','original').compare,false,'Do not promote rental on stop');
+assert.strictEqual(check('fr','translation').compare,true,'Only conditional comparison');
+assert.strictEqual(check('jp','japan','yes','yes').tone,'possible','Resident rule not for valid domestic licence');
+assert.strictEqual(check('','geneva').tone,'check','Missing issuer');
+console.log('Japan licence checker JS decision regression PASS');
