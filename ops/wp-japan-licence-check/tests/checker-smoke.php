@@ -4,8 +4,9 @@ define('ABSPATH', '/tests/');
 $GLOBALS['hooks'] = array();
 $GLOBALS['shortcodes'] = array();
 function add_action($event, $callback, $priority=10) {$GLOBALS['hooks'][$event]=$callback;}
+function add_filter($event, $callback, $priority=10) {$GLOBALS['hooks'][$event]=$callback;}
 function add_shortcode($tag, $callback) {$GLOBALS['shortcodes'][$tag]=$callback;}
-class WP_Post {public $post_content='';}
+class WP_Post {public $post_content='';public $post_name='';}
 require __DIR__ . '/../tsurikue-can-drive-japan.php';
 function ensure($v, $message) {if (!$v) {throw new RuntimeException($message);}}
 ensure(isset($GLOBALS['hooks']['wp_enqueue_scripts']), 'Assets hook missing');
@@ -31,5 +32,12 @@ ensure(strpos($css,'.tsu-drive')!==false,'Scoped CSS missing');
 ensure(strpos($html,'data-answer')!==false,'Accessible result area missing');
 ensure(strpos($html,'aria-live="polite"')!==false,'Result aria-live missing');
 ensure(strpos($html,'name="reentry"')!==false,'Re-entry safety missing');
+ensure(substr_count($html,'name="arrival"')===5, 'Landing date options missing');
+ensure(strpos($html,'I have not arrived yet')!==false,'Pre-trip visitors cannot answer');
+ensure(strpos($html,'One year ago or earlier')!==false,'One-year expiry option missing');
+ensure(strpos($js,'s.arrival === "yearplus"')!==false,'Landing limit validation missing');
+ensure(strpos($js,'s.arrival === "unsure"')!==false,'Unknown landing date validation missing');
+ensure(isset($GLOBALS['hooks']['language_attributes']),'English document language hook missing');
+
 ensure(strpos($html,'Check my documents')!==false,'Submission action missing');
 echo "Japan licence checker PHP + markup smoke PASS\n";
