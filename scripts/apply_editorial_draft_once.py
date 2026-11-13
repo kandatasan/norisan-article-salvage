@@ -1293,6 +1293,9 @@ def apply(config_path: Path):
     if not user or not password: raise SystemExit("BLOCKED_MISSING_SECRETS")
     auth = auth_header(user, password)
     raw_cfg = json.loads(config_path.read_text(encoding="utf-8"))
+    if raw_cfg.get("operation") == "add_ux_resale_actual_negotiation_20261113":
+        from add_ux_resale_actual_negotiation_20261113 import apply_negotiation
+        return apply_negotiation(config_path, raw_cfg, auth, (fetch_post_by_id, raw_field, public_counts, post_json, SITE_URL))
     if raw_cfg.get("operation") == "rewrite_published_ux_resale_20261113":
         from rewrite_ux_resale_20261113 import apply_revision
         return apply_revision(config_path, raw_cfg, auth, (fetch_post_by_id, raw_field, public_counts, post_json, SITE_URL))
