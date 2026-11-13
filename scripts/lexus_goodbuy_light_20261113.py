@@ -51,7 +51,7 @@ def signature(body:str):
 def transform(source:str)->str:
     if MARKER in source:
         if (source.count(MARKER)==1 and source.count("金利2％なら利息約15.5万円")==1
-            and source.count("年間6万円、5年で30万円")==1 and source.count('[blog_parts id="4521"]')==1):
+            and source.count("補償内容もそろえておきたいところです")==1 and source.count('[blog_parts id="4521"]')==1):
             return source
         raise RuntimeError("Partial goodbuy edit marker")
     if sha(source)!=SOURCE_SHA:
