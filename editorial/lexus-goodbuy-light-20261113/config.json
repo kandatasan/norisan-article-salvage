@@ -1,0 +1,20 @@
+{
+  "operation": "cleanup_lexus_goodbuy_light_20261113",
+  "post_id": 3835,
+  "slug": "goodbuy",
+  "expected_sha256": "7e7190b8f2fa275bef401b3586aacf41d8da8442006df80782b48244949bbaf5",
+  "scope": "Only three paragraphs in the loan and insurance sections; leave other content, title, images, tables, CTAs and metadata untouched",
+  "edit_intent": [
+    "Replace repeated generic loan closing with illustrative 3m yen 5yr 2% vs 4% example",
+    "Clarify auto insurance saves recurring ownership expense, not new-vehicle purchase price",
+    "Remove repeated annual/5yr insurance savings numbers but keep once in prior paragraph"
+  ],
+  "protected_facts": [
+    "Sienta dealer 50万円 vs outside 75万円 (25万円 gap)",
+    "headlights 16.5万円 plus moonroof 11万円 (27.5万円)",
+    "UX purchase 6156510円 and discount zero",
+    "friend referred three buyers but had no discount",
+    "UX actual sale 427万円 via CTN",
+    "bank comparison service was not personally used"
+  ]
+}
