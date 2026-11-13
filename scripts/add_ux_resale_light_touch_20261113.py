@@ -115,7 +115,7 @@ def transform(source: str) -> str:
 
     if source.count("<!-- wp:paragraph") + 2 != augmented.count("<!-- wp:paragraph"):
         raise RuntimeError("Original paragraph blocks unexpectedly changed")
-    if source.count("<!-- wp:list") + 1 != augmented.count("<!-- wp:list"):
+    if len(re.findall(r"<!-- wp:list(?:\\s|>)", source)) + 1 != len(re.findall(r"<!-- wp:list(?:\\s|>)", augmented)):
         raise RuntimeError("Only one small fact list may be added")
     for token in [
         "<!-- wp:heading", "<!-- wp:table", "<!-- wp:image", "<!-- wp:embed",
