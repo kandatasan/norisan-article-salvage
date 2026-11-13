@@ -93,7 +93,7 @@ def transform(source:str)->str:
        '350万円・500万円前後・430万円・435万円は、いずれも査定時の<strong>提示額</strong>。<br>2025年2月にカーセブンへ<strong>実際に売却した価格</strong>は427万円です。')
     current=replace_paragraph(current,
        'なお、購入額616万円の見積もり内訳には',
-       '<strong>購入総額比の残価率：約69.3％</strong>（427万円 ÷ 616万円 × 100）。<br>この616万円にはオプションや諸費用も含まれます。車両本体価格だけを分母にした残価率とは別の数字なので、そこは分けて見てください。')
+       '<strong>購入総額比の残価率：約69.3％</strong>（427万円 ÷ 616万円 × 100）。<br>この616万円にはオプションや諸費用も含まれます。車両本体価格だけを分母にした残価率とは別の数字なので、そこは分けて見てください。<br>新車購入時の内訳は<a href="https://tsurikue.com/ux-mitsumori/">616万円の見積もり記事</a>に載せています。')
 
     # Preserve the actual two-company physical appraisal sequence; no imagined bids or dialogue.
     current=rename_heading(current,
