@@ -1,0 +1,44 @@
+{
+  "operation": "enhance_english_travel_20261113",
+  "source_snapshot": "WXR 2026-11-12 + verified original Japanese first-person media",
+  "targets": [
+    {
+      "post_id": 4392,
+      "slug": "okunoshima-rabbit-island-english",
+      "status": "publish",
+      "title": "Rabbit Island (Okunoshima): Rabbits, Wartime Ruins & Our Autumn Visit",
+      "expected_current_content_sha256": "6a248a18b01531b3f2ebe06011d0935293fca5f491a6ea1a9546f31d4080ff69",
+      "marker": "tsurikue-en-owner-photo-4392-20261113",
+      "required_category": 49,
+      "expected_media": {
+        "3739": "/wp-content/uploads/2026/09/img_8244.jpg"
+      },
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>But when we disembarked, there weren't rabbits rushing toward us. We started walking clockwise around the island, wondering when the rabbit part of Rabbit Island would begin.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-owner-photo-4392-20261113 -->\n<!-- wp:image {\"id\":3739,\"sizeSlug\":\"large\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-large\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/09/img_8244.jpg\" alt=\"Walking path after disembarking from the ferry on Okunoshima Rabbit Island\" class=\"wp-image-3739\"/><figcaption class=\"wp-element-caption\">We began walking clockwise around the island. The rabbits hadn't appeared yet.</figcaption></figure>\n<!-- /wp:image -->"
+        }
+      ]
+    },
+    {
+      "post_id": 4432,
+      "slug": "karato-market-english",
+      "status": "publish",
+      "title": "Karato Market Shimonoseki: Best Sushi to Try, Weekend Hours & Our Seafood Lunch",
+      "expected_current_content_sha256": "3cbf73a2a68b715903f75e847b8e76ad3e93a26264ce4b5c988f7937c20eb34d",
+      "marker": "tsurikue-en-owner-photo-4432-20261113",
+      "required_category": 49,
+      "expected_media": {
+        "1003": "/wp-content/uploads/2026/05/img_2101.jpg"
+      },
+      "edits": [
+        {
+          "mode": "insert_after",
+          "anchor": "<!-- wp:paragraph -->\n<p>We walked around the waterfront near Kamon Wharf and included Kaikyokan aquarium on our wider trip. The market and aquarium are close enough to pair without another long drive.</p>\n<!-- /wp:paragraph -->",
+          "fragment": "<!-- tsurikue-en-owner-photo-4432-20261113 -->\n<!-- wp:image {\"id\":1003,\"sizeSlug\":\"large\",\"linkDestination\":\"none\"} -->\n<figure class=\"wp-block-image size-large\"><img src=\"https://tsurikue.com/wp-content/uploads/2026/05/img_2101.jpg\" alt=\"A large whale exhibit photographed at nearby Kaikyokan Aquarium\" class=\"wp-image-1003\"/><figcaption class=\"wp-element-caption\">This whale photo is from Kaikyokan Aquarium, not Karato Market. We visited after our seafood lunch.</figcaption></figure>\n<!-- /wp:image -->"
+        }
+      ]
+    }
+  ]
+}
