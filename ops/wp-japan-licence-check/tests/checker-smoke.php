@@ -29,6 +29,10 @@ ensure(strpos($html,'https://english.jaf.or.jp/')!==false,'JAF official source m
 ensure(strpos($js,'rel=sponsored nofollow noopener')===false,'Unintended unquoted link');
 ensure(strpos($js,'sponsored nofollow noopener')!==false,'Affiliate attribution missing');
 ensure(strpos($css,'.tsu-drive')!==false,'Scoped CSS missing');
+ensure(strpos($css,'.tsu-drive .hero h2::before')!==false,'Hero theme pseudo-element suppression missing');
+ensure(strpos($css,'.tsu-drive fieldset{border:0;border-bottom:1px')!==false,'Legend-border overlap fix missing');
+ensure(strpos($html,'residents recorded in Japan')!==false,'Resident definition help missing');
+ensure(strpos($html,'5. When did you last enter Japan?')!==false,'Short mobile heading missing');
 ensure(strpos($html,'data-answer')!==false,'Accessible result area missing');
 ensure(strpos($html,'aria-live="polite"')!==false,'Result aria-live missing');
 ensure(strpos($html,'name="reentry"')!==false,'Re-entry safety missing');
