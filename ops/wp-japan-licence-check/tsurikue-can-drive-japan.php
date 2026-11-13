@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Tsurikue Japan Driving Licence Checker
  * Description: Read-only English travel document checklist displayed only by [tsurikue_can_drive_japan].
- * Version: 1.1.0
+ * Version: 1.2.0
  *
  * Never decides legal eligibility. No personal data storage, cookies, or AJAX.
  */
@@ -15,7 +15,8 @@ return <<<'CSS'
 .tsu-drive a{color:#075d69;text-decoration:underline;text-underline-offset:2px}
 .tsu-drive .hero{background:linear-gradient(125deg,#143949,#186678);color:#fff;padding:27px 25px;border-radius:16px 16px 0 0}
 .tsu-drive .hero .eyebrow{font-size:.76rem;letter-spacing:.11em;text-transform:uppercase;font-weight:700;color:#b8e6e6}
-.tsu-drive .hero h2{font-size:clamp(1.45rem,3vw,2rem);margin:8px 0;color:#fff;line-height:1.3}
+.tsu-drive .hero h2{font-size:clamp(1.45rem,3vw,2rem);margin:8px 0;color:#fff;line-height:1.3;background:transparent!important;border:0!important;box-shadow:none!important;padding:0!important;border-radius:0!important;text-align:left!important}
+.tsu-drive .hero h2::before,.tsu-drive .hero h2::after{content:none!important;display:none!important}
 .tsu-drive .hero p{margin:8px 0 0;color:#e7f5f4}
 .tsu-drive .body{border:1px solid #d8e3e8;border-top:0;border-radius:0 0 16px 16px;padding:22px 22px 26px;background:#fff}
 .tsu-drive .note{padding:12px 14px;background:#f1f6f7;border-left:3px solid #167386;color:#294451;font-size:.92rem;border-radius:0 8px 8px 0;margin:0 0 21px}
@@ -23,8 +24,8 @@ return <<<'CSS'
 .tsu-drive label{display:block;font-weight:750;margin:0 0 8px;color:#1e3744;font-size:1rem}
 .tsu-drive .help{display:block;color:#5b6870;font-size:.86rem;margin:0 0 8px}
 .tsu-drive select,.tsu-drive input[type=text]{display:block;width:100%;padding:12px 12px;border:1px solid #aebfc6;border-radius:9px;font:inherit;color:#172e36;background:#fff;min-height:48px}
-.tsu-drive fieldset{border:1px solid #d8e3e8;border-radius:10px;padding:13px 15px 12px;margin:0 0 21px;min-width:0}
-.tsu-drive legend{font-weight:750;color:#1e3744;padding:0 5px;font-size:1rem}
+.tsu-drive fieldset{border:0;border-bottom:1px solid #d8e3e8;border-radius:0;padding:2px 0 18px;margin:0 0 24px;min-width:0;background:transparent}
+.tsu-drive legend{font-weight:750;color:#1e3744;padding:0;margin:0 0 12px;font-size:1rem;line-height:1.4;max-width:100%;white-space:normal}
 .tsu-drive .choice{display:flex;gap:10px;align-items:flex-start;line-height:1.4;font-weight:400;margin:10px 0;cursor:pointer;font-size:.94rem}
 .tsu-drive input[type=radio]{accent-color:#146d74;width:18px;height:18px;flex:none;margin-top:2px}
 .tsu-drive .two{display:grid;grid-template-columns:1fr 1fr;gap:16px}
@@ -80,6 +81,7 @@ function decide(s) {
       "Check your documents with the official authority and rental provider before travelling."
     ],compare:false};
   }
+  var isJapaneseLicence = s.document === "japan" || (s.document === "original" && s.country === "jp");
   var r;
   if (s.document === "japan") {
     if (s.country !== "jp") {
@@ -153,7 +155,7 @@ function decide(s) {
   }
   // Foreign IDPs and translated foreign licences are subject to a time limit
   // that cannot be inferred from a document expiry date alone.
-  if (s.document !== "japan") {
+  if (!isJapaneseLicence) {
     if (s.arrival === "yearplus") {
       if (r.tone !== "stop") {
         r.title="The usual one-year landing period has passed";
@@ -169,16 +171,16 @@ function decide(s) {
       r.steps.push("If you have not yet entered Japan, the usual one-year landing period starts from your eligible entry date. Your document must also be valid at the time you drive.");
     }
   }
-  if (s.reentry === "yes" && s.document !== "japan") {
+  if (s.reentry === "yes" && !isJapaneseLicence) {
     if (r.tone !== "stop") r.tone="check";
     r.compare=false;
     r.steps.push("Important: for residents recorded in Japan's Basic Resident Register, leaving and re-entering within three months may NOT restart the one-year driving period. Ask the prefectural driver's licence centre.");
-  } else if (s.reentry === "unsure" && s.document !== "japan") {
+  } else if (s.reentry === "unsure" && !isJapaneseLicence) {
     if (r.tone !== "stop") r.tone="check";
     r.compare=false;
     r.steps.push("If you live in Japan or have recently re-entered, confirm the one-year counting rule before driving.");
   }
-  if (s.document !== "japan" && s.country !== "jp") {
+  if (!isJapaneseLicence && s.country !== "jp") {
     r.steps.push("For international permits or eligible foreign licences, the driving period is generally no longer than one year from landing, or until the relevant document expires, whichever comes first. Re-entry exceptions apply.");
   }
   r.steps.push("Final confirmation must come from the official rules and the rental company; age, insurance, vehicle class and required identification may also matter.");
@@ -305,14 +307,15 @@ return <<<'HTML'
           <label class="choice"><input type="radio" name="validity" value="unsure"> Not sure</label>
         </fieldset>
         <fieldset>
-          <legend>4. Are you registered as a resident of Japan and returning after a trip abroad lasting three months or less?</legend>
+          <legend>4. Are you a registered Japan resident returning after three months or less abroad?</legend>
+          <span class="help">This refers to residents recorded in Japan's Basic Resident Register.</span>
           <label class="choice"><input type="radio" name="reentry" value="no" required> No</label>
           <label class="choice"><input type="radio" name="reentry" value="yes"> Yes</label>
           <label class="choice"><input type="radio" name="reentry" value="unsure"> Not sure</label>
         </fieldset>
       </div>
       <fieldset>
-        <legend>5. When did you most recently enter Japan?</legend>
+        <legend>5. When did you last enter Japan?</legend>
         <span class="help">For a Japanese driving licence, choose "Not applicable". If you live in Japan, the short re-entry rule above still matters.</span>
         <label class="choice"><input type="radio" name="arrival" value="planning" required> I have not arrived yet (planning my trip)</label>
         <label class="choice"><input type="radio" name="arrival" value="underone"> Less than one year ago</label>
@@ -358,10 +361,10 @@ function tsu_drive_checker_assets() {
     if (!is_singular('post')) { return; }
     $post = get_queried_object();
     if (!($post instanceof WP_Post) || !has_shortcode($post->post_content, 'tsurikue_can_drive_japan')) { return; }
-    wp_register_style('tsurikue-drive-checker', false, array(), '1.1.0');
+    wp_register_style('tsurikue-drive-checker', false, array(), '1.2.0');
     wp_enqueue_style('tsurikue-drive-checker');
     wp_add_inline_style('tsurikue-drive-checker', tsu_drive_checker_css());
-    wp_register_script('tsurikue-drive-checker', false, array(), '1.1.0', true);
+    wp_register_script('tsurikue-drive-checker', false, array(), '1.2.0', true);
     wp_enqueue_script('tsurikue-drive-checker');
     wp_add_inline_script('tsurikue-drive-checker', tsu_drive_checker_js(), 'after');
 }

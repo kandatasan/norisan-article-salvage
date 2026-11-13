@@ -23,6 +23,7 @@ jobs:
           set -euo pipefail
           php -l ops/wp-japan-licence-check/tsurikue-can-drive-japan.php
           php -l ops/wp-japan-licence-check/baseline/tsurikue-can-drive-japan-v1.0.0.php
+          php -l ops/wp-japan-licence-check/baseline/tsurikue-can-drive-japan-v1.1.0.php
           php -l ops/wp-japan-licence-check/tests/checker-smoke.php
           php ops/wp-japan-licence-check/tests/checker-smoke.php
       - name: Browser-free decision regression
@@ -55,8 +56,8 @@ jobs:
             ops/wp-japan-licence-check/tsurikue-can-drive-japan.php \
             "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-can-drive-japan-20261113.php"
           scp -P 10022 -i "$HOME/.ssh/xserver_deploy_key" -o BatchMode=yes -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
-            ops/wp-japan-licence-check/baseline/tsurikue-can-drive-japan-v1.0.0.php \
-            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-can-drive-japan-v1-baseline-20261113.php"
+            ops/wp-japan-licence-check/baseline/tsurikue-can-drive-japan-v1.1.0.php \
+            "$XSERVER_SSH_USER@$XSERVER_SSH_HOST:.tsurikue-can-drive-japan-v1-1-baseline-20261113.php"
       - name: Guarded MU-plugin activation and rollback
         shell: bash
         run: |
@@ -67,7 +68,7 @@ jobs:
           set -euo pipefail
           root="$HOME/tsurikue.com/public_html"
           staged="$HOME/.tsurikue-can-drive-japan-20261113.php"
-          baseline="$HOME/.tsurikue-can-drive-japan-v1-baseline-20261113.php"
+          baseline="$HOME/.tsurikue-can-drive-japan-v1-1-baseline-20261113.php"
           backup="$HOME/.tsurikue-can-drive-japan-rollback-20261113.php"
           target="$root/wp-content/mu-plugins/tsurikue-can-drive-japan.php"
           installed=0
@@ -124,14 +125,14 @@ jobs:
               cmp -s "$target" "$baseline" || { echo 'CHECKER_LIVE_BYTES_DRIFTED=STOP'; exit 1; }
               cp -p "$target" "$backup"
               cmp -s "$target" "$backup"
-              temp="$target.new.$"
+              temp="$target.new.$$"
               install -m 0644 "$staged" "$temp"
               mv -f "$temp" "$target"
               replaced=1
-              echo 'JAPAN_DRIVE_CHECKER_SAFE_UPGRADE_V1_TO_V1_1=yes'
+              echo 'JAPAN_DRIVE_CHECKER_SAFE_UPGRADE_V1_1_TO_V1_2=yes'
             fi
           else
-            temp="$target.new.$"
+            temp="$target.new.$$"
             install -m 0644 "$staged" "$temp"
             mv -f "$temp" "$target"
             installed=1

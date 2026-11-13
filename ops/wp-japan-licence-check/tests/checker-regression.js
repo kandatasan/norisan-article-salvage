@@ -51,5 +51,8 @@ assert.strictEqual(check('hk','geneva').tone,'possible','Hong Kong Geneva 1949 r
 assert.strictEqual(check('fr','translation','yes','no','yearplus').tone,'stop','Translation route ends after one year');
 assert.strictEqual(check('fr','translation','yes','yes','planning').tone,'check','Resident short re-entry needs review');
 assert.strictEqual(check('jp','japan','yes','no','notapplicable').tone,'possible','Japanese licence ignores arrival count');
+assert.strictEqual(check('jp','original','yes','no','notapplicable').tone,'possible','Japanese original-only licence ignores visitor landing period');
+assert.strictEqual(check('jp','original','yes','yes','notapplicable').tone,'possible','Japanese licence does not trigger foreign-licence re-entry restriction');
+assert.strictEqual(check('jp','original','yes','no','yearplus').tone,'possible','Domestic licence does not expire because landing was over one year ago');
 assert.strictEqual(decide({country:'us',document:'geneva',valid:'yes',reentry:'no'}).tone,'check','Missing arrival is not approved');
 console.log('Japan licence checker JS decision regression PASS');
