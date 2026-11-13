@@ -1,0 +1,66 @@
+name: Read-only audit goodbuy CTN exit rendering
+on:
+  push:
+    branches: [audit-goodbuy-exit-cta-20261113]
+    paths: [.github/workflows/audit-goodbuy-exit-cta-20261113.yml]
+permissions:
+  contents: read
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Inspect published goodbuy CTN shortcodes and rendered exit without writes
+        env:
+          USER: ${{ secrets.TSURIKUE_WP_USER }}
+          PASS: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,html,json,os,re,urllib.request,urllib.error
+          base="https://tsurikue.com"
+          auth="Basic "+base64.b64encode((os.environ["USER"]+":"+os.environ["PASS"]).encode()).decode()
+          def get(path, authenticated=True):
+              req=urllib.request.Request(base+path,headers={"Accept":"application/json","Authorization":auth} if authenticated else {"Accept":"text/html","User-Agent":"Mozilla/5.0"})
+              with urllib.request.urlopen(req,timeout=40) as f:
+                  raw=f.read().decode('utf-8','replace')
+                  return json.loads(raw) if 'application/json' in f.headers.get('Content-Type','') else raw
+          post=get("/wp-json/wp/v2/posts/3835?context=edit&_fields=id,slug,status,title,content")
+          raw=post["content"]["raw"]
+          rendered=post["content"].get("rendered","")
+          print("GOODBUY_POST",post["id"],post["status"],post["slug"])
+          print("GOODBUY_SHORTCODES",re.findall(r'\[blog_parts id="\d+"\]',raw))
+          for idx,needle in enumerate(["[blog_parts id=\"4521\"]","[blog_parts id=\"2843\"]","[blog_parts id=\"4172\"]"]):
+              offset=raw.find(needle)
+              print("RAW_EXIT_CONTEXT",idx,repr(raw[max(0,offset-750):offset+350]))
+          print("RENDERED_LENGTH",len(rendered))
+          for needle in ["お試しだけでもOK","電話ラッシュなし","無料で試してみる","【CTN一括車査定】","ctn-cta","px.a8.net"]:
+              print("RENDERED_MATCH",needle,rendered.count(needle))
+              pos=rendered.find(needle)
+              if pos>=0:print("RENDERED_CONTEXT",needle,repr(rendered[max(0,pos-350):pos+550]))
+          try:
+              types=get("/wp-json/wp/v2/types?context=edit")
+              for name,typ in types.items():
+                  if "blog" in name or "part" in name or "ブログ" in str(typ.get("name","")):
+                      print("WP_PART_TYPE",name,typ.get("rest_base"),typ.get("slug"))
+              parts=[(name,typ.get("rest_base",name)) for name,typ in types.items() if "part" in name or "blog" in name]
+              for name,rest_base in parts:
+                  try:
+                      part=get(f"/wp-json/wp/v2/{rest_base}/4521?context=edit&_fields=id,title,content,status")
+                      content=part.get("content") or {}
+                      text=content.get("raw","") if isinstance(content,dict) else content
+                      print("FOUND_BLOG_PART",name,rest_base,part["id"],part.get("status"),"length",len(text))
+                      print("BLOG_PART_TEXT",repr(text[:3000]))
+                  except (urllib.error.HTTPError,KeyError):pass
+          except Exception as e:
+              print("BLOG_PART_LOOKUP_ERROR",type(e).__name__,str(e)[:200])
+          try:
+              page=get("/goodbuy/",False)
+              print("PUBLIC_PAGE_LENGTH",len(page))
+              for needle in ["お試しだけでもOK","電話ラッシュなし","無料で試してみる","ctn-cta","専門店比較で高価買取【CTN一括車査定】"]:
+                  print("PUBLIC_MATCH",needle,page.count(needle))
+                  i=page.find(needle)
+                  if i>=0:print("PUBLIC_CONTEXT",needle,repr(page[max(0,i-250):i+450]))
+          except Exception as e:
+              print("PUBLIC_PAGE_ERROR",type(e).__name__,str(e)[:200])
+          PY
