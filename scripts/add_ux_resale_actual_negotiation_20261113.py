@@ -46,7 +46,7 @@ def transform(source:str)->str:
     if digest(source)!=EXPECTED_SHA:
         raise RuntimeError("Live WordPress UX resale content drifted; no overwrite")
     if source.count(BEFORE_ANCHOR)!=1 or source.count(NEXT_ANCHOR)!=1:
-        raise RuntimeError("CTN history anchor not unique")
+        raise RuntimeError(f"CTN history anchor not unique: telephone={source.count(BEFORE_ANCHOR)}, onsite={source.count(NEXT_ANCHOR)}")
     items=[m for m in PARA.finditer(source) if BEFORE_ANCHOR in html.unescape(re.sub(r'<[^>]*>','',m.group(0)))]
     next_items=[m for m in PARA.finditer(source) if NEXT_ANCHOR in html.unescape(re.sub(r'<[^>]*>','',m.group(0)))]
     if len(items)!=1 or len(next_items)!=1 or items[0].end()>next_items[0].start():
