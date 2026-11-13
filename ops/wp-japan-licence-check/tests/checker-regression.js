@@ -9,8 +9,8 @@ const sandbox={document:{addEventListener(){}},window:{},console};
 vm.runInNewContext(hit[1],sandbox,{timeout:3000});
 const decide=sandbox.window.tsurikueDriveDecide;
 assert.strictEqual(typeof decide,'function');
-function check(country,document,valid='yes',reentry='no'){
-  return decide({country,document,valid,reentry});
+function check(country,document,valid='yes',reentry='no',arrival='planning'){
+  return decide({country,document,valid,reentry,arrival});
 }
 assert.strictEqual(check('jp','japan').tone,'possible','valid Japanese licence');
 assert.strictEqual(check('fr','translation').tone,'possible','French translation route');
@@ -32,4 +32,24 @@ assert.strictEqual(check('ca','original').compare,false,'Do not promote rental o
 assert.strictEqual(check('fr','translation').compare,true,'Only conditional comparison');
 assert.strictEqual(check('jp','japan','yes','yes').tone,'possible','Resident rule not for valid domestic licence');
 assert.strictEqual(check('','geneva').tone,'check','Missing issuer');
+assert.strictEqual(check('us','geneva','yes','no','yearplus').tone,'stop','Over-one-year landing blocks driving');
+assert.strictEqual(check('us','geneva','yes','no','yearplus').compare,false,'No affiliate after expiry of landing period');
+assert.strictEqual(check('us','geneva','yes','no','unsure').tone,'check','Unknown landing date cannot qualify');
+assert.strictEqual(check('us','geneva','yes','no','notapplicable').compare,false,'N/A landing only for Japan-issued licence');
+assert.strictEqual(check('us','geneva','yes','no','underone').tone,'possible','Known recent landing can be preliminary');
+assert.strictEqual(check('us','geneva','yes','yes','yearplus').tone,'stop','Resident re-entry must not turn expired into conditional');
+assert.strictEqual(check('us','vienna','yes','no','yearplus').tone,'stop','Vienna and old landing remain blocked');
+assert(check('us','vienna','yes','no','yearplus').title.includes('Vienna'),'Specific illegal-route warning remains');
+assert.strictEqual(check('other','original').tone,'stop','Other must not downgrade original-licence-only stop');
+assert.strictEqual(check('us','original','yes','no','unsure').tone,'stop','Unknown landing must not downgrade invalid original-only route');
+for(const c of ['cn','vn','id','fr','be','mc','de','ch','tw','jp','other']){
+  assert.strictEqual(check(c,'geneva').compare,false,'Unknown/alternative Geneva issuer not sold: '+c);
+  assert.notStrictEqual(check(c,'geneva').tone,'possible','Unknown/alternative Geneva issuer not marked possible: '+c);
+}
+assert.strictEqual(check('ph','geneva').tone,'possible','Philippines Geneva 1949 route');
+assert.strictEqual(check('hk','geneva').tone,'possible','Hong Kong Geneva 1949 route');
+assert.strictEqual(check('fr','translation','yes','no','yearplus').tone,'stop','Translation route ends after one year');
+assert.strictEqual(check('fr','translation','yes','yes','planning').tone,'check','Resident short re-entry needs review');
+assert.strictEqual(check('jp','japan','yes','no','notapplicable').tone,'possible','Japanese licence ignores arrival count');
+assert.strictEqual(decide({country:'us',document:'geneva',valid:'yes',reentry:'no'}).tone,'check','Missing arrival is not approved');
 console.log('Japan licence checker JS decision regression PASS');
