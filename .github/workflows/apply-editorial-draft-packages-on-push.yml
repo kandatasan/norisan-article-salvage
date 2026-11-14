@@ -28,6 +28,8 @@ on:
       - 'tests/test_lexus_goodbuy_light_20261113.py'
       - 'tests/test_replace_goodbuy_ctn_gulliver_20261113.py'
       - 'tests/test_migrate_all_gulliver_native_counted_20261113.py'
+      - 'tests/test_revise_lbx_cheap_light_20261114.py'
+      - 'scripts/revise_lbx_cheap_light_20261114.py'
       - 'scripts/migrate_all_gulliver_native_counted_20261113.py'
       - 'scripts/replace_goodbuy_ctn_gulliver_outlets_20261113.py'
       - 'scripts/lexus_goodbuy_light_20261113.py'
@@ -64,7 +66,7 @@ jobs:
         with:
           python-version: '3.x'
       - name: Run generic safety tests
-        run: python -m unittest tests/test_apply_editorial_draft_once.py tests/test_apply_editorial_draft_create.py tests/test_apply_editorial_published_insert.py tests/test_nx_hud_table_patch_20261026.py tests/test_gulliver_cta_20261104.py tests/test_gulliver_context_20261104.py tests/test_gulliver_extra_buttons_20261104.py tests/test_gulliver_benefit_copy_20261104.py tests/test_ux_purchase_funnel_20261111.py tests/test_rewrite_ux_used_20261113.py tests/test_refine_ux_used_voice_breaks_20261113.py tests/test_add_ux_used_owner_photos_20261113.py tests/test_rewrite_ux_resale_20261113.py tests/test_ux_resale_actual_negotiation_20261113.py tests/test_ux_resale_light_touch_20261113.py tests/test_lexus_goodbuy_light_20261113.py tests/test_replace_goodbuy_ctn_gulliver_20261113.py tests/test_migrate_all_gulliver_native_counted_20261113.py tests/test_english_travel_refresh_20261113.py tests/test_en_travel_20261113.py tests/test_english_travel_wave2_20261113.py tests/test_english_travel_copy_cleanup_20261113.py tests/test_en_rabbit_karato_photos_20261113.py -v
+        run: python -m unittest tests/test_apply_editorial_draft_once.py tests/test_apply_editorial_draft_create.py tests/test_apply_editorial_published_insert.py tests/test_nx_hud_table_patch_20261026.py tests/test_gulliver_cta_20261104.py tests/test_gulliver_context_20261104.py tests/test_gulliver_extra_buttons_20261104.py tests/test_gulliver_benefit_copy_20261104.py tests/test_ux_purchase_funnel_20261111.py tests/test_rewrite_ux_used_20261113.py tests/test_refine_ux_used_voice_breaks_20261113.py tests/test_add_ux_used_owner_photos_20261113.py tests/test_rewrite_ux_resale_20261113.py tests/test_ux_resale_actual_negotiation_20261113.py tests/test_ux_resale_light_touch_20261113.py tests/test_lexus_goodbuy_light_20261113.py tests/test_replace_goodbuy_ctn_gulliver_20261113.py tests/test_migrate_all_gulliver_native_counted_20261113.py tests/test_revise_lbx_cheap_light_20261114.py tests/test_english_travel_refresh_20261113.py tests/test_en_travel_20261113.py tests/test_english_travel_wave2_20261113.py tests/test_english_travel_copy_cleanup_20261113.py tests/test_en_rabbit_karato_photos_20261113.py -v
       - name: Resolve configs
         shell: bash
         run: |
