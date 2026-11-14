@@ -1,0 +1,40 @@
+name: Read-only LBX cheap full text audit
+on:
+  push:
+    branches: [revise-lbx-cheap-light-touch-20261114]
+    paths: ['.github/workflows/audit-lbx-cheap-source-20261114.yml','scripts/revise_lbx_cheap_light_20261114.py']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read exact live WP body, Gutenberg block text and stats; zero writes
+        env:
+          TSURIKUE_WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          TSURIKUE_WP_APP_PASSWORD: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,hashlib,html,json,os,re,sys,urllib.request
+          base="https://tsurikue.com/wp-json/wp/v2"
+          auth="Basic "+base64.b64encode((os.environ["TSURIKUE_WP_USER"]+":"+os.environ["TSURIKUE_WP_APP_PASSWORD"]).encode()).decode()
+          req=urllib.request.Request(base+"/posts/3863?context=edit&_fields=id,slug,status,title,content,featured_media,categories,author,modified",headers={"Authorization":auth,"Accept":"application/json"})
+          with urllib.request.urlopen(req,timeout=35) as f:p=json.load(f)
+          b=p["content"]["raw"]
+          print("POST_META",json.dumps({k:v for k,v in p.items() if k!="content"},ensure_ascii=False))
+          print("SOURCE_SHA",hashlib.sha256(b.encode()).hexdigest(),"CHARS",len(b))
+          print("SOURCE_BODY_START")
+          print(b)
+          print("SOURCE_BODY_END")
+          print("SOURCE_COUNTS",json.dumps({k:b.count("<!-- wp:"+k) for k in ["paragraph","heading","image","table","list","loos/button","shortcode"]}))
+          try:
+            sys.path.insert(0,'scripts')
+            from revise_lbx_cheap_light_20261114 import transform
+            revised=transform(b)
+            print("PREFLIGHT_AFTER_SHA",hashlib.sha256(revised.encode()).hexdigest(),"CHARS",len(revised))
+            print("PREFLIGHT_CHANGED_PARAGRAPHS_ONLY")
+          except ImportError:print("PREFLIGHT_NOT_READY")
+          PY
