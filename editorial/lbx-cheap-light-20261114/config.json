@@ -1,0 +1,36 @@
+{
+  "operation": "revise_lbx_cheap_light_20261114",
+  "post_id": 3863,
+  "slug": "lexus-lbx-cheap",
+  "expected_sha256": "c0bdad04c26f8576ea6d197d7b056c627c1370dade7df8d3d949db45267c8447",
+  "source_policy": "Keep every original byte except 14 exact paragraph payloads and 1 exact price table; preserve owner stories, old Sept estimate, counted Gulliver buttons, CTN, title, media, links other than stale price list reference",
+  "fact_check": {
+    "official_release": "https://global.toyota/jp/newsroom/lexus/44911793.html",
+    "release_date": "2026-10-22",
+    "sale_date": "2026-11-03",
+    "new_2wd_guide_price_yen": {
+      "Elegant": 4450000,
+      "Active": 4650000,
+      "Cool": 4820000,
+      "Relax": 4820000,
+      "Bespoke_Build": 5670000
+    }
+  },
+  "protected_metadata": {
+    "id": 3863,
+    "slug": "lexus-lbx-cheap",
+    "status": "publish",
+    "featured_media": 1700,
+    "categories": [
+      10
+    ],
+    "author": 1
+  },
+  "editorial_decisions": [
+    "Leave author own 2026 September options 256300 yen and quoted Relax 4600000 yen with clear historical framing",
+    "Change only new-car market values for November 2026 model",
+    "Remove redundant summary apologies and imagined post-purchase dialogue",
+    "Preserve 2 individual article-counted Gulliver direct SWELL buttons and CTN 4521"
+  ],
+  "review_mode": "audit exact paragraph diff before merge"
+}
