@@ -1,0 +1,50 @@
+name: CTN mobile click browser check read only
+on:
+  push:
+    branches: [audit-ctn-link-failure-20261119]
+    paths: [.github/workflows/test-ctn-mobile-tap-20261119.yml]
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install browser
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install chromium
+      - name: Simulate iPhone-size tap and inspect destination, with no WP writes
+        run: |
+          node <<'JS'
+          const {chromium}=require('playwright');
+          (async()=>{
+             const browser=await chromium.launch({headless:true,args:['--no-sandbox']});
+             const ctx=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:3,isMobile:true,hasTouch:true,userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/18.6 Mobile/15E148 Safari/604.1'});
+             const page=await ctx.newPage();
+             page.on('pageerror',e=>console.log('PAGE_ERROR',String(e.message).slice(0,250)));
+             page.on('popup',p=>console.log('POPUP',p.url()));
+             console.log('STEP','start home');
+             let res=await page.goto('https://tsurikue.com/lexus-lbx-cheap/',{waitUntil:'domcontentloaded',timeout:40000});
+             console.log('ARTICLE',res.status(),page.url(),await page.title());
+             const link=page.locator('a[href*="px.a8.net"][href*="3Z8YF4"]').first();
+             console.log('LINK_COUNT',await page.locator('a[href*="px.a8.net"][href*="3Z8YF4"]').count());
+             if(!await link.count()){throw Error('CTN link not found in DOM');}
+             let info=await link.evaluate(el=>({html:el.outerHTML.slice(0,650),href:el.href,rect:(()=>{let b=el.getBoundingClientRect();return{x:b.x,y:b.y,width:b.width,height:b.height}})(),style:(()=>{let c=getComputedStyle(el);return{pointerEvents:c.pointerEvents,display:c.display,visibility:c.visibility}})(),parent:el.parentElement?.outerHTML.slice(0,850)}));
+             console.log('LINK_INFO',JSON.stringify(info));
+             const place=await link.boundingBox();if(!place||place.width===0||place.height===0){throw Error('CTA invisible/unclickable geometry')}
+             await link.scrollIntoViewIfNeeded({timeout:18000});
+             let element=await link.evaluate(el=>{const b=el.getBoundingClientRect();const hit=document.elementFromPoint(b.x+b.width/2,b.y+b.height/2);return hit?{node:hit.tagName,html:hit.outerHTML.slice(0,360),linkHit:el===hit||el.contains(hit)}:null});
+             console.log('HIT_TEST',JSON.stringify(element));
+             try{
+               await Promise.all([page.waitForURL(u=>!u.toString().includes('tsurikue.com'),{timeout:22000}),link.click({timeout:22000})]);
+               console.log('AFTER_TAP',page.url());
+               await page.waitForLoadState('domcontentloaded',{timeout:20000}).catch(e=>console.log('LOAD_ERR',e.message.slice(0,160)));
+               console.log('LANDING_TITLE',await page.title(), 'BODY_START',(await page.locator('body').innerText({timeout:15000})).slice(0,450));
+             }catch(e){console.log('TAP_ERROR',String(e.message).slice(0,1000),'CURRENT_URL',page.url())}
+             await browser.close();
+          })().catch(e=>{console.error('FATAL',e.message);process.exit(1)});
+          JS
