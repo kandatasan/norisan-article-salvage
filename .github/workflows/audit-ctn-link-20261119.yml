@@ -1,0 +1,50 @@
+name: CTN affiliate link incident read-only diagnosis
+on:
+  push:
+    branches: [audit-ctn-link-failure-20261119]
+    paths: ['.github/workflows/audit-ctn-link-20261119.yml']
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - name: Read CTN reusable parts, affected articles and test target HTTP responses without writing
+        env:
+          WP_USER: ${{ secrets.TSURIKUE_WP_USER }}
+          WP_PASS: ${{ secrets.TSURIKUE_WP_APP_PASSWORD }}
+        shell: bash
+        run: |
+          python - <<'PY'
+          import base64,html,json,os,re,urllib.request,urllib.error,time
+          BASE='https://tsurikue.com'
+          AUTH='Basic '+base64.b64encode((os.environ['WP_USER']+':'+os.environ['WP_PASS']).encode()).decode()
+          def wp(path):
+              req=urllib.request.Request(BASE+'/wp-json/wp/v2'+path,headers={'Authorization':AUTH,'Accept':'application/json'})
+              with urllib.request.urlopen(req,timeout=32) as f:return json.load(f)
+          for id in (4521,2846,2184,3788,3104):
+              try:
+                  item=wp(f'/blog_parts/{id}?context=edit&_fields=id,title,status,content')
+                  raw=item['content']['raw']
+                  print('CTN_PART',json.dumps({'id':id,'title':item['title']['raw'],'status':item['status'],'hrefs':re.findall(r'href="([^"]+)"',raw),'pixel_srcs':re.findall(r'<img[^>]+src="([^"]+)"',raw),'block_names':re.findall(r'<!-- wp:([\w/]+)',raw),'fragment':raw[:5500]},ensure_ascii=False),flush=True)
+              except urllib.error.HTTPError as e:print('CTN_PART_ERROR',id,e.code,flush=True)
+          for id in (3863,2222,3835,2948):
+              post=wp(f'/posts/{id}?context=edit&_fields=id,title,slug,status,content')
+              raw=post['content']['raw'];render=post['content'].get('rendered','')
+              print('ARTICLE',json.dumps({'id':id,'slug':post['slug'],'status':post['status'],'CTN_parts':re.findall(r'\[blog_parts id="(4521|2846|2184|3788|3104)"\]',raw),'ctn_direct_hrefs':sorted({x for x in re.findall(r'href="([^"]+)"',raw) if '3Z8YF4' in x}),'rendered_ctn_hrefs':sorted({x for x in re.findall(r'href="([^"]+)"',render) if '3Z8YF4' in x}),'rendered_ctn_count':render.count('CTN一括車査定')},ensure_ascii=False),flush=True)
+          old='https://px.a8.net/svt/ejp?a8mat=3Z8YF4+7VECQA+5I4S+5YJRM'
+          official='https://px.a8.net/svt/ejp?a8mat=3Z8YF4+7VEGL6+5I4S+5YRHE'
+          found=set([old,official])
+          try:
+              p=wp('/blog_parts/4521?context=edit&_fields=content')
+              found.update(x for x in re.findall(r'href="([^"]+)"',p['content']['raw']) if 'px.a8.net' in x)
+          except Exception:pass
+          for url in sorted(found):
+              req=urllib.request.Request(url,headers={'User-Agent':'Mozilla/5.0 (compatible; CTNAdLinkDebug/1.0)','Referer':BASE+'/lexus-lbx-cheap/'},method='HEAD')
+              try:
+                  with urllib.request.urlopen(req,timeout=20) as res:print('AD_HEAD',json.dumps({'url':url,'status':res.status,'final_url':res.url,'content_type':res.headers.get('Content-Type')},ensure_ascii=False),flush=True)
+              except urllib.error.HTTPError as e:print('AD_HEAD_ERROR',json.dumps({'url':url,'code':e.code,'loc':e.headers.get('Location'),'body':'not fetched'},ensure_ascii=False),flush=True)
+              except Exception as e:print('AD_HEAD_ERROR',url,type(e).__name__,str(e)[:150],flush=True)
+          print('READ_ONLY_DONE',flush=True)
+          PY
